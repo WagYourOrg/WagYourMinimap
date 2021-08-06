@@ -65,7 +65,7 @@ public class WagYourMinimapClient extends WagYourMinimap<WagYourMinimapClientCon
     public String getServerName() {
         IntegratedServer server = mc.getSingleplayerServer();
         if (server != null) {
-            return "LOCAL_" + server.getWorldPath(LevelResource.ROOT).getFileName();
+            return "LOCAL_" + server.getWorldPath(LevelResource.ROOT).normalize().getFileName();
         }
         ServerData multiplayerServer = mc.getCurrentServer();
         if (multiplayerServer != null) {
