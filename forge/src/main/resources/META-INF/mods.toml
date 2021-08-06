@@ -1,35 +1,42 @@
 modLoader = "javafml"
 loaderVersion = "[35,)"
 #issueTrackerURL = ""
-license = "Insert License Here"
+license = "MPL-2.0"
 
 [[mods]]
-modId = "examplemod"
+modId = "wagyourminimap"
 version = "${version}"
-displayName = "Example Mod"
-authors = "Me!"
+displayName = "WagYourMinimap"
+authors = "Wagyourtail"
 description = '''
-This is an example description! Tell everyone what your mod is about!
+Minimap mod coded from scratch to not be ass.
 '''
 #logoFile = ""
 
-[[dependencies.examplemod]]
+[[dependencies.wagyourminimap]]
 modId = "forge"
 mandatory = true
-versionRange = "[35,)"
+versionRange = "[37,)"
 ordering = "NONE"
 side = "BOTH"
 
-[[dependencies.examplemod]]
+[[dependencies.wagyourminimap]]
 modId = "minecraft"
 mandatory = true
-versionRange = "[1.16.2,)"
+versionRange = "[1.17,)"
 ordering = "NONE"
 side = "BOTH"
 
-[[dependencies.examplemod]]
+[[dependencies.wagyourminimap]]
 modId = "architectury"
 mandatory = true
-versionRange = "[1.1.55,)"
+versionRange = "[2.3.0,)"
+ordering = "AFTER"
+side = "BOTH"
+
+[[dependencies.wagyourminimap]]
+modId = "cloth-config2"
+mandatory = true
+versionRange = "[5.0.38,)"
 ordering = "AFTER"
 side = "BOTH"

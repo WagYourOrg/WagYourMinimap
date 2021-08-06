@@ -1,31 +1,34 @@
 {
   "schemaVersion": 1,
-  "id": "examplemod",
+  "id": "wagyourminimap",
   "version": "${version}",
-  "name": "Example Mod",
-  "description": "This is an example description! Tell everyone what your mod is about!",
+  "name": "WagYourMinimap",
+  "description": "Minimap mod coded from scratch to not be ass.",
   "authors": [
-    "Me!"
+    "Wagyourtail"
   ],
   "contact": {
-    "homepage": "https://fabricmc.net/",
-    "sources": "https://github.com/FabricMC/fabric-example-mod"
+    "homepage": "https://wagyourtail.xyz/",
+    "sources": "https://github.com/wagyourtail/WagYourMinimap"
   },
-  "license": "Insert License Here",
+  "license": "MPL-2.0",
   "icon": "assets/examplemod/icon.png",
   "environment": "*",
   "entrypoints": {
-    "main": [
-      "net.examplemod.fabric.ExampleModFabric"
+    "client": [
+      "xyz.wagyourtail.minimap.fabric.WagYourMinimapFabric"
+    ],
+    "modmenu": [
+      "xyz.wagyourtail.minimap.fabric.ModMenuConfig"
     ]
   },
   "depends": {
     "fabricloader": ">=0.7.4",
     "fabric": "*",
     "minecraft": ">=1.16.4",
-    "architectury": ">=1.1.55"
+    "architectury": ">=2.3.0",
+    "cloth-config2": ">=5.0.38"
   },
   "suggests": {
-    "flamingo": "*"
   }
 }
