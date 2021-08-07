@@ -9,8 +9,15 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.levelgen.Heightmap;
 
+import java.io.*;
+import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
 
 public class MapRegion {
     public final MapLevel parent;
@@ -34,7 +41,46 @@ public class MapRegion {
         data[index].loadFromChunk(chunk, level);
     }
 
-    public void writeRegion() {
+    public void readRegion(Path file) throws IOException {
+        ZipChunk[] zipData = new ZipChunk[256];
+        try (ZipFile zf = new ZipFile(file.toFile())) {
+            Enumeration<? extends ZipEntry> entries = zf.entries();
+            while (entries.hasMoreElements()) {
+                ZipEntry ze = entries.nextElement();
+                String[] parts = ze.getName().split("\\.");
+                int i = Integer.getInteger(parts[0]);
+                if (zipData[i] == null) {
+                    zipData[i] = new ZipChunk();
+                }
+                if (parts[1].equals("data")) {
+                    zipData[i].data = ze;
+                } else if (parts[1].equals("resources")) {
+                    zipData[i].resources = ze;
+                }
+            }
+            for (int i = 0; i < 256; ++i) {
+                if (zipData[i] != null) {
+                    data[i] = new ChunkData(this);
+                    data[i].loadFromDisk(zf, zipData[i]);
+                }
+            }
+        }
+    }
 
+    public void writeRegion(Path file) throws IOException {
+        try (FileOutputStream fos = new FileOutputStream(file.toFile())) {
+            try (ZipOutputStream zos = new ZipOutputStream(fos)) {
+                for (int i = 0; i < 256; ++i) {
+                    if (data[i] != null) {
+                        data[i].writeToZip(zos, Integer.toString(i));
+                    }
+                }
+            }
+        }
+    }
+
+    public static class ZipChunk {
+        public ZipEntry data;
+        public ZipEntry resources;
     }
 }

@@ -6,6 +6,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import xyz.wagyourtail.minimap.WagYourMinimap;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
@@ -16,8 +17,6 @@ public class MapLevel {
     public final Path mapCacheLocation;
     public LoadingCache<Pos, MapRegion> regionCache;
 
-    public final RegionLoader loader = new RegionLoader();
-
     public MapLevel(String server_slug, String level_slug) {
         this.server_slug = server_slug;
         this.level_slug = level_slug;
@@ -26,12 +25,20 @@ public class MapLevel {
     }
 
     public void onRegionRemoved(RemovalNotification<Pos, MapRegion> notification) {
-        notification.getValue().writeRegion();
+        try {
+            notification.getValue().writeRegion(mapCacheLocation.resolve(notification.getKey().getString() + ".zip"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    //wtf, why doesn't newBuilder do this method sig instead of just <Object, Object>
+    private <K,V> CacheBuilder<K, V> createCache() {
+        return (CacheBuilder) CacheBuilder.newBuilder();
     }
 
     public void resizeCache(long newCacheSize) {
-        CacheBuilder<Pos, MapRegion> builder = (CacheBuilder) CacheBuilder.newBuilder();
-        builder
+        CacheBuilder<Pos, MapRegion> builder = createCache()
             .maximumSize(newCacheSize)
             .removalListener(this::onRegionRemoved);
 
@@ -48,6 +55,10 @@ public class MapLevel {
     }
 
     public static record Pos(int x, int z) {
+        public String getString() {
+            return x + "," + z;
+        }
+
         public boolean equals(Object o) {
             if (this == o) return true;
             if (!(o instanceof Pos pos)) return false;
@@ -62,9 +73,12 @@ public class MapLevel {
     public class RegionLoader extends CacheLoader<Pos, MapRegion> {
 
         @Override
-        public MapRegion load(Pos key) {
-            //TODO: read from file, or new
-            return new MapRegion(MapLevel.this, key);
+        public MapRegion load(Pos key) throws IOException {
+            MapRegion region = new MapRegion(MapLevel.this, key);
+            if (mapCacheLocation.resolve(key.getString() + ".zip").toFile().exists()) {
+                region.readRegion(mapCacheLocation.resolve(key.getString() + ".zip"));
+            }
+            return region;
         }
 
     }
