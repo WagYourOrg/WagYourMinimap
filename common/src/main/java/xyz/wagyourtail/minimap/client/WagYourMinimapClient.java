@@ -44,7 +44,6 @@ public class WagYourMinimapClient extends WagYourMinimap<WagYourMinimapClientCon
         });
 
         ChunkEvent.LOAD_DATA.register((ChunkAccess chunk, @Nullable ServerLevel level, CompoundTag nbt) -> {
-            assert mc.level != null;
             String server_slug = getServerName();
             String level_slug = getLevelName(level);
             if (currentLevel == null ||
@@ -53,7 +52,7 @@ public class WagYourMinimapClient extends WagYourMinimap<WagYourMinimapClientCon
                 currentLevel = new MapLevel(server_slug, level_slug);
             }
             try {
-                currentLevel.onServerChunk(chunk);
+                currentLevel.onServerChunk(chunk, level == null ? mc.level : level);
             } catch (ExecutionException e) {
                 e.printStackTrace();
             }

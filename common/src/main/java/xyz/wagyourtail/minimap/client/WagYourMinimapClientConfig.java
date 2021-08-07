@@ -17,6 +17,8 @@ public class WagYourMinimapClientConfig extends WagYourMinimapConfig {
 
     private static final ConfigEntryBuilder configEntryBuilder = ConfigEntryBuilder.create();
 
+    public int minimapChunkRadius = 1;
+
     public InGameHud.SnapSide snapSide = InGameHud.SnapSide.TOP_RIGHT;
     public float mapScreenPercent = 0.30F;
     public Screen getConfigScreen(Screen parent) {
@@ -31,6 +33,12 @@ public class WagYourMinimapClientConfig extends WagYourMinimapConfig {
             this.regionCacheSize = size;
         });
         generalCategory.addEntry(regionCacheSize.build());
+
+        IntSliderBuilder minimapChunkRadius = configEntryBuilder.startIntSlider(new TranslatableComponent("config.wagyourminimap.minimap_chunk_radius"), this.minimapChunkRadius, 1, 20);
+        minimapChunkRadius.setSaveConsumer(radius -> {
+            this.minimapChunkRadius = radius;
+        });
+        generalCategory.addEntry(minimapChunkRadius.build());
 
         EnumSelectorBuilder<InGameHud.SnapSide> snapSide = configEntryBuilder.startEnumSelector(new TranslatableComponent("config.wagyourminimap.snap"), InGameHud.SnapSide.class, this.snapSide);
         snapSide.setSaveConsumer(snap -> {

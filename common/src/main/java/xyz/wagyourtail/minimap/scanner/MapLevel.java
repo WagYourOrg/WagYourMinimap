@@ -2,6 +2,7 @@ package xyz.wagyourtail.minimap.scanner;
 
 import com.google.common.cache.*;
 import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import xyz.wagyourtail.minimap.WagYourMinimap;
 
@@ -41,9 +42,9 @@ public class MapLevel {
         }
     }
 
-    public void onServerChunk(ChunkAccess chunk) throws ExecutionException {
+    public void onServerChunk(ChunkAccess chunk, Level level) throws ExecutionException {
         ChunkPos pos = chunk.getPos();
-        regionCache.get(new Pos(pos.getRegionX(), pos.getRegionZ())).parseChunkFromServer(chunk);
+        regionCache.get(new Pos(pos.getRegionX(), pos.getRegionZ())).loadChunkFromServer(chunk, level);
     }
 
     public static record Pos(int x, int z) {
