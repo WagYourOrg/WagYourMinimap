@@ -11,6 +11,7 @@ import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.server.IntegratedServer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.storage.LevelResource;
 import org.jetbrains.annotations.Nullable;
@@ -42,25 +43,9 @@ public class WagYourMinimapClient extends WagYourMinimap<WagYourMinimapClientCon
                 mc.setScreen(this.config.getConfigScreen(null));
             }
         });
-
-        ChunkEvent.LOAD_DATA.register((ChunkAccess chunk, @Nullable ServerLevel level, CompoundTag nbt) -> {
-            String server_slug = getServerName();
-            String level_slug = getLevelName(level);
-            if (currentLevel == null ||
-                !currentLevel.server_slug.equals(server_slug) ||
-                !currentLevel.level_slug.equals(level_slug)) {
-                currentLevel = new MapLevel(server_slug, level_slug);
-            }
-            try {
-                currentLevel.onServerChunk(chunk, level == null ? mc.level : level);
-            } catch (ExecutionException e) {
-                e.printStackTrace();
-            }
-        });
-
-
     }
 
+    @Override
     public String getServerName() {
         IntegratedServer server = mc.getSingleplayerServer();
         if (server != null) {
@@ -79,11 +64,17 @@ public class WagYourMinimapClient extends WagYourMinimap<WagYourMinimapClientCon
         return "UNKNOWN_SERVER_NAME";
     }
 
-    public String getLevelName(ServerLevel level) {
-        assert mc.level != null;
-        if (level != null) {
-            return level.dimension().location().toString().replace(":", "_");
-        }
-        return mc.level.dimension().location().toString().replace(":", "_");
+    @Override
+    public String getLevelName(Level level) {
+        if (level == null)
+            return mc.level.dimension().location().toString().replace(":", "_");
+        return level.dimension().location().toString().replace(":", "_");
     }
+
+    @Override
+    public Level resolveServerLevel(Level level) {
+        if (level == null) return mc.level;
+        return super.resolveServerLevel(level);
+    }
+
 }

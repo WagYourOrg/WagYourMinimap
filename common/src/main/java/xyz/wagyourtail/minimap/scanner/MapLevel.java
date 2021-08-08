@@ -5,6 +5,7 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import xyz.wagyourtail.minimap.WagYourMinimap;
+import xyz.wagyourtail.minimap.api.MinimapEvents;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -15,7 +16,7 @@ public class MapLevel {
     public final String server_slug;
     public final String level_slug;
     public final Path mapCacheLocation;
-    public LoadingCache<Pos, MapRegion> regionCache;
+    private LoadingCache<Pos, MapRegion> regionCache;
 
     public MapLevel(String server_slug, String level_slug) {
         this.server_slug = server_slug;
@@ -37,7 +38,11 @@ public class MapLevel {
         return (CacheBuilder) CacheBuilder.newBuilder();
     }
 
-    public void resizeCache(long newCacheSize) {
+    public synchronized MapRegion getRegion(Pos pos) throws ExecutionException {
+        return regionCache.get(pos);
+    }
+
+    public synchronized void resizeCache(long newCacheSize) {
         CacheBuilder<Pos, MapRegion> builder = createCache()
             .maximumSize(newCacheSize)
             .removalListener(this::onRegionRemoved);
@@ -47,11 +52,6 @@ public class MapLevel {
         if (oldCache != null) {
             regionCache.putAll(oldCache.asMap());
         }
-    }
-
-    public void onServerChunk(ChunkAccess chunk, Level level) throws ExecutionException {
-        ChunkPos pos = chunk.getPos();
-        regionCache.get(new Pos(pos.getRegionX(), pos.getRegionZ())).loadChunkFromServer(chunk, level);
     }
 
     public static record Pos(int x, int z) {
@@ -78,6 +78,7 @@ public class MapLevel {
             if (mapCacheLocation.resolve(key.getString() + ".zip").toFile().exists()) {
                 region.readRegion(mapCacheLocation.resolve(key.getString() + ".zip"));
             }
+            MinimapEvents.REGION_LOADED.invoker().onChunkLoaded(region);
             return region;
         }
 

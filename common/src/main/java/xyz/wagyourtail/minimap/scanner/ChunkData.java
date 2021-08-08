@@ -38,28 +38,6 @@ public class ChunkData {
     public ChunkData(MapRegion parent) {
         this.parent = parent;
     }
-
-    public synchronized void loadFromChunk(ChunkAccess chunk, Level level) {
-        CompletableFuture.runAsync(() -> {
-            updateTime = System.currentTimeMillis();
-            ChunkPos pos = chunk.getPos();
-            BlockPos.MutableBlockPos blockPos = new BlockPos.MutableBlockPos();
-            for (int i = 0; i < 256; ++i) {
-                int x = (i >> 4) % 16;
-                int z = i % 16;
-
-                Registry<Biome> biomeRegistry = level.registryAccess().registryOrThrow(Registry.BIOME_REGISTRY);
-
-                this.heightmap[i] = chunk.getHeight(Heightmap.Types.WORLD_SURFACE, x, z);
-                this.blockid[i] = getOrRegisterResourceLocation(Registry.BLOCK.getKey(chunk.getBlockState(blockPos.set(pos.x << 4 + x, this.heightmap[i], pos.z << 4)).getBlock()));
-                this.biomeid[i] = getOrRegisterResourceLocation(biomeRegistry.getKey(level.getBiome(blockPos)));
-
-                this.oceanFloorHeightmap[i] = chunk.getHeight(Heightmap.Types.OCEAN_FLOOR, x, z);
-                this.oceanFloorBlockid[i] = getOrRegisterResourceLocation(Registry.BLOCK.getKey(chunk.getBlockState(blockPos.setY(this.oceanFloorHeightmap[i])).getBlock()));
-                this.oceanFloorBiomeid[i] = getOrRegisterResourceLocation(biomeRegistry.getKey(level.getBiome(blockPos)));
-            }
-        });
-    }
     
     public synchronized void loadFromDisk(ZipFile file, MapRegion.ZipChunk chunk) throws IOException {
         try (InputStream stream = file.getInputStream(chunk.data)) {
@@ -130,6 +108,10 @@ public class ChunkData {
         int k = resources.size();
         resources.add(id);
         return k;
+    }
+
+    public static int blockPosToIndex(BlockPos pos) {
+        return ((pos.getX() % 16) << 4) + (pos.getZ() % 16);
     }
 
 }

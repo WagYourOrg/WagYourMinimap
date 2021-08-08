@@ -11,38 +11,28 @@ import net.minecraft.world.level.levelgen.Heightmap;
 
 import java.io.*;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 public class MapRegion {
+    public static final int REGION_SIZE = 32;
+    public static final int REGION_SQUARE_SIZE = 1024;
     public final MapLevel parent;
     public final MapLevel.Pos position;
-
-    public final ChunkData[] data = new ChunkData[256];
+    public final ChunkData[] data = new ChunkData[REGION_SQUARE_SIZE];
+    public final boolean[] datalocks = new boolean[REGION_SQUARE_SIZE];
 
     public MapRegion(MapLevel parent, MapLevel.Pos pos) {
         this.parent = parent;
         this.position = pos;
     }
 
-    public void loadChunkFromServer(ChunkAccess chunk, Level level) {
-        ChunkPos pos = chunk.getPos();
-        int px = pos.x % 16;
-        int pz = pos.z % 16;
-        if (px < 0) px += 16;
-        if (pz < 0) pz += 16;
-        int index = (px << 4) + pz;
-        if (data[index] == null) data[index] = new ChunkData(this);
-        data[index].loadFromChunk(chunk, level);
-    }
-
     public void readRegion(Path file) throws IOException {
-        ZipChunk[] zipData = new ZipChunk[256];
+        ZipChunk[] zipData = new ZipChunk[REGION_SQUARE_SIZE];
         try (ZipFile zf = new ZipFile(file.toFile())) {
             Enumeration<? extends ZipEntry> entries = zf.entries();
             while (entries.hasMoreElements()) {
@@ -58,7 +48,7 @@ public class MapRegion {
                     zipData[i].resources = ze;
                 }
             }
-            for (int i = 0; i < 256; ++i) {
+            for (int i = 0; i < REGION_SQUARE_SIZE; ++i) {
                 if (zipData[i] != null) {
                     data[i] = new ChunkData(this);
                     data[i].loadFromDisk(zf, zipData[i]);
@@ -70,13 +60,30 @@ public class MapRegion {
     public void writeRegion(Path file) throws IOException {
         try (FileOutputStream fos = new FileOutputStream(file.toFile())) {
             try (ZipOutputStream zos = new ZipOutputStream(fos)) {
-                for (int i = 0; i < 256; ++i) {
+                for (int i = 0; i < REGION_SQUARE_SIZE; ++i) {
                     if (data[i] != null) {
                         data[i].writeToZip(zos, Integer.toString(i));
                     }
                 }
             }
         }
+    }
+
+
+    public static int chunkPosToIndex(ChunkPos pos) {
+        int px = pos.x % REGION_SIZE;
+        int pz = pos.z % REGION_SIZE;
+        if (px < 0) px += REGION_SIZE;
+        if (pz < 0) pz += REGION_SIZE;
+        return (px << 5) + pz;
+    }
+
+    public static int chunkPosToIndex(int x, int z) {
+        int px = x % REGION_SIZE;
+        int pz = z % REGION_SIZE;
+        if (px < 0) px += REGION_SIZE;
+        if (pz < 0) pz += REGION_SIZE;
+        return (px << 5) + pz;
     }
 
     public static class ZipChunk {
