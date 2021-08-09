@@ -3,7 +3,6 @@ package xyz.wagyourtail.minimap.client;
 import me.shedaniel.clothconfig2.api.ConfigBuilder;
 import me.shedaniel.clothconfig2.api.ConfigCategory;
 import me.shedaniel.clothconfig2.api.ConfigEntryBuilder;
-import me.shedaniel.clothconfig2.gui.entries.IntegerSliderEntry;
 import me.shedaniel.clothconfig2.impl.builders.EnumSelectorBuilder;
 import me.shedaniel.clothconfig2.impl.builders.IntSliderBuilder;
 import me.shedaniel.clothconfig2.impl.builders.LongSliderBuilder;
@@ -11,7 +10,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.TranslatableComponent;
 import xyz.wagyourtail.minimap.WagYourMinimap;
 import xyz.wagyourtail.minimap.WagYourMinimapConfig;
-import xyz.wagyourtail.minimap.client.hud.InGameHud;
+import xyz.wagyourtail.minimap.client.gui.InGameHud;
 
 public class WagYourMinimapClientConfig extends WagYourMinimapConfig {
 
@@ -28,7 +27,7 @@ public class WagYourMinimapClientConfig extends WagYourMinimapConfig {
 
         ConfigCategory generalCategory = builder.getOrCreateCategory(new TranslatableComponent("stat.generalButton"));
 
-        LongSliderBuilder regionCacheSize = configEntryBuilder.startLongSlider(new TranslatableComponent("config.wagyourminimap.region_cache_size"), this.regionCacheSize, 0, 20000L);
+        LongSliderBuilder regionCacheSize = configEntryBuilder.startLongSlider(new TranslatableComponent("config.wagyourminimap.region_cache_size"), this.regionCacheSize, 0, 2000L);
         regionCacheSize.setSaveConsumer(size -> {
             this.regionCacheSize = size;
         });

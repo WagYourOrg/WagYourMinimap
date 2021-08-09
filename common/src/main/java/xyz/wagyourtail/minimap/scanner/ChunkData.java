@@ -1,20 +1,15 @@
 package xyz.wagyourtail.minimap.scanner;
 
+import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.biome.Biome;
-import net.minecraft.world.level.chunk.ChunkAccess;
-import net.minecraft.world.level.levelgen.Heightmap;
+import xyz.wagyourtail.minimap.client.gui.renderer.AbstractRenderStrategy;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
@@ -31,7 +26,6 @@ public class ChunkData {
     public final int[] oceanFloorHeightmap = new int[256];
     public final int[] oceanFloorBlockid = new int[256];
     public final int[] oceanFloorBiomeid = new int[256];
-
 
     public final List<ResourceLocation> resources = new ArrayList<>();
 
@@ -113,5 +107,4 @@ public class ChunkData {
     public static int blockPosToIndex(BlockPos pos) {
         return ((pos.getX() % 16) << 4) + (pos.getZ() % 16);
     }
-
 }

@@ -1,0 +1,8 @@
+{
+  "required": true,
+  "package": "xyz.wagyourtail.minimap.fabric.mixins",
+  "compatibilityLevel": "JAVA_16",
+  "mixins": [
+    "events.MixinLevel"
+  ]
+}

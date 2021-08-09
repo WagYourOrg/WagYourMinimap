@@ -1,16 +1,19 @@
-package xyz.wagyourtail.minimap.client.hud;
+package xyz.wagyourtail.minimap.client.gui;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
-import com.mojang.math.Matrix4f;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.GameRenderer;
 import org.jetbrains.annotations.NotNull;
 import xyz.wagyourtail.minimap.client.WagYourMinimapClient;
+import xyz.wagyourtail.minimap.scanner.ChunkData;
+import xyz.wagyourtail.minimap.scanner.MapLevel;
+import xyz.wagyourtail.minimap.scanner.MapRegion;
 
-public class InGameHud extends AbstractMapRenderer {
+import java.util.concurrent.ExecutionException;
+
+public class InGameHud extends AbstractMapGui {
 
     public InGameHud(WagYourMinimapClient parent) {
         super(parent);
@@ -41,7 +44,16 @@ public class InGameHud extends AbstractMapRenderer {
 
         //TODO add circular mode and toggle
         //TODO actually draw a texture to this...
-        GuiComponent.fill(matrixStack, posX, posZ, posX + minimapSize, posZ + minimapSize, 0xFFFFFFFF);
+        try {
+            MapRegion region = parent.currentLevel.getRegion(new MapLevel.Pos(chunkX >> 5, chunkZ >> 5));
+            ChunkData chunk = region.data[MapRegion.chunkPosToIndex(chunkX, chunkZ)];
+            if (chunk != null)
+                bindChunkTex(chunk);
+        } catch (ExecutionException ignored) {}
+
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+        GuiComponent.blit(matrixStack, posX, posZ,posX + minimapSize, posZ + minimapSize, 0, 0, 16, 16, 16,16);
     }
 
     public void renderPlayerPosUnderMap(PoseStack matrixStack, @NotNull LocalPlayer player, int w, int h, int minimapSize) {

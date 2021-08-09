@@ -15,7 +15,7 @@ public class MinimapEvents {
     }
 
     public interface ChunkUpdated {
-        void onChunkUpdated(ChunkData chunkData, Class<? extends AbstractChunkUpdateStrategy> strategy);
+        void onChunkUpdated(ChunkData chunkData, ChunkData oldData, Class<? extends AbstractChunkUpdateStrategy> strategy);
     }
 
 }

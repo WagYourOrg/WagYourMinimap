@@ -12,15 +12,18 @@ import java.nio.file.Path;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 
-public class MapLevel {
+public class MapLevel implements AutoCloseable {
     public final String server_slug;
     public final String level_slug;
     public final Path mapCacheLocation;
     private LoadingCache<Pos, MapRegion> regionCache;
+    public final int minHeight, maxHeight;
 
-    public MapLevel(String server_slug, String level_slug) {
+    public MapLevel(String server_slug, String level_slug, int minHeight, int maxHeight) {
         this.server_slug = server_slug;
         this.level_slug = level_slug;
+        this.minHeight = minHeight;
+        this.maxHeight = maxHeight;
         mapCacheLocation = WagYourMinimap.configFolder.resolve(server_slug + "/" + level_slug);
         resizeCache(WagYourMinimap.INSTANCE.config.regionCacheSize);
     }
@@ -52,6 +55,12 @@ public class MapLevel {
         if (oldCache != null) {
             regionCache.putAll(oldCache.asMap());
         }
+    }
+
+    @Override
+    public synchronized void close() {
+        regionCache.invalidateAll();
+        regionCache.cleanUp();
     }
 
     public static record Pos(int x, int z) {

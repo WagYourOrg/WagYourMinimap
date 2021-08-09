@@ -3,23 +3,15 @@ package xyz.wagyourtail.minimap.client;
 import com.mojang.blaze3d.platform.InputConstants;
 import dev.architectury.event.events.client.ClientGuiEvent;
 import dev.architectury.event.events.client.ClientTickEvent;
-import dev.architectury.event.events.common.ChunkEvent;
 import dev.architectury.registry.client.keymappings.KeyMappingRegistry;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.server.IntegratedServer;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.storage.LevelResource;
-import org.jetbrains.annotations.Nullable;
 import xyz.wagyourtail.minimap.WagYourMinimap;
-import xyz.wagyourtail.minimap.client.hud.InGameHud;
-import xyz.wagyourtail.minimap.scanner.MapLevel;
-
-import java.util.concurrent.ExecutionException;
+import xyz.wagyourtail.minimap.client.gui.InGameHud;
 
 public class WagYourMinimapClient extends WagYourMinimap<WagYourMinimapClientConfig> {
     private static final KeyMapping key_openmap = new KeyMapping("key.wagyourminimap.openmap", InputConstants.KEY_M, "WagYourMinimap");
