@@ -38,14 +38,20 @@ public class MapRegion {
             while (entries.hasMoreElements()) {
                 ZipEntry ze = entries.nextElement();
                 String[] parts = ze.getName().split("\\.");
-                int i = Integer.getInteger(parts[0]);
-                if (zipData[i] == null) {
-                    zipData[i] = new ZipChunk();
-                }
-                if (parts[1].equals("data")) {
-                    zipData[i].data = ze;
-                } else if (parts[1].equals("resources")) {
-                    zipData[i].resources = ze;
+                try {
+                    int i = Integer.parseInt(parts[0]);
+                    if (zipData[i] == null) {
+                        zipData[i] = new ZipChunk();
+                    }
+                    if (parts[1].equals("data")) {
+                        zipData[i].data = ze;
+                    } else if (parts[1].equals("resources")) {
+                        zipData[i].resources = ze;
+                    } else {
+                        System.err.println("bad zip entry: " + ze.getName());
+                    }
+                } catch (NumberFormatException ex) {
+                    System.err.println("bad zip entry: " + ze.getName());
                 }
             }
             for (int i = 0; i < REGION_SQUARE_SIZE; ++i) {

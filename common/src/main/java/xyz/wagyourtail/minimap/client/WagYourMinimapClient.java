@@ -2,6 +2,7 @@ package xyz.wagyourtail.minimap.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import dev.architectury.event.events.client.ClientGuiEvent;
+import dev.architectury.event.events.client.ClientPlayerEvent;
 import dev.architectury.event.events.client.ClientTickEvent;
 import dev.architectury.registry.client.keymappings.KeyMappingRegistry;
 import net.minecraft.client.KeyMapping;
@@ -12,6 +13,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.LevelResource;
 import xyz.wagyourtail.minimap.WagYourMinimap;
 import xyz.wagyourtail.minimap.client.gui.InGameHud;
+import xyz.wagyourtail.minimap.scanner.MapLevel;
 
 public class WagYourMinimapClient extends WagYourMinimap<WagYourMinimapClientConfig> {
     private static final KeyMapping key_openmap = new KeyMapping("key.wagyourminimap.openmap", InputConstants.KEY_M, "WagYourMinimap");
@@ -34,6 +36,11 @@ public class WagYourMinimapClient extends WagYourMinimap<WagYourMinimapClientCon
             if (key_openmap.consumeClick()) {
                 mc.setScreen(this.config.getConfigScreen(null));
             }
+        });
+        ClientPlayerEvent.CLIENT_PLAYER_QUIT.register((player) -> {
+            MapLevel level = this.currentLevel;
+            this.currentLevel = null;
+            level.close();
         });
     }
 

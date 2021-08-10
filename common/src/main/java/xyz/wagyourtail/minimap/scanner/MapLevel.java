@@ -1,16 +1,15 @@
 package xyz.wagyourtail.minimap.scanner;
 
 import com.google.common.cache.*;
-import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.chunk.ChunkAccess;
 import xyz.wagyourtail.minimap.WagYourMinimap;
 import xyz.wagyourtail.minimap.api.MinimapEvents;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 public class MapLevel implements AutoCloseable {
     public final String server_slug;
@@ -29,8 +28,14 @@ public class MapLevel implements AutoCloseable {
     }
 
     public void onRegionRemoved(RemovalNotification<Pos, MapRegion> notification) {
+        saveRegion(notification.getKey(), notification.getValue());
+    }
+
+    public void saveRegion(Pos pos, MapRegion region) {
         try {
-            notification.getValue().writeRegion(mapCacheLocation.resolve(notification.getKey().getString() + ".zip"));
+            File cacheLoc = mapCacheLocation.toFile();
+            if (!cacheLoc.exists() && !cacheLoc.mkdirs()) throw new IOException("Failed to make directory for cache.");
+            region.writeRegion(mapCacheLocation.resolve(pos.getString() + ".zip"));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -48,6 +53,7 @@ public class MapLevel implements AutoCloseable {
     public synchronized void resizeCache(long newCacheSize) {
         CacheBuilder<Pos, MapRegion> builder = createCache()
             .maximumSize(newCacheSize)
+            .expireAfterWrite(60000, TimeUnit.MILLISECONDS)
             .removalListener(this::onRegionRemoved);
 
         LoadingCache<Pos, MapRegion> oldCache = regionCache;

@@ -1,13 +1,12 @@
 package xyz.wagyourtail.minimap.scanner;
 
-import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
-import xyz.wagyourtail.minimap.client.gui.renderer.AbstractRenderStrategy;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.ZipEntry;
@@ -89,7 +88,7 @@ public class ChunkData {
         out.write(data.array());
         String resources = this.resources.stream().map(ResourceLocation::toString).reduce("", (a, b) -> a + b + "\n");
         out.putNextEntry(new ZipEntry(pos_slug + ".resources"));
-        out.write(data.array());
+        out.write(resources.getBytes(StandardCharsets.UTF_8));
     }
 
     public int getOrRegisterResourceLocation(ResourceLocation id) {
@@ -105,6 +104,10 @@ public class ChunkData {
     }
 
     public static int blockPosToIndex(BlockPos pos) {
-        return ((pos.getX() % 16) << 4) + (pos.getZ() % 16);
+        int x = pos.getX() % 16;
+        int z = pos.getZ() % 16;
+        if (x < 0) x += 16;
+        if (z < 0) z += 16;
+        return (x << 4) + z;
     }
 }

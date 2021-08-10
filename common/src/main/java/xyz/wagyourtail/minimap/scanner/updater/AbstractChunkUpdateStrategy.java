@@ -14,7 +14,7 @@ import java.util.function.BiFunction;
 
 public abstract class AbstractChunkUpdateStrategy {
 
-    public static final ForkJoinPool chunkResolvePool = new ForkJoinPool();
+    public final ForkJoinPool strategyAsyncPool = new ForkJoinPool();
 
     public AbstractChunkUpdateStrategy() {
         registerEventListener();
@@ -51,7 +51,7 @@ public abstract class AbstractChunkUpdateStrategy {
             } catch (ExecutionException | InterruptedException e) {
                 e.printStackTrace();
             }
-        }, chunkResolvePool);
+        }, strategyAsyncPool);
     }
 
     protected abstract void registerEventListener();
