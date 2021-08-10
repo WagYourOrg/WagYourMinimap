@@ -26,6 +26,10 @@ public abstract class AbstractMapGui {
         this.renderer = strategy;
     }
 
+    public AbstractRenderStrategy getRenderer() {
+        return renderer;
+    }
+
     public void bindChunkTex(ChunkData chunkData) {
         DynamicTexture image;
         try {

@@ -39,8 +39,10 @@ public class WagYourMinimapClient extends WagYourMinimap<WagYourMinimapClientCon
         });
         ClientPlayerEvent.CLIENT_PLAYER_QUIT.register((player) -> {
             MapLevel level = this.currentLevel;
-            this.currentLevel = null;
-            level.close();
+            if (level != null) {
+                this.currentLevel = null;
+                level.close();
+            }
         });
     }
 

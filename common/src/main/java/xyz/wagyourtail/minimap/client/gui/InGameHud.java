@@ -80,7 +80,7 @@ public class InGameHud extends AbstractMapGui {
                 String[] debugInfo = {
                     chunk.resources.get(chunk.blockid[ChunkData.blockPosToIndex(new BlockPos(player))]).toString(), // block
                     chunk.resources.get(chunk.biomeid[ChunkData.blockPosToIndex(new BlockPos(player))]).toString(), // biome
-                    String.format("%08x", TestRenderStrategy.getMainTopColor(chunk.resources.get(chunk.blockid[ChunkData.blockPosToIndex(new BlockPos(player))]))), // block-color
+                    String.format("%08x", TestRenderStrategy.getBlockColor(chunk.resources.get(chunk.blockid[ChunkData.blockPosToIndex(new BlockPos(player))]))), // block-color
                 };
                 for (int i = 0; i < debugInfo.length; ++i) {
                     int width = client.font.width(debugInfo[i]);

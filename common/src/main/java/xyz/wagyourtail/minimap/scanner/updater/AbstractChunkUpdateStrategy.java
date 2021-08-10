@@ -3,6 +3,7 @@ package xyz.wagyourtail.minimap.scanner.updater;
 import net.minecraft.world.level.Level;
 import xyz.wagyourtail.minimap.WagYourMinimap;
 import xyz.wagyourtail.minimap.api.MinimapEvents;
+import xyz.wagyourtail.minimap.client.WagYourMinimapClient;
 import xyz.wagyourtail.minimap.scanner.ChunkData;
 import xyz.wagyourtail.minimap.scanner.MapLevel;
 import xyz.wagyourtail.minimap.scanner.MapRegion;
@@ -44,6 +45,9 @@ public abstract class AbstractChunkUpdateStrategy {
                 ChunkData oldData = region.data[chunkIndex];
                 region.data[chunkIndex] = newChunkDataCreator.apply(region, region.data[chunkIndex]);
                 MinimapEvents.CHUNK_UPDATED.invoker().onChunkUpdated(region.data[chunkIndex], oldData, this.getClass());
+                if (WagYourMinimap.INSTANCE instanceof WagYourMinimapClient inst) {
+                    inst.inGameHud.getRenderer().invalidateChunk(oldData);
+                }
                 synchronized (region.datalocks) {
                     region.datalocks[chunkIndex] = false;
                     region.datalocks.notifyAll();

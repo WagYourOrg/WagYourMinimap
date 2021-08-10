@@ -26,6 +26,10 @@ public abstract class AbstractRenderStrategy extends CacheLoader<ChunkData, Dyna
         return cache.build(this);
     }
 
+    public void invalidateChunk(ChunkData chunkData) {
+        imageCache.invalidate(chunkData);
+    }
+
     public void onChunkRemoval(RemovalNotification<ChunkData, DynamicTexture> notification) {
         notification.getValue().close();
     }

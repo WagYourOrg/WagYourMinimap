@@ -10,7 +10,9 @@ import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.levelgen.Heightmap;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.zip.ZipEntry;
@@ -64,7 +66,8 @@ public class MapRegion {
     }
 
     public void writeRegion(Path file) throws IOException {
-        try (FileOutputStream fos = new FileOutputStream(file.toFile())) {
+        Path tempFile = file.getParent().resolve(file.getName(file.getNameCount() - 1) + ".tmp");
+        try (FileOutputStream fos = new FileOutputStream(tempFile.toFile())) {
             try (ZipOutputStream zos = new ZipOutputStream(fos)) {
                 for (int i = 0; i < REGION_SQUARE_SIZE; ++i) {
                     if (data[i] != null) {
@@ -73,6 +76,7 @@ public class MapRegion {
                 }
             }
         }
+        Files.move(tempFile, file, StandardCopyOption.REPLACE_EXISTING);
     }
 
 
