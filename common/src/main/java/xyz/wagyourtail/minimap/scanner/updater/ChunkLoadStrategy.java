@@ -53,7 +53,8 @@ public class ChunkLoadStrategy extends AbstractChunkUpdateStrategy {
                 level,
                 region_pos,
                 index,
-                (region, oldData) -> loadFromChunk(chunk, WagYourMinimap.INSTANCE.resolveServerLevel(level), region)
+                (region, oldData) -> loadFromChunk(chunk, WagYourMinimap.INSTANCE.resolveServerLevel(level), region),
+                true
             );
         });
     }

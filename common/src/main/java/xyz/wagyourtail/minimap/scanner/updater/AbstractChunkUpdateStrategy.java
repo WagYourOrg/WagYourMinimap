@@ -11,11 +11,12 @@ import xyz.wagyourtail.minimap.scanner.MapRegion;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.function.BiFunction;
 
 public abstract class AbstractChunkUpdateStrategy {
 
-    public final ForkJoinPool strategyAsyncPool = new ForkJoinPool();
+    private final ForkJoinPool pool = new ForkJoinPool();
 
     public AbstractChunkUpdateStrategy() {
         registerEventListener();
@@ -25,7 +26,7 @@ public abstract class AbstractChunkUpdateStrategy {
         return true;
     }
 
-    protected void updateChunk(String server_slug, String level_slug, Level level, MapLevel.Pos regionPos, int chunkIndex, BiFunction<MapRegion, ChunkData, ChunkData> newChunkDataCreator) {
+    protected void updateChunk(String server_slug, String level_slug, Level level, MapLevel.Pos regionPos, int chunkIndex, BiFunction<MapRegion, ChunkData, ChunkData> newChunkDataCreator, boolean fork) {
         MapLevel currentLevel = WagYourMinimap.INSTANCE.currentLevel;
         if ((currentLevel == null) || (!currentLevel.server_slug.equals(server_slug) || !currentLevel.level_slug.equals(level_slug))) {
             if (WagYourMinimap.INSTANCE.currentLevel != null) {
@@ -34,28 +35,36 @@ public abstract class AbstractChunkUpdateStrategy {
             WagYourMinimap.INSTANCE.currentLevel = currentLevel = new MapLevel(server_slug, level_slug, level.getMinBuildHeight(), level.getMaxBuildHeight());
         }
         MapLevel finalCurrentLevel = currentLevel;
-        CompletableFuture.runAsync(() -> {
-            try {
-                MapRegion region = finalCurrentLevel.getRegion(regionPos);
-                synchronized (region.datalocks) {
-                    if (region.datalocks[chunkIndex] && !overrideIfLocked()) return;
-                    while (region.datalocks[chunkIndex]) region.datalocks.wait();
-                    region.datalocks[chunkIndex] = true;
-                }
-                ChunkData oldData = region.data[chunkIndex];
-                region.data[chunkIndex] = newChunkDataCreator.apply(region, region.data[chunkIndex]);
-                MinimapEvents.CHUNK_UPDATED.invoker().onChunkUpdated(region.data[chunkIndex], oldData, this.getClass());
-                if (WagYourMinimap.INSTANCE instanceof WagYourMinimapClient inst) {
-                    inst.inGameHud.getRenderer().invalidateChunk(oldData);
-                }
-                synchronized (region.datalocks) {
-                    region.datalocks[chunkIndex] = false;
-                    region.datalocks.notifyAll();
-                }
-            } catch (ExecutionException | InterruptedException e) {
-                e.printStackTrace();
+        if (fork) {
+            CompletableFuture.runAsync(() -> {
+                runner(regionPos, chunkIndex, newChunkDataCreator, finalCurrentLevel);
+            }, pool);
+        } else {
+            runner(regionPos, chunkIndex, newChunkDataCreator, finalCurrentLevel);
+        }
+    }
+
+    private void runner(MapLevel.Pos regionPos, int chunkIndex, BiFunction<MapRegion, ChunkData, ChunkData> newChunkDataCreator, MapLevel finalCurrentLevel) {
+        try {
+            MapRegion region = finalCurrentLevel.getRegion(regionPos);
+            synchronized (region.datalocks) {
+                if (region.datalocks[chunkIndex] && !overrideIfLocked()) return;
+                while (region.datalocks[chunkIndex]) region.datalocks.wait();
+                region.datalocks[chunkIndex] = true;
             }
-        }, strategyAsyncPool);
+            ChunkData oldData = region.data[chunkIndex];
+            region.data[chunkIndex] = newChunkDataCreator.apply(region, region.data[chunkIndex]);
+            MinimapEvents.CHUNK_UPDATED.invoker().onChunkUpdated(region.data[chunkIndex], oldData, this.getClass());
+            if (WagYourMinimap.INSTANCE instanceof WagYourMinimapClient inst) {
+                inst.inGameHud.getRenderer().invalidateChunk(oldData);
+            }
+            synchronized (region.datalocks) {
+                region.datalocks[chunkIndex] = false;
+                region.datalocks.notifyAll();
+            }
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     protected abstract void registerEventListener();

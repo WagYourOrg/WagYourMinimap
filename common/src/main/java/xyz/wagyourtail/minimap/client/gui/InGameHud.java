@@ -49,16 +49,14 @@ public class InGameHud extends AbstractMapGui {
 
         //TODO add circular mode and toggle
         //TODO actually draw a texture to this...
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         try {
             MapRegion region = parent.currentLevel.getRegion(new MapLevel.Pos(chunkX >> 5, chunkZ >> 5));
             ChunkData chunk = region.data[MapRegion.chunkPosToIndex(chunkX, chunkZ)];
-            if (chunk != null)
-                bindChunkTex(chunk);
+            drawChunk(matrixStack, chunk, posX, posZ, minimapSize);
         } catch (ExecutionException ignored) {}
 
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        GuiComponent.blit(matrixStack, posX, posZ,posX + minimapSize, posZ + minimapSize, 0, 0, 16, 16, 16,16);
+
     }
 
     public void renderPlayerPosUnderMap(PoseStack matrixStack, @NotNull Vec3 player, int w, int h, int minimapSize) {

@@ -42,7 +42,8 @@ public class BlockUpdateStrategy extends AbstractChunkUpdateStrategy {
                 level,
                 new MapLevel.Pos(chunkX >> 5, chunkZ >> 5),
                 MapRegion.chunkPosToIndex(chunkX, chunkZ),
-                ((region, chunkData) -> updateChunkData(level, pos, chunkData))
+                ((region, chunkData) -> updateChunkData(level, pos, chunkData)),
+                false
             );
         });
     }
