@@ -1,9 +1,7 @@
 package xyz.wagyourtail.minimap.client.gui;
 
-import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
-import com.mojang.math.Matrix3f;
 import com.mojang.math.Matrix4f;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
@@ -11,7 +9,7 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import xyz.wagyourtail.minimap.client.WagYourMinimapClient;
 import xyz.wagyourtail.minimap.client.gui.renderer.AbstractRenderStrategy;
-import xyz.wagyourtail.minimap.client.gui.renderer.TestRenderStrategy;
+import xyz.wagyourtail.minimap.client.gui.renderer.VanillaMapRenderStrategy;
 import xyz.wagyourtail.minimap.scanner.ChunkData;
 
 import java.util.concurrent.ExecutionException;
@@ -20,21 +18,22 @@ public abstract class AbstractMapGui {
     protected final Minecraft client = Minecraft.getInstance();
     protected final WagYourMinimapClient parent;
 
-    private AbstractRenderStrategy renderer = new TestRenderStrategy();
+    private AbstractRenderStrategy[] rendererLayers = new AbstractRenderStrategy[] {new VanillaMapRenderStrategy()};
 
     public AbstractMapGui(WagYourMinimapClient parent) {
         this.parent = parent;
     }
 
-    public void setRenderer(AbstractRenderStrategy strategy) {
-        this.renderer = strategy;
+
+    public void setRenderLayers(AbstractRenderStrategy... strategy) {
+        this.rendererLayers = strategy;
     }
 
-    public AbstractRenderStrategy getRenderer() {
-        return renderer;
+    public AbstractRenderStrategy[] getRenderLayers() {
+        return rendererLayers;
     }
 
-    private void bindChunkTex(ChunkData chunkData) {
+    private static void bindChunkTex(ChunkData chunkData, AbstractRenderStrategy renderer) {
         DynamicTexture image;
         try {
             image = renderer.getImage(chunkData);
@@ -44,17 +43,20 @@ public abstract class AbstractMapGui {
     }
 
     private void drawChunk(PoseStack matrixStack, ChunkData chunk, int x, int y, int width, int height) {
-        bindChunkTex(chunk);
-        Matrix4f matrix = matrixStack.last().pose();
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        BufferBuilder builder = Tesselator.getInstance().getBuilder();
-        builder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
-        builder.vertex(matrix, x, y + height, 0).uv(0, 1).endVertex();
-        builder.vertex(matrix, x + width, y + height, 0).uv(1, 1).endVertex();
-        builder.vertex(matrix, x + width, y, 0).uv(1, 0).endVertex();
-        builder.vertex(matrix, x, y, 0).uv(0, 0).endVertex();
-        builder.end();
-        BufferUploader.end(builder);
+        for (AbstractRenderStrategy rendererLayer : rendererLayers) {
+            if (!rendererLayer.shouldRender()) continue;
+            bindChunkTex(chunk, rendererLayer);
+            Matrix4f matrix = matrixStack.last().pose();
+            RenderSystem.setShader(GameRenderer::getPositionTexShader);
+            BufferBuilder builder = Tesselator.getInstance().getBuilder();
+            builder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+            builder.vertex(matrix, x, y + height, 0).uv(0, 1).endVertex();
+            builder.vertex(matrix, x + width, y + height, 0).uv(1, 1).endVertex();
+            builder.vertex(matrix, x + width, y, 0).uv(1, 0).endVertex();
+            builder.vertex(matrix, x, y, 0).uv(0, 0).endVertex();
+            builder.end();
+            BufferUploader.end(builder);
+        }
     }
 
     public void drawChunk(PoseStack matrixStack, ChunkData chunk, int x, int y, int scale) {

@@ -2,19 +2,19 @@ package xyz.wagyourtail.minimap.client.gui;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
-import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import xyz.wagyourtail.minimap.client.WagYourMinimapClient;
-import xyz.wagyourtail.minimap.client.gui.renderer.TestRenderStrategy;
+import xyz.wagyourtail.minimap.client.gui.renderer.VanillaMapRenderStrategy;
 import xyz.wagyourtail.minimap.scanner.ChunkData;
 import xyz.wagyourtail.minimap.scanner.MapLevel;
 import xyz.wagyourtail.minimap.scanner.MapRegion;
 
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 public class InGameHud extends AbstractMapGui {
 
@@ -52,7 +52,7 @@ public class InGameHud extends AbstractMapGui {
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         try {
             MapRegion region = parent.currentLevel.getRegion(new MapLevel.Pos(chunkX >> 5, chunkZ >> 5));
-            ChunkData chunk = region.data[MapRegion.chunkPosToIndex(chunkX, chunkZ)];
+            ChunkData chunk = region.data[MapRegion.chunkPosToIndex(chunkX, chunkZ)].getNow(null);
             drawChunk(matrixStack, chunk, posX, posZ, minimapSize);
         } catch (ExecutionException ignored) {}
 
@@ -73,12 +73,12 @@ public class InGameHud extends AbstractMapGui {
 
         try {
             MapRegion region = parent.currentLevel.getRegion(new MapLevel.Pos(chunkX >> 5, chunkZ >> 5));
-            ChunkData chunk = region.data[MapRegion.chunkPosToIndex(chunkX, chunkZ)];
+            ChunkData chunk = region.data[MapRegion.chunkPosToIndex(chunkX, chunkZ)].getNow( null);
             if (chunk != null) {
                 String[] debugInfo = {
                     chunk.resources.get(chunk.blockid[ChunkData.blockPosToIndex(new BlockPos(player))]).toString(), // block
                     chunk.resources.get(chunk.biomeid[ChunkData.blockPosToIndex(new BlockPos(player))]).toString(), // biome
-                    String.format("%08x", TestRenderStrategy.getBlockColor(chunk.resources.get(chunk.blockid[ChunkData.blockPosToIndex(new BlockPos(player))]))), // block-color
+                    String.format("%08x", VanillaMapRenderStrategy.getBlockColor(chunk.resources.get(chunk.blockid[ChunkData.blockPosToIndex(new BlockPos(player))]))), // block-color
                 };
                 for (int i = 0; i < debugInfo.length; ++i) {
                     int width = client.font.width(debugInfo[i]);

@@ -5,6 +5,7 @@ import dev.architectury.event.EventFactory;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.levelgen.Heightmap;
@@ -22,6 +23,7 @@ public class BlockUpdateStrategy extends AbstractChunkUpdateStrategy {
         ChunkAccess chunk = level.getChunk(pos.getX() >> 4, pos.getZ() >> 4);
         Registry<Biome> biomeRegistry = level.registryAccess().registryOrThrow(Registry.BIOME_REGISTRY);
         data.heightmap[index] = chunk.getHeight(Heightmap.Types.WORLD_SURFACE, pos.getX(), pos.getZ());
+        data.blocklight[index] = (byte) level.getBrightness(LightLayer.BLOCK, blockPos);
         data.blockid[index] = data.getOrRegisterResourceLocation(Registry.BLOCK.getKey(chunk.getBlockState(blockPos.setY(data.heightmap[index])).getBlock()));
         data.biomeid[index] = data.getOrRegisterResourceLocation(biomeRegistry.getKey(level.getBiome(blockPos)));
 
@@ -42,8 +44,7 @@ public class BlockUpdateStrategy extends AbstractChunkUpdateStrategy {
                 level,
                 new MapLevel.Pos(chunkX >> 5, chunkZ >> 5),
                 MapRegion.chunkPosToIndex(chunkX, chunkZ),
-                ((region, chunkData) -> updateChunkData(level, pos, chunkData)),
-                false
+                ((region, chunkData) -> updateChunkData(level, pos, chunkData))
             );
         });
     }

@@ -7,6 +7,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.levelgen.Heightmap;
@@ -30,6 +31,7 @@ public class ChunkLoadStrategy extends AbstractChunkUpdateStrategy {
 
 
             data.heightmap[i] = chunk.getHeight(Heightmap.Types.WORLD_SURFACE, x, z);
+            data.blocklight[i] = (byte) level.getBrightness(LightLayer.BLOCK, blockPos);
             data.blockid[i] = data.getOrRegisterResourceLocation(Registry.BLOCK.getKey(chunk.getBlockState(blockPos.set((pos.x << 4) + x, data.heightmap[i], (pos.z << 4) + z)).getBlock()));
             data.biomeid[i] = data.getOrRegisterResourceLocation(biomeRegistry.getKey(level.getBiome(blockPos)));
 
@@ -53,8 +55,7 @@ public class ChunkLoadStrategy extends AbstractChunkUpdateStrategy {
                 level,
                 region_pos,
                 index,
-                (region, oldData) -> loadFromChunk(chunk, WagYourMinimap.INSTANCE.resolveServerLevel(level), region),
-                true
+                (region, oldData) -> loadFromChunk(chunk, WagYourMinimap.INSTANCE.resolveServerLevel(level), region)
             );
         });
     }

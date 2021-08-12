@@ -11,7 +11,7 @@ import xyz.wagyourtail.minimap.scanner.ChunkData;
 
 import java.awt.*;
 
-public class TestRenderStrategy extends AbstractRenderStrategy {
+public class VanillaMapRenderStrategy extends AbstractRenderStrategy {
     private final static ResourceLocation water = Registry.BLOCK.getKey(Blocks.WATER);
 
 

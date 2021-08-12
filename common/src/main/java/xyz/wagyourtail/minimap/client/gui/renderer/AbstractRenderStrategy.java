@@ -37,4 +37,8 @@ public abstract class AbstractRenderStrategy extends CacheLoader<ChunkData, Dyna
     public DynamicTexture getImage(ChunkData chunk) throws ExecutionException {
         return imageCache.get(chunk);
     }
+
+    public boolean shouldRender() {
+        return true;
+    }
 }
