@@ -1,7 +1,7 @@
 package xyz.wagyourtail.minimap.client.gui;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.*;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.Vec3;
@@ -13,7 +13,6 @@ import xyz.wagyourtail.minimap.scanner.MapLevel;
 import xyz.wagyourtail.minimap.scanner.MapRegion;
 
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 public class InGameHud extends AbstractMapGui {
@@ -52,9 +51,9 @@ public class InGameHud extends AbstractMapGui {
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         try {
             MapRegion region = parent.currentLevel.getRegion(new MapLevel.Pos(chunkX >> 5, chunkZ >> 5));
-            ChunkData chunk = region.data[MapRegion.chunkPosToIndex(chunkX, chunkZ)].getNow(null);
+            ChunkData chunk = region.data[MapRegion.chunkPosToIndex(chunkX, chunkZ)].resolveAsync(10);
             drawChunk(matrixStack, chunk, posX, posZ, minimapSize);
-        } catch (ExecutionException ignored) {}
+        } catch (ExecutionException | InterruptedException | TimeoutException ignored) {}
 
 
     }
@@ -73,7 +72,7 @@ public class InGameHud extends AbstractMapGui {
 
         try {
             MapRegion region = parent.currentLevel.getRegion(new MapLevel.Pos(chunkX >> 5, chunkZ >> 5));
-            ChunkData chunk = region.data[MapRegion.chunkPosToIndex(chunkX, chunkZ)].getNow( null);
+            ChunkData chunk = region.data[MapRegion.chunkPosToIndex(chunkX, chunkZ)].resolveAsync(10);
             if (chunk != null) {
                 String[] debugInfo = {
                     chunk.resources.get(chunk.blockid[ChunkData.blockPosToIndex(new BlockPos(player))]).toString(), // block
@@ -88,7 +87,9 @@ public class InGameHud extends AbstractMapGui {
                     client.font.draw(matrixStack, debugInfo[i], xPos, yPos, 0xFFFFFF);
                 }
             }
-        } catch (ExecutionException ignored) {}
+        } catch (ExecutionException | InterruptedException | TimeoutException e) {
+            e.printStackTrace();
+        }
     }
 
     public enum SnapSide {
