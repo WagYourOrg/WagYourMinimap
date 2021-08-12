@@ -20,10 +20,6 @@ public class VanillaMapRenderStrategy extends AbstractRenderStrategy {
 
     }
 
-    private int colorFormatSwap(int color) {
-        return color & 0xFF00FF00 | (color & 0xFF) << 0x10 | color >> 0x10 & 0xFF;
-    }
-
     private int colorCombine(int colorA, int colorB, float aRatio) {
         float bRatio = 1.0F - aRatio;
         int red = (int) (((colorA & 0xFF0000) >> 0x10) * aRatio);

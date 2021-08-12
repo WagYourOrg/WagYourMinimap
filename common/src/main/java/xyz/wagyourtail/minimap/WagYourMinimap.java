@@ -4,6 +4,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import dev.architectury.platform.Platform;
 import net.minecraft.world.level.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 import xyz.wagyourtail.minimap.scanner.MapLevel;
 import xyz.wagyourtail.minimap.scanner.updater.AbstractChunkUpdateStrategy;
@@ -26,6 +28,7 @@ public abstract class WagYourMinimap<T extends WagYourMinimapConfig> {
     public static final Path configFolder = Platform.getConfigFolder().resolve("WagYourMinimap");
     public static final Path configFile = configFolder.resolve("config.json");
     public static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    public static final Logger LOGGER = LogManager.getLogger("WagYourMinimap");
     private static final Map<Class<? extends AbstractChunkUpdateStrategy>, AbstractChunkUpdateStrategy> chunkUpdateStrategies = new HashMap<>();
     public static WagYourMinimap<?> INSTANCE;
     public T config;

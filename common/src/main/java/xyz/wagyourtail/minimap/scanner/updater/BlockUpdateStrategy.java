@@ -23,9 +23,9 @@ public class BlockUpdateStrategy extends AbstractChunkUpdateStrategy {
         ChunkAccess chunk = level.getChunk(pos.getX() >> 4, pos.getZ() >> 4);
         Registry<Biome> biomeRegistry = level.registryAccess().registryOrThrow(Registry.BIOME_REGISTRY);
         data.heightmap[index] = chunk.getHeight(Heightmap.Types.WORLD_SURFACE, pos.getX(), pos.getZ());
-        data.blocklight[index] = (byte) level.getBrightness(LightLayer.BLOCK, blockPos);
         data.blockid[index] = data.getOrRegisterResourceLocation(Registry.BLOCK.getKey(chunk.getBlockState(blockPos.setY(data.heightmap[index])).getBlock()));
         data.biomeid[index] = data.getOrRegisterResourceLocation(biomeRegistry.getKey(level.getBiome(blockPos)));
+        data.blocklight[index] = (byte) level.getBrightness(LightLayer.BLOCK, blockPos.setY(data.heightmap[index] + 1));
 
         data.oceanFloorHeightmap[index] = chunk.getHeight(Heightmap.Types.OCEAN_FLOOR, pos.getX(), pos.getZ());
         data.oceanFloorBlockid[index] = data.getOrRegisterResourceLocation(Registry.BLOCK.getKey(chunk.getBlockState(blockPos.setY(data.oceanFloorHeightmap[index])).getBlock()));

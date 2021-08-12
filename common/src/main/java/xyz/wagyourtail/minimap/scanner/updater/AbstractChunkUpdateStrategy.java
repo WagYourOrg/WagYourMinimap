@@ -10,7 +10,6 @@ import xyz.wagyourtail.minimap.scanner.ChunkData;
 import xyz.wagyourtail.minimap.scanner.MapLevel;
 import xyz.wagyourtail.minimap.scanner.MapRegion;
 
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
 import java.util.function.BiFunction;
@@ -25,8 +24,8 @@ public abstract class AbstractChunkUpdateStrategy {
     protected void updateChunk(String server_slug, String level_slug, Level level, MapLevel.Pos regionPos, int chunkIndex, BiFunction<MapRegion, ChunkData, ChunkData> newChunkDataCreator) {
         MapLevel currentLevel = WagYourMinimap.INSTANCE.currentLevel;
         if ((currentLevel == null) || (!currentLevel.server_slug.equals(server_slug) || !currentLevel.level_slug.equals(level_slug))) {
-            if (WagYourMinimap.INSTANCE.currentLevel != null) {
-                WagYourMinimap.INSTANCE.currentLevel.close();
+            if (currentLevel != null) {
+                currentLevel.close();
             }
             WagYourMinimap.INSTANCE.currentLevel = currentLevel = new MapLevel(server_slug, level_slug, level.getMinBuildHeight(), level.getMaxBuildHeight());
         }

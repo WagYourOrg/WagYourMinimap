@@ -11,6 +11,7 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
@@ -58,6 +59,8 @@ public class MapRegion {
                     }
                 }
             }
+        } catch (ZipException ex) {
+            ex.printStackTrace();
         }
     }
 

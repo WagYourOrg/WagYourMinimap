@@ -1,6 +1,7 @@
 package xyz.wagyourtail.minimap.scanner;
 
 import com.google.common.cache.*;
+import xyz.wagyourtail.LazyResolver;
 import xyz.wagyourtail.minimap.WagYourMinimap;
 import xyz.wagyourtail.minimap.api.MinimapEvents;
 
@@ -10,6 +11,7 @@ import java.nio.file.Path;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 public class MapLevel implements AutoCloseable {
     public final String server_slug;
@@ -28,7 +30,15 @@ public class MapLevel implements AutoCloseable {
     }
 
     public void onRegionRemoved(RemovalNotification<Pos, MapRegion> notification) {
-        saveRegion(notification.getKey(), notification.getValue());
+        WagYourMinimap.LOGGER.debug("expiring region {} from map cache", notification.getKey());
+        try {
+            new LazyResolver<>(() -> {
+                saveRegion(notification.getKey(), notification.getValue());
+                return null;
+            }).resolveAsync(1);
+        } catch (ExecutionException | InterruptedException | TimeoutException e) {
+            e.printStackTrace();
+        }
     }
 
     public void saveRegion(Pos pos, MapRegion region) {
@@ -53,7 +63,7 @@ public class MapLevel implements AutoCloseable {
     public synchronized void resizeCache(long newCacheSize) {
         CacheBuilder<Pos, MapRegion> builder = createCache()
             .maximumSize(newCacheSize)
-            .expireAfterWrite(60000, TimeUnit.MILLISECONDS)
+            .expireAfterAccess(60000, TimeUnit.MILLISECONDS)
             .removalListener(this::onRegionRemoved);
 
         LoadingCache<Pos, MapRegion> oldCache = regionCache;

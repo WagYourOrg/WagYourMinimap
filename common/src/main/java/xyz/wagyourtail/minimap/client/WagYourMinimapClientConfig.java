@@ -33,7 +33,7 @@ public class WagYourMinimapClientConfig extends WagYourMinimapConfig {
         });
         generalCategory.addEntry(regionCacheSize.build());
 
-        IntSliderBuilder minimapChunkRadius = configEntryBuilder.startIntSlider(new TranslatableComponent("config.wagyourminimap.minimap_chunk_radius"), this.minimapChunkRadius, 1, 20);
+        IntSliderBuilder minimapChunkRadius = configEntryBuilder.startIntSlider(new TranslatableComponent("config.wagyourminimap.minimap_chunk_radius"), this.minimapChunkRadius, 1, 32);
         minimapChunkRadius.setSaveConsumer(radius -> {
             this.minimapChunkRadius = radius;
         });
@@ -45,7 +45,7 @@ public class WagYourMinimapClientConfig extends WagYourMinimapConfig {
         });
         generalCategory.addEntry(snapSide.build());
 
-        IntSliderBuilder mapScreenPercent = configEntryBuilder.startIntSlider(new TranslatableComponent("config.wagyourminimap.size"), (int) this.mapScreenPercent * 100, 0, 100);
+        IntSliderBuilder mapScreenPercent = configEntryBuilder.startIntSlider(new TranslatableComponent("config.wagyourminimap.size"), (int) (this.mapScreenPercent * 100), 0, 100);
         mapScreenPercent.setSaveConsumer(size -> {
             this.mapScreenPercent = size / 100F;
         });

@@ -28,12 +28,10 @@ public class ChunkLoadStrategy extends AbstractChunkUpdateStrategy {
         for (int i = 0; i < 256; ++i) {
             int x = (i >> 4) % 16;
             int z = i % 16;
-
-
             data.heightmap[i] = chunk.getHeight(Heightmap.Types.WORLD_SURFACE, x, z);
-            data.blocklight[i] = (byte) level.getBrightness(LightLayer.BLOCK, blockPos);
             data.blockid[i] = data.getOrRegisterResourceLocation(Registry.BLOCK.getKey(chunk.getBlockState(blockPos.set((pos.x << 4) + x, data.heightmap[i], (pos.z << 4) + z)).getBlock()));
             data.biomeid[i] = data.getOrRegisterResourceLocation(biomeRegistry.getKey(level.getBiome(blockPos)));
+            data.blocklight[i] = (byte) level.getBrightness(LightLayer.BLOCK, blockPos.setY(data.heightmap[i] + 1));
 
             data.oceanFloorHeightmap[i] = chunk.getHeight(Heightmap.Types.OCEAN_FLOOR, x, z);
             data.oceanFloorBlockid[i] = data.getOrRegisterResourceLocation(Registry.BLOCK.getKey(chunk.getBlockState(blockPos.setY(data.oceanFloorHeightmap[i])).getBlock()));
