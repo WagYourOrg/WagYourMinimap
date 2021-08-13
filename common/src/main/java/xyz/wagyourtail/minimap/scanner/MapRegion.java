@@ -48,7 +48,7 @@ public class MapRegion {
                     System.err.println("bad zip entry: " + ze.getName());
                 }
             }
-            synchronized (data) {
+            synchronized (this) {
                 for (int i = 0; i < REGION_SQUARE_SIZE; ++i) {
                     if (zipData[i] != null) {
                         int index = i;

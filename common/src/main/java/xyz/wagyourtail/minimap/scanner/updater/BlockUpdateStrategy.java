@@ -25,14 +25,26 @@ public class BlockUpdateStrategy extends AbstractChunkUpdateStrategy {
         int index = ChunkData.blockPosToIndex(pos);
         ChunkAccess chunk = level.getChunk(pos.getX() >> 4, pos.getZ() >> 4);
         Registry<Biome> biomeRegistry = level.registryAccess().registryOrThrow(Registry.BIOME_REGISTRY);
-        data.heightmap[index] = chunk.getHeight(Heightmap.Types.WORLD_SURFACE, pos.getX(), pos.getZ());
-        data.blockid[index] = data.getOrRegisterResourceLocation(Registry.BLOCK.getKey(chunk.getBlockState(blockPos.setY(data.heightmap[index])).getBlock()));
+        boolean invalidateOld = false;
+        int newHeight = chunk.getHeight(Heightmap.Types.WORLD_SURFACE, pos.getX(), pos.getZ());
+        invalidateOld = invalidateOld || data.heightmap[index] != newHeight;
+        data.heightmap[index] = newHeight;
+        int newBlock = data.getOrRegisterResourceLocation(Registry.BLOCK.getKey(chunk.getBlockState(blockPos.setY(data.heightmap[index])).getBlock()));
+        invalidateOld = invalidateOld || data.blockid[index] != newBlock;
+        data.blockid[index] = newBlock;
         data.biomeid[index] = data.getOrRegisterResourceLocation(biomeRegistry.getKey(level.getBiome(blockPos)));
-        data.blocklight[index] = (byte) level.getBrightness(LightLayer.BLOCK, blockPos.setY(data.heightmap[index] + 1));
+        byte newBlockLight = (byte) level.getBrightness(LightLayer.BLOCK, blockPos.setY(data.heightmap[index] + 1));
+        invalidateOld = invalidateOld || data.blocklight[index] != newBlockLight;
+        data.blocklight[index] = newBlockLight;
 
-        data.oceanFloorHeightmap[index] = chunk.getHeight(Heightmap.Types.OCEAN_FLOOR, pos.getX(), pos.getZ());
-        data.oceanFloorBlockid[index] = data.getOrRegisterResourceLocation(Registry.BLOCK.getKey(chunk.getBlockState(blockPos.setY(data.oceanFloorHeightmap[index])).getBlock()));
+        int newOceanFloorHeight = chunk.getHeight(Heightmap.Types.OCEAN_FLOOR, pos.getX(), pos.getZ());
+        invalidateOld = invalidateOld || data.oceanFloorHeightmap[index] != newOceanFloorHeight;
+        data.oceanFloorHeightmap[index] = newOceanFloorHeight;
+        int newOceanBlockId = data.getOrRegisterResourceLocation(Registry.BLOCK.getKey(chunk.getBlockState(blockPos.setY(data.oceanFloorHeightmap[index])).getBlock()));
+        invalidateOld = invalidateOld || data.oceanFloorBlockid[index] != newOceanBlockId;
+        data.oceanFloorBlockid[index] = newOceanBlockId;
         data.oceanFloorBiomeid[index] = data.getOrRegisterResourceLocation(biomeRegistry.getKey(level.getBiome(blockPos)));
+        if (invalidateOld) invalidateImages(data);
         return data;
     }
 

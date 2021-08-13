@@ -28,7 +28,7 @@ public class LazyResolver<U> {
 
     public LazyResolver(Supplier<U> supplier, LazyResolver<U> previous) {
         this.supplier = supplier;
-        if (previous.isDone()) result = previous.result;
+        if (previous.done) result = previous.result;
     }
 
     public LazyResolver(U resolved) {
@@ -66,30 +66,25 @@ public class LazyResolver<U> {
         synchronized (this.pooled) {
             if (this.pooled.get() && maxWaitTimeMS == 0) return result;
         }
-        // don't synchronize on "this" so it doesn't jam when resolve() is running. so since I don't want to make any extra object fields, this was the only one left we weren't using
-        synchronized (supplier) {
-            // check if done in synchronized
-            if (this.done) return result;
-            // sync on pool so we don't accidentally pool this twice...
-            synchronized (this.pooled) {
-                if (!this.pooled.get()) {
-                    pool.execute(() -> {
-                        resolve();
-                        synchronized (supplier) {
-                            supplier.notifyAll();
-                        }
-                    });
-                    this.pooled.set(true);
-                }
-            }
-            // since we're synchronized on supplier, if done gets triggered we've already returned and so this doesn't get stuck
-            if (maxWaitTimeMS > 0) {
-                supplier.wait(maxWaitTimeMS);
-            } else {
-                return result;
+        // sync on pool so we don't accidentally pool this twice...
+        synchronized (this.pooled) {
+            if (!this.pooled.get()) {
+                pool.execute(() -> {
+                    resolve();
+                    synchronized (supplier) {
+                        supplier.notifyAll();
+                    }
+                });
+                this.pooled.set(true);
             }
         }
-        return resolve();
+        // don't synchronize on "this" so it doesn't jam when resolve() is running. so since I don't want to make any extra object fields, this was the only one left we weren't using
+        if (maxWaitTimeMS > 0) {
+            synchronized (supplier) {
+                supplier.wait(maxWaitTimeMS);
+            }
+        }
+        return result;
     }
 
     public U orElse(U value) {

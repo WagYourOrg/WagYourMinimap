@@ -24,7 +24,7 @@ public class ChunkLoadStrategy extends AbstractChunkUpdateStrategy {
 
     public static Event<Load> LOAD = EventFactory.createLoop();
 
-    public synchronized ChunkData loadFromChunk(ChunkAccess chunk, Level level, MapRegion parent) {
+    public synchronized ChunkData loadFromChunk(ChunkAccess chunk, Level level, MapRegion parent, ChunkData oldData) {
         ChunkData data = new ChunkData(parent);
         data.updateTime = System.currentTimeMillis();
         ChunkPos pos = chunk.getPos();
@@ -42,6 +42,7 @@ public class ChunkLoadStrategy extends AbstractChunkUpdateStrategy {
             data.oceanFloorBlockid[i] = data.getOrRegisterResourceLocation(Registry.BLOCK.getKey(chunk.getBlockState(blockPos.setY(data.oceanFloorHeightmap[i])).getBlock()));
             data.oceanFloorBiomeid[i] = data.getOrRegisterResourceLocation(biomeRegistry.getKey(level.getBiome(blockPos)));
         }
+        invalidateImages(oldData);
         return data;
     }
 
@@ -58,7 +59,7 @@ public class ChunkLoadStrategy extends AbstractChunkUpdateStrategy {
                 level,
                 region_pos,
                 index,
-                (region, oldData) -> loadFromChunk(chunk, level, region)
+                (region, oldData) -> loadFromChunk(chunk, level, region, oldData)
             );
         });
     }

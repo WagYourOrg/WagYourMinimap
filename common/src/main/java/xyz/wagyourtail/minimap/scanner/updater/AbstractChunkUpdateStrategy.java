@@ -26,20 +26,9 @@ public abstract class AbstractChunkUpdateStrategy {
         }
         try {
             MapRegion region = currentLevel.getRegion(regionPos);
-            synchronized (region.data) {
+            synchronized (region) {
                 LazyResolver<ChunkData> oldData = region.data[chunkIndex] == null ? new LazyResolver<>(() -> null) : region.data[chunkIndex];
-                region.data[chunkIndex] = new LazyResolver<>(() -> {
-                    ChunkData newData = newChunkDataCreator.apply(region, oldData.resolve());
-                    if (MinimapApi.getInstance() instanceof MinimapClientApi) {
-                        for (AbstractImageStrategy renderLayer : MinimapClientApi.inGameHud.renderer.getRenderLayers()) {
-                            if (oldData.resolve() != null)
-                                synchronized (oldData.resolve()) {
-                                    renderLayer.invalidateChunk(oldData.resolve());
-                                }
-                        }
-                    }
-                    return newData;
-                }, oldData);
+                region.data[chunkIndex] = new LazyResolver<>(() -> newChunkDataCreator.apply(region, oldData.resolve()), oldData);
                 MinimapEvents.CHUNK_UPDATED.invoker().onChunkUpdated(region, chunkIndex, region.data[chunkIndex], oldData, this.getClass());
                 return region.data[chunkIndex];
             }
@@ -47,6 +36,17 @@ public abstract class AbstractChunkUpdateStrategy {
             e.printStackTrace();
         }
         return null;
+    }
+
+    protected void invalidateImages(ChunkData oldData) {
+        if (oldData != null)
+            if (MinimapApi.getInstance() instanceof MinimapClientApi) {
+                synchronized (oldData) {
+                    for (AbstractImageStrategy renderLayer : MinimapClientApi.inGameHud.renderer.getRenderLayers()) {
+                        renderLayer.invalidateChunk(oldData);
+                    }
+                }
+            }
     }
 
     protected abstract void registerEventListener();
