@@ -1,4 +1,4 @@
-package xyz.wagyourtail.minimap.client;
+package xyz.wagyourtail.oldminimap.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import dev.architectury.event.events.client.ClientGuiEvent;
@@ -11,9 +11,12 @@ import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.server.IntegratedServer;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.LevelResource;
-import xyz.wagyourtail.minimap.WagYourMinimap;
-import xyz.wagyourtail.minimap.client.gui.InGameHud;
-import xyz.wagyourtail.minimap.scanner.MapLevel;
+import xyz.wagyourtail.oldminimap.WagYourMinimap;
+import xyz.wagyourtail.oldminimap.client.gui.InGameHud;
+import xyz.wagyourtail.oldminimap.client.gui.renderer.SquareMapRenderer;
+import xyz.wagyourtail.oldminimap.scanner.MapLevel;
+
+import java.lang.reflect.InvocationTargetException;
 
 public class WagYourMinimapClient extends WagYourMinimap<WagYourMinimapClientConfig> {
     private static final KeyMapping key_openmap = new KeyMapping("key.wagyourminimap.openmap", InputConstants.KEY_M, "WagYourMinimap");
@@ -29,6 +32,11 @@ public class WagYourMinimapClient extends WagYourMinimap<WagYourMinimapClientCon
     public WagYourMinimapClient() {
         super(WagYourMinimapClientConfig.class);
         inGameHud = new InGameHud(this);
+        try {
+            inGameHud.setRenderer(SquareMapRenderer.class);
+        } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
         KeyMappingRegistry.register(key_openmap);
 
         ClientGuiEvent.RENDER_HUD.register(inGameHud::render);
@@ -67,8 +75,10 @@ public class WagYourMinimapClient extends WagYourMinimap<WagYourMinimapClientCon
 
     @Override
     public String getLevelName(Level level) {
-        if (level == null)
+        if (level == null) {
+            assert mc.level != null;
             return mc.level.dimension().location().toString().replace(":", "_");
+        }
         return level.dimension().location().toString().replace(":", "_");
     }
 

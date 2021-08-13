@@ -1,20 +1,18 @@
 package xyz.wagyourtail.minimap.forge;
 
 import dev.architectury.platform.forge.EventBuses;
-import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.BlockEvent;
-import net.minecraftforge.event.world.ChunkEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fmlclient.ConfigGuiHandler;
-import xyz.wagyourtail.minimap.WagYourMinimap;
-import xyz.wagyourtail.minimap.client.WagYourMinimapClient;
-import xyz.wagyourtail.minimap.scanner.updater.BlockUpdateStrategy;
+import xyz.wagyourtail.oldminimap.WagYourMinimap;
+import xyz.wagyourtail.oldminimap.client.WagYourMinimapClient;
+import xyz.wagyourtail.oldminimap.scanner.updater.BlockUpdateStrategy;
 
 @Mod(WagYourMinimap.MOD_ID)
 public class WagYourMinimapForge {

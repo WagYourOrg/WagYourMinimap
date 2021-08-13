@@ -1,4 +1,4 @@
-package xyz.wagyourtail.minimap.client;
+package xyz.wagyourtail.oldminimap.client;
 
 import me.shedaniel.clothconfig2.api.ConfigBuilder;
 import me.shedaniel.clothconfig2.api.ConfigCategory;
@@ -8,9 +8,9 @@ import me.shedaniel.clothconfig2.impl.builders.IntSliderBuilder;
 import me.shedaniel.clothconfig2.impl.builders.LongSliderBuilder;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.TranslatableComponent;
-import xyz.wagyourtail.minimap.WagYourMinimap;
-import xyz.wagyourtail.minimap.WagYourMinimapConfig;
-import xyz.wagyourtail.minimap.client.gui.InGameHud;
+import xyz.wagyourtail.oldminimap.WagYourMinimap;
+import xyz.wagyourtail.oldminimap.WagYourMinimapConfig;
+import xyz.wagyourtail.oldminimap.client.gui.InGameHud;
 
 public class WagYourMinimapClientConfig extends WagYourMinimapConfig {
 

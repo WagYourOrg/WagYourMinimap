@@ -1,27 +1,25 @@
-package xyz.wagyourtail.minimap.scanner.updater;
+package xyz.wagyourtail.oldminimap.scanner.updater;
 
 import net.minecraft.world.level.Level;
 import xyz.wagyourtail.LazyResolver;
-import xyz.wagyourtail.minimap.WagYourMinimap;
-import xyz.wagyourtail.minimap.api.MinimapEvents;
-import xyz.wagyourtail.minimap.client.WagYourMinimapClient;
-import xyz.wagyourtail.minimap.client.gui.renderer.AbstractRenderStrategy;
-import xyz.wagyourtail.minimap.scanner.ChunkData;
-import xyz.wagyourtail.minimap.scanner.MapLevel;
-import xyz.wagyourtail.minimap.scanner.MapRegion;
+import xyz.wagyourtail.oldminimap.WagYourMinimap;
+import xyz.wagyourtail.oldminimap.api.MinimapEvents;
+import xyz.wagyourtail.oldminimap.client.WagYourMinimapClient;
+import xyz.wagyourtail.oldminimap.client.gui.image.AbstractImageStrategy;
+import xyz.wagyourtail.oldminimap.scanner.ChunkData;
+import xyz.wagyourtail.oldminimap.scanner.MapLevel;
+import xyz.wagyourtail.oldminimap.scanner.MapRegion;
 
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ForkJoinPool;
 import java.util.function.BiFunction;
 
 public abstract class AbstractChunkUpdateStrategy {
-    private static final ForkJoinPool pool = new ForkJoinPool();
 
     public AbstractChunkUpdateStrategy() {
         registerEventListener();
     }
 
-    protected void updateChunk(String server_slug, String level_slug, Level level, MapLevel.Pos regionPos, int chunkIndex, BiFunction<MapRegion, ChunkData, ChunkData> newChunkDataCreator) {
+    protected LazyResolver<ChunkData> updateChunk(String server_slug, String level_slug, Level level, MapLevel.Pos regionPos, int chunkIndex, BiFunction<MapRegion, ChunkData, ChunkData> newChunkDataCreator) {
         MapLevel currentLevel = WagYourMinimap.INSTANCE.currentLevel;
         if ((currentLevel == null) || (!currentLevel.server_slug.equals(server_slug) || !currentLevel.level_slug.equals(level_slug))) {
             if (currentLevel != null) {
@@ -35,19 +33,23 @@ public abstract class AbstractChunkUpdateStrategy {
                 LazyResolver<ChunkData> oldData = region.data[chunkIndex] == null ? new LazyResolver<>(() -> null) : region.data[chunkIndex];
                 region.data[chunkIndex] = new LazyResolver<>(() -> {
                     ChunkData newData = newChunkDataCreator.apply(region, oldData.resolve());
-                    MinimapEvents.CHUNK_UPDATED.invoker().onChunkUpdated(newData, oldData.resolve(), this.getClass());
                     if (WagYourMinimap.INSTANCE instanceof WagYourMinimapClient inst) {
-                        for (AbstractRenderStrategy renderLayer : inst.inGameHud.getRenderLayers()) {
+                        for (AbstractImageStrategy renderLayer : inst.inGameHud.renderer.getRenderLayers()) {
                             if (oldData.resolve() != null)
-                                renderLayer.invalidateChunk(oldData.resolve());
+                                synchronized (oldData.resolve()) {
+                                    renderLayer.invalidateChunk(oldData.resolve());
+                                }
                         }
                     }
                     return newData;
-                });
+                }, oldData);
+                MinimapEvents.CHUNK_UPDATED.invoker().onChunkUpdated(region, chunkIndex, region.data[chunkIndex], oldData, this.getClass());
+                return region.data[chunkIndex];
             }
         } catch (ExecutionException e) {
             e.printStackTrace();
         }
+        return null;
     }
 
     protected abstract void registerEventListener();

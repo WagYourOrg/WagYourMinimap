@@ -2,8 +2,8 @@ package xyz.wagyourtail.minimap.fabric;
 
 import com.terraformersmc.modmenu.api.ConfigScreenFactory;
 import com.terraformersmc.modmenu.api.ModMenuApi;
-import xyz.wagyourtail.minimap.WagYourMinimap;
-import xyz.wagyourtail.minimap.client.WagYourMinimapClientConfig;
+import xyz.wagyourtail.oldminimap.WagYourMinimap;
+import xyz.wagyourtail.oldminimap.client.WagYourMinimapClientConfig;
 
 public class ModMenuConfig implements ModMenuApi {
     @Override

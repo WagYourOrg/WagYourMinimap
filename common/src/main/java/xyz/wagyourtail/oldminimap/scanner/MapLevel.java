@@ -1,9 +1,9 @@
-package xyz.wagyourtail.minimap.scanner;
+package xyz.wagyourtail.oldminimap.scanner;
 
 import com.google.common.cache.*;
 import xyz.wagyourtail.LazyResolver;
-import xyz.wagyourtail.minimap.WagYourMinimap;
-import xyz.wagyourtail.minimap.api.MinimapEvents;
+import xyz.wagyourtail.oldminimap.WagYourMinimap;
+import xyz.wagyourtail.oldminimap.api.MinimapEvents;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,7 +35,7 @@ public class MapLevel implements AutoCloseable {
             new LazyResolver<>(() -> {
                 saveRegion(notification.getKey(), notification.getValue());
                 return null;
-            }).resolveAsync(1);
+            }).resolveAsync(0);
         } catch (ExecutionException | InterruptedException | TimeoutException e) {
             e.printStackTrace();
         }

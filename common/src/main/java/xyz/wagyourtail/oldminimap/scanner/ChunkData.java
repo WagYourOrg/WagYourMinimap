@@ -1,4 +1,4 @@
-package xyz.wagyourtail.minimap.scanner;
+package xyz.wagyourtail.oldminimap.scanner;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;

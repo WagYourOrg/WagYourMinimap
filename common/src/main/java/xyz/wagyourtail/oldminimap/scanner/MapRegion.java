@@ -1,4 +1,4 @@
-package xyz.wagyourtail.minimap.scanner;
+package xyz.wagyourtail.oldminimap.scanner;
 
 import net.minecraft.world.level.ChunkPos;
 import xyz.wagyourtail.LazyResolver;
@@ -8,8 +8,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
@@ -50,9 +48,9 @@ public class MapRegion {
                     System.err.println("bad zip entry: " + ze.getName());
                 }
             }
-            for (int i = 0; i < REGION_SQUARE_SIZE; ++i) {
-                if (zipData[i] != null) {
-                    synchronized (data) {
+            synchronized (data) {
+                for (int i = 0; i < REGION_SQUARE_SIZE; ++i) {
+                    if (zipData[i] != null) {
                         int index = i;
                         data[i] = new LazyResolver<>(() -> new ChunkData(this)).then(u -> u.loadFromDisk(zf, zipData[index]));
                         data[i].resolve();

@@ -1,4 +1,4 @@
-package xyz.wagyourtail.minimap.scanner.updater;
+package xyz.wagyourtail.oldminimap.scanner.updater;
 
 import dev.architectury.event.events.common.ChunkEvent;
 import net.minecraft.core.BlockPos;
@@ -12,10 +12,10 @@ import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.levelgen.Heightmap;
 import org.jetbrains.annotations.Nullable;
-import xyz.wagyourtail.minimap.WagYourMinimap;
-import xyz.wagyourtail.minimap.scanner.ChunkData;
-import xyz.wagyourtail.minimap.scanner.MapLevel;
-import xyz.wagyourtail.minimap.scanner.MapRegion;
+import xyz.wagyourtail.oldminimap.WagYourMinimap;
+import xyz.wagyourtail.oldminimap.scanner.ChunkData;
+import xyz.wagyourtail.oldminimap.scanner.MapLevel;
+import xyz.wagyourtail.oldminimap.scanner.MapRegion;
 
 public class ChunkLoadStrategy extends AbstractChunkUpdateStrategy {
 

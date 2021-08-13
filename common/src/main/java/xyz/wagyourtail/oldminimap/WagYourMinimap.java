@@ -1,4 +1,4 @@
-package xyz.wagyourtail.minimap;
+package xyz.wagyourtail.oldminimap;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -7,10 +7,10 @@ import net.minecraft.world.level.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
-import xyz.wagyourtail.minimap.scanner.MapLevel;
-import xyz.wagyourtail.minimap.scanner.updater.AbstractChunkUpdateStrategy;
-import xyz.wagyourtail.minimap.scanner.updater.BlockUpdateStrategy;
-import xyz.wagyourtail.minimap.scanner.updater.ChunkLoadStrategy;
+import xyz.wagyourtail.oldminimap.scanner.MapLevel;
+import xyz.wagyourtail.oldminimap.scanner.updater.AbstractChunkUpdateStrategy;
+import xyz.wagyourtail.oldminimap.scanner.updater.BlockUpdateStrategy;
+import xyz.wagyourtail.oldminimap.scanner.updater.ChunkLoadStrategy;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -60,7 +60,9 @@ public abstract class WagYourMinimap<T extends WagYourMinimapConfig> {
                     final Path bak = configFolder.resolve("config.json.bak");
                     try {
                         Files.move(configFile, bak, StandardCopyOption.REPLACE_EXISTING);
-                    } catch (IOException ignored) {}
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
                 }
             }
             try {

@@ -1,4 +1,4 @@
-package xyz.wagyourtail.minimap.scanner.updater;
+package xyz.wagyourtail.oldminimap.scanner.updater;
 
 import dev.architectury.event.Event;
 import dev.architectury.event.EventFactory;
@@ -9,10 +9,10 @@ import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.levelgen.Heightmap;
-import xyz.wagyourtail.minimap.WagYourMinimap;
-import xyz.wagyourtail.minimap.scanner.ChunkData;
-import xyz.wagyourtail.minimap.scanner.MapLevel;
-import xyz.wagyourtail.minimap.scanner.MapRegion;
+import xyz.wagyourtail.oldminimap.WagYourMinimap;
+import xyz.wagyourtail.oldminimap.scanner.ChunkData;
+import xyz.wagyourtail.oldminimap.scanner.MapLevel;
+import xyz.wagyourtail.oldminimap.scanner.MapRegion;
 
 public class BlockUpdateStrategy extends AbstractChunkUpdateStrategy {
     public static final Event<BlockUpdate> BLOCK_UPDATE_EVENT = EventFactory.createLoop();
@@ -38,14 +38,18 @@ public class BlockUpdateStrategy extends AbstractChunkUpdateStrategy {
         BLOCK_UPDATE_EVENT.register((pos, level) -> {
             int chunkX = pos.getX() >> 4;
             int chunkZ = pos.getZ() >> 4;
-            updateChunk(
-                WagYourMinimap.INSTANCE.getServerName(),
-                WagYourMinimap.INSTANCE.getLevelName(level),
-                level,
-                new MapLevel.Pos(chunkX >> 5, chunkZ >> 5),
-                MapRegion.chunkPosToIndex(chunkX, chunkZ),
-                ((region, chunkData) -> updateChunkData(level, pos, chunkData))
-            );
+            try {
+                updateChunk(
+                    WagYourMinimap.INSTANCE.getServerName(),
+                    WagYourMinimap.INSTANCE.getLevelName(level),
+                    level,
+                    new MapLevel.Pos(chunkX >> 5, chunkZ >> 5),
+                    MapRegion.chunkPosToIndex(chunkX, chunkZ),
+                    ((region, chunkData) -> updateChunkData(level, pos, chunkData))
+                );
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         });
     }
 
