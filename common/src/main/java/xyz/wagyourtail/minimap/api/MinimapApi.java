@@ -89,10 +89,11 @@ public class MinimapApi {
     }
 
     public synchronized void setCurrentLevel(MapLevel level) {
-        if (currentLevel != null) {
-            currentLevel.close();
-        }
+        MapLevel oldLevel = currentLevel;
         currentLevel = level;
+        if (oldLevel != null) {
+            oldLevel.close();
+        }
     }
 
     public String getServerName() {

@@ -4,9 +4,9 @@ import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.client.Minecraft;
 import xyz.wagyourtail.LazyResolver;
 import xyz.wagyourtail.minimap.client.gui.ThreadsafeDynamicTexture;
-import xyz.wagyourtail.minimap.scanner.ChunkData;
 
 import java.awt.*;
+import java.util.concurrent.ExecutionException;
 
 public class BlockLightImageStrategy extends AbstractImageStrategy {
 
@@ -23,13 +23,17 @@ public class BlockLightImageStrategy extends AbstractImageStrategy {
     }
 
     @Override
-    public LazyResolver<ThreadsafeDynamicTexture> load(ChunkData key) {
+    public LazyResolver<ThreadsafeDynamicTexture> load(ChunkLocation key) {
         return new LazyResolver<>(() -> {
             NativeImage image = new NativeImage(16, 16, false);
             for (int i = 0; i < 256; ++i) {
                 int x = (i >> 4) % 16;
                 int z = i % 16;
-                image.setPixelRGBA(x, z, 0x7FFFFFFF & colorFormatSwap(colorForLightLevel(key.blocklight[i])));
+                try {
+                    image.setPixelRGBA(x, z, 0x7FFFFFFF & colorFormatSwap(colorForLightLevel(key.level().getRegion(key.region()).data[key.index()].resolve().blocklight[i])));
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
             }
             return new ThreadsafeDynamicTexture(image);
         });

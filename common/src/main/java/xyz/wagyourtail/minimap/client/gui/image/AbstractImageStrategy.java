@@ -4,42 +4,47 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.cache.RemovalNotification;
-import com.mojang.blaze3d.systems.RenderSystem;
 import xyz.wagyourtail.LazyResolver;
 import xyz.wagyourtail.minimap.client.gui.ThreadsafeDynamicTexture;
-import xyz.wagyourtail.minimap.scanner.ChunkData;
+import xyz.wagyourtail.minimap.scanner.MapLevel;
 
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
-public abstract class AbstractImageStrategy extends CacheLoader<ChunkData, LazyResolver<ThreadsafeDynamicTexture>> {
+public abstract class AbstractImageStrategy extends CacheLoader<AbstractImageStrategy.ChunkLocation, LazyResolver<ThreadsafeDynamicTexture>> {
 
-    private final LoadingCache<ChunkData, LazyResolver<ThreadsafeDynamicTexture>> imageCache = createCache();
+    private final LoadingCache<ChunkLocation, LazyResolver<ThreadsafeDynamicTexture>> imageCache = createCache();
 
     //wtf, why doesn't newBuilder do this method sig instead of just <Object, Object>
     private <K,V> CacheBuilder<K, V> createCacheBuilder() {
         return (CacheBuilder) CacheBuilder.newBuilder();
     }
 
-    private LoadingCache<ChunkData, LazyResolver<ThreadsafeDynamicTexture>> createCache() {
-        CacheBuilder<ChunkData, LazyResolver<ThreadsafeDynamicTexture>> cache = createCacheBuilder()
+    private LoadingCache<ChunkLocation, LazyResolver<ThreadsafeDynamicTexture>> createCache() {
+        CacheBuilder<ChunkLocation, LazyResolver<ThreadsafeDynamicTexture>> cache = createCacheBuilder()
+            .expireAfterAccess(60000, TimeUnit.MILLISECONDS)
             .removalListener(this::onChunkRemoval);
 
         return cache.build(this);
     }
 
-    public void invalidateChunk(ChunkData chunkData) {
+    public synchronized void invalidateChunk(ChunkLocation chunkData) {
         imageCache.invalidate(chunkData);
     }
 
-    public void onChunkRemoval(RemovalNotification<ChunkData, LazyResolver<ThreadsafeDynamicTexture>> notification) {
-        RenderSystem.recordRenderCall(() -> {
+    public void invalidateAll() {
+        imageCache.invalidateAll();
+    }
+
+    public void onChunkRemoval(RemovalNotification<ChunkLocation, LazyResolver<ThreadsafeDynamicTexture>> notification) {
+//        RenderSystem.recordRenderCall(() -> {
             synchronized (notification.getKey()) {
                 notification.getValue().close();
             }
-        });
+//        });
     }
 
-    public LazyResolver<ThreadsafeDynamicTexture> getImage(ChunkData chunk) throws ExecutionException {
+    public synchronized LazyResolver<ThreadsafeDynamicTexture> getImage(ChunkLocation chunk) throws ExecutionException {
         return imageCache.get(chunk);
     }
 
@@ -50,4 +55,5 @@ public abstract class AbstractImageStrategy extends CacheLoader<ChunkData, LazyR
     public static int colorFormatSwap(int color) {
         return color & 0xFF00FF00 | (color & 0xFF) << 0x10 | color >> 0x10 & 0xFF;
     }
+    public record ChunkLocation(MapLevel level, MapLevel.Pos region, int index) {}
 }

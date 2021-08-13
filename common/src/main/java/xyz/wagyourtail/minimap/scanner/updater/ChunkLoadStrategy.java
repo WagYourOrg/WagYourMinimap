@@ -2,20 +2,17 @@ package xyz.wagyourtail.minimap.scanner.updater;
 
 import dev.architectury.event.Event;
 import dev.architectury.event.EventFactory;
-import dev.architectury.event.events.common.ChunkEvent;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.levelgen.Heightmap;
-import org.jetbrains.annotations.Nullable;
-import xyz.wagyourtail.minimap.WagYourMinimap;
 import xyz.wagyourtail.minimap.api.MinimapApi;
+import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
+import xyz.wagyourtail.minimap.client.gui.image.AbstractImageStrategy;
 import xyz.wagyourtail.minimap.scanner.ChunkData;
 import xyz.wagyourtail.minimap.scanner.MapLevel;
 import xyz.wagyourtail.minimap.scanner.MapRegion;
@@ -24,7 +21,7 @@ public class ChunkLoadStrategy extends AbstractChunkUpdateStrategy {
 
     public static Event<Load> LOAD = EventFactory.createLoop();
 
-    public synchronized ChunkData loadFromChunk(ChunkAccess chunk, Level level, MapRegion parent, ChunkData oldData) {
+    public synchronized ChunkData loadFromChunk(ChunkAccess chunk, Level level, MapRegion parent, ChunkData oldData, AbstractImageStrategy.ChunkLocation loc) {
         ChunkData data = new ChunkData(parent);
         data.updateTime = System.currentTimeMillis();
         ChunkPos pos = chunk.getPos();
@@ -42,7 +39,7 @@ public class ChunkLoadStrategy extends AbstractChunkUpdateStrategy {
             data.oceanFloorBlockid[i] = data.getOrRegisterResourceLocation(Registry.BLOCK.getKey(chunk.getBlockState(blockPos.setY(data.oceanFloorHeightmap[i])).getBlock()));
             data.oceanFloorBiomeid[i] = data.getOrRegisterResourceLocation(biomeRegistry.getKey(level.getBiome(blockPos)));
         }
-        invalidateImages(oldData);
+        if (MinimapApi.getInstance() instanceof MinimapClientApi inst) inst.invalidateImages(loc);
         return data;
     }
 
@@ -59,7 +56,7 @@ public class ChunkLoadStrategy extends AbstractChunkUpdateStrategy {
                 level,
                 region_pos,
                 index,
-                (region, oldData) -> loadFromChunk(chunk, level, region, oldData)
+                (region, oldData) -> loadFromChunk(chunk, level, region, oldData, new AbstractImageStrategy.ChunkLocation(region.parent, region_pos, index))
             );
         });
     }

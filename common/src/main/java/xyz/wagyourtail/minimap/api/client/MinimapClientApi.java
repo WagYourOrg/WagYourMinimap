@@ -6,6 +6,7 @@ import net.minecraft.client.server.IntegratedServer;
 import net.minecraft.world.level.storage.LevelResource;
 import xyz.wagyourtail.minimap.api.MinimapApi;
 import xyz.wagyourtail.minimap.client.gui.InGameHud;
+import xyz.wagyourtail.minimap.client.gui.image.AbstractImageStrategy;
 
 public class MinimapClientApi extends MinimapApi {
     protected static final Minecraft mc = Minecraft.getInstance();
@@ -40,6 +41,18 @@ public class MinimapClientApi extends MinimapApi {
             return multiplayerServer.ip.replace(":25565", "").replace(":", "_");
         }
         return "UNKNOWN_SERVER_NAME";
+    }
+
+    public void invalidateAllImages() {
+        for (AbstractImageStrategy renderLayer : inGameHud.renderer.getRenderLayers()) {
+            renderLayer.invalidateAll();
+        }
+    }
+
+    public void invalidateImages(AbstractImageStrategy.ChunkLocation location) {
+        for (AbstractImageStrategy renderLayer : inGameHud.renderer.getRenderLayers()) {
+            renderLayer.invalidateChunk(location);
+        }
     }
 
     public String getLevelName() {

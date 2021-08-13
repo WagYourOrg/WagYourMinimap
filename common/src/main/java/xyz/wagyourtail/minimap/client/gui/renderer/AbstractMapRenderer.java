@@ -47,9 +47,9 @@ public abstract class AbstractMapRenderer {
 
     public abstract void renderMinimap(PoseStack matrixStack, @NotNull Vec3 center, float maxLength, @NotNull Vec3 player_pos, float player_rot);
 
-    public abstract void renderText(PoseStack matrixStack, float maxLength, Component... textLines);
+    public abstract void renderText(PoseStack matrixStack, float maxLength,  boolean bottom, Component... textLines);
 
-    private static boolean bindChunkTex(ChunkData chunkData, AbstractImageStrategy renderer) {
+    private static boolean bindChunkTex(AbstractImageStrategy.ChunkLocation chunkData, AbstractImageStrategy renderer) {
         ThreadsafeDynamicTexture image;
         try {
             image = renderer.getImage(chunkData).resolveAsync(0);
@@ -63,7 +63,7 @@ public abstract class AbstractMapRenderer {
         return false;
     }
 
-    private boolean drawChunk(PoseStack matrixStack, ChunkData chunk, float x, float y, float width, float height, float startU, float startV, float endU, float endV) {
+    private boolean drawChunk(PoseStack matrixStack, AbstractImageStrategy.ChunkLocation chunk, float x, float y, float width, float height, float startU, float startV, float endU, float endV) {
         for (AbstractImageStrategy rendererLayer : rendererLayers) {
             if (!rendererLayer.shouldRender()) continue;
             if (!bindChunkTex(chunk, rendererLayer)) return false;
@@ -127,20 +127,13 @@ public abstract class AbstractMapRenderer {
         RenderSystem.disableBlend();
     }
 
-    protected ChunkData getChunk(int chunkX, int chunkZ) {
-        try {
-            MapLevel level = MinimapClientApi.getInstance().getCurrentLevel();
-            if (level == null) return null;
-            MapRegion region = level.getRegion(new MapLevel.Pos(chunkX >> 5, chunkZ >> 5));
-            if (region.data[MapRegion.chunkPosToIndex(chunkX, chunkZ)] == null) return null;
-            return region.data[MapRegion.chunkPosToIndex(chunkX, chunkZ)].resolveAsync(0);
-        } catch (ExecutionException | InterruptedException | TimeoutException e) {
-            e.printStackTrace();
-        }
-        return null;
+    protected AbstractImageStrategy.ChunkLocation getChunk(int chunkX, int chunkZ) {
+        MapLevel level = MinimapClientApi.getInstance().getCurrentLevel();
+        if (level == null) return null;
+        return new AbstractImageStrategy.ChunkLocation(level, new MapLevel.Pos(chunkX >> 5, chunkZ >> 5), MapRegion.chunkPosToIndex(chunkX, chunkZ));
     }
 
-    protected void drawPartialChunk(PoseStack stack, ChunkData chunk, float x, float y, float scale, float startBlockX, float startBlockZ, float endBlockX, float endBlockZ) {
+    protected void drawPartialChunk(PoseStack stack, AbstractImageStrategy.ChunkLocation chunk, float x, float y, float scale, float startBlockX, float startBlockZ, float endBlockX, float endBlockZ) {
         float startX = startBlockX / 16F;
         float startZ = startBlockZ / 16F;
         float endX = endBlockX / 16F;
@@ -153,7 +146,7 @@ public abstract class AbstractMapRenderer {
         drawEmptyChunk(stack, x, y, scaledScaleX, scaledScaleZ);
     }
 
-    protected void drawChunk(PoseStack matrixStack, ChunkData chunk, float x, float y, float scale) {
+    protected void drawChunk(PoseStack matrixStack, AbstractImageStrategy.ChunkLocation chunk, float x, float y, float scale) {
         if (chunk != null) {
             if (drawChunk(matrixStack, chunk, x, y, scale, scale, 0, 0, 1, 1)) return;
         }

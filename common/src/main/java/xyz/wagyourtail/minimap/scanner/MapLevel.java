@@ -79,21 +79,14 @@ public class MapLevel implements AutoCloseable {
     public synchronized void close() {
         regionCache.invalidateAll();
         regionCache.cleanUp();
+        if (MinimapApi.getInstance() instanceof MinimapClientApi inst) {
+            inst.invalidateAllImages();
+        }
     }
 
     public static record Pos(int x, int z) {
         public String getString() {
             return x + "," + z;
-        }
-
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (!(o instanceof Pos pos)) return false;
-            return x == pos.x && z == pos.z;
-        }
-
-        public int hashCode() {
-            return Objects.hash(x, z);
         }
     }
 

@@ -84,7 +84,7 @@ public class SquareMapRenderer extends AbstractMapRenderer {
     }
 
     @Override
-    public void renderText(PoseStack matrixStack, float maxLength, Component... textLines) {
+    public void renderText(PoseStack matrixStack, float maxLength, boolean bottom, Component... textLines) {
 
     }
 
