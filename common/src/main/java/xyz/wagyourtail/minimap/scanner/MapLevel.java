@@ -10,7 +10,6 @@ import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -36,6 +35,7 @@ public class MapLevel implements AutoCloseable {
         try {
             new LazyResolver<>(() -> {
                 saveRegion(notification.getKey(), notification.getValue());
+                notification.getValue().close();
                 return null;
             }).resolveAsync(0);
         } catch (ExecutionException | InterruptedException | TimeoutException e) {
@@ -79,9 +79,6 @@ public class MapLevel implements AutoCloseable {
     public synchronized void close() {
         regionCache.invalidateAll();
         regionCache.cleanUp();
-        if (MinimapApi.getInstance() instanceof MinimapClientApi inst) {
-            inst.invalidateAllImages();
-        }
     }
 
     public static record Pos(int x, int z) {

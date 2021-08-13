@@ -43,18 +43,6 @@ public class MinimapClientApi extends MinimapApi {
         return "UNKNOWN_SERVER_NAME";
     }
 
-    public void invalidateAllImages() {
-        for (AbstractImageStrategy renderLayer : inGameHud.renderer.getRenderLayers()) {
-            renderLayer.invalidateAll();
-        }
-    }
-
-    public void invalidateImages(AbstractImageStrategy.ChunkLocation location) {
-        for (AbstractImageStrategy renderLayer : inGameHud.renderer.getRenderLayers()) {
-            renderLayer.invalidateChunk(location);
-        }
-    }
-
     public String getLevelName() {
         return getLevelName(mc.level);
     }

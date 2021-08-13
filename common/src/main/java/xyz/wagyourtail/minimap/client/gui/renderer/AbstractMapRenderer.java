@@ -8,6 +8,7 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
+import xyz.wagyourtail.LazyResolver;
 import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
 import xyz.wagyourtail.minimap.client.gui.AbstractMapGui;
 import xyz.wagyourtail.minimap.client.gui.ThreadsafeDynamicTexture;
@@ -52,7 +53,9 @@ public abstract class AbstractMapRenderer {
     private static boolean bindChunkTex(AbstractImageStrategy.ChunkLocation chunkData, AbstractImageStrategy renderer) {
         ThreadsafeDynamicTexture image;
         try {
-            image = renderer.getImage(chunkData).resolveAsync(0);
+            LazyResolver<ThreadsafeDynamicTexture> lazyImage = renderer.getImage(chunkData);
+            if (lazyImage == null) return false;
+            image = lazyImage.resolveAsync(0);
             if (image == null) return false;
             image.bind();
             RenderSystem.setShaderTexture(0, image.getId());

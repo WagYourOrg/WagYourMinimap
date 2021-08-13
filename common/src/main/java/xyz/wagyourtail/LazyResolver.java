@@ -22,7 +22,7 @@ public class LazyResolver<U> {
     private boolean done = false;
     private U result = null;
 
-    public LazyResolver(Supplier<U> supplier) {
+    public LazyResolver(@NotNull Supplier<U> supplier) {
         this.supplier = supplier;
     }
 

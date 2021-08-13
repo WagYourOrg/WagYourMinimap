@@ -13,7 +13,7 @@ import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
-public class MapRegion {
+public class MapRegion implements AutoCloseable {
     public static final int REGION_SIZE = 32;
     public static final int REGION_SQUARE_SIZE = 1024;
     public final MapLevel parent;
@@ -76,6 +76,14 @@ public class MapRegion {
         Files.move(tempFile, file, StandardCopyOption.REPLACE_EXISTING);
     }
 
+    @Override
+    public void close() {
+        for (LazyResolver<ChunkData> datum : data) {
+            if (datum != null) {
+                datum.close();
+            }
+        }
+    }
 
     public static int chunkPosToIndex(ChunkPos pos) {
         int px = pos.x % REGION_SIZE;

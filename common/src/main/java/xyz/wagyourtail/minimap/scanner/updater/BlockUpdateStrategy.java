@@ -43,7 +43,8 @@ public class BlockUpdateStrategy extends AbstractChunkUpdateStrategy {
         invalidateOld = invalidateOld || data.oceanFloorBlockid[index] != newOceanBlockId;
         data.oceanFloorBlockid[index] = newOceanBlockId;
         data.oceanFloorBiomeid[index] = data.getOrRegisterResourceLocation(biomeRegistry.getKey(level.getBiome(blockPos)));
-        if (invalidateOld && MinimapApi.getInstance() instanceof MinimapClientApi inst) inst.invalidateImages(loc);
+        data.updateTime = System.currentTimeMillis();
+        if (invalidateOld) data.invalidateDerivitives();
         return data;
     }
 

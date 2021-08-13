@@ -11,7 +11,6 @@ import xyz.wagyourtail.minimap.client.gui.ThreadsafeDynamicTexture;
 import xyz.wagyourtail.minimap.scanner.ChunkData;
 
 import java.awt.*;
-import java.util.concurrent.ExecutionException;
 
 public class VanillaMapImageStrategy extends AbstractImageStrategy {
     private final static ResourceLocation water = Registry.BLOCK.getKey(Blocks.WATER);
@@ -42,46 +41,34 @@ public class VanillaMapImageStrategy extends AbstractImageStrategy {
 
 
     @Override
-    public LazyResolver<ThreadsafeDynamicTexture> load(ChunkLocation key) {
-        return new LazyResolver<>(() -> {
-            LazyResolver<ChunkData> ldata;
-            ChunkData data;
-            try {
-                ldata = key.level().getRegion(key.region()).data[key.index()];
-                if (ldata == null) return null;
-                data = ldata.resolve();
-                if (data == null) return null;
-            } catch (ExecutionException e) {
-                throw new RuntimeException(e);
+    public ThreadsafeDynamicTexture load(ChunkData data) {
+        NativeImage image = new NativeImage(16, 16, false);
+        int min = data.parent.parent.minHeight;
+        int max = data.parent.parent.maxHeight;
+        int height = max - min;
+        for (int i = 0; i < 256; ++i) {
+            int x = (i >> 4) % 16;
+            int z = i % 16;
+            ResourceLocation currentBlock = data.resources.get(data.blockid[i]);
+            int color;
+            if (currentBlock.equals(water)) {
+                float waterRatio = Math.min(
+                    // 0.8 - 1.0 depending on depth of water 1 - 10 blocks...
+                    .8F + .2F * (data.heightmap[i] - data.oceanFloorHeightmap[i]) / 10F,
+                    1.0F
+                );
+                color = colorCombine(
+                    getBlockColor(currentBlock),
+                    getBlockColor(data.resources.get(data.oceanFloorBlockid[i])),
+                    waterRatio
+                );
+            } else {
+                color = 0xFF000000 | getBlockColor(currentBlock);
             }
-            NativeImage image = new NativeImage(16, 16, false);
-            int min = data.parent.parent.minHeight;
-            int max = data.parent.parent.maxHeight;
-            int height = max - min;
-            for (int i = 0; i < 256; ++i) {
-                int x = (i >> 4) % 16;
-                int z = i % 16;
-                ResourceLocation currentBlock = data.resources.get(data.blockid[i]);
-                int color;
-                if (currentBlock.equals(water)) {
-                    float waterRatio = Math.min(
-                        // 0.8 - 1.0 depending on depth of water 1 - 10 blocks...
-                        .8F + .2F * (data.heightmap[i] - data.oceanFloorHeightmap[i]) / 10F,
-                        1.0F
-                    );
-                    color = colorCombine(
-                        getBlockColor(currentBlock),
-                        getBlockColor(data.resources.get(data.oceanFloorBlockid[i])),
-                        waterRatio
-                    );
-                } else {
-                    color = 0xFF000000 | getBlockColor(currentBlock);
-                }
-                color = brightnessForHeight(color, (data.heightmap[i] - min) / (float) height);
-                image.setPixelRGBA(x, z, colorFormatSwap(color));
-            }
-            return new ThreadsafeDynamicTexture(image);
-        });
+            color = brightnessForHeight(color, (data.heightmap[i] - min) / (float) height);
+            image.setPixelRGBA(x, z, colorFormatSwap(color));
+        }
+        return new ThreadsafeDynamicTexture(image);
     }
 
 }

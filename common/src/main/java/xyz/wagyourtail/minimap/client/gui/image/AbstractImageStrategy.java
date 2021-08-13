@@ -1,40 +1,15 @@
 package xyz.wagyourtail.minimap.client.gui.image;
 
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
 import com.google.common.cache.RemovalNotification;
 import xyz.wagyourtail.LazyResolver;
 import xyz.wagyourtail.minimap.client.gui.ThreadsafeDynamicTexture;
+import xyz.wagyourtail.minimap.scanner.ChunkData;
 import xyz.wagyourtail.minimap.scanner.MapLevel;
 
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
-public abstract class AbstractImageStrategy extends CacheLoader<AbstractImageStrategy.ChunkLocation, LazyResolver<ThreadsafeDynamicTexture>> {
-
-    private final LoadingCache<ChunkLocation, LazyResolver<ThreadsafeDynamicTexture>> imageCache = createCache();
-
-    //wtf, why doesn't newBuilder do this method sig instead of just <Object, Object>
-    private <K,V> CacheBuilder<K, V> createCacheBuilder() {
-        return (CacheBuilder) CacheBuilder.newBuilder();
-    }
-
-    private LoadingCache<ChunkLocation, LazyResolver<ThreadsafeDynamicTexture>> createCache() {
-        CacheBuilder<ChunkLocation, LazyResolver<ThreadsafeDynamicTexture>> cache = createCacheBuilder()
-            .expireAfterAccess(60000, TimeUnit.MILLISECONDS)
-            .removalListener(this::onChunkRemoval);
-
-        return cache.build(this);
-    }
-
-    public synchronized void invalidateChunk(ChunkLocation chunkData) {
-        imageCache.invalidate(chunkData);
-    }
-
-    public void invalidateAll() {
-        imageCache.invalidateAll();
-    }
+public abstract class AbstractImageStrategy {
 
     public void onChunkRemoval(RemovalNotification<ChunkLocation, LazyResolver<ThreadsafeDynamicTexture>> notification) {
 //        RenderSystem.recordRenderCall(() -> {
@@ -44,9 +19,22 @@ public abstract class AbstractImageStrategy extends CacheLoader<AbstractImageStr
 //        });
     }
 
-    public synchronized LazyResolver<ThreadsafeDynamicTexture> getImage(ChunkLocation chunk) throws ExecutionException {
-        return imageCache.get(chunk);
+    public synchronized LazyResolver<ThreadsafeDynamicTexture> getImage(ChunkLocation key) throws ExecutionException {
+        LazyResolver<ChunkData> data = key.level().getRegion(key.region()).data[key.index()];
+        try {
+            if (data != null) {
+                ChunkData resolved = data.resolveAsync(0);
+                if (resolved != null) {
+                    return resolved.computeDerivitive(this.getClass().getCanonicalName(), () -> this.load(resolved));
+                }
+            }
+        } catch (InterruptedException | TimeoutException e) {
+            e.printStackTrace();
+        }
+        return new LazyResolver<>((ThreadsafeDynamicTexture) null);
     }
+
+    public abstract ThreadsafeDynamicTexture load(ChunkData data);
 
     public boolean shouldRender() {
         return true;

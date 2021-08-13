@@ -11,7 +11,6 @@ import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.levelgen.Heightmap;
 import xyz.wagyourtail.minimap.api.MinimapApi;
-import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
 import xyz.wagyourtail.minimap.client.gui.image.AbstractImageStrategy;
 import xyz.wagyourtail.minimap.scanner.ChunkData;
 import xyz.wagyourtail.minimap.scanner.MapLevel;
@@ -39,7 +38,7 @@ public class ChunkLoadStrategy extends AbstractChunkUpdateStrategy {
             data.oceanFloorBlockid[i] = data.getOrRegisterResourceLocation(Registry.BLOCK.getKey(chunk.getBlockState(blockPos.setY(data.oceanFloorHeightmap[i])).getBlock()));
             data.oceanFloorBiomeid[i] = data.getOrRegisterResourceLocation(biomeRegistry.getKey(level.getBiome(blockPos)));
         }
-        if (MinimapApi.getInstance() instanceof MinimapClientApi inst) inst.invalidateImages(loc);
+        if (oldData != null) data.copyDerivatives(oldData);
         return data;
     }
 
