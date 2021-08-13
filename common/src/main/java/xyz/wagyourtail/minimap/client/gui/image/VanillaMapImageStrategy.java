@@ -5,15 +5,35 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Blocks;
-import xyz.wagyourtail.LazyResolver;
 import xyz.wagyourtail.minimap.client.gui.ThreadsafeDynamicTexture;
 import xyz.wagyourtail.minimap.scanner.ChunkData;
 
 import java.awt.*;
+import java.util.Set;
 
 public class VanillaMapImageStrategy extends AbstractImageStrategy {
-    private final static ResourceLocation water = Registry.BLOCK.getKey(Blocks.WATER);
+    private final static Set<ResourceLocation> water = Set.of(
+        Registry.BLOCK.getKey(Blocks.WATER)
+    );
+
+    private final static Set<ResourceLocation> grass = Set.of(
+        Registry.BLOCK.getKey(Blocks.GRASS_BLOCK),
+        Registry.BLOCK.getKey(Blocks.GRASS),
+        Registry.BLOCK.getKey(Blocks.TALL_GRASS)
+    );
+
+    private final static Set<ResourceLocation> leaves = Set.of(
+        Registry.BLOCK.getKey(Blocks.ACACIA_LEAVES),
+        Registry.BLOCK.getKey(Blocks.AZALEA_LEAVES),
+        Registry.BLOCK.getKey(Blocks.BIRCH_LEAVES),
+        Registry.BLOCK.getKey(Blocks.DARK_OAK_LEAVES),
+        Registry.BLOCK.getKey(Blocks.FLOWERING_AZALEA_LEAVES),
+        Registry.BLOCK.getKey(Blocks.JUNGLE_LEAVES),
+        Registry.BLOCK.getKey(Blocks.OAK_LEAVES),
+        Registry.BLOCK.getKey(Blocks.SPRUCE_LEAVES)
+    );
 
 
     public static int getBlockColor(ResourceLocation block) {
@@ -46,22 +66,29 @@ public class VanillaMapImageStrategy extends AbstractImageStrategy {
         int min = data.parent.parent.minHeight;
         int max = data.parent.parent.maxHeight;
         int height = max - min;
+        Registry<Biome> biomeRegistry = minecraft.level.registryAccess().registryOrThrow(Registry.BIOME_REGISTRY);
         for (int i = 0; i < 256; ++i) {
             int x = (i >> 4) % 16;
             int z = i % 16;
+            Biome biome = biomeRegistry.get(data.resources.get(data.biomeid[i]));
             ResourceLocation currentBlock = data.resources.get(data.blockid[i]);
             int color;
-            if (currentBlock.equals(water)) {
+            assert biome != null;
+            if (water.contains(currentBlock)) {
                 float waterRatio = Math.min(
                     // 0.8 - 1.0 depending on depth of water 1 - 10 blocks...
                     .8F + .2F * (data.heightmap[i] - data.oceanFloorHeightmap[i]) / 10F,
                     1.0F
                 );
                 color = colorCombine(
-                    getBlockColor(currentBlock),
+                    biome.getWaterColor(),
                     getBlockColor(data.resources.get(data.oceanFloorBlockid[i])),
                     waterRatio
                 );
+            } else if (grass.contains(currentBlock)) {
+                color = biome.getGrassColor(x, z);
+            } else if (leaves.contains(currentBlock)) {
+                color = biome.getFoliageColor();
             } else {
                 color = 0xFF000000 | getBlockColor(currentBlock);
             }

@@ -1,6 +1,6 @@
 package xyz.wagyourtail.minimap.client.gui.image;
 
-import com.google.common.cache.RemovalNotification;
+import net.minecraft.client.Minecraft;
 import xyz.wagyourtail.LazyResolver;
 import xyz.wagyourtail.minimap.client.gui.ThreadsafeDynamicTexture;
 import xyz.wagyourtail.minimap.scanner.ChunkData;
@@ -10,14 +10,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 public abstract class AbstractImageStrategy {
-
-    public void onChunkRemoval(RemovalNotification<ChunkLocation, LazyResolver<ThreadsafeDynamicTexture>> notification) {
-//        RenderSystem.recordRenderCall(() -> {
-            synchronized (notification.getKey()) {
-                notification.getValue().close();
-            }
-//        });
-    }
+    protected static final Minecraft minecraft = Minecraft.getInstance();
 
     public synchronized LazyResolver<ThreadsafeDynamicTexture> getImage(ChunkLocation key) throws ExecutionException {
         LazyResolver<ChunkData> data = key.level().getRegion(key.region()).data[key.index()];

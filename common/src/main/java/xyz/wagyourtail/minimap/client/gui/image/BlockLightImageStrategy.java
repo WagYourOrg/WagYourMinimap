@@ -1,8 +1,6 @@
 package xyz.wagyourtail.minimap.client.gui.image;
 
 import com.mojang.blaze3d.platform.NativeImage;
-import net.minecraft.client.Minecraft;
-import xyz.wagyourtail.LazyResolver;
 import xyz.wagyourtail.minimap.client.gui.ThreadsafeDynamicTexture;
 import xyz.wagyourtail.minimap.scanner.ChunkData;
 
@@ -18,7 +16,8 @@ public class BlockLightImageStrategy extends AbstractImageStrategy {
 
     @Override
     public boolean shouldRender() {
-        long time = Minecraft.getInstance().level.getDayTime() % TICKS_PER_DAY;
+        assert minecraft.level != null;
+        long time = minecraft.level.getDayTime() % TICKS_PER_DAY;
         return time > TICKS_PER_DAY / 2;
     }
 

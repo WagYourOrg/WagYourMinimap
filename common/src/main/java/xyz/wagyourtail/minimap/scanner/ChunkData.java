@@ -124,9 +124,12 @@ public class ChunkData implements AutoCloseable {
 
     public synchronized <T> LazyResolver<T> computeDerivitive(String key, Supplier<T> supplier) {
         //chunk is closed???
-        if (derrivitives == null) return null;
+        if (derrivitives == null) {
+            new Error().printStackTrace();
+            return null;
+        }
         Derivitive<T> der = (Derivitive<T>) derrivitives.computeIfAbsent(key, (k) -> new Derivitive<>(false, new LazyResolver<>(supplier)));
-        if (der.old) derrivitives.put(key, new Derivitive<>(false, der.contained.then(old -> supplier.get())));
+        if (der.old) derrivitives.put(key, new Derivitive<>(false, der.contained.then(old -> supplier.get(), true)));
         return der.contained;
     }
 
@@ -160,18 +163,14 @@ public class ChunkData implements AutoCloseable {
     private synchronized Map<String, Derivitive<?>> getDerivativesAsOldAndClear() {
         if (derrivitives == null) return ImmutableMap.of();
         Map<String, Derivitive<?>> derivitiveMap = ImmutableMap.copyOf(derrivitives);
-        derivitiveMap.forEach((k,v) -> {
-            v.old = true;
-        });
+        derivitiveMap.forEach((k,v) -> v.old = true);
         derrivitives.clear();
         return derivitiveMap;
     }
 
     public synchronized void invalidateDerivitives() {
         if (derrivitives == null) return;
-        derrivitives.values().forEach((v) -> {
-            v.old = true;
-        });
+        derrivitives.values().forEach((v) -> v.old = true);
     }
 
     public static int blockPosToIndex(BlockPos pos) {
@@ -182,7 +181,7 @@ public class ChunkData implements AutoCloseable {
         return (x << 4) + z;
     }
 
-    public class Derivitive<T>{
+    public static class Derivitive<T>{
         public boolean old;
         public final LazyResolver<T> contained;
         Derivitive(boolean old, LazyResolver<T> contained) {
