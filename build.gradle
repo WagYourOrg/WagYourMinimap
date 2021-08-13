@@ -20,7 +20,7 @@ subprojects {
 
         mappings loom.layered() {
             officialMojangMappings()
-            parchment("org.parchmentmc.data:parchment-1.17.1:2021.08.02@zip")
+            parchment("org.parchmentmc.data:parchment-1.17.1:BLEEDING-SNAPSHOT@zip")
         }
         // The following line declares the yarn mappings you may select this one as well.
         // mappings "net.fabricmc:yarn:1.16.5+build.9:v2"
