@@ -3,6 +3,7 @@ package xyz.wagyourtail.minimap.scanner;
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.Range;
 import xyz.wagyourtail.LazyResolver;
 
 import java.io.IOException;
@@ -30,7 +31,7 @@ public class ChunkData implements AutoCloseable {
     public final int[] oceanFloorBlockid = new int[256];
     public final int[] oceanFloorBiomeid = new int[256];
 
-    public final List<ResourceLocation> resources = new ArrayList<>();
+    private final List<ResourceLocation> resources = new ArrayList<>();
 
     public ChunkData(MapRegion parent) {
         this.parent = parent;
@@ -110,16 +111,19 @@ public class ChunkData implements AutoCloseable {
         }
     }
 
-    public int getOrRegisterResourceLocation(ResourceLocation id) {
-        if (id == null) return -1;
+    public synchronized int getOrRegisterResourceLocation(ResourceLocation id) {
+        if (id == null) return 0;
         for (int j = 0; j < resources.size(); ++j) {
             if (id.equals(resources.get(j))) {
-                return j;
+                return j + 1;
             }
         }
-        int k = resources.size();
         resources.add(id);
-        return k;
+        return resources.size();
+    }
+
+    public synchronized ResourceLocation getResourceLocation(@Range(from = 1, to = Integer.MAX_VALUE) int i) {
+        return resources.get(i - 1);
     }
 
     public synchronized <T> LazyResolver<T> computeDerivitive(String key, Supplier<T> supplier) {

@@ -37,7 +37,7 @@ public class VanillaMapImageStrategy extends AbstractImageStrategy {
 
 
     public static int getBlockColor(ResourceLocation block) {
-        return Registry.BLOCK.getOptional(block).get().defaultBlockState().getMapColor(Minecraft.getInstance().level, BlockPos.ZERO).col;
+        return Registry.BLOCK.getOptional(block).orElse(Blocks.AIR).defaultBlockState().getMapColor(Minecraft.getInstance().level, BlockPos.ZERO).col;
 
     }
 
@@ -66,23 +66,24 @@ public class VanillaMapImageStrategy extends AbstractImageStrategy {
         int min = data.parent.parent.minHeight;
         int max = data.parent.parent.maxHeight;
         int height = max - min;
+        assert minecraft.level != null;
         Registry<Biome> biomeRegistry = minecraft.level.registryAccess().registryOrThrow(Registry.BIOME_REGISTRY);
         for (int i = 0; i < 256; ++i) {
             int x = (i >> 4) % 16;
             int z = i % 16;
-            Biome biome = biomeRegistry.get(data.resources.get(data.biomeid[i]));
-            ResourceLocation currentBlock = data.resources.get(data.blockid[i]);
+            Biome biome = biomeRegistry.get(data.getResourceLocation(data.biomeid[i]));
+            ResourceLocation currentBlock = data.getResourceLocation(data.blockid[i]);
             int color;
             assert biome != null;
             if (water.contains(currentBlock)) {
                 float waterRatio = Math.min(
-                    // 0.8 - 1.0 depending on depth of water 1 - 10 blocks...
-                    .8F + .2F * (data.heightmap[i] - data.oceanFloorHeightmap[i]) / 10F,
+                    // 0.7 - 1.0 depending on depth of water 1 - 10 blocks...
+                    .7f + .3f * (data.heightmap[i] - data.oceanFloorHeightmap[i]) / 10F,
                     1.0F
                 );
                 color = colorCombine(
                     biome.getWaterColor(),
-                    getBlockColor(data.resources.get(data.oceanFloorBlockid[i])),
+                    getBlockColor(data.getResourceLocation(data.oceanFloorBlockid[i])),
                     waterRatio
                 );
             } else if (grass.contains(currentBlock)) {
