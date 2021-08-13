@@ -68,7 +68,8 @@ public class MapRegion implements AutoCloseable {
             try (ZipOutputStream zos = new ZipOutputStream(fos)) {
                 for (int i = 0; i < REGION_SQUARE_SIZE; ++i) {
                     if (data[i] != null) {
-                        data[i].resolve().writeToZip(zos, Integer.toString(i));
+                        ChunkData cd = data[i].resolve();
+                        if (cd != null) cd.writeToZip(zos, Integer.toString(i));
                     }
                 }
             }

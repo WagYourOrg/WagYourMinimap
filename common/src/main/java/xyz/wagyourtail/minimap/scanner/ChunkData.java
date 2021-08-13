@@ -126,14 +126,21 @@ public class ChunkData implements AutoCloseable {
         //chunk is closed???
         if (derrivitives == null) return null;
         Derivitive<T> der = (Derivitive<T>) derrivitives.computeIfAbsent(key, (k) -> new Derivitive<>(false, new LazyResolver<>(supplier)));
-        if (der.old) derrivitives.put(key, new Derivitive<>(false, new LazyResolver<>(supplier, der.contained)));
+        if (der.old) derrivitives.put(key, new Derivitive<>(false, der.contained.then(old -> supplier.get())));
         return der.contained;
     }
+
+    Error firstClose = null;
 
     @Override
     public synchronized void close() {
         //double close????
-        if (derrivitives == null) return;
+        if (derrivitives == null) {
+            new Error().printStackTrace();
+            firstClose.printStackTrace();
+            return;
+        }
+        firstClose = new Error();
         derrivitives.forEach((k,v) -> {
             if (v.contained instanceof AutoCloseable) {
                 try {

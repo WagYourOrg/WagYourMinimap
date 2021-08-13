@@ -43,8 +43,11 @@ public class LazyResolver<U> {
         synchronized (this) {
             //check if done in synchronized
             if (done) return result;
-            if (result != null) {
-                if (result instanceof AutoCloseable close) {
+            U oldResult = result;
+            result = supplier.get();
+            //close defaulted value
+            if (oldResult != null) {
+                if (oldResult instanceof AutoCloseable close) {
                     try {
                         close.close();
                     } catch (Exception e) {
@@ -52,7 +55,6 @@ public class LazyResolver<U> {
                     }
                 }
             }
-            result = supplier.get();
             //after result to make optimistic not break
             done = true;
         }

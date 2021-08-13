@@ -29,7 +29,7 @@ public abstract class AbstractChunkUpdateStrategy {
                 if (oldData == null) {
                     region.data[chunkIndex] = new LazyResolver<>(() -> newChunkDataCreator.apply(region, null));
                 } else {
-                    region.data[chunkIndex] = new LazyResolver<>(() -> newChunkDataCreator.apply(region, oldData.resolve()), oldData);
+                    region.data[chunkIndex] = oldData.then(od -> newChunkDataCreator.apply(region, od));
                 }
                 MinimapEvents.CHUNK_UPDATED.invoker().onChunkUpdated(region, chunkIndex, region.data[chunkIndex], oldData, this.getClass());
             }
