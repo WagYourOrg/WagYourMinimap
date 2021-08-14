@@ -32,7 +32,7 @@ public class LazyResolver<U> {
     public LazyResolver(Supplier<U> supplier, LazyResolver<U> previous) {
         this.supplier = supplier;
         this.previous = previous;
-        if (previous.supplier) {
+        if (previous.supplier != null) {
             synchronized (previous.supplier) {
                 result = previous.result;
                 if (!previous.done) previous.result = null;
