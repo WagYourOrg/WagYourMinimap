@@ -54,9 +54,11 @@ public abstract class AbstractMapRenderer {
         ThreadsafeDynamicTexture image;
         try {
             LazyResolver<ThreadsafeDynamicTexture> lazyImage = renderer.getImage(chunkData);
-            if (lazyImage == null) return false;
+            if (lazyImage == null)
+                return false;
             image = lazyImage.resolveAsync(0);
-            if (image == null) return false;
+            if (image == null)
+                return false;
             image.bind();
             RenderSystem.setShaderTexture(0, image.getId());
             return true;

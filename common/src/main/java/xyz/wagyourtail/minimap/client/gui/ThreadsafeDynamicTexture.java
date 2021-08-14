@@ -10,6 +10,8 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.concurrent.CompletableFuture;
+
 public class ThreadsafeDynamicTexture extends AbstractTexture {
     private static final Logger LOGGER = LogManager.getLogger();
     @Nullable
@@ -81,12 +83,15 @@ public class ThreadsafeDynamicTexture extends AbstractTexture {
     }
 
     public synchronized void close() {
-        if (this.pixels != null) {
-            this.pixels.close();
-            this.releaseId();
-            this.pixels = null;
-        }
-
+        CompletableFuture.runAsync(() -> {
+            synchronized (this) {
+                if (this.pixels != null) {
+                    this.pixels.close();
+                    this.releaseId();
+                    this.pixels = null;
+                }
+            }
+        });
     }
 
 }

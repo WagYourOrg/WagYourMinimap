@@ -16,6 +16,8 @@ import xyz.wagyourtail.minimap.scanner.ChunkData;
 import xyz.wagyourtail.minimap.scanner.MapLevel;
 import xyz.wagyourtail.minimap.scanner.MapRegion;
 
+import java.util.concurrent.ExecutionException;
+
 public class BlockUpdateStrategy extends AbstractChunkUpdateStrategy {
     public static final Event<BlockUpdate> BLOCK_UPDATE_EVENT = EventFactory.createLoop();
 
@@ -44,8 +46,48 @@ public class BlockUpdateStrategy extends AbstractChunkUpdateStrategy {
         data.oceanFloorBlockid[index] = newOceanBlockId;
         data.oceanFloorBiomeid[index] = data.getOrRegisterResourceLocation(biomeRegistry.getKey(level.getBiome(blockPos)));
         data.updateTime = System.currentTimeMillis();
+        updateLighting(level, data, pos.getX() >> 4, pos.getZ() >> 4);
         if (invalidateOld) data.invalidateDerivitives();
         return data;
+    }
+
+    public void updateNeighborLighting(Level level, int chunkX, int chunkZ) throws ExecutionException {
+        for (int i = chunkX - 1; i < chunkX + 2; ++i) {
+            for (int j = chunkZ - 1; j < chunkZ + 2; ++j) {
+                if (i == chunkX && j == chunkZ) continue;
+                if (level.hasChunk(i, j)) {
+                    int finalI = i;
+                    int finalJ = j;
+                    updateChunk(
+                        MinimapApi.getInstance().getServerName(),
+                        MinimapClientApi.getInstance().getLevelName(level),
+                        level,
+                        new MapLevel.Pos(i >> 5, j >> 5),
+                        MapRegion.chunkPosToIndex(i, j),
+                        (region, chunkData) -> updateLighting(level, chunkData, finalI, finalJ)
+                    );
+                }
+            }
+        }
+    }
+
+    public ChunkData updateLighting(Level level, ChunkData oldData, int chunkX, int chunkZ) {
+        if (oldData == null) return null;
+        ChunkAccess chunk = level.getChunkSource().getChunk(chunkX, chunkZ, false);
+        BlockPos.MutableBlockPos blockPos = new BlockPos.MutableBlockPos(0, 0, 0);
+        if (chunk != null) {
+            boolean invalidate = false;
+            for (int i = 0; i < 256; ++i) {
+                int x = (i >> 4) % 16;
+                int z = i % 16;
+
+                byte newBlockLight = (byte) level.getBrightness(LightLayer.BLOCK, blockPos.set((chunkX << 4) + x, oldData.heightmap[i] + 1, (chunkZ << 4) + z));
+                invalidate = invalidate || newBlockLight != oldData.blocklight[i];
+                oldData.blocklight[i] = newBlockLight;
+            }
+            if (invalidate) oldData.invalidateDerivitives();
+        }
+        return oldData;
     }
 
     @Override
@@ -63,6 +105,7 @@ public class BlockUpdateStrategy extends AbstractChunkUpdateStrategy {
                     MapRegion.chunkPosToIndex(chunkX, chunkZ),
                     ((region, chunkData) -> updateChunkData(level, pos, chunkData, new AbstractImageStrategy.ChunkLocation(region.parent, regionPos, MapRegion.chunkPosToIndex(chunkX, chunkZ))))
                 );
+                updateNeighborLighting(level, chunkX, chunkZ);
             } catch (Exception e) {
                 e.printStackTrace();
             }

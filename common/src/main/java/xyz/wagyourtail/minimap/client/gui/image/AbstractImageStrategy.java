@@ -19,6 +19,8 @@ public abstract class AbstractImageStrategy {
                 ChunkData resolved = data.resolveAsync(0);
                 if (resolved != null) {
                     return resolved.computeDerivitive(this.getClass().getCanonicalName(), () -> this.load(resolved));
+                } else {
+                    System.out.print("a");
                 }
             }
         } catch (InterruptedException | TimeoutException e) {

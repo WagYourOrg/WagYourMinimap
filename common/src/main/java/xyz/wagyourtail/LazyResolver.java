@@ -1,6 +1,7 @@
 package xyz.wagyourtail;
 
 import org.jetbrains.annotations.NotNull;
+import xyz.wagyourtail.minimap.client.gui.ThreadsafeDynamicTexture;
 
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -20,19 +21,26 @@ public class LazyResolver<U> {
     private final Supplier<U> supplier;
     private final AtomicBoolean pooled = new AtomicBoolean(false);
     private boolean done = false;
+    private final LazyResolver<U> previous;
     private U result = null;
 
     public LazyResolver(@NotNull Supplier<U> supplier) {
+        previous = null;
         this.supplier = supplier;
     }
 
     public LazyResolver(Supplier<U> supplier, LazyResolver<U> previous) {
         this.supplier = supplier;
-        if (previous.done) result = previous.result;
+        this.previous = previous;
+        synchronized (previous.supplier) {
+            result = previous.result;
+            if (!previous.done) previous.result = null;
+        }
     }
 
     public LazyResolver(U resolved) {
         supplier = null;
+        previous = null;
         done = true;
         result = resolved;
     }
@@ -43,20 +51,32 @@ public class LazyResolver<U> {
         synchronized (this) {
             //check if done in synchronized
             if (done) return result;
+
             U oldResult = result;
-            result = supplier.get();
-            //close defaulted value
-            if (oldResult != null) {
-                if (oldResult instanceof AutoCloseable close) {
-                    try {
-                        close.close();
-                    } catch (Exception e) {
-                        e.printStackTrace();
+            U newResult = supplier.get();
+
+            // give this a synchronized so we can cancel it when it's a previous
+            synchronized (supplier) {
+
+                result = newResult;
+
+                //close defaulted value if not still same class instance...
+
+                if (newResult != oldResult) {
+                    if (oldResult != null) {
+                        if (oldResult instanceof AutoCloseable close) {
+                            try {
+                                close.close();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
                     }
                 }
+
+                //after result to make optimistic not break,
+                done = true;
             }
-            //after result to make optimistic not break
-            done = true;
         }
         return result;
     }
@@ -98,13 +118,14 @@ public class LazyResolver<U> {
     }
 
     public synchronized void close() {
-        if (done && result instanceof AutoCloseable) {
+        if (result instanceof AutoCloseable) {
             try {
                 ((AutoCloseable) result).close();
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
+        if (previous != null) previous.close();
         done = true;
         result = null;
     }

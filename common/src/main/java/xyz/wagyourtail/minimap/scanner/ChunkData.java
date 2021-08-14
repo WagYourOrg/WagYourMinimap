@@ -130,6 +130,7 @@ public class ChunkData implements AutoCloseable {
         //chunk is closed???
         if (derrivitives == null) {
             new Error().printStackTrace();
+            firstClose.printStackTrace();
             return null;
         }
         Derivitive<T> der = (Derivitive<T>) derrivitives.computeIfAbsent(key, (k) -> new Derivitive<>(false, new LazyResolver<>(supplier)));
