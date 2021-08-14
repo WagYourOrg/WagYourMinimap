@@ -3,6 +3,7 @@ package xyz.wagyourtail.minimap.client.gui;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import xyz.wagyourtail.LazyResolver;
@@ -29,20 +30,33 @@ public class InGameHud extends AbstractMapGui {
         LocalPlayer player = client.player;
         assert player != null;
 
+        boolean bottom = MinimapClientApi.getInstance().getConfig().snapSide.bottom;
+
         float posX = MinimapClientApi.getInstance().getConfig().snapSide.right ? w - minimapSize - 5 : MinimapClientApi.getInstance().getConfig().snapSide.center ? w / 2f - minimapSize / 2f : 5;
-        float posZ = MinimapClientApi.getInstance().getConfig().snapSide.bottom ? h - minimapSize - client.font.lineHeight - 10 : 5;
-        //pull back map to 0, 0
-        matrixStack.translate(posX, posZ, 0);
+        float posZ = bottom ? h - minimapSize - client.font.lineHeight - 10 : 5;
         Vec3 player_pos = player.getPosition(tickDelta);
         float player_rot = player.getYRot();
+
+        //pull back map to 0, 0
+        matrixStack.translate(posX, posZ, 0);
         renderer.renderMinimap(matrixStack, player_pos, minimapSize, player_pos, player_rot);
         matrixStack.popPose();
 
+        //pull back text pos to 0, 0
         matrixStack.pushPose();
-        renderPlayerPosUnderMap(matrixStack, player_pos, w, h, minimapSize);
-        //TODO: make toggle
-        renderDebugInfo(matrixStack, player_pos, w, h, minimapSize);
+        matrixStack.translate(posX, posZ, 0);
+        if (!bottom) {
+            matrixStack.translate(0, minimapSize + 5, 0);
+        }
+        renderer.renderText(matrixStack, minimapSize, bottom, new TextComponent(String.format("%.2f %.2f %.2f", player_pos.x, player_pos.y, player_pos.z)));
         matrixStack.popPose();
+
+//        matrixStack.pushPose();
+//
+//        renderPlayerPosUnderMap(matrixStack, player_pos, w, h, minimapSize);
+//        //TODO: make toggle
+//        renderDebugInfo(matrixStack, player_pos, w, h, minimapSize);
+//        matrixStack.popPose();
     }
 
     public void renderPlayerPosUnderMap(PoseStack matrixStack, @NotNull Vec3 player, int w, int h, float minimapSize) {

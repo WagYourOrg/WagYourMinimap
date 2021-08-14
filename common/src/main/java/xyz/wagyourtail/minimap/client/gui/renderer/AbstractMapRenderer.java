@@ -75,7 +75,7 @@ public abstract class AbstractMapRenderer {
         return true;
     }
 
-    public void drawTex(PoseStack matrixStack, float x, float y, float width, float height, float startU, float startV, float endU, float endV) {
+    public static void drawTex(PoseStack matrixStack, float x, float y, float width, float height, float startU, float startV, float endU, float endV) {
         Matrix4f matrix = matrixStack.last().pose();
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.enableBlend();
@@ -91,7 +91,23 @@ public abstract class AbstractMapRenderer {
         BufferUploader.end(builder);
     }
 
-    public void drawTexCol(PoseStack matrixStack, float x, float y, float width, float height, float startU, float startV, float endU, float endV, int abgrTint) {
+    public static void drawTexSideways(PoseStack matrixStack, float x, float y, float width, float height, float startU, float startV, float endU, float endV) {
+        Matrix4f matrix = matrixStack.last().pose();
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
+        RenderSystem.enableTexture();
+        BufferBuilder builder = Tesselator.getInstance().getBuilder();
+        builder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+        builder.vertex(matrix, x, y + height, 0).uv(startU, endV).endVertex();
+        builder.vertex(matrix, x + width, y + height, 0).uv(startU, startV).endVertex();
+        builder.vertex(matrix, x + width, y, 0).uv(endU, startV).endVertex();
+        builder.vertex(matrix, x, y, 0).uv(endU, endV).endVertex();
+        builder.end();
+        BufferUploader.end(builder);
+    }
+
+    public static void drawTexCol(PoseStack matrixStack, float x, float y, float width, float height, float startU, float startV, float endU, float endV, int abgrTint) {
         Matrix4f matrix = matrixStack.last().pose();
         RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
         RenderSystem.enableBlend();

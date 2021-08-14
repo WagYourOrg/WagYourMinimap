@@ -11,14 +11,14 @@ import xyz.wagyourtail.minimap.WagYourMinimap;
 import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
 import xyz.wagyourtail.minimap.client.gui.AbstractMapGui;
 import xyz.wagyourtail.minimap.client.gui.renderer.overlay.AbstractMapOverlayRenderer;
+import xyz.wagyourtail.minimap.client.gui.renderer.overlay.SquareMapBorderOverlay;
 
-public class SquareMapRenderer extends AbstractMapRenderer {
+public class SquareMapNoRotRenderer extends AbstractMapRenderer {
     private static final ResourceLocation player_icon_tex = new ResourceLocation(WagYourMinimap.MOD_ID, "textures/player_arrow.png");
-    private static final ResourceLocation map_corner = new ResourceLocation(WagYourMinimap.MOD_ID, "textures/square_border_corner.png");
-    private static final ResourceLocation map_side = new ResourceLocation(WagYourMinimap.MOD_ID, "textures/square_border_side.png");
 
-    public SquareMapRenderer(AbstractMapGui parent) {
+    public SquareMapNoRotRenderer(AbstractMapGui parent) {
         super(parent);
+        overlays = new AbstractMapOverlayRenderer[] {new SquareMapBorderOverlay(this)};
     }
 
     @Override
@@ -85,7 +85,21 @@ public class SquareMapRenderer extends AbstractMapRenderer {
 
     @Override
     public void renderText(PoseStack matrixStack, float maxLength, boolean bottom, Component... textLines) {
-
+        float lineOffset = 0;
+        for (int i = 0; i < textLines.length; ++i) {
+            int len = minecraft.font.width(textLines[i]);
+            float scale = len / maxLength;
+            if (scale > 1) {
+                matrixStack.scale(1/ scale, 1/scale, 0);
+            }
+            minecraft.font.drawShadow(matrixStack, textLines[i], len < maxLength ? (maxLength - len) / 2 : 0, lineOffset, 0xFFFFFF);
+            if (scale > 1) {
+                matrixStack.scale( scale, scale, 0);
+                lineOffset += scale * minecraft.font.lineHeight;
+            } else {
+                lineOffset += minecraft.font.lineHeight;
+            }
+        }
     }
 
 }

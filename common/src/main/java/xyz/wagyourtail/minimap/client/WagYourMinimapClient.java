@@ -9,7 +9,7 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import xyz.wagyourtail.minimap.WagYourMinimap;
 import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
-import xyz.wagyourtail.minimap.client.gui.renderer.SquareMapRenderer;
+import xyz.wagyourtail.minimap.client.gui.renderer.SquareMapNoRotRenderer;
 import xyz.wagyourtail.minimap.scanner.updater.BlockUpdateStrategy;
 import xyz.wagyourtail.minimap.scanner.updater.ChunkLoadStrategy;
 
@@ -23,7 +23,7 @@ public class WagYourMinimapClient extends WagYourMinimap {
     public static void init() {
         MinimapClientApi.getInstance();
         try {
-            MinimapClientApi.inGameHud.setRenderer(SquareMapRenderer.class);
+            MinimapClientApi.inGameHud.setRenderer(SquareMapNoRotRenderer.class);
         } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
         }
