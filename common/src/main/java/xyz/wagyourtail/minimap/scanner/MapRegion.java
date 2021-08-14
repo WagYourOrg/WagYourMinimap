@@ -40,7 +40,7 @@ public class MapRegion implements AutoCloseable {
     public synchronized void setChunkData(int index, LazyResolver<ChunkData> newData) {
         if (data[index] != null) {
             ChunkData oldData = data[index].getNowUnsafe();
-            if (oldData != newData.getNowUnsafe()) {
+            if (oldData != null && oldData != newData.getNowUnsafe()) {
                 oldData.close();
             }
             data[index] = newData;
