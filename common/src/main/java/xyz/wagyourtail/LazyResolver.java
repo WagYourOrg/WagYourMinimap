@@ -109,6 +109,10 @@ public class LazyResolver<U> {
         return result;
     }
 
+    public U getNowUnsafe() {
+        return result;
+    }
+
     public U orElse(U value) {
         if (done) return result;
         synchronized (this) {

@@ -13,7 +13,7 @@ public abstract class AbstractImageStrategy {
     protected static final Minecraft minecraft = Minecraft.getInstance();
 
     public synchronized LazyResolver<ThreadsafeDynamicTexture> getImage(ChunkLocation key) throws ExecutionException {
-        LazyResolver<ChunkData> data = key.level().getRegion(key.region()).data[key.index()];
+        LazyResolver<ChunkData> data = key.level().getRegion(key.region()).getChunk(key.index());
         try {
             if (data != null) {
                 ChunkData resolved = data.resolveAsync(0);

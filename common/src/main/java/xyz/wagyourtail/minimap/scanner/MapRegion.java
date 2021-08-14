@@ -18,14 +18,36 @@ public class MapRegion implements AutoCloseable {
     public static final int REGION_SQUARE_SIZE = 1024;
     public final MapLevel parent;
     public final MapLevel.Pos position;
-    public final LazyResolver<ChunkData>[] data = new LazyResolver[REGION_SQUARE_SIZE];
+    private final LazyResolver<ChunkData>[] data = new LazyResolver[REGION_SQUARE_SIZE];
 
     public MapRegion(MapLevel parent, MapLevel.Pos pos) {
         this.parent = parent;
         this.position = pos;
     }
 
-    public void readRegion(Path file) throws IOException {
+    public synchronized LazyResolver<ChunkData> getChunk(int chunkX, int chunkZ) {
+        return getChunk(chunkPosToIndex(chunkX, chunkZ));
+    }
+
+    public synchronized LazyResolver<ChunkData> getChunk(int index) {
+        if (data[index] == null) return new LazyResolver<>((ChunkData) null);
+        return data[index];
+    }
+
+    public synchronized void setChunkData(int chunkX, int chunkZ, LazyResolver<ChunkData> newData) {
+        setChunkData(chunkPosToIndex(chunkX, chunkZ), newData);
+    }
+    public synchronized void setChunkData(int index, LazyResolver<ChunkData> newData) {
+        if (data[index] != null) {
+            ChunkData oldData = data[index].getNowUnsafe();
+            if (oldData != newData.getNowUnsafe()) {
+                oldData.close();
+            }
+            data[index] = newData;
+        }
+    }
+
+    public synchronized void readRegion(Path file) throws IOException {
         ZipChunk[] zipData = new ZipChunk[REGION_SQUARE_SIZE];
         try (ZipFile zf = new ZipFile(file.toFile())) {
             Enumeration<? extends ZipEntry> entries = zf.entries();
@@ -62,7 +84,7 @@ public class MapRegion implements AutoCloseable {
         }
     }
 
-    public void writeRegion(Path file) throws IOException {
+    public synchronized void writeRegion(Path file) throws IOException {
         Path tempFile = file.getParent().resolve(file.getName(file.getNameCount() - 1) + ".tmp");
         try (FileOutputStream fos = new FileOutputStream(tempFile.toFile())) {
             try (ZipOutputStream zos = new ZipOutputStream(fos)) {

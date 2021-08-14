@@ -128,9 +128,11 @@ public class ChunkData implements AutoCloseable {
 
     public synchronized <T> LazyResolver<T> computeDerivitive(String key, Supplier<T> supplier) {
         //chunk is closed???
-        if (derrivitives == null) {
-            new Error().printStackTrace();
-            firstClose.printStackTrace();
+        if (derrivitives instanceof ImmutableMap) {
+            Derivitive<T> der = (Derivitive<T>) derrivitives.get(key);
+            if (der != null) {
+                return der.contained;
+            }
             return null;
         }
         Derivitive<T> der = (Derivitive<T>) derrivitives.computeIfAbsent(key, (k) -> new Derivitive<>(false, new LazyResolver<>(supplier)));
@@ -142,12 +144,6 @@ public class ChunkData implements AutoCloseable {
 
     @Override
     public synchronized void close() {
-        //double close????
-        if (derrivitives == null) {
-            new Error().printStackTrace();
-            firstClose.printStackTrace();
-            return;
-        }
         firstClose = new Error();
         derrivitives.forEach((k,v) -> {
             if (v.contained instanceof AutoCloseable) {
@@ -158,18 +154,18 @@ public class ChunkData implements AutoCloseable {
                 }
             }
         });
-        derrivitives = null;
+        derrivitives = ImmutableMap.copyOf(derrivitives);
     }
 
     public void copyDerivatives(ChunkData old) {
-        this.derrivitives.putAll(old.getDerivativesAsOldAndClear());
+        this.derrivitives.putAll(old.getDerivativesAsOldAndClose());
     }
 
-    private synchronized Map<String, Derivitive<?>> getDerivativesAsOldAndClear() {
+    private synchronized Map<String, Derivitive<?>> getDerivativesAsOldAndClose() {
         if (derrivitives == null) return ImmutableMap.of();
         Map<String, Derivitive<?>> derivitiveMap = ImmutableMap.copyOf(derrivitives);
         derivitiveMap.forEach((k,v) -> v.old = true);
-        derrivitives.clear();
+        this.close();
         return derivitiveMap;
     }
 

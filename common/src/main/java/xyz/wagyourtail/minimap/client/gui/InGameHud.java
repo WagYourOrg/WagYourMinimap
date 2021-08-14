@@ -75,7 +75,7 @@ public class InGameHud extends AbstractMapGui {
             MapLevel level = MinimapClientApi.getInstance().getCurrentLevel();
             if (level == null) return;
             MapRegion region = level.getRegion(new MapLevel.Pos(chunkX >> 5, chunkZ >> 5));
-            LazyResolver<ChunkData> cdata = region.data[MapRegion.chunkPosToIndex(chunkX, chunkZ)];
+            LazyResolver<ChunkData> cdata = region.getChunk(MapRegion.chunkPosToIndex(chunkX, chunkZ));
             if (cdata == null) return;
             ChunkData chunk = cdata.resolveAsync(0);
             if (chunk != null) {

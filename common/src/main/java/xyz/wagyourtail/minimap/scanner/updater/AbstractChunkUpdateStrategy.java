@@ -24,14 +24,15 @@ public abstract class AbstractChunkUpdateStrategy {
         }
         try {
             MapRegion region = currentLevel.getRegion(regionPos);
+            LazyResolver<ChunkData> newResolver;
             synchronized (region) {
-                LazyResolver<ChunkData> oldData = region.data[chunkIndex];
+                LazyResolver<ChunkData> oldData = region.getChunk(chunkIndex);
                 if (oldData == null) {
-                    region.data[chunkIndex] = new LazyResolver<>(() -> newChunkDataCreator.apply(region, null));
+                    region.setChunkData(chunkIndex, newResolver = new LazyResolver<>(() -> newChunkDataCreator.apply(region, null)));
                 } else {
-                    region.data[chunkIndex] = oldData.then(od -> newChunkDataCreator.apply(region, od), true);
+                    region.setChunkData(chunkIndex, newResolver = oldData.then(od -> newChunkDataCreator.apply(region, od), true));
                 }
-                MinimapEvents.CHUNK_UPDATED.invoker().onChunkUpdated(region, chunkIndex, region.data[chunkIndex], oldData, this.getClass());
+                MinimapEvents.CHUNK_UPDATED.invoker().onChunkUpdated(region, chunkIndex, newResolver, oldData, this.getClass());
             }
         } catch (ExecutionException e) {
             e.printStackTrace();
