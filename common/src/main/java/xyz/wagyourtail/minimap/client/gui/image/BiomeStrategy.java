@@ -5,7 +5,8 @@ import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.biome.Biome;
 import xyz.wagyourtail.minimap.client.gui.ThreadsafeDynamicTexture;
-import xyz.wagyourtail.minimap.scanner.ChunkData;
+import xyz.wagyourtail.minimap.data.ChunkData;
+import xyz.wagyourtail.minimap.data.ChunkLocation;
 
 public class BiomeStrategy extends AbstractImageStrategy {
     private int colorForBiome(ResourceLocation biome, Registry<Biome> registry) {
@@ -13,7 +14,7 @@ public class BiomeStrategy extends AbstractImageStrategy {
         return 0;
     }
     @Override
-    public ThreadsafeDynamicTexture load(ChunkData data) {
+    public ThreadsafeDynamicTexture load(ChunkLocation location, ChunkData data) {
         assert minecraft.level != null;
         Registry<Biome> biomeRegistry = minecraft.level.registryAccess().registryOrThrow(Registry.BIOME_REGISTRY);
         NativeImage image = new NativeImage(16, 16, false);

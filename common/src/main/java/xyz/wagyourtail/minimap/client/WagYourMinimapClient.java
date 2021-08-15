@@ -10,8 +10,8 @@ import net.minecraft.client.Minecraft;
 import xyz.wagyourtail.minimap.WagYourMinimap;
 import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
 import xyz.wagyourtail.minimap.client.gui.renderer.SquareMapNoRotRenderer;
-import xyz.wagyourtail.minimap.scanner.updater.BlockUpdateStrategy;
-import xyz.wagyourtail.minimap.scanner.updater.ChunkLoadStrategy;
+import xyz.wagyourtail.minimap.data.updater.BlockUpdateStrategy;
+import xyz.wagyourtail.minimap.data.updater.ChunkLoadStrategy;
 
 import java.lang.reflect.InvocationTargetException;
 

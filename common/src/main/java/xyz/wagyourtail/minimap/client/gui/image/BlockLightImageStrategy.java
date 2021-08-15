@@ -2,7 +2,8 @@ package xyz.wagyourtail.minimap.client.gui.image;
 
 import com.mojang.blaze3d.platform.NativeImage;
 import xyz.wagyourtail.minimap.client.gui.ThreadsafeDynamicTexture;
-import xyz.wagyourtail.minimap.scanner.ChunkData;
+import xyz.wagyourtail.minimap.data.ChunkData;
+import xyz.wagyourtail.minimap.data.ChunkLocation;
 
 import java.awt.*;
 
@@ -22,7 +23,7 @@ public class BlockLightImageStrategy extends AbstractImageStrategy {
     }
 
     @Override
-    public ThreadsafeDynamicTexture load(ChunkData key) {
+    public ThreadsafeDynamicTexture load(ChunkLocation location, ChunkData key) {
         NativeImage image = new NativeImage(16, 16, false);
         for (int i = 0; i < 256; ++i) {
             int x = (i >> 4) % 16;

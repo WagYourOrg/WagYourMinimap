@@ -1,4 +1,4 @@
-package xyz.wagyourtail.minimap.scanner.updater;
+package xyz.wagyourtail.minimap.data.updater;
 
 import dev.architectury.event.Event;
 import dev.architectury.event.EventFactory;
@@ -9,19 +9,12 @@ import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.levelgen.Heightmap;
-import xyz.wagyourtail.minimap.api.MinimapApi;
-import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
-import xyz.wagyourtail.minimap.client.gui.image.AbstractImageStrategy;
-import xyz.wagyourtail.minimap.scanner.ChunkData;
-import xyz.wagyourtail.minimap.scanner.MapLevel;
-import xyz.wagyourtail.minimap.scanner.MapRegion;
-
-import java.util.concurrent.ExecutionException;
+import xyz.wagyourtail.minimap.data.ChunkData;
 
 public class BlockUpdateStrategy extends AbstractChunkUpdateStrategy {
     public static final Event<BlockUpdate> BLOCK_UPDATE_EVENT = EventFactory.createLoop();
 
-    public ChunkData updateChunkData(Level level, BlockPos pos, ChunkData data, AbstractImageStrategy.ChunkLocation loc) {
+    public ChunkData updateChunkData(Level level, BlockPos pos, ChunkData data) {
         if (data == null) return null;
         BlockPos.MutableBlockPos blockPos = new BlockPos.MutableBlockPos(pos.getX(), 0, pos.getZ());
         int index = ChunkData.blockPosToIndex(pos);
@@ -51,7 +44,7 @@ public class BlockUpdateStrategy extends AbstractChunkUpdateStrategy {
         return data;
     }
 
-    public void updateNeighborLighting(Level level, int chunkX, int chunkZ) throws ExecutionException {
+    public void updateNeighborLighting(Level level, int chunkX, int chunkZ) {
         for (int i = chunkX - 1; i < chunkX + 2; ++i) {
             for (int j = chunkZ - 1; j < chunkZ + 2; ++j) {
                 if (i == chunkX && j == chunkZ) continue;
@@ -59,11 +52,8 @@ public class BlockUpdateStrategy extends AbstractChunkUpdateStrategy {
                     int finalI = i;
                     int finalJ = j;
                     updateChunk(
-                        MinimapApi.getInstance().getServerName(),
-                        MinimapClientApi.getInstance().getLevelName(level),
                         level,
-                        new MapLevel.Pos(i >> 5, j >> 5),
-                        MapRegion.chunkPosToIndex(i, j),
+                        getChunkLocation(level, chunkX, chunkZ),
                         (region, chunkData) -> updateLighting(level, chunkData, finalI, finalJ)
                     );
                 }
@@ -95,15 +85,11 @@ public class BlockUpdateStrategy extends AbstractChunkUpdateStrategy {
         BLOCK_UPDATE_EVENT.register((pos, level) -> {
             int chunkX = pos.getX() >> 4;
             int chunkZ = pos.getZ() >> 4;
-            MapLevel.Pos regionPos = new MapLevel.Pos(chunkX >> 5, chunkZ >> 5);
             try {
                 updateChunk(
-                    MinimapApi.getInstance().getServerName(),
-                    MinimapClientApi.getInstance().getLevelName(level),
                     level,
-                    regionPos,
-                    MapRegion.chunkPosToIndex(chunkX, chunkZ),
-                    ((region, chunkData) -> updateChunkData(level, pos, chunkData, new AbstractImageStrategy.ChunkLocation(region.parent, regionPos, MapRegion.chunkPosToIndex(chunkX, chunkZ))))
+                    getChunkLocation(level, chunkX, chunkZ),
+                    ((location, chunkData) -> updateChunkData(level, pos, chunkData))
                 );
                 updateNeighborLighting(level, chunkX, chunkZ);
             } catch (Exception e) {

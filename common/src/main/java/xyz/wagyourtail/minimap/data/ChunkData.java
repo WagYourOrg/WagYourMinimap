@@ -1,5 +1,6 @@
-package xyz.wagyourtail.minimap.scanner;
+package xyz.wagyourtail.minimap.data;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
@@ -17,7 +18,6 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
 public class ChunkData implements AutoCloseable {
-    public final MapRegion parent;
     private Map<String, Derivitive<?>> derrivitives = new HashMap<>();
     public long updateTime;
 
@@ -33,82 +33,7 @@ public class ChunkData implements AutoCloseable {
 
     private final List<ResourceLocation> resources = new ArrayList<>();
 
-    public ChunkData(MapRegion parent) {
-        this.parent = parent;
-    }
-    
-    public synchronized ChunkData loadFromDisk(ZipFile file, MapRegion.ZipChunk chunk) {
-        try (InputStream stream = file.getInputStream(chunk.data)) {
-            ByteBuffer data = ByteBuffer.wrap(stream.readAllBytes());
-            data.rewind();
-            this.updateTime = data.getLong();
-            for (int i = 0; i < 256; ++i) {
-                heightmap[i] = data.getInt();
-            }
-            for (int i = 0; i < 256; ++i) {
-                blocklight[i] = data.get();
-            }
-            for (int i = 0; i < 256; ++i) {
-                blockid[i] = data.getInt();
-            }
-            for (int i = 0; i < 256; ++i) {
-                biomeid[i] = data.getInt();
-            }
-            for (int i = 0; i < 256; ++i) {
-                oceanFloorHeightmap[i] = data.getInt();
-            }
-            for (int i = 0; i < 256; ++i) {
-                oceanFloorBlockid[i] = data.getInt();
-            }
-            for (int i = 0; i < 256; ++i) {
-                oceanFloorBiomeid[i] = data.getInt();
-            }
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-        try (InputStream stream = file.getInputStream(chunk.resources)) {
-            for (String resource : new String(stream.readAllBytes()).split("\n")) {
-                resources.add(new ResourceLocation(resource));
-            }
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-        return this;
-    }
-
-    public synchronized void writeToZip(ZipOutputStream out, String pos_slug) {
-        try {
-            ByteBuffer data = ByteBuffer.allocate(Long.BYTES + Integer.BYTES * 256 * 6 + Byte.BYTES * 256);
-            data.putLong(updateTime);
-            for (int i = 0; i < 256; ++i) {
-                data.putInt(heightmap[i]);
-            }
-            for (int i = 0; i < 256; ++i) {
-                data.put(blocklight[i]);
-            }
-            for (int i = 0; i < 256; ++i) {
-                data.putInt(blockid[i]);
-            }
-            for (int i = 0; i < 256; ++i) {
-                data.putInt(biomeid[i]);
-            }
-            for (int i = 0; i < 256; ++i) {
-                data.putInt(oceanFloorHeightmap[i]);
-            }
-            for (int i = 0; i < 256; ++i) {
-                data.putInt(oceanFloorBlockid[i]);
-            }
-            for (int i = 0; i < 256; ++i) {
-                data.putInt(oceanFloorBiomeid[i]);
-            }
-            out.putNextEntry(new ZipEntry(pos_slug + ".data"));
-            out.write(data.array());
-            String resources = this.resources.stream().map(ResourceLocation::toString).reduce("", (a, b) -> a + b + "\n");
-            out.putNextEntry(new ZipEntry(pos_slug + ".resources"));
-            out.write(resources.getBytes(StandardCharsets.UTF_8));
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
+    public ChunkData() {
     }
 
     public synchronized int getOrRegisterResourceLocation(ResourceLocation id) {
@@ -124,6 +49,10 @@ public class ChunkData implements AutoCloseable {
 
     public synchronized ResourceLocation getResourceLocation(@Range(from = 1, to = Integer.MAX_VALUE) int i) {
         return resources.get(i - 1);
+    }
+
+    public synchronized List<ResourceLocation> getResources() {
+        return ImmutableList.copyOf(resources);
     }
 
     public synchronized <T> LazyResolver<T> computeDerivitive(String key, Supplier<T> supplier) {

@@ -7,7 +7,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import xyz.wagyourtail.minimap.scanner.updater.BlockUpdateStrategy;
+import xyz.wagyourtail.minimap.data.updater.BlockUpdateStrategy;
 
 @Mixin(Level.class)
 public class MixinLevel {

@@ -4,8 +4,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import dev.architectury.platform.Platform;
 import net.minecraft.world.level.Level;
-import xyz.wagyourtail.minimap.scanner.MapLevel;
-import xyz.wagyourtail.minimap.scanner.updater.AbstractChunkUpdateStrategy;
+import xyz.wagyourtail.minimap.data.MapLevel;
+import xyz.wagyourtail.minimap.data.updater.AbstractChunkUpdateStrategy;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -18,7 +18,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MinimapApi {
+public abstract class MinimapApi {
     protected static MinimapApi INSTANCE;
 
     protected final Map<Class<? extends AbstractChunkUpdateStrategy>, AbstractChunkUpdateStrategy> chunkUpdateStrategies = new HashMap<>();
@@ -31,7 +31,6 @@ public class MinimapApi {
     protected WagYourMinimapConfig config = null;
 
     public static MinimapApi getInstance() {
-        if (INSTANCE == null) INSTANCE = new MinimapApi();
         return INSTANCE;
     }
 

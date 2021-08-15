@@ -1,4 +1,4 @@
-package xyz.wagyourtail.minimap.scanner.updater;
+package xyz.wagyourtail.minimap.data.updater;
 
 import dev.architectury.event.Event;
 import dev.architectury.event.EventFactory;
@@ -12,18 +12,14 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.levelgen.Heightmap;
-import xyz.wagyourtail.minimap.api.MinimapApi;
-import xyz.wagyourtail.minimap.client.gui.image.AbstractImageStrategy;
-import xyz.wagyourtail.minimap.scanner.ChunkData;
-import xyz.wagyourtail.minimap.scanner.MapLevel;
-import xyz.wagyourtail.minimap.scanner.MapRegion;
+import xyz.wagyourtail.minimap.data.ChunkData;
 
 public class ChunkLoadStrategy extends AbstractChunkUpdateStrategy {
 
     public static Event<Load> LOAD = EventFactory.createLoop();
 
-    public synchronized ChunkData loadFromChunk(ChunkAccess chunk, Level level, MapRegion parent, ChunkData oldData, AbstractImageStrategy.ChunkLocation loc) {
-        ChunkData data = new ChunkData(parent);
+    public synchronized ChunkData loadFromChunk(ChunkAccess chunk, Level level, ChunkData oldData) {
+        ChunkData data = new ChunkData();
         data.updateTime = System.currentTimeMillis();
         ChunkPos pos = chunk.getPos();
         BlockPos.MutableBlockPos blockPos = new BlockPos.MutableBlockPos();
@@ -52,17 +48,11 @@ public class ChunkLoadStrategy extends AbstractChunkUpdateStrategy {
     @Override
     protected void registerEventListener() {
         LOAD.register((chunk, level) -> {
-            String server_slug = MinimapApi.getInstance().getServerName();
-            String level_slug = MinimapApi.getInstance().getLevelName(level);
             ChunkPos pos = chunk.getPos();
-            int index = MapRegion.chunkPosToIndex(pos);
-            MapLevel.Pos region_pos = new MapLevel.Pos(pos.getRegionX(), pos.getRegionZ());
-            updateChunk(server_slug,
-                level_slug,
+            updateChunk(
                 level,
-                region_pos,
-                index,
-                (region, oldData) -> loadFromChunk(chunk, level, region, oldData, new AbstractImageStrategy.ChunkLocation(region.parent, region_pos, index))
+                getChunkLocation(level, pos),
+                (region, oldData) -> loadFromChunk(chunk, level, oldData)
             );
         });
     }

@@ -9,9 +9,9 @@ import org.jetbrains.annotations.NotNull;
 import xyz.wagyourtail.LazyResolver;
 import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
 import xyz.wagyourtail.minimap.client.gui.image.VanillaMapImageStrategy;
-import xyz.wagyourtail.minimap.scanner.ChunkData;
-import xyz.wagyourtail.minimap.scanner.MapLevel;
-import xyz.wagyourtail.minimap.scanner.MapRegion;
+import xyz.wagyourtail.minimap.data.ChunkData;
+import xyz.wagyourtail.minimap.data.ChunkLocation;
+import xyz.wagyourtail.minimap.data.MapLevel;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
@@ -74,8 +74,7 @@ public class InGameHud extends AbstractMapGui {
         try {
             MapLevel level = MinimapClientApi.getInstance().getCurrentLevel();
             if (level == null) return;
-            MapRegion region = level.getRegion(new MapLevel.Pos(chunkX >> 5, chunkZ >> 5));
-            LazyResolver<ChunkData> cdata = region.getChunk(MapRegion.chunkPosToIndex(chunkX, chunkZ));
+            LazyResolver<ChunkData> cdata = level.getChunk(ChunkLocation.locationForChunkPos(level, chunkX, chunkZ));
             if (cdata == null) return;
             ChunkData chunk = cdata.resolveAsync(0);
             if (chunk != null) {

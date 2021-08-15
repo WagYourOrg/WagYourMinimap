@@ -8,7 +8,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Blocks;
 import xyz.wagyourtail.minimap.client.gui.ThreadsafeDynamicTexture;
-import xyz.wagyourtail.minimap.scanner.ChunkData;
+import xyz.wagyourtail.minimap.data.ChunkData;
+import xyz.wagyourtail.minimap.data.ChunkLocation;
 
 import java.awt.*;
 import java.util.Set;
@@ -61,10 +62,10 @@ public class VanillaMapImageStrategy extends AbstractImageStrategy {
 
 
     @Override
-    public ThreadsafeDynamicTexture load(ChunkData data) {
+    public ThreadsafeDynamicTexture load(ChunkLocation location, ChunkData data) {
         NativeImage image = new NativeImage(16, 16, false);
-        int min = data.parent.parent.minHeight;
-        int max = data.parent.parent.maxHeight;
+        int min = location.level().minHeight;
+        int max = location.level().maxHeight;
         int height = max - min;
         assert minecraft.level != null;
         Registry<Biome> biomeRegistry = minecraft.level.registryAccess().registryOrThrow(Registry.BIOME_REGISTRY);

@@ -1,7 +1,6 @@
 package xyz.wagyourtail;
 
 import org.jetbrains.annotations.NotNull;
-import xyz.wagyourtail.minimap.client.gui.ThreadsafeDynamicTexture;
 
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
