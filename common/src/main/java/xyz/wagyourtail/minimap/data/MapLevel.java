@@ -1,9 +1,6 @@
 package xyz.wagyourtail.minimap.data;
 
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
-import com.google.common.cache.RemovalNotification;
+import com.google.common.cache.*;
 import xyz.wagyourtail.LazyResolver;
 import xyz.wagyourtail.minimap.WagYourMinimap;
 import xyz.wagyourtail.minimap.api.MinimapApi;
@@ -33,6 +30,7 @@ public class MapLevel extends CacheLoader<ChunkLocation, LazyResolver<ChunkData>
     public void onRegionRemoved(RemovalNotification<ChunkLocation, LazyResolver<ChunkData>> notification) {
         WagYourMinimap.LOGGER.debug("expiring region {} from map cache", notification.getKey());
         try {
+            if (notification.getCause() == RemovalCause.REPLACED) return;
             new LazyResolver<>(() -> {
                 ChunkData data = notification.getValue().resolve();
                 if (data != null) {

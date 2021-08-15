@@ -78,6 +78,10 @@ public class LazyResolver<U> {
                     }
                 }
 
+                if (previous != null && newResult != previous.result) {
+                    previous.close();
+                }
+
                 //after result to make optimistic not break,
                 done = true;
             }
@@ -107,7 +111,9 @@ public class LazyResolver<U> {
         // don't synchronize on "this" so it doesn't jam when resolve() is running. so since I don't want to make any extra object fields, this was the only one left we weren't using
         if (maxWaitTimeMS > 0) {
             synchronized (supplier) {
-                supplier.wait(maxWaitTimeMS);
+                if (!this.done) {
+                    supplier.wait(maxWaitTimeMS);
+                }
             }
         }
         return result;
