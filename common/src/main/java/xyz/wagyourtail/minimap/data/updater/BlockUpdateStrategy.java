@@ -47,12 +47,11 @@ public class BlockUpdateStrategy extends AbstractChunkUpdateStrategy {
     public void updateNeighborLighting(Level level, int chunkX, int chunkZ) {
         for (int i = chunkX - 1; i < chunkX + 2; ++i) {
             for (int j = chunkZ - 1; j < chunkZ + 2; ++j) {
-                if (i == chunkX && j == chunkZ) continue;
                 if (level.hasChunk(i, j)) {
                     int finalI = i;
                     int finalJ = j;
                     updateChunk(
-                        getChunkLocation(level, chunkX, chunkZ),
+                        getChunkLocation(level, finalI, finalJ),
                         (region, chunkData) -> updateLighting(level, chunkData, finalI, finalJ)
                     );
                 }
