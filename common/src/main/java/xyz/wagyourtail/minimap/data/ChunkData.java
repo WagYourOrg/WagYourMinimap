@@ -5,17 +5,13 @@ import com.google.common.collect.ImmutableMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Range;
-import xyz.wagyourtail.LazyResolver;
+import xyz.wagyourtail.ResolveQueue;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Supplier;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
-import java.util.zip.ZipOutputStream;
 
 public class ChunkData implements AutoCloseable {
     private Map<String, Derivitive<?>> derrivitives = new HashMap<>();
@@ -55,7 +51,7 @@ public class ChunkData implements AutoCloseable {
         return ImmutableList.copyOf(resources);
     }
 
-    public synchronized <T> LazyResolver<T> computeDerivitive(String key, Supplier<T> supplier) {
+    public synchronized <T> ResolveQueue<T> computeDerivitive(String key, Supplier<T> supplier) {
         //chunk is closed???
         if (derrivitives instanceof ImmutableMap) {
             Derivitive<T> der = (Derivitive<T>) derrivitives.get(key);
@@ -64,8 +60,11 @@ public class ChunkData implements AutoCloseable {
             }
             return null;
         }
-        Derivitive<T> der = (Derivitive<T>) derrivitives.computeIfAbsent(key, (k) -> new Derivitive<>(false, new LazyResolver<>(supplier)));
-        if (der.old) derrivitives.put(key, new Derivitive<>(false, der.contained.then(old -> supplier.get(), true)));
+        Derivitive<T> der = (Derivitive<T>) derrivitives.computeIfAbsent(key, (k) -> new Derivitive<>(false, new ResolveQueue<>((n) -> supplier.get())));
+        if (der.old) {
+            der.old = false;
+            der.contained.addTask(old -> supplier.get());
+        }
         return der.contained;
     }
 
@@ -113,8 +112,8 @@ public class ChunkData implements AutoCloseable {
 
     public static class Derivitive<T>{
         public boolean old;
-        public final LazyResolver<T> contained;
-        Derivitive(boolean old, LazyResolver<T> contained) {
+        public final ResolveQueue<T> contained;
+        Derivitive(boolean old, ResolveQueue<T> contained) {
             this.old = old;
             this.contained = contained;
         }

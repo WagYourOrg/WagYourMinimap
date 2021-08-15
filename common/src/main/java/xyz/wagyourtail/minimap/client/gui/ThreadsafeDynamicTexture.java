@@ -17,7 +17,7 @@ public class ThreadsafeDynamicTexture extends AbstractTexture {
     @Nullable
     private NativeImage pixels;
 
-    public ThreadsafeDynamicTexture(NativeImage nativeImage) {
+    public ThreadsafeDynamicTexture(@Nullable NativeImage nativeImage) {
         this.pixels = nativeImage;
         if (!RenderSystem.isOnRenderThread()) {
             RenderSystem.recordRenderCall(() -> {
@@ -43,6 +43,7 @@ public class ThreadsafeDynamicTexture extends AbstractTexture {
         TextureUtil.prepareImage(this.getId(), this.pixels.getWidth(), this.pixels.getHeight());
     }
 
+    @Override
     public void load(ResourceManager manager) {
     }
 
@@ -82,6 +83,7 @@ public class ThreadsafeDynamicTexture extends AbstractTexture {
         }
     }
 
+    @Override
     public synchronized void close() {
         CompletableFuture.runAsync(() -> {
             synchronized (this) {

@@ -6,15 +6,12 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
-import xyz.wagyourtail.LazyResolver;
+import xyz.wagyourtail.ResolveQueue;
 import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
 import xyz.wagyourtail.minimap.client.gui.image.VanillaMapImageStrategy;
 import xyz.wagyourtail.minimap.data.ChunkData;
 import xyz.wagyourtail.minimap.data.ChunkLocation;
 import xyz.wagyourtail.minimap.data.MapLevel;
-
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
 
 public class InGameHud extends AbstractMapGui {
 
@@ -71,28 +68,24 @@ public class InGameHud extends AbstractMapGui {
         int chunkX = ((int) player.x) >> 4;
         int chunkZ = ((int) player.z) >> 4;
 
-        try {
-            MapLevel level = MinimapClientApi.getInstance().getCurrentLevel();
-            if (level == null) return;
-            LazyResolver<ChunkData> cdata = level.getChunk(ChunkLocation.locationForChunkPos(level, chunkX, chunkZ));
-            if (cdata == null) return;
-            ChunkData chunk = cdata.resolveAsync(0);
-            if (chunk != null) {
-                String[] debugInfo = {
-                    chunk.getResourceLocation(chunk.blockid[ChunkData.blockPosToIndex(new BlockPos(player))]).toString(), // block
-                    chunk.getResourceLocation(chunk.biomeid[ChunkData.blockPosToIndex(new BlockPos(player))]).toString(), // biome
-                    String.format("%08x", VanillaMapImageStrategy.getBlockColor(chunk.getResourceLocation(chunk.blockid[ChunkData.blockPosToIndex(new BlockPos(player))]))), // block-color
-                };
-                for (int i = 0; i < debugInfo.length; ++i) {
-                    int width = client.font.width(debugInfo[i]);
-                    float xPos = MinimapClientApi.getInstance().getConfig().snapSide.right ? w - width - 5 : MinimapClientApi.getInstance().getConfig().snapSide.center ? w / 2f - width / 2f : 5;
-                    float yPos = MinimapClientApi.getInstance().getConfig().snapSide.bottom ? h - minimapSize - (client.font.lineHeight * (i + 1)) - 10 : minimapSize + 10 + client.font.lineHeight * (i + 1);
+        MapLevel level = MinimapClientApi.getInstance().getCurrentLevel();
+        if (level == null) return;
+        ResolveQueue<ChunkData> cdata = level.getChunk(ChunkLocation.locationForChunkPos(level, chunkX, chunkZ));
+        if (cdata == null) return;
+        ChunkData chunk = cdata.getNow();
+        if (chunk != null) {
+            String[] debugInfo = {
+                chunk.getResourceLocation(chunk.blockid[ChunkData.blockPosToIndex(new BlockPos(player))]).toString(), // block
+                chunk.getResourceLocation(chunk.biomeid[ChunkData.blockPosToIndex(new BlockPos(player))]).toString(), // biome
+                String.format("%08x", VanillaMapImageStrategy.getBlockColor(chunk.getResourceLocation(chunk.blockid[ChunkData.blockPosToIndex(new BlockPos(player))]))), // block-color
+            };
+            for (int i = 0; i < debugInfo.length; ++i) {
+                int width = client.font.width(debugInfo[i]);
+                float xPos = MinimapClientApi.getInstance().getConfig().snapSide.right ? w - width - 5 : MinimapClientApi.getInstance().getConfig().snapSide.center ? w / 2f - width / 2f : 5;
+                float yPos = MinimapClientApi.getInstance().getConfig().snapSide.bottom ? h - minimapSize - (client.font.lineHeight * (i + 1)) - 10 : minimapSize + 10 + client.font.lineHeight * (i + 1);
 
-                    client.font.draw(matrixStack, debugInfo[i], xPos, yPos, 0xFFFFFF);
-                }
+                client.font.draw(matrixStack, debugInfo[i], xPos, yPos, 0xFFFFFF);
             }
-        } catch (ExecutionException | InterruptedException | TimeoutException e) {
-            e.printStackTrace();
         }
     }
 

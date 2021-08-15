@@ -2,7 +2,7 @@ package xyz.wagyourtail.minimap.data.updater;
 
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
-import xyz.wagyourtail.LazyResolver;
+import xyz.wagyourtail.ResolveQueue;
 import xyz.wagyourtail.minimap.api.MinimapApi;
 import xyz.wagyourtail.minimap.api.MinimapEvents;
 import xyz.wagyourtail.minimap.data.ChunkData;
@@ -17,12 +17,11 @@ public abstract class AbstractChunkUpdateStrategy {
         registerEventListener();
     }
 
-    protected void updateChunk(Level level, ChunkLocation location, BiFunction<ChunkLocation, ChunkData, ChunkData> newChunkDataCreator) {
-        LazyResolver<ChunkData> newResolver;
+    protected void updateChunk(ChunkLocation location, BiFunction<ChunkLocation, ChunkData, ChunkData> newChunkDataCreator) {
         synchronized (location.level()) {
-            LazyResolver<ChunkData> oldData = location.level().getChunk(location);
-            location.level().setChunk(location, newResolver = oldData.then(od -> newChunkDataCreator.apply(location, od), true));
-            MinimapEvents.CHUNK_UPDATED.invoker().onChunkUpdated(location, newResolver, oldData, this.getClass());
+            ResolveQueue<ChunkData> chunkData = location.level().getChunk(location);
+            location.level().setChunk(location, chunkData.addTask((od) -> newChunkDataCreator.apply(location, od)));
+            MinimapEvents.CHUNK_UPDATED.invoker().onChunkUpdated(location, chunkData, this.getClass());
         }
     }
 

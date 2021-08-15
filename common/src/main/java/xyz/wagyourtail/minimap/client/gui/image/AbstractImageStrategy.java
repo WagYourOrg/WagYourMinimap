@@ -1,30 +1,25 @@
 package xyz.wagyourtail.minimap.client.gui.image;
 
 import net.minecraft.client.Minecraft;
-import xyz.wagyourtail.LazyResolver;
+import xyz.wagyourtail.ResolveQueue;
 import xyz.wagyourtail.minimap.client.gui.ThreadsafeDynamicTexture;
 import xyz.wagyourtail.minimap.data.ChunkData;
 import xyz.wagyourtail.minimap.data.ChunkLocation;
 
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
 
 public abstract class AbstractImageStrategy {
     protected static final Minecraft minecraft = Minecraft.getInstance();
 
-    public synchronized LazyResolver<ThreadsafeDynamicTexture> getImage(ChunkLocation key) throws ExecutionException {
-        LazyResolver<ChunkData> data = key.level().getChunk(key);
-        try {
-            if (data != null) {
-                ChunkData resolved = data.resolveAsync(0);
-                if (resolved != null) {
-                    return resolved.computeDerivitive(this.getClass().getCanonicalName(), () -> this.load(key, resolved));
-                }
+    public synchronized ResolveQueue<ThreadsafeDynamicTexture> getImage(ChunkLocation key) throws ExecutionException {
+        ResolveQueue<ChunkData> data = key.level().getChunk(key);
+        if (data != null) {
+            ChunkData resolved = data.getNow();
+            if (resolved != null) {
+                return resolved.computeDerivitive(this.getClass().getCanonicalName(), () -> this.load(key, resolved));
             }
-        } catch (InterruptedException | TimeoutException e) {
-            e.printStackTrace();
         }
-        return new LazyResolver<>((ThreadsafeDynamicTexture) null);
+        return new ResolveQueue<>(null, null);
     }
 
     public abstract ThreadsafeDynamicTexture load(ChunkLocation location, ChunkData data);

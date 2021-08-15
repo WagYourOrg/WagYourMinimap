@@ -35,9 +35,9 @@ public class WagYourMinimapClient extends WagYourMinimap {
                 mc.setScreen(MinimapClientApi.getInstance().getConfig().getConfigScreen(null));
             }
         });
-        ClientPlayerEvent.CLIENT_PLAYER_QUIT.register((player) -> {
-            MinimapClientApi.getInstance().setCurrentLevel(null);
-        });
+        ClientPlayerEvent.CLIENT_PLAYER_QUIT.register((player) ->
+            MinimapClientApi.getInstance().setCurrentLevel(null)
+        );
 
         MinimapClientApi.getInstance().registerChunkUpdateStrategy(ChunkLoadStrategy.class);
         MinimapClientApi.getInstance().registerChunkUpdateStrategy(BlockUpdateStrategy.class);

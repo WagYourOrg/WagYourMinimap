@@ -50,7 +50,6 @@ public class ChunkLoadStrategy extends AbstractChunkUpdateStrategy {
         LOAD.register((chunk, level) -> {
             ChunkPos pos = chunk.getPos();
             updateChunk(
-                level,
                 getChunkLocation(level, pos),
                 (region, oldData) -> loadFromChunk(chunk, level, oldData)
             );

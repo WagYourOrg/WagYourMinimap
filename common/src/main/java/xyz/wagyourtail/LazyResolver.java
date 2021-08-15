@@ -8,6 +8,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+/**
+ * stack overflow in then makes it bad...
+ *
+ * @param <U>
+ */
+ @Deprecated
 public class LazyResolver<U> {
     private static final int availableThreads = Math.min(Math.max(1, Runtime.getRuntime().availableProcessors() - 1), 4);
     private static final ThreadPoolExecutor pool = new ThreadPoolExecutor(availableThreads, availableThreads, 0L, TimeUnit.NANOSECONDS, new LinkedBlockingQueue<>(), new ThreadFactory() {
@@ -148,11 +154,30 @@ public class LazyResolver<U> {
         return done;
     }
 
+    /**
+     * using it this way can cause stack overflow...
+     *
+     * @param then
+     * @param <V>
+     *
+     * @return
+     */
+    @Deprecated
     public <V> LazyResolver<V> then(Function<U, V> then) {
         return new LazyResolver<>(() -> then.apply(resolve()));
     }
 
+    /**
+     * @param then
+     * @param previous
+     *
+     * @return
+     */
+    @Deprecated
     public LazyResolver<U> then(Function<U, U> then, boolean previous) {
+        if (done) {
+            return previous ? new LazyResolver<>(() -> then.apply(result), this) : new LazyResolver<>(() -> then.apply(result));
+        }
         return previous ? new LazyResolver<>(() -> then.apply(resolve()), this) : new LazyResolver<>(() -> then.apply(resolve()));
     }
 

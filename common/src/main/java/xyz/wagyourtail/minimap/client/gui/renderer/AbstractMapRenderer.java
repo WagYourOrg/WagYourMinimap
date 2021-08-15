@@ -8,7 +8,7 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
-import xyz.wagyourtail.LazyResolver;
+import xyz.wagyourtail.ResolveQueue;
 import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
 import xyz.wagyourtail.minimap.client.gui.AbstractMapGui;
 import xyz.wagyourtail.minimap.client.gui.ThreadsafeDynamicTexture;
@@ -20,7 +20,6 @@ import xyz.wagyourtail.minimap.data.ChunkLocation;
 import xyz.wagyourtail.minimap.data.MapLevel;
 
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
 
 public abstract class AbstractMapRenderer {
     protected static final Minecraft minecraft = Minecraft.getInstance();
@@ -52,16 +51,16 @@ public abstract class AbstractMapRenderer {
     private static boolean bindChunkTex(ChunkLocation chunkData, AbstractImageStrategy renderer) {
         ThreadsafeDynamicTexture image;
         try {
-            LazyResolver<ThreadsafeDynamicTexture> lazyImage = renderer.getImage(chunkData);
+            ResolveQueue<ThreadsafeDynamicTexture> lazyImage = renderer.getImage(chunkData);
             if (lazyImage == null)
                 return false;
-            image = lazyImage.resolveAsync(0);
+            image = lazyImage.getNow();
             if (image == null)
                 return false;
             image.bind();
             RenderSystem.setShaderTexture(0, image.getId());
             return true;
-        } catch (ExecutionException | InterruptedException | TimeoutException e) {
+        } catch (ExecutionException e) {
             e.printStackTrace();
         }
         return false;

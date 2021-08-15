@@ -1,20 +1,19 @@
 package xyz.wagyourtail.minimap.data;
 
 import com.google.common.cache.*;
-import xyz.wagyourtail.LazyResolver;
-import xyz.wagyourtail.minimap.WagYourMinimap;
+import xyz.wagyourtail.ResolveQueue;
 import xyz.wagyourtail.minimap.api.MinimapApi;
 import xyz.wagyourtail.minimap.data.cache.AbstractCacher;
 import xyz.wagyourtail.minimap.data.cache.ZipCacher;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
-public class MapLevel extends CacheLoader<ChunkLocation, LazyResolver<ChunkData>> implements AutoCloseable {
+public class MapLevel extends CacheLoader<ChunkLocation, ResolveQueue<ChunkData>> implements AutoCloseable {
     public final String server_slug;
     public final String level_slug;
-    private LoadingCache<ChunkLocation, LazyResolver<ChunkData>> regionCache;
+    private LoadingCache<ChunkLocation, ResolveQueue<ChunkData>> regionCache;
     private static AbstractCacher[] cachers = new AbstractCacher[] {new ZipCacher()};
     public final int minHeight, maxHeight;
     private boolean closed = false;
@@ -27,23 +26,26 @@ public class MapLevel extends CacheLoader<ChunkLocation, LazyResolver<ChunkData>
         resizeCache(MinimapApi.getInstance().getConfig().regionCacheSize);
     }
 
-    public void onRegionRemoved(RemovalNotification<ChunkLocation, LazyResolver<ChunkData>> notification) {
-        WagYourMinimap.LOGGER.debug("expiring region {} from map cache", notification.getKey());
-        try {
-            if (notification.getCause() == RemovalCause.REPLACED) return;
-            new LazyResolver<>(() -> {
-                ChunkData data = notification.getValue().resolve();
-                if (data != null) {
-                    for (AbstractCacher cacher : cachers) {
-                        cacher.save(notification.getKey(), data);
-                    }
+    public void onRegionRemoved(RemovalNotification<ChunkLocation, ResolveQueue<ChunkData>> notification) {
+        if (notification.getCause() == RemovalCause.REPLACED) return;
+        CompletableFuture.runAsync(() -> {
+            ChunkData data = null;
+            try {
+                data = notification.getValue().get();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            if (data != null) {
+                for (AbstractCacher cacher : cachers) {
+                    cacher.save(notification.getKey(), data);
                 }
+            }
+            try {
                 notification.getValue().close();
-                return null;
-            }).resolveAsync(0);
-        } catch (ExecutionException | InterruptedException | TimeoutException e) {
-            e.printStackTrace();
-        }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     //wtf, why doesn't newBuilder do this method sig instead of just <Object, Object>
@@ -53,12 +55,12 @@ public class MapLevel extends CacheLoader<ChunkLocation, LazyResolver<ChunkData>
 
 
     public synchronized void resizeCache(long newCacheSize) {
-        CacheBuilder<ChunkLocation, LazyResolver<ChunkData>> builder = createCache()
+        CacheBuilder<ChunkLocation, ResolveQueue<ChunkData>> builder = createCache()
             .maximumSize(newCacheSize)
             .expireAfterAccess(60000, TimeUnit.MILLISECONDS)
             .removalListener(this::onRegionRemoved);
 
-        LoadingCache<ChunkLocation, LazyResolver<ChunkData>> oldCache = regionCache;
+        LoadingCache<ChunkLocation, ResolveQueue<ChunkData>> oldCache = regionCache;
         regionCache = builder.build(this);
         if (oldCache != null) {
             regionCache.putAll(oldCache.asMap());
@@ -72,7 +74,7 @@ public class MapLevel extends CacheLoader<ChunkLocation, LazyResolver<ChunkData>
         regionCache.cleanUp();
     }
 
-    public synchronized void setChunk(ChunkLocation location, LazyResolver<ChunkData> newData) {
+    public synchronized void setChunk(ChunkLocation location, ResolveQueue<ChunkData> newData) {
         regionCache.put(location, newData);
         if (closed) {
             regionCache.invalidateAll();
@@ -80,18 +82,18 @@ public class MapLevel extends CacheLoader<ChunkLocation, LazyResolver<ChunkData>
         }
     }
 
-    public synchronized LazyResolver<ChunkData> getChunk(ChunkLocation location) {
+    public synchronized ResolveQueue<ChunkData> getChunk(ChunkLocation location) {
         try {
             return regionCache.get(location);
         } catch (ExecutionException e) {
             e.printStackTrace();
         }
-        return new LazyResolver<>((ChunkData) null);
+        return new ResolveQueue<>(null, null);
     }
 
     @Override
-    public LazyResolver<ChunkData> load(ChunkLocation key) throws Exception {
-        return new LazyResolver<>(() -> {
+    public ResolveQueue<ChunkData> load(ChunkLocation key) throws Exception {
+        return new ResolveQueue<>((nullVal) -> {
             for (AbstractCacher cacher : cachers) {
                 ChunkData data = cacher.load(key);
                 if (data != null) return data;

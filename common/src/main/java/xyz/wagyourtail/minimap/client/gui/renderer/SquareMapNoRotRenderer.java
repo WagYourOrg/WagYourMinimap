@@ -87,15 +87,15 @@ public class SquareMapNoRotRenderer extends AbstractMapRenderer {
     @Override
     public void renderText(PoseStack matrixStack, float maxLength, boolean bottom, Component... textLines) {
         float lineOffset = 0;
-        for (int i = 0; i < textLines.length; ++i) {
-            int len = minecraft.font.width(textLines[i]);
+        for (Component textLine : textLines) {
+            int len = minecraft.font.width(textLine);
             float scale = len / maxLength;
             if (scale > 1) {
-                matrixStack.scale(1/ scale, 1/scale, 0);
+                matrixStack.scale(1 / scale, 1 / scale, 0);
             }
-            minecraft.font.drawShadow(matrixStack, textLines[i], len < maxLength ? (maxLength - len) / 2 : 0, lineOffset, 0xFFFFFF);
+            minecraft.font.drawShadow(matrixStack, textLine, len < maxLength ? (maxLength - len) / 2 : 0, lineOffset, 0xFFFFFF);
             if (scale > 1) {
-                matrixStack.scale( scale, scale, 0);
+                matrixStack.scale(scale, scale, 0);
                 lineOffset += scale * minecraft.font.lineHeight;
             } else {
                 lineOffset += minecraft.font.lineHeight;

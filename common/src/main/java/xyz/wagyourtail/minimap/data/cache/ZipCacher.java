@@ -12,18 +12,22 @@ import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class ZipCacher extends AbstractCacher {
+    private static final ReadWriteLock lock = new ReentrantReadWriteLock();
+
     private Path locationToPath(ChunkLocation location) {
         return MinimapApi.getInstance().configFolder.resolve(location.level().server_slug).resolve(location.level().level_slug).resolve(location.region().getString() + ".zip");
     }
 
     @Override
-    public synchronized ChunkData load(ChunkLocation location) {
+    public ChunkData load(ChunkLocation location) {
         Path zip = locationToPath(location);
-        if (!zip.toFile().exists()) return null;
+        lock.readLock().lock();
+        if (Files.notExists(zip)) return null;
         try (FileSystem zipfs = FileSystems.newFileSystem(zip)) {
             Path dataPath = zipfs.getPath(location.index() + ".data");
             Path resourcesPath = zipfs.getPath(location.index() + ".resources");
@@ -32,13 +36,16 @@ public class ZipCacher extends AbstractCacher {
             }
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            lock.readLock().unlock();
         }
         return null;
     }
 
     @Override
-    public synchronized void save(ChunkLocation location, ChunkData data) {
+    public void save(ChunkLocation location, ChunkData data) {
         Path zip = locationToPath(location);
+        lock.writeLock().lock();
         try {
             if (Files.notExists(zip.getParent())) Files.createDirectories(zip.getParent());
             try (FileSystem zipfs = FileSystems.newFileSystem(zip, Map.of("create", true))) {
@@ -48,6 +55,8 @@ public class ZipCacher extends AbstractCacher {
             }
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            lock.writeLock().unlock();
         }
     }
 

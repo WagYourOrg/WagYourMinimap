@@ -52,7 +52,6 @@ public class BlockUpdateStrategy extends AbstractChunkUpdateStrategy {
                     int finalI = i;
                     int finalJ = j;
                     updateChunk(
-                        level,
                         getChunkLocation(level, chunkX, chunkZ),
                         (region, chunkData) -> updateLighting(level, chunkData, finalI, finalJ)
                     );
@@ -87,7 +86,6 @@ public class BlockUpdateStrategy extends AbstractChunkUpdateStrategy {
             int chunkZ = pos.getZ() >> 4;
             try {
                 updateChunk(
-                    level,
                     getChunkLocation(level, chunkX, chunkZ),
                     ((location, chunkData) -> updateChunkData(level, pos, chunkData))
                 );
