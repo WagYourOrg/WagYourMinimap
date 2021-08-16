@@ -5,12 +5,12 @@ import xyz.wagyourtail.ResolveQueue;
 import xyz.wagyourtail.minimap.data.cache.AbstractCacher;
 import xyz.wagyourtail.minimap.data.cache.ZipCacher;
 
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
 public class MapLevel extends CacheLoader<ChunkLocation, ResolveQueue<ChunkData>> implements AutoCloseable {
+    public static final ThreadPoolExecutor pool = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.NANOSECONDS, new LinkedBlockingQueue<>());
     public final String server_slug;
     public final String level_slug;
     private final LoadingCache<ChunkLocation, ResolveQueue<ChunkData>> regionCache;
@@ -23,55 +23,39 @@ public class MapLevel extends CacheLoader<ChunkLocation, ResolveQueue<ChunkData>
         this.level_slug = level_slug;
         this.minHeight = minHeight;
         this.maxHeight = maxHeight;
-        CacheBuilder<ChunkLocation, ResolveQueue<ChunkData>> builder = createCache()
-            .expireAfterAccess(60000, TimeUnit.MILLISECONDS)
-            .removalListener(this::onRegionRemoved);
+        CacheBuilder<ChunkLocation, ResolveQueue<ChunkData>> builder = CacheBuilder.newBuilder()
+            .expireAfterAccess(60000, TimeUnit.MILLISECONDS).removalListener(e -> {
+                try {
+                    e.getValue().close();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            });
         regionCache = builder.build(this);
     }
 
-    public void onRegionRemoved(RemovalNotification<ChunkLocation, ResolveQueue<ChunkData>> notification) {
-        if (!closed) {
-            CompletableFuture.runAsync(() -> {
-                ChunkData data = null;
-                try {
-                    data = notification.getValue().get();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                if (data != null) {
-                    for (AbstractCacher cacher : cachers) {
-                        cacher.save(notification.getKey(), data);
-                    }
-                }
-                try {
-                    notification.getValue().close();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            });
-        } else {
-            ChunkData data = null;
-            try {
-                data = notification.getValue().get();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            if (data != null) {
+    private static final AtomicInteger saving = new AtomicInteger(0);
+
+    public void saveChunk(ChunkLocation location, ChunkData data) {
+        saving.incrementAndGet();
+        pool.execute(() -> {
+            innerRemove(location, data);
+            saving.decrementAndGet();
+        });
+    }
+
+    private void innerRemove(ChunkLocation location, ChunkData data) {
+        if (data != null) {
+            synchronized (data) {
                 for (AbstractCacher cacher : cachers) {
-                    cacher.save(notification.getKey(), data);
+                    cacher.save(location, data);
                 }
-            }
-            try {
-                notification.getValue().close();
-            } catch (Exception e) {
-                e.printStackTrace();
             }
         }
     }
 
-    //wtf, why doesn't newBuilder do this method sig instead of just <Object, Object>
-    private <K,V> CacheBuilder<K, V> createCache() {
-        return (CacheBuilder) CacheBuilder.newBuilder();
+    public static int getSaving() {
+        return saving.get();
     }
 
     @Override
@@ -92,12 +76,12 @@ public class MapLevel extends CacheLoader<ChunkLocation, ResolveQueue<ChunkData>
 
     @Override
     public ResolveQueue<ChunkData> load(ChunkLocation key) throws Exception {
-        return new ResolveQueue<>(null, ((Supplier<ChunkData>)() -> {
+        return new ResolveQueue<>((a) -> {
             for (AbstractCacher cacher : cachers) {
                 ChunkData data = cacher.load(key);
                 if (data != null) return data;
             }
             return null;
-        }).get());
+        });
     }
 }

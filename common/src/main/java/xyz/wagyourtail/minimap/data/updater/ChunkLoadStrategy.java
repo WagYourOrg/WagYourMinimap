@@ -13,6 +13,7 @@ import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.lighting.LayerLightEventListener;
 import xyz.wagyourtail.minimap.data.ChunkData;
+import xyz.wagyourtail.minimap.data.ChunkLocation;
 
 public class ChunkLoadStrategy extends AbstractChunkUpdateStrategy {
 
@@ -22,8 +23,8 @@ public class ChunkLoadStrategy extends AbstractChunkUpdateStrategy {
         super(1);
     }
 
-    public static ChunkData loadFromChunk(ChunkAccess chunk, Level level, ChunkData oldData) {
-        ChunkData data = new ChunkData();
+    public static ChunkData loadFromChunk(ChunkLocation location, ChunkAccess chunk, Level level, ChunkData oldData) {
+        ChunkData data = new ChunkData(location);
         data.updateTime = System.currentTimeMillis();
         ChunkPos pos = chunk.getPos();
         BlockPos.MutableBlockPos blockPos = new BlockPos.MutableBlockPos();
@@ -59,7 +60,7 @@ public class ChunkLoadStrategy extends AbstractChunkUpdateStrategy {
             ChunkPos pos = chunk.getPos();
             updateChunk(
                 getChunkLocation(level, pos),
-                (region, oldData) -> loadFromChunk(chunk, level, oldData)
+                (location, oldData) -> loadFromChunk(location, chunk, level, oldData)
             );
         });
     }

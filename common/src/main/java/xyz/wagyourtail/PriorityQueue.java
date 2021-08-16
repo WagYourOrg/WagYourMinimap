@@ -46,4 +46,8 @@ public class PriorityQueue<E> {
         return count;
     }
 
+    public synchronized void waitForEmpty() throws InterruptedException {
+        while (count != 0) this.wait();
+    }
+
 }

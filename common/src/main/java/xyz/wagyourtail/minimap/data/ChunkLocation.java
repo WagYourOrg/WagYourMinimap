@@ -37,12 +37,12 @@ public record ChunkLocation(MapLevel level, RegionPos region, int index) {
         return (px << 5) + pz;
     }
 
-    public int getRegionX() {
+    public int getChunkX() {
         int xCord = index >> 5;
         return (region.x << 5) + xCord;
     }
 
-    public int getRegionZ() {
+    public int getChunkZ() {
         int zCord = index % REGION_SIZE;
         return (region.x << 5) + zCord;
     }

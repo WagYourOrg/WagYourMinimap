@@ -10,6 +10,7 @@ import net.minecraft.client.Minecraft;
 import xyz.wagyourtail.minimap.WagYourMinimap;
 import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
 import xyz.wagyourtail.minimap.client.gui.renderer.SquareMapNoRotRenderer;
+import xyz.wagyourtail.minimap.data.MapLevel;
 import xyz.wagyourtail.minimap.data.updater.BlockUpdateStrategy;
 import xyz.wagyourtail.minimap.data.updater.ChunkLoadStrategy;
 
@@ -35,9 +36,17 @@ public class WagYourMinimapClient extends WagYourMinimap {
                 mc.setScreen(MinimapClientApi.getInstance().getConfig().getConfigScreen(null));
             }
         });
-        ClientPlayerEvent.CLIENT_PLAYER_QUIT.register((player) ->
-            MinimapClientApi.getInstance().setCurrentLevel(null)
-        );
+        ClientPlayerEvent.CLIENT_PLAYER_QUIT.register((player) -> {
+            MinimapClientApi.getInstance().setCurrentLevel(null);
+            int i = 0;
+            int j;
+            while ((j = MapLevel.getSaving()) > 0) {
+                if (i != j) LOGGER.info("Minimap Saving Chunks, (Remaining: {})", j);
+                i = j;
+                Thread.onSpinWait();
+                Thread.yield();
+            }
+        });
 
         MinimapClientApi.getInstance().registerChunkUpdateStrategy(ChunkLoadStrategy.class);
         MinimapClientApi.getInstance().registerChunkUpdateStrategy(BlockUpdateStrategy.class);

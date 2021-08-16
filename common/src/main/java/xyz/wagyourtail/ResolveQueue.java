@@ -11,21 +11,28 @@ import java.util.function.Function;
 public class ResolveQueue<U> {
     private static final int availableThreads = Math.max((int) Math.ceil(Runtime.getRuntime().availableProcessors() / 3d), 1);
     private static final int defaultPriority = 0;
-    private static final PriorityPoolExecutor pool = new PriorityPoolExecutor(availableThreads, defaultPriority, "ResolveQueuePool", Thread.NORM_PRIORITY);
+    private static final PriorityPoolExecutor default_pool = new PriorityPoolExecutor(availableThreads, defaultPriority, "ResolveQueuePool", Thread.NORM_PRIORITY);
     private U current = null;
+    private final PriorityPoolExecutor pool;
     private final AtomicInteger count = new AtomicInteger(0);
     private final AtomicBoolean runningNext = new AtomicBoolean(false);
     private final Queue<QueueItem<U>> queue = new LinkedList<>();
     private boolean closed = false;
 
     public ResolveQueue(@NotNull  Function<U, U> firstResolve) {
-        queue.add(new QueueItem<>(firstResolve, defaultPriority));
+        this(firstResolve, null);
 
     }
 
     public ResolveQueue(Function<U, U> next, U initial) {
+        this(next, initial, default_pool);
+    }
+
+    public ResolveQueue(Function<U, U> next, U initial, PriorityPoolExecutor pool) {
+        this.pool = pool;
         if (next != null) queue.add(new QueueItem<>(next, defaultPriority));
         current = initial;
+
     }
 
 

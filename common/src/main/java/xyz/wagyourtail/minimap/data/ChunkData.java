@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 public class ChunkData implements AutoCloseable {
+    public final ChunkLocation location;
     private Map<String, Derivitive<?>> derrivitives = new HashMap<>();
     public long updateTime;
     public boolean changed = false;
@@ -28,7 +29,8 @@ public class ChunkData implements AutoCloseable {
 
     private final List<ResourceLocation> resources = new ArrayList<>();
 
-    public ChunkData() {
+    public ChunkData(ChunkLocation location) {
+        this.location = location;
     }
 
     public synchronized int getOrRegisterResourceLocation(ResourceLocation id) {
@@ -92,6 +94,7 @@ public class ChunkData implements AutoCloseable {
         if (derrivitives == null) return;
         derrivitives.values().forEach((v) -> v.old = true);
         changed = true;
+        location.level().saveChunk(location, this);
     }
 
     public static int blockPosToIndex(BlockPos pos) {
@@ -102,7 +105,7 @@ public class ChunkData implements AutoCloseable {
         return (x << 4) + z;
     }
 
-    public void combineWithNewData(ChunkData newData) {
+    public synchronized void combineWithNewData(ChunkData newData) {
         if (newData.updateTime > this.updateTime) {
             this.updateTime = newData.updateTime;
             this.changed = true;

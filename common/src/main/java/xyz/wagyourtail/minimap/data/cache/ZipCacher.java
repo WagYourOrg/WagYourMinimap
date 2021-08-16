@@ -1,7 +1,5 @@
 package xyz.wagyourtail.minimap.data.cache;
 
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.LoadingCache;
 import net.minecraft.resources.ResourceLocation;
 import xyz.wagyourtail.minimap.api.MinimapApi;
 import xyz.wagyourtail.minimap.data.ChunkData;
@@ -29,7 +27,7 @@ public class ZipCacher extends AbstractCacher {
             Path dataPath = zipfs.getPath(location.index() + ".data");
             Path resourcesPath = zipfs.getPath(location.index() + ".resources");
             if (Files.exists(dataPath) && Files.exists(resourcesPath)) {
-                return loadFromDisk(dataPath, resourcesPath);
+                return loadFromDisk(location, dataPath, resourcesPath);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -53,8 +51,8 @@ public class ZipCacher extends AbstractCacher {
         }
     }
 
-    private ChunkData loadFromDisk(Path dataPath, Path resourcesPath) {
-        ChunkData chunk = new ChunkData();
+    private ChunkData loadFromDisk(ChunkLocation location, Path dataPath, Path resourcesPath) {
+        ChunkData chunk = new ChunkData(location);
         try (InputStream stream = Files.newInputStream(dataPath)) {
             ByteBuffer data = ByteBuffer.wrap(stream.readAllBytes());
             data.rewind();

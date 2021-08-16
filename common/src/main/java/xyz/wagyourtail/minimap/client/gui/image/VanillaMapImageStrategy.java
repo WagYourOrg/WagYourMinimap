@@ -16,7 +16,11 @@ import java.util.Set;
 
 public class VanillaMapImageStrategy extends AbstractImageStrategy {
     private final static Set<ResourceLocation> water = Set.of(
-        Registry.BLOCK.getKey(Blocks.WATER)
+        Registry.BLOCK.getKey(Blocks.WATER),
+        Registry.BLOCK.getKey(Blocks.SEAGRASS),
+        Registry.BLOCK.getKey(Blocks.TALL_SEAGRASS),
+        Registry.BLOCK.getKey(Blocks.KELP_PLANT),
+        Registry.BLOCK.getKey(Blocks.KELP)
     );
 
     private final static Set<ResourceLocation> grass = Set.of(
