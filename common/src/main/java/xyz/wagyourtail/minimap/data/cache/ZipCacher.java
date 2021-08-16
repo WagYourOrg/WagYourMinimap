@@ -92,6 +92,8 @@ public class ZipCacher extends AbstractCacher {
 
     private synchronized void writeToZip(Path dataPath, Path resourcesPath, ChunkData chunk) {
         try {
+            String resources = chunk.getResources().stream().map(ResourceLocation::toString).reduce("", (a, b) -> a + b + "\n");
+            Files.writeString(resourcesPath, resources);
             ByteBuffer data = ByteBuffer.allocate(Long.BYTES + Integer.BYTES * 256 * 6 + Byte.BYTES * 256);
             data.putLong(chunk.updateTime);
             for (int i = 0; i < 256; ++i) {
@@ -113,8 +115,6 @@ public class ZipCacher extends AbstractCacher {
                 data.putInt(chunk.oceanFloorBlockid[i]);
             }
             Files.write(dataPath, data.array());
-            String resources = chunk.getResources().stream().map(ResourceLocation::toString).reduce("", (a, b) -> a + b + "\n");
-            Files.writeString(resourcesPath, resources);
         } catch (IOException ex) {
             ex.printStackTrace();
         }

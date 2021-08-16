@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
-import org.jetbrains.annotations.Range;
 import xyz.wagyourtail.ResolveQueue;
 
 import java.util.ArrayList;
@@ -65,7 +64,7 @@ public class ChunkData implements AutoCloseable {
         Derivitive<T> der = (Derivitive<T>) derrivitives.computeIfAbsent(key, (k) -> new Derivitive<>(false, new ResolveQueue<>((n) -> supplier.get())));
         if (der.old) {
             der.old = false;
-            der.contained.addTask(old -> supplier.get());
+            der.contained.addTask(old -> supplier.get(), 2);
         }
         return der.contained;
     }

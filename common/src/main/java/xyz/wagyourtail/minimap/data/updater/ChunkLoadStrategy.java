@@ -19,7 +19,7 @@ public class ChunkLoadStrategy extends AbstractChunkUpdateStrategy {
     public static Event<Load> LOAD = EventFactory.createLoop();
 
     public ChunkLoadStrategy() {
-        super(5);
+        super(1);
     }
 
     public static ChunkData loadFromChunk(ChunkAccess chunk, Level level, ChunkData oldData) {

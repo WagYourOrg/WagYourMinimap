@@ -8,6 +8,7 @@ import xyz.wagyourtail.minimap.data.cache.ZipCacher;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 
 public class MapLevel extends CacheLoader<ChunkLocation, ResolveQueue<ChunkData>> implements AutoCloseable {
     public final String server_slug;
@@ -72,12 +73,12 @@ public class MapLevel extends CacheLoader<ChunkLocation, ResolveQueue<ChunkData>
 
     @Override
     public ResolveQueue<ChunkData> load(ChunkLocation key) throws Exception {
-        return new ResolveQueue<>((nullVal) -> {
+        return new ResolveQueue<>(null, ((Supplier<ChunkData>)() -> {
             for (AbstractCacher cacher : cachers) {
                 ChunkData data = cacher.load(key);
                 if (data != null) return data;
             }
             return null;
-        });
+        }).get());
     }
 }

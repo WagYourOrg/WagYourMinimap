@@ -1,41 +1,35 @@
 package xyz.wagyourtail.minimap.data.updater;
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import dev.architectury.event.Event;
 import dev.architectury.event.EventFactory;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Registry;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.chunk.ChunkAccess;
-import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.lighting.LayerLightEventListener;
 import xyz.wagyourtail.minimap.data.ChunkData;
+import xyz.wagyourtail.minimap.data.ChunkLocation;
+
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 public class BlockUpdateStrategy extends AbstractChunkUpdateStrategy {
     public static final Event<BlockUpdate> BLOCK_UPDATE_EVENT = EventFactory.createLoop();
 
+    private final LoadingCache<BlockUpdateData, Runnable> updateCache = CacheBuilder.newBuilder().expireAfterWrite(5000, TimeUnit.MILLISECONDS).removalListener((a) -> ((Runnable)a.getValue()).run()).build(new CacheLoader<>() {
+        @Override
+        public Runnable load(BlockUpdateData key) {
+            return () -> {
+                updateChunk(key.location, (loc, oldData) -> ChunkLoadStrategy.loadFromChunk(key.chunk, key.level, oldData));
+                updateNeighborLighting(key.level, getBlockLightLayer(key.level), key.location.getRegionX(), key.location.getRegionZ());
+            };
+        }
+    });
+
     public BlockUpdateStrategy() {
-        super(1);
-    }
-
-    public ChunkData updateChunkData(Level level, ChunkAccess chunk, BlockPos pos, ChunkData data) {
-        if (data == null) return null;
-        BlockPos.MutableBlockPos blockPos = new BlockPos.MutableBlockPos(pos.getX(), 0, pos.getZ());
-        int index = ChunkData.blockPosToIndex(pos);
-        Registry<Biome> biomeRegistry = level.registryAccess().registryOrThrow(Registry.BIOME_REGISTRY);
-        int newHeight = chunk.getHeight(Heightmap.Types.WORLD_SURFACE, pos.getX(), pos.getZ());
-        data.heightmap[index] = newHeight;
-        int newBlock = data.getOrRegisterResourceLocation(Registry.BLOCK.getKey(chunk.getBlockState(blockPos.setY(data.heightmap[index])).getBlock()));
-        data.blockid[index] = newBlock;
-        data.biomeid[index] = data.getOrRegisterResourceLocation(biomeRegistry.getKey(level.getBiome(blockPos)));
-
-        int newOceanFloorHeight = chunk.getHeight(Heightmap.Types.OCEAN_FLOOR, pos.getX(), pos.getZ());
-        data.oceanFloorHeightmap[index] = newOceanFloorHeight;
-        int newOceanBlockId = data.getOrRegisterResourceLocation(Registry.BLOCK.getKey(chunk.getBlockState(blockPos.setY(data.oceanFloorHeightmap[index])).getBlock()));
-        data.oceanFloorBlockid[index] = newOceanBlockId;
-        data.updateTime = System.currentTimeMillis();
-        updateNeighborLighting(level, getBlockLightLayer(level), pos.getX() >> 4, pos.getZ() >> 4);
-        return data;
+        super(3);
     }
 
     public void updateNeighborLighting(Level level, LayerLightEventListener light, int chunkX, int chunkZ) {
@@ -79,16 +73,14 @@ public class BlockUpdateStrategy extends AbstractChunkUpdateStrategy {
             int chunkZ = pos.getZ() >> 4;
             ChunkAccess chunk = level.getChunk(chunkX, chunkZ);
             try {
-                updateChunk(
-                    getChunkLocation(level, chunkX, chunkZ),
-                    ((location, chunkData) -> updateChunkData(level, chunk, pos, chunkData))
-                );
-            } catch (Exception e) {
+                updateCache.get(new BlockUpdateData(level, chunk, getChunkLocation(level, chunkX, chunkZ)));
+            } catch (ExecutionException e) {
                 e.printStackTrace();
             }
         });
     }
 
+    private record BlockUpdateData(Level level, ChunkAccess chunk, ChunkLocation location) {}
 
     public interface BlockUpdate {
         void onBlockUpdate(BlockPos pos, Level level);

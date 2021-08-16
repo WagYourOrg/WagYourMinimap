@@ -3,7 +3,6 @@ package xyz.wagyourtail;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.Executor;
-import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class PriorityPoolExecutor implements Executor, AutoCloseable {
@@ -11,7 +10,7 @@ public class PriorityPoolExecutor implements Executor, AutoCloseable {
     private static final AtomicInteger poolcount = new AtomicInteger(0);
     private final Thread[] threads;
 
-    private PriorityBlockingQueue<QueueItem> queue = new PriorityBlockingQueue<>(100, (a,b) -> b.priority-a.priority+1);
+    private PriorityQueue<Runnable> queue = new PriorityQueue<>();
 
     private final int defaultPriority;
 
@@ -21,7 +20,7 @@ public class PriorityPoolExecutor implements Executor, AutoCloseable {
     }
 
     public PriorityPoolExecutor(int threadCount) {
-        this(threadCount, 0);
+        this(threadCount, 10);
     }
 
     public PriorityPoolExecutor(int threadCount, int defaultPriority) {
@@ -40,17 +39,17 @@ public class PriorityPoolExecutor implements Executor, AutoCloseable {
 
     @Override
     public void execute(@NotNull Runnable command) {
-        queue.put(new QueueItem(command, defaultPriority));
+        queue.put(command, defaultPriority);
     }
 
     public void execute(@NotNull Runnable command, int priority) {
-        queue.put(new QueueItem(command, priority * 2));
+        queue.put(command, priority);
     }
 
     private void threadRunner() {
         try {
             while (true) {
-                 queue.take().command.run();
+                 queue.take().run();
                  Thread.yield();
             }
         } catch (InterruptedException e) {
@@ -65,7 +64,4 @@ public class PriorityPoolExecutor implements Executor, AutoCloseable {
         }
         queue = null;
     }
-
-    private static record QueueItem(Runnable command, int priority) {}
-
 }

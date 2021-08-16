@@ -10,7 +10,7 @@ import java.util.function.Function;
 
 public class ResolveQueue<U> {
     private static final int availableThreads = Math.max((int) Math.ceil(Runtime.getRuntime().availableProcessors() / 3d), 1);
-    private static final int defaultPriority = 10;
+    private static final int defaultPriority = 0;
     private static final PriorityPoolExecutor pool = new PriorityPoolExecutor(availableThreads, defaultPriority, "ResolveQueuePool", Thread.NORM_PRIORITY);
     private U current = null;
     private final AtomicInteger count = new AtomicInteger(0);
