@@ -26,7 +26,12 @@ public class ZipCacher extends AbstractCacher {
     @Override
     public ChunkData load(ChunkLocation location) {
         Path zip = locationToPath(location);
-        lock.readLock().lock();
+        try {
+            lock.readLock().lockInterruptibly();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            return null;
+        }
         if (Files.notExists(zip)) return null;
         try (FileSystem zipfs = FileSystems.newFileSystem(zip)) {
             Path dataPath = zipfs.getPath(location.index() + ".data");
@@ -45,7 +50,12 @@ public class ZipCacher extends AbstractCacher {
     @Override
     public void save(ChunkLocation location, ChunkData data) {
         Path zip = locationToPath(location);
-        lock.writeLock().lock();
+        try {
+            lock.writeLock().lockInterruptibly();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            return;
+        }
         try {
             if (Files.notExists(zip.getParent())) Files.createDirectories(zip.getParent());
             try (FileSystem zipfs = FileSystems.newFileSystem(zip, Map.of("create", true))) {

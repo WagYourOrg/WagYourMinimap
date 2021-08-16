@@ -18,6 +18,10 @@ public class ChunkLoadStrategy extends AbstractChunkUpdateStrategy {
 
     public static Event<Load> LOAD = EventFactory.createLoop();
 
+    public ChunkLoadStrategy() {
+        super(5);
+    }
+
     public synchronized ChunkData loadFromChunk(ChunkAccess chunk, Level level, ChunkData oldData) {
         ChunkData data = new ChunkData();
         data.updateTime = System.currentTimeMillis();

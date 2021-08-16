@@ -14,6 +14,10 @@ import xyz.wagyourtail.minimap.data.ChunkData;
 public class BlockUpdateStrategy extends AbstractChunkUpdateStrategy {
     public static final Event<BlockUpdate> BLOCK_UPDATE_EVENT = EventFactory.createLoop();
 
+    public BlockUpdateStrategy() {
+        super(1);
+    }
+
     public ChunkData updateChunkData(Level level, BlockPos pos, ChunkData data) {
         if (data == null) return null;
         BlockPos.MutableBlockPos blockPos = new BlockPos.MutableBlockPos(pos.getX(), 0, pos.getZ());

@@ -12,15 +12,16 @@ import xyz.wagyourtail.minimap.data.MapLevel;
 import java.util.function.BiFunction;
 
 public abstract class AbstractChunkUpdateStrategy {
-
-    public AbstractChunkUpdateStrategy() {
+    private final int priority;
+    public AbstractChunkUpdateStrategy(int priority) {
         registerEventListener();
+        this.priority = priority;
     }
 
     protected void updateChunk(ChunkLocation location, BiFunction<ChunkLocation, ChunkData, ChunkData> newChunkDataCreator) {
         synchronized (location.level()) {
             ResolveQueue<ChunkData> chunkData = location.level().getChunk(location);
-            location.level().setChunk(location, chunkData.addTask((od) -> newChunkDataCreator.apply(location, od)));
+            chunkData.addTask((od) -> newChunkDataCreator.apply(location, od), priority);
             MinimapEvents.CHUNK_UPDATED.invoker().onChunkUpdated(location, chunkData, this.getClass());
         }
     }

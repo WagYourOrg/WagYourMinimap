@@ -72,7 +72,9 @@ public class ChunkData implements AutoCloseable {
 
     @Override
     public synchronized void close() {
+        if (firstClose != null) return;
         firstClose = new Error();
+        if (derrivitives instanceof ImmutableMap) return;
         derrivitives.forEach((k,v) -> {
             if (v.contained instanceof AutoCloseable) {
                 try {
@@ -91,10 +93,10 @@ public class ChunkData implements AutoCloseable {
 
     private synchronized Map<String, Derivitive<?>> getDerivativesAsOldAndClose() {
         if (derrivitives == null) return ImmutableMap.of();
-        Map<String, Derivitive<?>> derivitiveMap = ImmutableMap.copyOf(derrivitives);
-        derivitiveMap.forEach((k,v) -> v.old = true);
+        derrivitives = ImmutableMap.copyOf(derrivitives);
+        derrivitives.forEach((k,v) -> v.old = true);
         this.close();
-        return derivitiveMap;
+        return derrivitives;
     }
 
     public synchronized void invalidateDerivitives() {
