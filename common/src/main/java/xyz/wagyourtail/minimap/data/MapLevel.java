@@ -2,7 +2,6 @@ package xyz.wagyourtail.minimap.data;
 
 import com.google.common.cache.*;
 import xyz.wagyourtail.ResolveQueue;
-import xyz.wagyourtail.minimap.api.MinimapApi;
 import xyz.wagyourtail.minimap.data.cache.AbstractCacher;
 import xyz.wagyourtail.minimap.data.cache.ZipCacher;
 
@@ -13,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 public class MapLevel extends CacheLoader<ChunkLocation, ResolveQueue<ChunkData>> implements AutoCloseable {
     public final String server_slug;
     public final String level_slug;
-    private LoadingCache<ChunkLocation, ResolveQueue<ChunkData>> regionCache;
+    private final LoadingCache<ChunkLocation, ResolveQueue<ChunkData>> regionCache;
     private static AbstractCacher[] cachers = new AbstractCacher[] {new ZipCacher()};
     public final int minHeight, maxHeight;
     private boolean closed = false;
@@ -23,11 +22,13 @@ public class MapLevel extends CacheLoader<ChunkLocation, ResolveQueue<ChunkData>
         this.level_slug = level_slug;
         this.minHeight = minHeight;
         this.maxHeight = maxHeight;
-        resizeCache(MinimapApi.getInstance().getConfig().regionCacheSize);
+        CacheBuilder<ChunkLocation, ResolveQueue<ChunkData>> builder = createCache()
+            .expireAfterAccess(60000, TimeUnit.MILLISECONDS)
+            .removalListener(this::onRegionRemoved);
+        regionCache = builder.build(this);
     }
 
     public void onRegionRemoved(RemovalNotification<ChunkLocation, ResolveQueue<ChunkData>> notification) {
-        if (notification.getCause() == RemovalCause.REPLACED) return;
         CompletableFuture.runAsync(() -> {
             ChunkData data = null;
             try {
@@ -53,33 +54,11 @@ public class MapLevel extends CacheLoader<ChunkLocation, ResolveQueue<ChunkData>
         return (CacheBuilder) CacheBuilder.newBuilder();
     }
 
-
-    public synchronized void resizeCache(long newCacheSize) {
-        CacheBuilder<ChunkLocation, ResolveQueue<ChunkData>> builder = createCache()
-            .maximumSize(newCacheSize)
-            .expireAfterAccess(60000, TimeUnit.MILLISECONDS)
-            .removalListener(this::onRegionRemoved);
-
-        LoadingCache<ChunkLocation, ResolveQueue<ChunkData>> oldCache = regionCache;
-        regionCache = builder.build(this);
-        if (oldCache != null) {
-            regionCache.putAll(oldCache.asMap());
-        }
-    }
-
     @Override
     public synchronized void close() {
         closed = true;
         regionCache.invalidateAll();
         regionCache.cleanUp();
-    }
-
-    public synchronized void setChunk(ChunkLocation location, ResolveQueue<ChunkData> newData) {
-        regionCache.put(location, newData);
-        if (closed) {
-            regionCache.invalidateAll();
-            regionCache.cleanUp();
-        }
     }
 
     public synchronized ResolveQueue<ChunkData> getChunk(ChunkLocation location) {

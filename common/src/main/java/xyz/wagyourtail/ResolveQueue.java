@@ -5,13 +5,15 @@ import org.jetbrains.annotations.NotNull;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 
 public class ResolveQueue<U> {
-    private static final int availableThreads = Math.min(Math.max(1, Runtime.getRuntime().availableProcessors() - 1), 4);
+    private static final int availableThreads = Math.max((int) Math.ceil(Runtime.getRuntime().availableProcessors() / 3d), 1);
     private static final int defaultPriority = 10;
-    private static final PriorityPoolExecutor pool = new PriorityPoolExecutor(availableThreads, defaultPriority, "ResolveQueuePool");
+    private static final PriorityPoolExecutor pool = new PriorityPoolExecutor(availableThreads, defaultPriority, "ResolveQueuePool", Thread.NORM_PRIORITY);
     private U current = null;
+    private final AtomicInteger count = new AtomicInteger(0);
     private final AtomicBoolean runningNext = new AtomicBoolean(false);
     private final Queue<QueueItem<U>> queue = new LinkedList<>();
     private boolean closed = false;
@@ -33,6 +35,7 @@ public class ResolveQueue<U> {
     }
 
     public synchronized ResolveQueue<U> addTask(@NotNull Function<U, U> next, int poolPriority) {
+        count.incrementAndGet();
         queue.add(new QueueItem<>(next, poolPriority));
         return this;
     }

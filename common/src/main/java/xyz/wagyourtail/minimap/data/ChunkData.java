@@ -16,6 +16,7 @@ import java.util.function.Supplier;
 public class ChunkData implements AutoCloseable {
     private Map<String, Derivitive<?>> derrivitives = new HashMap<>();
     public long updateTime;
+    public boolean changed = false;
 
     public final int[] heightmap = new int[256];
     public final byte[] blocklight = new byte[256];
@@ -25,7 +26,6 @@ public class ChunkData implements AutoCloseable {
 
     public final int[] oceanFloorHeightmap = new int[256];
     public final int[] oceanFloorBlockid = new int[256];
-    public final int[] oceanFloorBiomeid = new int[256];
 
     private final List<ResourceLocation> resources = new ArrayList<>();
 
@@ -43,7 +43,9 @@ public class ChunkData implements AutoCloseable {
         return resources.size();
     }
 
-    public synchronized ResourceLocation getResourceLocation(@Range(from = 1, to = Integer.MAX_VALUE) int i) {
+    private static final ResourceLocation air = new ResourceLocation("minecraft", "air");
+    public synchronized ResourceLocation getResourceLocation(int i) {
+        if (i < 1) return air;
         return resources.get(i - 1);
     }
 
@@ -87,21 +89,10 @@ public class ChunkData implements AutoCloseable {
         derrivitives = ImmutableMap.copyOf(derrivitives);
     }
 
-    public void copyDerivatives(ChunkData old) {
-        this.derrivitives.putAll(old.getDerivativesAsOldAndClose());
-    }
-
-    private synchronized Map<String, Derivitive<?>> getDerivativesAsOldAndClose() {
-        if (derrivitives == null) return ImmutableMap.of();
-        derrivitives = ImmutableMap.copyOf(derrivitives);
-        derrivitives.forEach((k,v) -> v.old = true);
-        this.close();
-        return derrivitives;
-    }
-
-    public synchronized void invalidateDerivitives() {
+    public synchronized void markDirty() {
         if (derrivitives == null) return;
         derrivitives.values().forEach((v) -> v.old = true);
+        changed = true;
     }
 
     public static int blockPosToIndex(BlockPos pos) {
@@ -112,6 +103,42 @@ public class ChunkData implements AutoCloseable {
         return (x << 4) + z;
     }
 
+    public void combineWithNewData(ChunkData newData) {
+        if (newData.updateTime > this.updateTime) {
+            this.updateTime = newData.updateTime;
+            this.changed = true;
+            boolean changed = false;
+            for (int i = 0; i < 256; ++i) {
+                int newHeight = newData.heightmap[i];
+                changed = changed || newHeight != this.heightmap[i];
+                this.heightmap[i] = newHeight;
+
+                byte newLight = newData.blocklight[i];
+                changed = changed || newLight != this.blocklight[i];
+                this.blocklight[i] = newLight;
+
+                int newBlockid = newData.blockid[i];
+                changed = changed || newBlockid != this.blockid[i];
+                this.blockid[i] = newBlockid;
+
+                int newBiomeId = newData.biomeid[i];
+                changed = changed || newBiomeId != this.biomeid[i];
+                this.biomeid[i] = newBiomeId;
+
+                int newOceanHeight = newData.oceanFloorHeightmap[i];
+                changed = changed || newOceanHeight != this.oceanFloorHeightmap[i];
+                this.oceanFloorHeightmap[i] = newOceanHeight;
+
+                int newOceanBlock = newData.oceanFloorBlockid[i];
+                changed = changed || newOceanBlock != this.oceanFloorBlockid[i];
+                this.oceanFloorBlockid[i] = newOceanBlock;
+            }
+            this.resources.clear();
+            this.resources.addAll(newData.resources);
+            if (changed) markDirty();
+        }
+    }
+
     public static class Derivitive<T>{
         public boolean old;
         public final ResolveQueue<T> contained;
@@ -120,5 +147,4 @@ public class ChunkData implements AutoCloseable {
             this.contained = contained;
         }
     }
-
 }

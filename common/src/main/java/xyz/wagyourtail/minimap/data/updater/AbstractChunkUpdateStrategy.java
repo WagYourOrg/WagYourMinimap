@@ -2,6 +2,8 @@ package xyz.wagyourtail.minimap.data.updater;
 
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LightLayer;
+import net.minecraft.world.level.lighting.LayerLightEventListener;
 import xyz.wagyourtail.ResolveQueue;
 import xyz.wagyourtail.minimap.api.MinimapApi;
 import xyz.wagyourtail.minimap.api.MinimapEvents;
@@ -16,6 +18,10 @@ public abstract class AbstractChunkUpdateStrategy {
     public AbstractChunkUpdateStrategy(int priority) {
         registerEventListener();
         this.priority = priority;
+    }
+
+    protected static LayerLightEventListener getBlockLightLayer(Level level) {
+        return level.getLightEngine().getLayerListener(LightLayer.BLOCK);
     }
 
     protected void updateChunk(ChunkLocation location, BiFunction<ChunkLocation, ChunkData, ChunkData> newChunkDataCreator) {
