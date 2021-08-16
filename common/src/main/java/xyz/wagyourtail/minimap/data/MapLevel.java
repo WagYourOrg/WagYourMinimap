@@ -30,7 +30,26 @@ public class MapLevel extends CacheLoader<ChunkLocation, ResolveQueue<ChunkData>
     }
 
     public void onRegionRemoved(RemovalNotification<ChunkLocation, ResolveQueue<ChunkData>> notification) {
-        CompletableFuture.runAsync(() -> {
+        if (!closed) {
+            CompletableFuture.runAsync(() -> {
+                ChunkData data = null;
+                try {
+                    data = notification.getValue().get();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                if (data != null) {
+                    for (AbstractCacher cacher : cachers) {
+                        cacher.save(notification.getKey(), data);
+                    }
+                }
+                try {
+                    notification.getValue().close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
+        } else {
             ChunkData data = null;
             try {
                 data = notification.getValue().get();
@@ -47,7 +66,7 @@ public class MapLevel extends CacheLoader<ChunkLocation, ResolveQueue<ChunkData>
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        });
+        }
     }
 
     //wtf, why doesn't newBuilder do this method sig instead of just <Object, Object>

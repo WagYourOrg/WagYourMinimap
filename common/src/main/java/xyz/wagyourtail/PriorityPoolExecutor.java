@@ -49,7 +49,12 @@ public class PriorityPoolExecutor implements Executor, AutoCloseable {
     private void threadRunner() {
         try {
             while (true) {
-                 queue.take().run();
+                Runnable next = queue.take();
+                try {
+                    next.run();
+                } catch(Throwable th) {
+                    th.printStackTrace();
+                }
                  Thread.yield();
             }
         } catch (InterruptedException e) {
