@@ -14,8 +14,8 @@ import net.minecraftforge.fmlclient.ConfigGuiHandler;
 import xyz.wagyourtail.minimap.WagYourMinimap;
 import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
 import xyz.wagyourtail.minimap.client.WagYourMinimapClient;
-import xyz.wagyourtail.minimap.data.updater.BlockUpdateStrategy;
-import xyz.wagyourtail.minimap.data.updater.ChunkLoadStrategy;
+import xyz.wagyourtail.minimap.chunkdata.updater.BlockUpdateStrategy;
+import xyz.wagyourtail.minimap.chunkdata.updater.ChunkLoadStrategy;
 
 @Mod(WagYourMinimap.MOD_ID)
 public class WagYourMinimapForge {

@@ -16,8 +16,8 @@ import xyz.wagyourtail.minimap.client.gui.image.AbstractImageStrategy;
 import xyz.wagyourtail.minimap.client.gui.image.BlockLightImageStrategy;
 import xyz.wagyourtail.minimap.client.gui.image.VanillaMapImageStrategy;
 import xyz.wagyourtail.minimap.client.gui.renderer.overlay.AbstractMapOverlayRenderer;
-import xyz.wagyourtail.minimap.data.ChunkLocation;
-import xyz.wagyourtail.minimap.data.MapLevel;
+import xyz.wagyourtail.minimap.chunkdata.ChunkLocation;
+import xyz.wagyourtail.minimap.MapLevel;
 
 import java.util.concurrent.ExecutionException;
 

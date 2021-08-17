@@ -1,6 +1,7 @@
-package xyz.wagyourtail.minimap.data;
+package xyz.wagyourtail.minimap.chunkdata;
 
 import net.minecraft.world.level.ChunkPos;
+import xyz.wagyourtail.minimap.MapLevel;
 
 public record ChunkLocation(MapLevel level, RegionPos region, int index) {
     public static final int REGION_SIZE = 32;

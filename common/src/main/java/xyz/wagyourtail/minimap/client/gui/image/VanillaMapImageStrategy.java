@@ -8,8 +8,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Blocks;
 import xyz.wagyourtail.minimap.client.gui.ThreadsafeDynamicTexture;
-import xyz.wagyourtail.minimap.data.ChunkData;
-import xyz.wagyourtail.minimap.data.ChunkLocation;
+import xyz.wagyourtail.minimap.chunkdata.ChunkData;
+import xyz.wagyourtail.minimap.chunkdata.ChunkLocation;
 
 import java.awt.*;
 import java.util.Set;

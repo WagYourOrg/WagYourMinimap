@@ -4,8 +4,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import dev.architectury.platform.Platform;
 import net.minecraft.world.level.Level;
-import xyz.wagyourtail.minimap.data.MapLevel;
-import xyz.wagyourtail.minimap.data.updater.AbstractChunkUpdateStrategy;
+import xyz.wagyourtail.minimap.MapLevel;
+import xyz.wagyourtail.minimap.chunkdata.updater.AbstractChunkUpdateStrategy;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;

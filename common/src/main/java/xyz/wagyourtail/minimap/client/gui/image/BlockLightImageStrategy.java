@@ -2,8 +2,8 @@ package xyz.wagyourtail.minimap.client.gui.image;
 
 import com.mojang.blaze3d.platform.NativeImage;
 import xyz.wagyourtail.minimap.client.gui.ThreadsafeDynamicTexture;
-import xyz.wagyourtail.minimap.data.ChunkData;
-import xyz.wagyourtail.minimap.data.ChunkLocation;
+import xyz.wagyourtail.minimap.chunkdata.ChunkData;
+import xyz.wagyourtail.minimap.chunkdata.ChunkLocation;
 
 import java.awt.*;
 

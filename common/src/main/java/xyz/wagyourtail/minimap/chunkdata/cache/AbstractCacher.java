@@ -1,7 +1,7 @@
-package xyz.wagyourtail.minimap.data.cache;
+package xyz.wagyourtail.minimap.chunkdata.cache;
 
-import xyz.wagyourtail.minimap.data.ChunkData;
-import xyz.wagyourtail.minimap.data.ChunkLocation;
+import xyz.wagyourtail.minimap.chunkdata.ChunkData;
+import xyz.wagyourtail.minimap.chunkdata.ChunkLocation;
 
 public abstract class AbstractCacher {
     public abstract ChunkData load(ChunkLocation location);

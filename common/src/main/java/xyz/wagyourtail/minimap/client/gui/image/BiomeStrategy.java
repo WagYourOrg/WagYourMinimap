@@ -5,8 +5,8 @@ import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.biome.Biome;
 import xyz.wagyourtail.minimap.client.gui.ThreadsafeDynamicTexture;
-import xyz.wagyourtail.minimap.data.ChunkData;
-import xyz.wagyourtail.minimap.data.ChunkLocation;
+import xyz.wagyourtail.minimap.chunkdata.ChunkData;
+import xyz.wagyourtail.minimap.chunkdata.ChunkLocation;
 
 public class BiomeStrategy extends AbstractImageStrategy {
     private int colorForBiome(ResourceLocation biome, Registry<Biome> registry) {

@@ -1,4 +1,4 @@
-package xyz.wagyourtail.minimap.data.updater;
+package xyz.wagyourtail.minimap.chunkdata.updater;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;

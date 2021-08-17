@@ -1,13 +1,14 @@
-package xyz.wagyourtail.minimap.data;
+package xyz.wagyourtail.minimap;
 
 import com.google.common.cache.*;
 import xyz.wagyourtail.ResolveQueue;
-import xyz.wagyourtail.minimap.data.cache.AbstractCacher;
-import xyz.wagyourtail.minimap.data.cache.ZipCacher;
+import xyz.wagyourtail.minimap.chunkdata.ChunkData;
+import xyz.wagyourtail.minimap.chunkdata.ChunkLocation;
+import xyz.wagyourtail.minimap.chunkdata.cache.AbstractCacher;
+import xyz.wagyourtail.minimap.chunkdata.cache.ZipCacher;
 
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Supplier;
 
 public class MapLevel extends CacheLoader<ChunkLocation, ResolveQueue<ChunkData>> implements AutoCloseable {
     public static final ThreadPoolExecutor pool = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.NANOSECONDS, new LinkedBlockingQueue<>());

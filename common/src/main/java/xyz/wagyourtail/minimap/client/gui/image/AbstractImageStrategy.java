@@ -3,8 +3,8 @@ package xyz.wagyourtail.minimap.client.gui.image;
 import net.minecraft.client.Minecraft;
 import xyz.wagyourtail.ResolveQueue;
 import xyz.wagyourtail.minimap.client.gui.ThreadsafeDynamicTexture;
-import xyz.wagyourtail.minimap.data.ChunkData;
-import xyz.wagyourtail.minimap.data.ChunkLocation;
+import xyz.wagyourtail.minimap.chunkdata.ChunkData;
+import xyz.wagyourtail.minimap.chunkdata.ChunkLocation;
 
 import java.util.concurrent.ExecutionException;
 

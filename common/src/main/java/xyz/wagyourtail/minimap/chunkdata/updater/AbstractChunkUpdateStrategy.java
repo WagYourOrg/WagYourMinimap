@@ -1,4 +1,4 @@
-package xyz.wagyourtail.minimap.data.updater;
+package xyz.wagyourtail.minimap.chunkdata.updater;
 
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
@@ -7,9 +7,9 @@ import net.minecraft.world.level.lighting.LayerLightEventListener;
 import xyz.wagyourtail.ResolveQueue;
 import xyz.wagyourtail.minimap.api.MinimapApi;
 import xyz.wagyourtail.minimap.api.MinimapEvents;
-import xyz.wagyourtail.minimap.data.ChunkData;
-import xyz.wagyourtail.minimap.data.ChunkLocation;
-import xyz.wagyourtail.minimap.data.MapLevel;
+import xyz.wagyourtail.minimap.chunkdata.ChunkData;
+import xyz.wagyourtail.minimap.chunkdata.ChunkLocation;
+import xyz.wagyourtail.minimap.MapLevel;
 
 import java.util.function.BiFunction;
 

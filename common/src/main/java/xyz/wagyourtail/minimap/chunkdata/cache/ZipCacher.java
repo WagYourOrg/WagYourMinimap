@@ -1,9 +1,9 @@
-package xyz.wagyourtail.minimap.data.cache;
+package xyz.wagyourtail.minimap.chunkdata.cache;
 
 import net.minecraft.resources.ResourceLocation;
 import xyz.wagyourtail.minimap.api.MinimapApi;
-import xyz.wagyourtail.minimap.data.ChunkData;
-import xyz.wagyourtail.minimap.data.ChunkLocation;
+import xyz.wagyourtail.minimap.chunkdata.ChunkData;
+import xyz.wagyourtail.minimap.chunkdata.ChunkLocation;
 
 import java.io.IOException;
 import java.io.InputStream;

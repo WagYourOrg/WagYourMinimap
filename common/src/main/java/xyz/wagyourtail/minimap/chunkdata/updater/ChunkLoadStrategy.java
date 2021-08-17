@@ -1,4 +1,4 @@
-package xyz.wagyourtail.minimap.data.updater;
+package xyz.wagyourtail.minimap.chunkdata.updater;
 
 import dev.architectury.event.Event;
 import dev.architectury.event.EventFactory;
@@ -12,8 +12,8 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.lighting.LayerLightEventListener;
-import xyz.wagyourtail.minimap.data.ChunkData;
-import xyz.wagyourtail.minimap.data.ChunkLocation;
+import xyz.wagyourtail.minimap.chunkdata.ChunkData;
+import xyz.wagyourtail.minimap.chunkdata.ChunkLocation;
 
 public class ChunkLoadStrategy extends AbstractChunkUpdateStrategy {
 
