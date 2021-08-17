@@ -1,9 +1,11 @@
 package xyz.wagyourtail.minimap.api;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import dev.architectury.platform.Platform;
 import net.minecraft.world.level.Level;
+import xyz.wagyourtail.minimap.map.chunkdata.cache.AbstractCacher;
 import xyz.wagyourtail.minimap.map.chunkdata.updater.AbstractChunkUpdateStrategy;
 import xyz.wagyourtail.minimap.map.MapLevel;
 import xyz.wagyourtail.minimap.map.MapServer;
@@ -18,11 +20,18 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class MinimapApi {
+    public static final AtomicInteger saving = new AtomicInteger(0);
+    private static final Map<Class<? extends AbstractCacher>, AbstractCacher> cachers = new HashMap<>();
     protected static MinimapApi INSTANCE;
 
-    protected final Map<Class<? extends AbstractChunkUpdateStrategy>, AbstractChunkUpdateStrategy> chunkUpdateStrategies = new HashMap<>();
+    protected static final Map<Class<? extends AbstractChunkUpdateStrategy>, AbstractChunkUpdateStrategy> chunkUpdateStrategies = new HashMap<>();
 
     public final Path configFolder = Platform.getConfigFolder().resolve("WagYourMinimap");
     public final Path configFile = configFolder.resolve("config.json");
@@ -35,7 +44,7 @@ public abstract class MinimapApi {
         return INSTANCE;
     }
 
-    public void registerChunkUpdateStrategy(Class<? extends AbstractChunkUpdateStrategy> chunkUpdateStrategy) {
+    public static void registerChunkUpdateStrategy(Class<? extends AbstractChunkUpdateStrategy> chunkUpdateStrategy) {
         chunkUpdateStrategies.computeIfAbsent(chunkUpdateStrategy, (cus) -> {
             try {
                 return cus.getConstructor().newInstance();
@@ -43,6 +52,22 @@ public abstract class MinimapApi {
                 throw new RuntimeException(e);
             }
         });
+    }
+
+    public static void addCacher(Class<? extends AbstractCacher> cacher) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        MinimapApi.cachers.put(cacher, cacher.getConstructor().newInstance());
+    }
+
+    public static void removeCacher(Class<? extends AbstractCacher> cacher) {
+        MinimapApi.cachers.remove(cacher);
+    }
+
+    public static Set<AbstractCacher> getCachers() {
+        return ImmutableSet.copyOf(MinimapApi.cachers.values());
+    }
+
+    public static int getSaving() {
+        return saving.get();
     }
 
     protected void getConfig(Class<? extends WagYourMinimapConfig> configClass) {

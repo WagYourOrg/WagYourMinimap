@@ -11,9 +11,9 @@ public class WaypointManager implements AutoCloseable {
     private static final Map<Class<Predicate<Waypoint>>, Predicate<Waypoint>> filters = new HashMap<>();
     private static Predicate<Waypoint> compiledFilter = (a) -> true;
     private final MapServer server;
-    private final List<Waypoint> waypointList = new ArrayList<>();
+    private final Set<Waypoint> waypointList = new LinkedHashSet<>();
     //if it starts lagging, I'll add computing in parallel...
-    private List<Waypoint> visibleWaypoints = new ArrayList<>();
+    private Set<Waypoint> visibleWaypoints = new HashSet<>();
 
     public WaypointManager(MapServer server) {
         this.server = server;
@@ -40,8 +40,8 @@ public class WaypointManager implements AutoCloseable {
         compileFilter();
     }
 
-    public List<Waypoint> getVisibleWaypoints() {
-        return visibleWaypoints = waypointList.parallelStream().filter(compiledFilter).collect(Collectors.toList());
+    public Set<Waypoint> getVisibleWaypoints() {
+        return visibleWaypoints = waypointList.parallelStream().filter(compiledFilter).collect(Collectors.toSet());
     }
 
     @Override

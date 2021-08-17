@@ -8,6 +8,7 @@ import dev.architectury.registry.client.keymappings.KeyMappingRegistry;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import xyz.wagyourtail.minimap.WagYourMinimap;
+import xyz.wagyourtail.minimap.api.MinimapApi;
 import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
 import xyz.wagyourtail.minimap.map.chunkdata.cache.ZipCacher;
 import xyz.wagyourtail.minimap.map.chunkdata.updater.BlockUpdateStrategy;
@@ -17,7 +18,6 @@ import xyz.wagyourtail.minimap.client.gui.image.BlockLightImageStrategy;
 import xyz.wagyourtail.minimap.client.gui.image.VanillaMapImageStrategy;
 import xyz.wagyourtail.minimap.client.gui.renderer.SquareMapNoRotRenderer;
 import xyz.wagyourtail.minimap.client.gui.renderer.overlay.SquareMapBorderOverlay;
-import xyz.wagyourtail.minimap.map.MapServer;
 
 import java.lang.reflect.InvocationTargetException;
 
@@ -34,7 +34,7 @@ public class WagYourMinimapClient extends WagYourMinimap {
                 .addRenderLayer(BlockLightImageStrategy.class)
                 .addOverlay(SquareMapBorderOverlay.class)
                 .build());
-            MapServer.addCacher(ZipCacher.class);
+            MinimapApi.addCacher(ZipCacher.class);
         } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
         }
@@ -50,15 +50,15 @@ public class WagYourMinimapClient extends WagYourMinimap {
             LOGGER.info("exiting {}", MinimapClientApi.getInstance().getMapServer());
             int i = 0;
             int j;
-            while ((j = MapServer.getSaving()) > 0) {
+            while ((j = MinimapApi.getSaving()) > 0) {
                 if (i != j) LOGGER.info("Minimap Saving Chunks, (Remaining: {})", j);
                 i = j;
                 Thread.yield();
             }
         });
 
-        MinimapClientApi.getInstance().registerChunkUpdateStrategy(ChunkLoadStrategy.class);
-        MinimapClientApi.getInstance().registerChunkUpdateStrategy(BlockUpdateStrategy.class);
+        MinimapApi.registerChunkUpdateStrategy(ChunkLoadStrategy.class);
+        MinimapApi.registerChunkUpdateStrategy(BlockUpdateStrategy.class);
     }
 
 }
