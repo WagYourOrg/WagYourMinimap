@@ -43,7 +43,6 @@ public class WagYourMinimapClient extends WagYourMinimap {
             while ((j = MapLevel.getSaving()) > 0) {
                 if (i != j) LOGGER.info("Minimap Saving Chunks, (Remaining: {})", j);
                 i = j;
-                Thread.onSpinWait();
                 Thread.yield();
             }
         });

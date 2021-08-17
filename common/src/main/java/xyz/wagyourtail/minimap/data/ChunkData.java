@@ -87,7 +87,7 @@ public class ChunkData implements AutoCloseable {
                 }
             }
         });
-        derrivitives = ImmutableMap.copyOf(derrivitives);
+        derrivitives = ImmutableMap.of();
     }
 
     public synchronized void markDirty() {
