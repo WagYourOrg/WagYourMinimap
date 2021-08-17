@@ -27,11 +27,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class MinimapApi {
-    public static final AtomicInteger saving = new AtomicInteger(0);
-    private static final Map<Class<? extends AbstractCacher>, AbstractCacher> cachers = new HashMap<>();
     protected static MinimapApi INSTANCE;
+    public static final AtomicInteger saving = new AtomicInteger(0);
+    private final Map<Class<? extends AbstractCacher>, AbstractCacher> cachers = new HashMap<>();
 
-    protected static final Map<Class<? extends AbstractChunkUpdateStrategy>, AbstractChunkUpdateStrategy> chunkUpdateStrategies = new HashMap<>();
+    protected final Map<Class<? extends AbstractChunkUpdateStrategy>, AbstractChunkUpdateStrategy> chunkUpdateStrategies = new HashMap<>();
 
     public final Path configFolder = Platform.getConfigFolder().resolve("WagYourMinimap");
     public final Path configFile = configFolder.resolve("config.json");
@@ -44,7 +44,7 @@ public abstract class MinimapApi {
         return INSTANCE;
     }
 
-    public static void registerChunkUpdateStrategy(Class<? extends AbstractChunkUpdateStrategy> chunkUpdateStrategy) {
+    public void registerChunkUpdateStrategy(Class<? extends AbstractChunkUpdateStrategy> chunkUpdateStrategy) {
         chunkUpdateStrategies.computeIfAbsent(chunkUpdateStrategy, (cus) -> {
             try {
                 return cus.getConstructor().newInstance();
@@ -54,19 +54,19 @@ public abstract class MinimapApi {
         });
     }
 
-    public static void addCacher(Class<? extends AbstractCacher> cacher) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-        MinimapApi.cachers.put(cacher, cacher.getConstructor().newInstance());
+    public void addCacher(Class<? extends AbstractCacher> cacher) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        cachers.put(cacher, cacher.getConstructor().newInstance());
     }
 
-    public static void removeCacher(Class<? extends AbstractCacher> cacher) {
-        MinimapApi.cachers.remove(cacher);
+    public void removeCacher(Class<? extends AbstractCacher> cacher) {
+        cachers.remove(cacher);
     }
 
-    public static Set<AbstractCacher> getCachers() {
-        return ImmutableSet.copyOf(MinimapApi.cachers.values());
+    public Set<AbstractCacher> getCachers() {
+        return ImmutableSet.copyOf(cachers.values());
     }
 
-    public static int getSaving() {
+    public int getSaving() {
         return saving.get();
     }
 

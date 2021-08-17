@@ -24,23 +24,24 @@ import java.lang.reflect.InvocationTargetException;
 public class WagYourMinimapClient extends WagYourMinimap {
     private static final KeyMapping key_openmap = new KeyMapping("key.wagyourminimap.openmap", InputConstants.KEY_M, "WagYourMinimap");
 
-    protected static final Minecraft mc = Minecraft.getInstance();
-
     public static void init() {
-        MinimapClientApi.getInstance();
+        KeyMappingRegistry.register(key_openmap);
+
         try {
-            MinimapClientApi.inGameHud.setRenderer(MapRendererBuilder.createBuilder(SquareMapNoRotRenderer.class)
+            //client api getInstance first so we establish the instance as a ClientApi.
+            MinimapClientApi.getInstance().inGameHud.setRenderer(MapRendererBuilder.createBuilder(SquareMapNoRotRenderer.class)
                 .addRenderLayer(VanillaMapImageStrategy.class)
                 .addRenderLayer(BlockLightImageStrategy.class)
                 .addOverlay(SquareMapBorderOverlay.class)
                 .build());
-            MinimapApi.addCacher(ZipCacher.class);
+            MinimapApi.getInstance().addCacher(ZipCacher.class);
+            MinimapApi.getInstance().registerChunkUpdateStrategy(ChunkLoadStrategy.class);
+            MinimapApi.getInstance().registerChunkUpdateStrategy(BlockUpdateStrategy.class);
         } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
         }
-        KeyMappingRegistry.register(key_openmap);
 
-        ClientGuiEvent.RENDER_HUD.register(MinimapClientApi.inGameHud::render);
+        ClientGuiEvent.RENDER_HUD.register(MinimapClientApi.getInstance().inGameHud::render);
         ClientTickEvent.CLIENT_POST.register((mc) -> {
             if (key_openmap.consumeClick()) {
                 mc.setScreen(MinimapClientApi.getInstance().getConfig().getConfigScreen(null));
@@ -50,15 +51,12 @@ public class WagYourMinimapClient extends WagYourMinimap {
             LOGGER.info("exiting {}", MinimapClientApi.getInstance().getMapServer());
             int i = 0;
             int j;
-            while ((j = MinimapApi.getSaving()) > 0) {
+            while ((j = MinimapApi.getInstance().getSaving()) > 0) {
                 if (i != j) LOGGER.info("Minimap Saving Chunks, (Remaining: {})", j);
                 i = j;
                 Thread.yield();
             }
         });
-
-        MinimapApi.registerChunkUpdateStrategy(ChunkLoadStrategy.class);
-        MinimapApi.registerChunkUpdateStrategy(BlockUpdateStrategy.class);
     }
 
 }

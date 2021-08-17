@@ -8,8 +8,8 @@ import xyz.wagyourtail.minimap.api.MinimapApi;
 import xyz.wagyourtail.minimap.client.gui.InGameHud;
 
 public class MinimapClientApi extends MinimapApi {
-    protected static final Minecraft mc = Minecraft.getInstance();
-    public static final InGameHud inGameHud = new InGameHud();
+    protected final Minecraft mc = Minecraft.getInstance();
+    public final InGameHud inGameHud = new InGameHud();
 
 
     public static MinimapClientApi getInstance() {

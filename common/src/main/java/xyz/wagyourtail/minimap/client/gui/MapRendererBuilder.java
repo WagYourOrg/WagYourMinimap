@@ -17,7 +17,7 @@ public class MapRendererBuilder<T extends AbstractMapRenderer> {
 
 
     private MapRendererBuilder(Class<T> mapRenderer) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-        this.mapRenderer = mapRenderer.getConstructor(AbstractMapGui.class).newInstance(MinimapClientApi.inGameHud);
+        this.mapRenderer = mapRenderer.getConstructor(AbstractMapGui.class).newInstance(MinimapClientApi.getInstance().inGameHud);
     }
 
     public static <T extends AbstractMapRenderer> MapRendererBuilder<T> createBuilder(Class<T> mapRenderer) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {

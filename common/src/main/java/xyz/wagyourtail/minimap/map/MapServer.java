@@ -25,7 +25,7 @@ public class MapServer implements AutoCloseable {
     }
 
     public static ChunkData loadChunk(ChunkLocation location) {
-        for (AbstractCacher cacher : MinimapApi.getCachers()) {
+        for (AbstractCacher cacher : MinimapApi.getInstance().getCachers()) {
             ChunkData data = cacher.loadChunk(location);
             if (data != null) return data;
         }
@@ -43,7 +43,7 @@ public class MapServer implements AutoCloseable {
     private static void innerRemove(ChunkLocation location, ChunkData data) {
         if (data != null) {
             synchronized (data) {
-                for (AbstractCacher cacher : MinimapApi.getCachers()) {
+                for (AbstractCacher cacher : MinimapApi.getInstance().getCachers()) {
                     cacher.saveChunk(location, data);
                 }
             }
