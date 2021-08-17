@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import xyz.wagyourtail.ResolveQueue;
+import xyz.wagyourtail.minimap.map.MapServer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,24 +14,30 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 public class ChunkData implements AutoCloseable {
+    private static final ResourceLocation air = new ResourceLocation("minecraft", "air");
+    private final List<ResourceLocation> resources = new ArrayList<>();
     public final ChunkLocation location;
-    private Map<String, Derivitive<?>> derrivitives = new HashMap<>();
-    public long updateTime;
-    public boolean changed = false;
-
     public final int[] heightmap = new int[256];
     public final byte[] blocklight = new byte[256];
     public final int[] blockid = new int[256];
     public final int[] biomeid = new int[256];
-
-
     public final int[] oceanFloorHeightmap = new int[256];
     public final int[] oceanFloorBlockid = new int[256];
-
-    private final List<ResourceLocation> resources = new ArrayList<>();
+    private Map<String, Derivitive<?>> derrivitives = new HashMap<>();
+    Error firstClose = null;
+    public long updateTime;
+    public boolean changed = false;
 
     public ChunkData(ChunkLocation location) {
         this.location = location;
+    }
+
+    public static int blockPosToIndex(BlockPos pos) {
+        int x = pos.getX() % 16;
+        int z = pos.getZ() % 16;
+        if (x < 0) x += 16;
+        if (z < 0) z += 16;
+        return (x << 4) + z;
     }
 
     public synchronized int getOrRegisterResourceLocation(ResourceLocation id) {
@@ -44,7 +51,6 @@ public class ChunkData implements AutoCloseable {
         return resources.size();
     }
 
-    private static final ResourceLocation air = new ResourceLocation("minecraft", "air");
     public synchronized ResourceLocation getResourceLocation(int i) {
         if (i < 1) return air;
         return resources.get(i - 1);
@@ -71,14 +77,12 @@ public class ChunkData implements AutoCloseable {
         return der.contained;
     }
 
-    Error firstClose = null;
-
     @Override
     public synchronized void close() {
         if (firstClose != null) return;
         firstClose = new Error();
         if (derrivitives instanceof ImmutableMap) return;
-        derrivitives.forEach((k,v) -> {
+        derrivitives.forEach((k, v) -> {
             if (v.contained instanceof AutoCloseable) {
                 try {
                     ((AutoCloseable) v.contained).close();
@@ -88,21 +92,6 @@ public class ChunkData implements AutoCloseable {
             }
         });
         derrivitives = ImmutableMap.of();
-    }
-
-    public synchronized void markDirty() {
-        if (derrivitives == null) return;
-        derrivitives.values().forEach((v) -> v.old = true);
-        changed = true;
-        location.level().saveChunk(location, this);
-    }
-
-    public static int blockPosToIndex(BlockPos pos) {
-        int x = pos.getX() % 16;
-        int z = pos.getZ() % 16;
-        if (x < 0) x += 16;
-        if (z < 0) z += 16;
-        return (x << 4) + z;
     }
 
     public synchronized void combineWithNewData(ChunkData newData) {
@@ -141,12 +130,22 @@ public class ChunkData implements AutoCloseable {
         }
     }
 
-    public static class Derivitive<T>{
-        public boolean old;
+    public synchronized void markDirty() {
+        if (derrivitives == null) return;
+        derrivitives.values().forEach((v) -> v.old = true);
+        changed = true;
+        MapServer.saveChunk(location, this);
+    }
+
+    public static class Derivitive<T> {
         public final ResolveQueue<T> contained;
+        public boolean old;
+
         Derivitive(boolean old, ResolveQueue<T> contained) {
             this.old = old;
             this.contained = contained;
         }
+
     }
+
 }

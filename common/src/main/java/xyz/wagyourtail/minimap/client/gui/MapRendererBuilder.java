@@ -39,4 +39,5 @@ public class MapRendererBuilder<T extends AbstractMapRenderer> {
         mapRenderer.setOverlays(overlays.toArray(AbstractMapOverlayRenderer[]::new));
         return mapRenderer;
     }
+
 }

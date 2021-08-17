@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit;
 public class BlockUpdateStrategy extends AbstractChunkUpdateStrategy {
     public static final Event<BlockUpdate> BLOCK_UPDATE_EVENT = EventFactory.createLoop();
 
-    private final LoadingCache<BlockUpdateData, Runnable> updateCache = CacheBuilder.newBuilder().expireAfterWrite(5000, TimeUnit.MILLISECONDS).removalListener((a) -> ((Runnable)a.getValue()).run()).build(new CacheLoader<>() {
+    private final LoadingCache<BlockUpdateData, Runnable> updateCache = CacheBuilder.newBuilder().expireAfterWrite(5000, TimeUnit.MILLISECONDS).removalListener((a) -> ((Runnable) a.getValue()).run()).build(new CacheLoader<>() {
         @Override
         public Runnable load(BlockUpdateData key) {
             return () -> updateNeighborLighting(key.level, key.chunkX, key.chunkZ);
@@ -37,6 +37,7 @@ public class BlockUpdateStrategy extends AbstractChunkUpdateStrategy {
             }
         }
     }
+
     @Override
     protected void registerEventListener() {
         BLOCK_UPDATE_EVENT.register((pos, level) -> {
@@ -50,9 +51,12 @@ public class BlockUpdateStrategy extends AbstractChunkUpdateStrategy {
         });
     }
 
-    private record BlockUpdateData(Level level, int chunkX, int chunkZ) {}
-
     public interface BlockUpdate {
         void onBlockUpdate(BlockPos pos, Level level);
+
     }
+
+    private record BlockUpdateData(Level level, int chunkX, int chunkZ) {
+    }
+
 }

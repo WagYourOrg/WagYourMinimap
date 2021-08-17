@@ -81,7 +81,7 @@ public class SquareMapNoRotRenderer extends AbstractMapRenderer {
         matrixStack.mulPose(Vector3f.ZP.rotationDegrees(player_rot));
         RenderSystem.setShaderTexture(0, player_icon_tex);
         float texSize = Math.max(maxLength / 20, 8);
-        drawTexCol(matrixStack, -texSize, -texSize, texSize*2, texSize*2, 1, 1, 0, 0, 0xFF0000FF);
+        drawTexCol(matrixStack, -texSize, -texSize, texSize * 2, texSize * 2, 1, 1, 0, 0, 0xFF0000FF);
     }
 
     @Override

@@ -13,4 +13,5 @@ public abstract class AbstractMapOverlayRenderer {
     }
 
     public abstract void renderOverlay(PoseStack stack, @NotNull Vec3 center, float maxLength, @NotNull Vec3 player_pos, float player_rot);
+
 }

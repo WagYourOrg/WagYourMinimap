@@ -12,6 +12,7 @@ public class MinimapEvents {
 
     public interface ChunkUpdated {
         void onChunkUpdated(ChunkLocation location, ResolveQueue<ChunkData> chunkData, Class<? extends AbstractChunkUpdateStrategy> strategy);
+
     }
 
 }

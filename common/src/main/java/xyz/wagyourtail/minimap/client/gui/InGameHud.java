@@ -8,10 +8,10 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import xyz.wagyourtail.ResolveQueue;
 import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
-import xyz.wagyourtail.minimap.client.gui.image.VanillaMapImageStrategy;
 import xyz.wagyourtail.minimap.chunkdata.ChunkData;
 import xyz.wagyourtail.minimap.chunkdata.ChunkLocation;
-import xyz.wagyourtail.minimap.MapLevel;
+import xyz.wagyourtail.minimap.client.gui.image.VanillaMapImageStrategy;
+import xyz.wagyourtail.minimap.map.MapLevel;
 
 public class InGameHud extends AbstractMapGui {
 
@@ -68,7 +68,7 @@ public class InGameHud extends AbstractMapGui {
         int chunkX = ((int) player.x) >> 4;
         int chunkZ = ((int) player.z) >> 4;
 
-        MapLevel level = MinimapClientApi.getInstance().getCurrentLevel();
+        MapLevel level = MinimapClientApi.getInstance().getMapLevel(client.level);
         if (level == null) return;
         ResolveQueue<ChunkData> cdata = level.getChunk(ChunkLocation.locationForChunkPos(level, chunkX, chunkZ));
         if (cdata == null) return;
@@ -101,4 +101,5 @@ public class InGameHud extends AbstractMapGui {
             this.bottom = bottom;
         }
     }
+
 }

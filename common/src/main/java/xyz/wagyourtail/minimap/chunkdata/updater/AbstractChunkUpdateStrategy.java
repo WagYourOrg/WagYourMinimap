@@ -9,16 +9,18 @@ import xyz.wagyourtail.minimap.api.MinimapApi;
 import xyz.wagyourtail.minimap.api.MinimapEvents;
 import xyz.wagyourtail.minimap.chunkdata.ChunkData;
 import xyz.wagyourtail.minimap.chunkdata.ChunkLocation;
-import xyz.wagyourtail.minimap.MapLevel;
 
 import java.util.function.BiFunction;
 
 public abstract class AbstractChunkUpdateStrategy {
     private final int priority;
+
     public AbstractChunkUpdateStrategy(int priority) {
         registerEventListener();
         this.priority = priority;
     }
+
+    protected abstract void registerEventListener();
 
     protected static LayerLightEventListener getBlockLightLayer(Level level) {
         return level.getLightEngine().getLayerListener(LightLayer.BLOCK);
@@ -33,22 +35,11 @@ public abstract class AbstractChunkUpdateStrategy {
     }
 
     protected ChunkLocation getChunkLocation(Level level, int chunkX, int chunkZ) {
-        return ChunkLocation.locationForChunkPos(updateCurrentLevel(level), chunkX, chunkZ);
-    }
-
-    private MapLevel updateCurrentLevel(Level level) {
-        MapLevel currentLevel = MinimapApi.getInstance().getCurrentLevel();
-        String server_slug = MinimapApi.getInstance().getServerName();
-        String level_slug = MinimapApi.getInstance().getLevelName(level);
-        if ((currentLevel == null) || (!currentLevel.server_slug.equals(server_slug) || !currentLevel.level_slug.equals(level_slug))) {
-            MinimapApi.getInstance().setCurrentLevel(currentLevel = new MapLevel(server_slug, level_slug, level.getMinBuildHeight(), level.getMaxBuildHeight()));
-        }
-        return currentLevel;
+        return ChunkLocation.locationForChunkPos(MinimapApi.getInstance().getMapLevel(level), chunkX, chunkZ);
     }
 
     protected ChunkLocation getChunkLocation(Level level, ChunkPos pos) {
-        return ChunkLocation.locationForChunkPos(updateCurrentLevel(level), pos);
+        return ChunkLocation.locationForChunkPos(MinimapApi.getInstance().getMapLevel(level), pos);
     }
 
-    protected abstract void registerEventListener();
 }

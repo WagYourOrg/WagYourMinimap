@@ -37,16 +37,6 @@ public class ThreadsafeDynamicTexture extends AbstractTexture {
 
     }
 
-    public ThreadsafeDynamicTexture(int i, int j, boolean bl) {
-        RenderSystem.assertThread(RenderSystem::isOnGameThreadOrInit);
-        this.pixels = new NativeImage(i, j, bl);
-        TextureUtil.prepareImage(this.getId(), this.pixels.getWidth(), this.pixels.getHeight());
-    }
-
-    @Override
-    public void load(ResourceManager manager) {
-    }
-
     public synchronized void upload() {
         if (this.pixels != null) {
             this.bind();
@@ -57,12 +47,35 @@ public class ThreadsafeDynamicTexture extends AbstractTexture {
 
     }
 
+    public ThreadsafeDynamicTexture(int i, int j, boolean bl) {
+        RenderSystem.assertThread(RenderSystem::isOnGameThreadOrInit);
+        this.pixels = new NativeImage(i, j, bl);
+        TextureUtil.prepareImage(this.getId(), this.pixels.getWidth(), this.pixels.getHeight());
+    }
+
+    @Override
+    public void load(ResourceManager manager) {
+    }
+
+    @Override
+    public synchronized void close() {
+        CompletableFuture.runAsync(() -> {
+            synchronized (this) {
+                if (this.pixels != null) {
+                    this.pixels.close();
+                    this.releaseId();
+                    this.pixels = null;
+                }
+            }
+        });
+    }
+
     @Nullable
     public synchronized NativeImage getPixels() {
         return this.pixels;
     }
 
-    public  synchronized void setPixels(@NotNull NativeImage nativeImage) {
+    public synchronized void setPixels(@NotNull NativeImage nativeImage) {
         if (this.pixels != null) {
             this.pixels.close();
         }
@@ -81,19 +94,6 @@ public class ThreadsafeDynamicTexture extends AbstractTexture {
             TextureUtil.prepareImage(this.getId(), this.pixels.getWidth(), this.pixels.getHeight());
             this.upload();
         }
-    }
-
-    @Override
-    public synchronized void close() {
-        CompletableFuture.runAsync(() -> {
-            synchronized (this) {
-                if (this.pixels != null) {
-                    this.pixels.close();
-                    this.releaseId();
-                    this.pixels = null;
-                }
-            }
-        });
     }
 
 }

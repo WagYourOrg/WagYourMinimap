@@ -4,8 +4,9 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import dev.architectury.platform.Platform;
 import net.minecraft.world.level.Level;
-import xyz.wagyourtail.minimap.MapLevel;
 import xyz.wagyourtail.minimap.chunkdata.updater.AbstractChunkUpdateStrategy;
+import xyz.wagyourtail.minimap.map.MapLevel;
+import xyz.wagyourtail.minimap.map.MapServer;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -27,7 +28,7 @@ public abstract class MinimapApi {
     public final Path configFile = configFolder.resolve("config.json");
     public final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
-    protected MapLevel currentLevel = null;
+    private MapServer currentServer = null;
     protected WagYourMinimapConfig config = null;
 
     public static MinimapApi getInstance() {
@@ -75,7 +76,8 @@ public abstract class MinimapApi {
     }
 
     public synchronized void saveConfig() {
-        if (!configFolder.toFile().exists() && !configFolder.toFile().mkdirs()) throw new RuntimeException("Failed to create config folder!");
+        if (!configFolder.toFile().exists() && !configFolder.toFile().mkdirs())
+            throw new RuntimeException("Failed to create config folder!");
         try (FileWriter fw = new FileWriter(configFile.toFile())) {
             fw.write(gson.toJson(getConfig()));
         } catch (IOException ex) {
@@ -83,23 +85,22 @@ public abstract class MinimapApi {
         }
     }
 
-    public synchronized MapLevel getCurrentLevel() {
-        return currentLevel;
+    public synchronized MapLevel getMapLevel(Level current) {
+        return getMapServer().getLevel(current);
     }
 
-    public synchronized void setCurrentLevel(MapLevel level) {
-        MapLevel oldLevel = currentLevel;
-        currentLevel = level;
-        if (oldLevel != null) {
-            oldLevel.close();
+    public synchronized MapServer getMapServer() {
+        if (currentServer == null || !getServerName().equals(currentServer.server_slug)) {
+            if (currentServer != null) {
+                currentServer.close();
+            }
+            currentServer = new MapServer(getServerName());
         }
+        return currentServer;
     }
 
     public String getServerName() {
         return ".";
     }
 
-    public String getLevelName(Level level) {
-        return level.dimension().location().toString().replace(":", "_");
-    }
 }

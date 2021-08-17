@@ -2,14 +2,18 @@ package xyz.wagyourtail.minimap.client.gui.image;
 
 import net.minecraft.client.Minecraft;
 import xyz.wagyourtail.ResolveQueue;
-import xyz.wagyourtail.minimap.client.gui.ThreadsafeDynamicTexture;
 import xyz.wagyourtail.minimap.chunkdata.ChunkData;
 import xyz.wagyourtail.minimap.chunkdata.ChunkLocation;
+import xyz.wagyourtail.minimap.client.gui.ThreadsafeDynamicTexture;
 
 import java.util.concurrent.ExecutionException;
 
 public abstract class AbstractImageStrategy {
     protected static final Minecraft minecraft = Minecraft.getInstance();
+
+    public static int colorFormatSwap(int color) {
+        return color & 0xFF00FF00 | (color & 0xFF) << 0x10 | color >> 0x10 & 0xFF;
+    }
 
     public synchronized ResolveQueue<ThreadsafeDynamicTexture> getImage(ChunkLocation key) throws ExecutionException {
         ResolveQueue<ChunkData> data = key.level().getChunk(key);
@@ -26,10 +30,6 @@ public abstract class AbstractImageStrategy {
 
     public boolean shouldRender() {
         return true;
-    }
-
-    public static int colorFormatSwap(int color) {
-        return color & 0xFF00FF00 | (color & 0xFF) << 0x10 | color >> 0x10 & 0xFF;
     }
 
 }

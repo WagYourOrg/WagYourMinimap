@@ -9,10 +9,8 @@ public class PriorityPoolExecutor implements Executor, AutoCloseable {
 
     private static final AtomicInteger poolcount = new AtomicInteger(0);
     private final Thread[] threads;
-
-    private PriorityQueue<Runnable> queue = new PriorityQueue<>();
-
     private final int defaultPriority;
+    private PriorityQueue<Runnable> queue = new PriorityQueue<>();
 
 
     public PriorityPoolExecutor() {
@@ -37,6 +35,22 @@ public class PriorityPoolExecutor implements Executor, AutoCloseable {
         }
     }
 
+    private void threadRunner() {
+        try {
+            while (true) {
+                Runnable next = queue.take();
+                try {
+                    next.run();
+                } catch (Throwable th) {
+                    th.printStackTrace();
+                }
+                Thread.yield();
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
     @Override
     public void execute(@NotNull Runnable command) {
         queue.put(command, defaultPriority);
@@ -46,22 +60,6 @@ public class PriorityPoolExecutor implements Executor, AutoCloseable {
         queue.put(command, priority);
     }
 
-    private void threadRunner() {
-        try {
-            while (true) {
-                Runnable next = queue.take();
-                try {
-                    next.run();
-                } catch(Throwable th) {
-                    th.printStackTrace();
-                }
-                 Thread.yield();
-            }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
     @Override
     public void close() {
         for (Thread thread : threads) {
@@ -69,4 +67,5 @@ public class PriorityPoolExecutor implements Executor, AutoCloseable {
         }
         queue = null;
     }
+
 }

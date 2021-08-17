@@ -7,9 +7,9 @@ import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Blocks;
-import xyz.wagyourtail.minimap.client.gui.ThreadsafeDynamicTexture;
 import xyz.wagyourtail.minimap.chunkdata.ChunkData;
 import xyz.wagyourtail.minimap.chunkdata.ChunkLocation;
+import xyz.wagyourtail.minimap.client.gui.ThreadsafeDynamicTexture;
 
 import java.awt.*;
 import java.util.Set;
@@ -39,31 +39,6 @@ public class VanillaMapImageStrategy extends AbstractImageStrategy {
         Registry.BLOCK.getKey(Blocks.OAK_LEAVES),
         Registry.BLOCK.getKey(Blocks.SPRUCE_LEAVES)
     );
-
-
-    public static int getBlockColor(ResourceLocation block) {
-        return Registry.BLOCK.getOptional(block).orElse(Blocks.AIR).defaultBlockState().getMapColor(Minecraft.getInstance().level, BlockPos.ZERO).col;
-
-    }
-
-    private int colorCombine(int colorA, int colorB, float aRatio) {
-        float bRatio = 1.0F - aRatio;
-        int red = (int) (((colorA & 0xFF0000) >> 0x10) * aRatio);
-        int green = (int) (((colorA & 0xFF00) >> 0x8) * aRatio);
-        int blue = (int) ((colorA & 0xFF) * aRatio);
-        red += (int) (((colorB & 0xFF0000) >> 0x10) * bRatio);
-        green += (int) (((colorB & 0xFF00) >> 0x8) * bRatio);
-        blue += (int) ((colorB & 0xFF) * bRatio);
-        return red << 0x10 | green << 0x8 | blue;
-    }
-
-    private int brightnessForHeight(int color, float height) {
-        float[] hsb = Color.RGBtoHSB((color & 0xFF0000) >> 0x10, (color & 0xFF00) >> 0x8, color & 0xFF, null);
-        //brightness scaled by .75 - 1.0 based on height
-        hsb[2] *= .75F + height * .25F;
-        return color & 0xFF000000 | Color.HSBtoRGB(hsb[0], hsb[1], hsb[2]);
-    }
-
 
     @Override
     public ThreadsafeDynamicTexture load(ChunkLocation location, ChunkData data) {
@@ -102,6 +77,29 @@ public class VanillaMapImageStrategy extends AbstractImageStrategy {
             image.setPixelRGBA(x, z, colorFormatSwap(color));
         }
         return new ThreadsafeDynamicTexture(image);
+    }
+
+    public static int getBlockColor(ResourceLocation block) {
+        return Registry.BLOCK.getOptional(block).orElse(Blocks.AIR).defaultBlockState().getMapColor(Minecraft.getInstance().level, BlockPos.ZERO).col;
+
+    }
+
+    private int colorCombine(int colorA, int colorB, float aRatio) {
+        float bRatio = 1.0F - aRatio;
+        int red = (int) (((colorA & 0xFF0000) >> 0x10) * aRatio);
+        int green = (int) (((colorA & 0xFF00) >> 0x8) * aRatio);
+        int blue = (int) ((colorA & 0xFF) * aRatio);
+        red += (int) (((colorB & 0xFF0000) >> 0x10) * bRatio);
+        green += (int) (((colorB & 0xFF00) >> 0x8) * bRatio);
+        blue += (int) ((colorB & 0xFF) * bRatio);
+        return red << 0x10 | green << 0x8 | blue;
+    }
+
+    private int brightnessForHeight(int color, float height) {
+        float[] hsb = Color.RGBtoHSB((color & 0xFF0000) >> 0x10, (color & 0xFF00) >> 0x8, color & 0xFF, null);
+        //brightness scaled by .75 - 1.0 based on height
+        hsb[2] *= .75F + height * .25F;
+        return color & 0xFF000000 | Color.HSBtoRGB(hsb[0], hsb[1], hsb[2]);
     }
 
 }

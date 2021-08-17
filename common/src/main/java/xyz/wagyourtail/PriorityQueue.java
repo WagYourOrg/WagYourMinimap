@@ -10,8 +10,8 @@ import java.util.List;
  * @param <E>
  */
 public class PriorityQueue<E> {
-    private int count = 0;
     private final List<List<E>> priorityMap = new ArrayList<>();
+    private int count = 0;
 
     public synchronized void put(E element, int priority) {
         while (priorityMap.size() <= priority) {

@@ -23,6 +23,17 @@ public class ChunkLoadStrategy extends AbstractChunkUpdateStrategy {
         super(1);
     }
 
+    @Override
+    protected void registerEventListener() {
+        LOAD.register((chunk, level) -> {
+            ChunkPos pos = chunk.getPos();
+            updateChunk(
+                getChunkLocation(level, pos),
+                (location, oldData) -> loadFromChunk(location, chunk, level, oldData)
+            );
+        });
+    }
+
     public static ChunkData loadFromChunk(ChunkLocation location, ChunkAccess chunk, Level level, ChunkData oldData) {
         ChunkData data = new ChunkData(location);
         data.updateTime = System.currentTimeMillis();
@@ -54,19 +65,9 @@ public class ChunkLoadStrategy extends AbstractChunkUpdateStrategy {
         return oldData;
     }
 
-    @Override
-    protected void registerEventListener() {
-        LOAD.register((chunk, level) -> {
-            ChunkPos pos = chunk.getPos();
-            updateChunk(
-                getChunkLocation(level, pos),
-                (location, oldData) -> loadFromChunk(location, chunk, level, oldData)
-            );
-        });
-    }
-
     public interface Load {
         void onLoadChunk(ChunkAccess chunk, Level level);
+
     }
 
 }

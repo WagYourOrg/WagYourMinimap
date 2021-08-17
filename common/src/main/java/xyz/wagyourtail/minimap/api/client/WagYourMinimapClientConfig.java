@@ -8,7 +8,6 @@ import me.shedaniel.clothconfig2.impl.builders.IntSliderBuilder;
 import me.shedaniel.clothconfig2.impl.builders.LongSliderBuilder;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.TranslatableComponent;
-import xyz.wagyourtail.minimap.WagYourMinimap;
 import xyz.wagyourtail.minimap.api.WagYourMinimapConfig;
 import xyz.wagyourtail.minimap.client.gui.InGameHud;
 
@@ -20,6 +19,7 @@ public class WagYourMinimapClientConfig extends WagYourMinimapConfig {
 
     public InGameHud.SnapSide snapSide = InGameHud.SnapSide.TOP_RIGHT;
     public float mapScreenPercent = 0.30F;
+
     public Screen getConfigScreen(Screen parent) {
         ConfigBuilder builder = ConfigBuilder.create()
             .setParentScreen(parent)

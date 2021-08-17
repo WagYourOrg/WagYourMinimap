@@ -12,14 +12,14 @@ public class ResolveQueue<U> {
     private static final int availableThreads = Math.max((int) Math.ceil(Runtime.getRuntime().availableProcessors() / 3d), 1);
     private static final int defaultPriority = 0;
     private static final PriorityPoolExecutor default_pool = new PriorityPoolExecutor(availableThreads, defaultPriority, "ResolveQueuePool", Thread.NORM_PRIORITY);
-    private U current;
     private final PriorityPoolExecutor pool;
     private final AtomicInteger count = new AtomicInteger(0);
     private final AtomicBoolean runningNext = new AtomicBoolean(false);
     private final Queue<QueueItem<U>> queue = new LinkedList<>();
+    private U current;
     private boolean closed = false;
 
-    public ResolveQueue(@NotNull  Function<U, U> firstResolve) {
+    public ResolveQueue(@NotNull Function<U, U> firstResolve) {
         this(firstResolve, null);
 
     }
@@ -58,6 +58,36 @@ public class ResolveQueue<U> {
         return current;
     }
 
+    private synchronized void runNextAsync() {
+        if (!runningNext.get() && !queue.isEmpty()) {
+            QueueItem<U> next = queue.poll();
+            assert next != null;
+            runningNext.set(true);
+            pool.execute(() ->
+                    runNextInner(next)
+                , next.priority);
+        }
+    }
+
+    private void runNextInner(QueueItem<U> next) {
+        U newVal = next.next.apply(current);
+        synchronized (this) {
+            U oldVal = current;
+            current = newVal;
+            if (oldVal != newVal) {
+                if (oldVal instanceof AutoCloseable old) {
+                    try {
+                        old.close();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            this.notifyAll();
+            runningNext.set(false);
+        }
+    }
+
     public U get() throws InterruptedException {
         synchronized (this) {
             if (closed) return null;
@@ -82,36 +112,6 @@ public class ResolveQueue<U> {
         runNextInner(next);
     }
 
-    private synchronized void runNextAsync() {
-        if (!runningNext.get() && !queue.isEmpty()) {
-            QueueItem<U> next = queue.poll();
-            assert next != null;
-            runningNext.set(true);
-            pool.execute(() ->
-                runNextInner(next)
-            , next.priority);
-        }
-    }
-
-    private void runNextInner(QueueItem<U> next) {
-        U newVal = next.next.apply(current);
-        synchronized (this) {
-            U oldVal = current;
-            current = newVal;
-            if (oldVal != newVal) {
-                if (oldVal instanceof AutoCloseable old) {
-                    try {
-                        old.close();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-            this.notifyAll();
-            runningNext.set(false);
-        }
-    }
-
     public synchronized void close() throws Exception {
         closed = true;
         if (runningNext.get()) {
@@ -122,5 +122,7 @@ public class ResolveQueue<U> {
         }
     }
 
-    private static record QueueItem<U>(Function<U, U> next, int priority) {}
+    private static record QueueItem<U>(Function<U, U> next, int priority) {
+    }
+
 }

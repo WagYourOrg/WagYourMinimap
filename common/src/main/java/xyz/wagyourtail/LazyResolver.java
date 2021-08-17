@@ -13,11 +13,12 @@ import java.util.function.Supplier;
  *
  * @param <U>
  */
- @Deprecated
+@Deprecated
 public class LazyResolver<U> {
     private static final int availableThreads = Math.min(Math.max(1, Runtime.getRuntime().availableProcessors() - 1), 4);
     private static final ThreadPoolExecutor pool = new ThreadPoolExecutor(availableThreads, availableThreads, 0L, TimeUnit.NANOSECONDS, new LinkedBlockingQueue<>(), new ThreadFactory() {
         final AtomicInteger threadCount = new AtomicInteger(1);
+
         @Override
         public Thread newThread(@NotNull Runnable r) {
             return new Thread(r, "LazyResolverPool-" + threadCount.getAndIncrement());
@@ -25,8 +26,8 @@ public class LazyResolver<U> {
     });
     private final Supplier<U> supplier;
     private final AtomicBoolean pooled = new AtomicBoolean(false);
-    private boolean done = false;
     private final LazyResolver<U> previous;
+    private boolean done = false;
     private U result = null;
 
     public LazyResolver(@NotNull Supplier<U> supplier) {
