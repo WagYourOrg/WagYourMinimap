@@ -4,8 +4,8 @@ import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.biome.Biome;
-import xyz.wagyourtail.minimap.chunkdata.ChunkData;
-import xyz.wagyourtail.minimap.chunkdata.ChunkLocation;
+import xyz.wagyourtail.minimap.map.chunkdata.ChunkData;
+import xyz.wagyourtail.minimap.map.chunkdata.ChunkLocation;
 import xyz.wagyourtail.minimap.client.gui.ThreadsafeDynamicTexture;
 
 public class BiomeStrategy extends AbstractImageStrategy {

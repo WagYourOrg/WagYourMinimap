@@ -1,4 +1,4 @@
-package xyz.wagyourtail.minimap.chunkdata;
+package xyz.wagyourtail.minimap.map.chunkdata;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;

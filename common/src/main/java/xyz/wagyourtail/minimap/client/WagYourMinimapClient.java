@@ -9,8 +9,9 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import xyz.wagyourtail.minimap.WagYourMinimap;
 import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
-import xyz.wagyourtail.minimap.chunkdata.updater.BlockUpdateStrategy;
-import xyz.wagyourtail.minimap.chunkdata.updater.ChunkLoadStrategy;
+import xyz.wagyourtail.minimap.map.chunkdata.cache.ZipCacher;
+import xyz.wagyourtail.minimap.map.chunkdata.updater.BlockUpdateStrategy;
+import xyz.wagyourtail.minimap.map.chunkdata.updater.ChunkLoadStrategy;
 import xyz.wagyourtail.minimap.client.gui.MapRendererBuilder;
 import xyz.wagyourtail.minimap.client.gui.image.BlockLightImageStrategy;
 import xyz.wagyourtail.minimap.client.gui.image.VanillaMapImageStrategy;
@@ -33,6 +34,7 @@ public class WagYourMinimapClient extends WagYourMinimap {
                 .addRenderLayer(BlockLightImageStrategy.class)
                 .addOverlay(SquareMapBorderOverlay.class)
                 .build());
+            MapServer.addCacher(ZipCacher.class);
         } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
         }

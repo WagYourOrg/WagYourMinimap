@@ -4,8 +4,8 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import xyz.wagyourtail.ResolveQueue;
-import xyz.wagyourtail.minimap.chunkdata.ChunkData;
-import xyz.wagyourtail.minimap.chunkdata.ChunkLocation;
+import xyz.wagyourtail.minimap.map.chunkdata.ChunkData;
+import xyz.wagyourtail.minimap.map.chunkdata.ChunkLocation;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;

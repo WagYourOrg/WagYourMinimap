@@ -1,11 +1,13 @@
 package xyz.wagyourtail.minimap.map;
 
+import com.google.common.collect.ImmutableSet;
 import net.minecraft.world.level.Level;
-import xyz.wagyourtail.minimap.chunkdata.ChunkData;
-import xyz.wagyourtail.minimap.chunkdata.ChunkLocation;
-import xyz.wagyourtail.minimap.chunkdata.cache.AbstractCacher;
+import xyz.wagyourtail.minimap.map.chunkdata.ChunkData;
+import xyz.wagyourtail.minimap.map.chunkdata.ChunkLocation;
+import xyz.wagyourtail.minimap.map.chunkdata.cache.AbstractCacher;
 import xyz.wagyourtail.minimap.waypoint.WaypointManager;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -25,8 +27,16 @@ public class MapServer implements AutoCloseable {
         this.server_slug = server_slug;
     }
 
+    public static void addCacher(Class<? extends AbstractCacher> cacher) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        cachers.put(cacher, cacher.getConstructor().newInstance());
+    }
+
+    public static void removeCacher(Class<? extends AbstractCacher> cacher) {
+        cachers.remove(cacher);
+    }
+
     public static ChunkData loadChunk(ChunkLocation location) {
-        for (AbstractCacher cacher : MapServer.cachers.values()) {
+        for (AbstractCacher cacher : ImmutableSet.copyOf(MapServer.cachers.values())) {
             ChunkData data = cacher.loadChunk(location);
             if (data != null) return data;
         }
@@ -44,7 +54,7 @@ public class MapServer implements AutoCloseable {
     private static void innerRemove(ChunkLocation location, ChunkData data) {
         if (data != null) {
             synchronized (data) {
-                for (AbstractCacher cacher : cachers.values()) {
+                for (AbstractCacher cacher : ImmutableSet.copyOf(cachers.values())) {
                     cacher.saveChunk(location, data);
                 }
             }
@@ -66,7 +76,7 @@ public class MapServer implements AutoCloseable {
     }
 
     @Override
-    public void close() {
+    public synchronized void close() {
         for (MapLevel value : levels.values()) {
             value.close();
         }

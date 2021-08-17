@@ -1,4 +1,4 @@
-package xyz.wagyourtail.minimap.chunkdata;
+package xyz.wagyourtail.minimap.map.chunkdata;
 
 import net.minecraft.world.level.ChunkPos;
 import xyz.wagyourtail.minimap.map.MapLevel;
