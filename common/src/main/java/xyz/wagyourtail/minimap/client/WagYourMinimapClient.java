@@ -6,18 +6,17 @@ import dev.architectury.event.events.client.ClientPlayerEvent;
 import dev.architectury.event.events.client.ClientTickEvent;
 import dev.architectury.registry.client.keymappings.KeyMappingRegistry;
 import net.minecraft.client.KeyMapping;
-import net.minecraft.client.Minecraft;
 import xyz.wagyourtail.minimap.WagYourMinimap;
 import xyz.wagyourtail.minimap.api.MinimapApi;
 import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
-import xyz.wagyourtail.minimap.map.chunkdata.cache.ZipCacher;
-import xyz.wagyourtail.minimap.map.chunkdata.updater.BlockUpdateStrategy;
-import xyz.wagyourtail.minimap.map.chunkdata.updater.ChunkLoadStrategy;
 import xyz.wagyourtail.minimap.client.gui.MapRendererBuilder;
 import xyz.wagyourtail.minimap.client.gui.image.BlockLightImageStrategy;
 import xyz.wagyourtail.minimap.client.gui.image.VanillaMapImageStrategy;
 import xyz.wagyourtail.minimap.client.gui.renderer.SquareMapNoRotRenderer;
 import xyz.wagyourtail.minimap.client.gui.renderer.overlay.SquareMapBorderOverlay;
+import xyz.wagyourtail.minimap.map.chunkdata.cache.ZipCacher;
+import xyz.wagyourtail.minimap.map.chunkdata.updater.BlockUpdateStrategy;
+import xyz.wagyourtail.minimap.map.chunkdata.updater.ChunkLoadStrategy;
 
 import java.lang.reflect.InvocationTargetException;
 
