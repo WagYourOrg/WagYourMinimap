@@ -14,7 +14,7 @@ public class WagYourMinimapFabric implements ClientModInitializer, DedicatedServ
     public void onInitializeClient() {
         WagYourMinimapClient.init();
         ClientChunkEvents.CHUNK_LOAD.register((level, chunk) -> ChunkLoadStrategy.LOAD.invoker().onLoadChunk(chunk, level));
-        WorldRenderEvents.LAST.register((ctx) -> InGameWaypointRenderer.RENDER_LAST.invoker().onRenderLast(ctx.matrixStack(), ctx.tickDelta(), ctx.limitTime()));
+        WorldRenderEvents.END.register((ctx) -> InGameWaypointRenderer.RENDER_LAST.invoker().onRenderLast(ctx.matrixStack(), ctx.tickDelta(), ctx.limitTime()));
     }
 
     @Override
