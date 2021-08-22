@@ -19,7 +19,7 @@ public class WaypointManager implements AutoCloseable {
         this.server = server;
         //TODO: load from cacher(s)
         //test waypoint
-        waypointList.add(new Waypoint(0, 0, 0, 0, 0, 0, "TEST", new String[] {}, new String[] {}));
+        waypointList.add(new Waypoint(0, 0, 0, (byte) 255, (byte) 0, (byte) 0, "TEST", new String[] {}, new String[] {}));
     }
 
     public static void addFilter(Class<? extends Predicate<Waypoint>> filter) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {

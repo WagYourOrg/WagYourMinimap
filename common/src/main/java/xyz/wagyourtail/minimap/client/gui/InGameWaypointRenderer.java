@@ -2,12 +2,14 @@ package xyz.wagyourtail.minimap.client.gui;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.math.Vector3f;
 import dev.architectury.event.Event;
 import dev.architectury.event.EventFactory;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.Option;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import xyz.wagyourtail.minimap.WagYourMinimap;
 import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
@@ -21,6 +23,7 @@ public class InGameWaypointRenderer {
 
 
     public void onRender(PoseStack stack, float partialTicks, long finishTimeNano) {
+        stack.pushPose();
         assert mc.cameraEntity != null;
         Vec3 center = mc.gameRenderer.getMainCamera().getPosition();
         float xRot = mc.gameRenderer.getMainCamera().getXRot();
@@ -29,21 +32,36 @@ public class InGameWaypointRenderer {
         RenderSystem.disableDepthTest();
         for (Waypoint visibleWaypoint : MinimapClientApi.getInstance().getMapServer().waypoints.getVisibleWaypoints()) {
             stack.pushPose();
-                renderWaypoint(stack, center, xRot, yRot, visibleWaypoint);
+            renderWaypoint(stack, center, xRot, yRot, visibleWaypoint);
             stack.popPose();
         }
         RenderSystem.enableDepthTest();
+        stack.popPose();
     }
 
     public void renderWaypoint(PoseStack stack, Vec3 center, float xRot, float yRot, Waypoint waypoint) {
-        Vec3 offset = new Vec3(waypoint.posX(), waypoint.posY(), waypoint.posZ()).subtract(center);
-        stack.translate(offset.x, offset.y, offset.z);
+        Vec3 offset = new Vec3(waypoint.posX() + .5f, waypoint.posY() + .5f, waypoint.posZ() + .5f).subtract(center);
+        Vec3 normalized_offset = offset.normalize().multiply(20, 20, 20);
+        stack.translate(normalized_offset.x, normalized_offset.y, normalized_offset.z);
         stack.mulPose(Vector3f.YP.rotationDegrees(-yRot));
         stack.mulPose(Vector3f.XP.rotationDegrees(xRot));
-        double maxDistance = mc.options.renderDistance * 16.0D * 0.99D;
+        stack.mulPose(Vector3f.ZP.rotationDegrees(180));
+        stack.scale(.25f, .25f, .25f);
+        int abgr = 0xFF000000 | waypoint.colB() << 0x10 | waypoint.colG() << 0x8 | waypoint.colR() & 255;
+        AbstractMapRenderer.drawTexCol(stack, -10, -10, 20, 20, 0, 0, 1, 1, abgr);
+        if (isLookingAt(offset.normalize(), xRot, yRot)) {
+            drawText(stack, String.format("%s (%.2f m)",waypoint.name(), offset.distanceTo(Vec3.ZERO)));
+        }
+    }
 
+    private boolean isLookingAt(Vec3 normal, float xRot, float yRot) {
+        return normal.distanceTo(Vec3.directionFromRotation(xRot, yRot)) < .1;
+    }
 
-        AbstractMapRenderer.drawTexCol(stack, -.1f, -.1f, .2f, .2f, 0, 0, 1, 1, 0xFFFFFFFF);
+    public void drawText(PoseStack stack, String text) {
+        MultiBufferSource.BufferSource buffer = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
+        mc.font.drawInBatch(text, -mc.font.width(text) / 2f, 10, -1, false, stack.last().pose(), buffer, true, 0x20000000, 0xF000F0);
+        buffer.endBatch();
     }
 
     public interface RenderLastEvent {
