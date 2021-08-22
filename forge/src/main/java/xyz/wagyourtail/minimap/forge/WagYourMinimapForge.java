@@ -2,6 +2,7 @@ package xyz.wagyourtail.minimap.forge;
 
 import dev.architectury.platform.forge.EventBuses;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.event.world.ChunkEvent;
@@ -14,6 +15,7 @@ import net.minecraftforge.fmlclient.ConfigGuiHandler;
 import xyz.wagyourtail.minimap.WagYourMinimap;
 import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
 import xyz.wagyourtail.minimap.client.WagYourMinimapClient;
+import xyz.wagyourtail.minimap.client.gui.InGameWaypointRenderer;
 import xyz.wagyourtail.minimap.map.chunkdata.updater.BlockUpdateStrategy;
 import xyz.wagyourtail.minimap.map.chunkdata.updater.ChunkLoadStrategy;
 
@@ -38,5 +40,10 @@ public class WagYourMinimapForge {
     @SubscribeEvent
     public void onChunkLoad(ChunkEvent.Load load) {
         ChunkLoadStrategy.LOAD.invoker().onLoadChunk(load.getChunk(), (Level) load.getWorld());
+    }
+
+    @SubscribeEvent
+    public void onRenderLast(RenderWorldLastEvent renderEvent) {
+        InGameWaypointRenderer.RENDER_LAST.invoker().onRenderLast(renderEvent.getMatrixStack(), renderEvent.getPartialTicks(), renderEvent.getFinishTimeNano());
     }
 }

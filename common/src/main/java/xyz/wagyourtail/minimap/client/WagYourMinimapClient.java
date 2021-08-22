@@ -9,6 +9,7 @@ import net.minecraft.client.KeyMapping;
 import xyz.wagyourtail.minimap.WagYourMinimap;
 import xyz.wagyourtail.minimap.api.MinimapApi;
 import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
+import xyz.wagyourtail.minimap.client.gui.InGameWaypointRenderer;
 import xyz.wagyourtail.minimap.client.gui.MapRendererBuilder;
 import xyz.wagyourtail.minimap.client.gui.image.BlockLightImageStrategy;
 import xyz.wagyourtail.minimap.client.gui.image.VanillaMapImageStrategy;
@@ -41,6 +42,7 @@ public class WagYourMinimapClient extends WagYourMinimap {
         }
 
         ClientGuiEvent.RENDER_HUD.register(MinimapClientApi.getInstance().inGameHud::render);
+
         ClientTickEvent.CLIENT_POST.register((mc) -> {
             if (key_openmap.consumeClick()) {
                 mc.setScreen(MinimapClientApi.getInstance().getConfig().getConfigScreen(null));
@@ -48,6 +50,7 @@ public class WagYourMinimapClient extends WagYourMinimap {
         });
         ClientPlayerEvent.CLIENT_PLAYER_QUIT.register((player) -> {
             LOGGER.info("exiting {}", MinimapClientApi.getInstance().getMapServer());
+            MinimapClientApi.getInstance().getMapServer().close();
             int i = 0;
             int j;
             while ((j = MinimapApi.getInstance().getSaving()) > 0) {
@@ -56,6 +59,7 @@ public class WagYourMinimapClient extends WagYourMinimap {
                 Thread.yield();
             }
         });
+        InGameWaypointRenderer.RENDER_LAST.register(MinimapClientApi.getInstance().waypointRenderer::onRender);
     }
 
 }

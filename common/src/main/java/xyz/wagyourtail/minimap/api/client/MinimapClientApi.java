@@ -6,10 +6,12 @@ import net.minecraft.client.server.IntegratedServer;
 import net.minecraft.world.level.storage.LevelResource;
 import xyz.wagyourtail.minimap.api.MinimapApi;
 import xyz.wagyourtail.minimap.client.gui.InGameHud;
+import xyz.wagyourtail.minimap.client.gui.InGameWaypointRenderer;
 
 public class MinimapClientApi extends MinimapApi {
     protected final Minecraft mc = Minecraft.getInstance();
     public final InGameHud inGameHud = new InGameHud();
+    public final InGameWaypointRenderer waypointRenderer = new InGameWaypointRenderer();
 
 
     public static MinimapClientApi getInstance() {

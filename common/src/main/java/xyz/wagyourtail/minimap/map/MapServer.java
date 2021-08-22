@@ -1,6 +1,5 @@
 package xyz.wagyourtail.minimap.map;
 
-import com.google.common.collect.ImmutableSet;
 import net.minecraft.world.level.Level;
 import xyz.wagyourtail.minimap.api.MinimapApi;
 import xyz.wagyourtail.minimap.map.chunkdata.ChunkData;
@@ -67,6 +66,7 @@ public class MapServer implements AutoCloseable {
             value.close();
         }
         levels.clear();
+        waypoints.close();
     }
 
 }
