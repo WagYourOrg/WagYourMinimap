@@ -5,7 +5,9 @@ import com.google.common.collect.ImmutableMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import xyz.wagyourtail.ResolveQueue;
+import xyz.wagyourtail.minimap.api.MinimapApi;
 import xyz.wagyourtail.minimap.map.MapServer;
+import xyz.wagyourtail.minimap.map.chunkdata.cache.AbstractCacher;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -134,7 +136,13 @@ public class ChunkData implements AutoCloseable {
         if (derrivitives == null) return;
         derrivitives.values().forEach((v) -> v.old = true);
         changed = true;
-        MapServer.saveChunk(location, this);
+        MapServer.addToSaveQueue(() -> {
+            synchronized (this) {
+                for (AbstractCacher cacher : MinimapApi.getInstance().getCachers()) {
+                    cacher.saveChunk(location, this);
+                }
+            }
+        });
     }
 
     public static class Derivitive<T> {

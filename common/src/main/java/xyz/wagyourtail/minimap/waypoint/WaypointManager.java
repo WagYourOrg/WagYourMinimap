@@ -1,13 +1,16 @@
 package xyz.wagyourtail.minimap.waypoint;
 
+import com.google.common.collect.ImmutableSet;
+import xyz.wagyourtail.minimap.api.MinimapApi;
 import xyz.wagyourtail.minimap.map.MapServer;
+import xyz.wagyourtail.minimap.map.chunkdata.cache.AbstractCacher;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-public class WaypointManager implements AutoCloseable {
+public class WaypointManager {
     private static final Map<Class<Predicate<Waypoint>>, Predicate<Waypoint>> filters = new HashMap<>();
     private static Predicate<Waypoint> compiledFilter = (a) -> true;
     private final MapServer server;
@@ -17,9 +20,14 @@ public class WaypointManager implements AutoCloseable {
 
     public WaypointManager(MapServer server) {
         this.server = server;
-        //TODO: load from cacher(s)
+
+        for (AbstractCacher cacher : MinimapApi.getInstance().getCachers()) {
+            waypointList.addAll(cacher.loadWaypoints(server));
+        }
         //test waypoint
-        waypointList.add(new Waypoint(0, 0, 0, (byte) 255, (byte) 0, (byte) 0, "TEST", new String[] {}, new String[] {}));
+        if (waypointList.isEmpty()) {
+            waypointList.add(new Waypoint(0, 0, 0, (byte) 255, (byte) 0, (byte) 0, "TEST", new String[] {}, new String[] {}));
+        }
     }
 
     public static void addFilter(Class<? extends Predicate<Waypoint>> filter) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
@@ -43,13 +51,32 @@ public class WaypointManager implements AutoCloseable {
         compileFilter();
     }
 
+    public Set<Waypoint> getAllWaypoints() {
+        return ImmutableSet.copyOf(waypointList);
+    }
+
+    public synchronized void addWaypoint(Waypoint waypoint) {
+        waypointList.add(waypoint);
+        saveWaypoints();
+    }
+
+    public synchronized void removeWaypoint(Waypoint waypoint) {
+        waypointList.remove(waypoint);
+        saveWaypoints();
+    }
+
     public Set<Waypoint> getVisibleWaypoints() {
         return visibleWaypoints = waypointList.parallelStream().filter(compiledFilter).collect(Collectors.toSet());
     }
 
-    @Override
-    public void close() {
-        //TODO: save to cacher(s)
-    }
+    public void saveWaypoints() {
+        MapServer.addToSaveQueue(() -> {
+            synchronized (this) {
+                for (AbstractCacher cacher : MinimapApi.getInstance().getCachers()) {
+                    cacher.saveWaypoints(server, waypointList);
+                }
 
+            }
+        });
+    }
 }

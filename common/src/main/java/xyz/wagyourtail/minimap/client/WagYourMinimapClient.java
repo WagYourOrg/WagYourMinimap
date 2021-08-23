@@ -56,7 +56,12 @@ public class WagYourMinimapClient extends WagYourMinimap {
             while ((j = MinimapApi.getInstance().getSaving()) > 0) {
                 if (i != j) LOGGER.info("Minimap Saving Chunks, (Remaining: {})", j);
                 i = j;
-                Thread.yield();
+                try {
+                    Thread.sleep(1);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+//                Thread.yield();
             }
         });
         InGameWaypointRenderer.RENDER_LAST.register(MinimapClientApi.getInstance().waypointRenderer::onRender);

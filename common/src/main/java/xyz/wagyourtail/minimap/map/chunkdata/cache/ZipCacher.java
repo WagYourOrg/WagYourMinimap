@@ -15,8 +15,10 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class ZipCacher extends AbstractCacher {
     @Override
@@ -33,6 +35,10 @@ public class ZipCacher extends AbstractCacher {
             e.printStackTrace();
         }
         return null;
+    }
+
+    private Path serverPath(MapServer server) {
+        return MinimapApi.getInstance().configFolder.resolve(server.server_slug);
     }
 
     private Path locationToPath(ChunkLocation location) {
@@ -86,12 +92,27 @@ public class ZipCacher extends AbstractCacher {
     }
 
     @Override
-    public void saveWaypoints(MapServer server, List<Waypoint> waypointList) {
-        //TODO:
+    public synchronized void saveWaypoints(MapServer server, Collection<Waypoint> waypointList) {
+        Path wpFile = serverPath(server).resolve("way.points");
+        String points = waypointList.stream().map(Waypoint::serialize).collect(Collectors.joining("\n"));
+        try {
+            Files.writeString(wpFile, points);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
-    public List<Waypoint> loadWaypoints(MapServer server) {
+    public synchronized List<Waypoint> loadWaypoints(MapServer server) {
+        Path wpFile = serverPath(server).resolve("way.points");
+        List<Waypoint> points = new ArrayList<>();
+        if (Files.exists(wpFile)) {
+            try {
+                return Files.readAllLines(wpFile).stream().map(Waypoint::deserialize).collect(Collectors.toList());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         return new ArrayList<>();
     }
 

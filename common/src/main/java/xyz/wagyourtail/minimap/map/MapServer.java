@@ -17,10 +17,11 @@ public class MapServer implements AutoCloseable {
     private static final ThreadPoolExecutor save_pool = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.NANOSECONDS, new LinkedBlockingQueue<>());
     private final Map<String, MapLevel> levels = new HashMap<>();
     public final String server_slug;
-    public final WaypointManager waypoints = new WaypointManager(this);
+    public final WaypointManager waypoints;
 
     public MapServer(String server_slug) {
         this.server_slug = server_slug;
+        this.waypoints = new WaypointManager(this);
     }
 
     public static ChunkData loadChunk(ChunkLocation location) {
@@ -31,22 +32,12 @@ public class MapServer implements AutoCloseable {
         return null;
     }
 
-    public static void saveChunk(ChunkLocation location, ChunkData data) {
+    public static void addToSaveQueue(Runnable saver) {
         MinimapApi.saving.incrementAndGet();
         save_pool.execute(() -> {
-            innerRemove(location, data);
+            saver.run();
             MinimapApi.saving.decrementAndGet();
         });
-    }
-
-    private static void innerRemove(ChunkLocation location, ChunkData data) {
-        if (data != null) {
-            synchronized (data) {
-                for (AbstractCacher cacher : MinimapApi.getInstance().getCachers()) {
-                    cacher.saveChunk(location, data);
-                }
-            }
-        }
     }
 
 
@@ -66,7 +57,6 @@ public class MapServer implements AutoCloseable {
             value.close();
         }
         levels.clear();
-        waypoints.close();
     }
 
 }
