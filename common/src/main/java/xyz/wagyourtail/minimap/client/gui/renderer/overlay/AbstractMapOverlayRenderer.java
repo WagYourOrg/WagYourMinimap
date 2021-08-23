@@ -1,11 +1,13 @@
 package xyz.wagyourtail.minimap.client.gui.renderer.overlay;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.Minecraft;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import xyz.wagyourtail.minimap.client.gui.renderer.AbstractMapRenderer;
 
 public abstract class AbstractMapOverlayRenderer {
+    protected static final Minecraft minecraft = Minecraft.getInstance();
     public final AbstractMapRenderer parent;
 
     protected AbstractMapOverlayRenderer(AbstractMapRenderer parent) {

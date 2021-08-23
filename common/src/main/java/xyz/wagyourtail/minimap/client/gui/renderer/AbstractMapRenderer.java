@@ -24,7 +24,7 @@ import xyz.wagyourtail.minimap.map.MapLevel;
 import java.util.concurrent.ExecutionException;
 
 public abstract class AbstractMapRenderer {
-    protected static final Minecraft minecraft = Minecraft.getInstance();
+    public static final Minecraft minecraft = Minecraft.getInstance();
     public final AbstractMapGui parent;
     private AbstractImageStrategy[] rendererLayers = new AbstractImageStrategy[] {new VanillaMapImageStrategy(), new BlockLightImageStrategy()};
     public AbstractMapOverlayRenderer[] overlays = new AbstractMapOverlayRenderer[0];
