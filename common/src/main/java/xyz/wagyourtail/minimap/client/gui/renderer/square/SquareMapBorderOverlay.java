@@ -1,4 +1,4 @@
-package xyz.wagyourtail.minimap.client.gui.renderer.overlay;
+package xyz.wagyourtail.minimap.client.gui.renderer.square;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -7,6 +7,7 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import xyz.wagyourtail.minimap.WagYourMinimap;
 import xyz.wagyourtail.minimap.client.gui.renderer.AbstractMapRenderer;
+import xyz.wagyourtail.minimap.client.gui.renderer.overlay.AbstractMapOverlayRenderer;
 
 public class SquareMapBorderOverlay extends AbstractMapOverlayRenderer {
     private static final ResourceLocation map_corner = new ResourceLocation(WagYourMinimap.MOD_ID, "textures/square_border_corner.png");

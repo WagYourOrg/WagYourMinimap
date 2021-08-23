@@ -1,8 +1,7 @@
-package xyz.wagyourtail.minimap.client.gui.renderer;
+package xyz.wagyourtail.minimap.client.gui.renderer.square.rotate;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Vector3d;
 import com.mojang.math.Vector3f;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -11,8 +10,9 @@ import org.jetbrains.annotations.NotNull;
 import xyz.wagyourtail.minimap.WagYourMinimap;
 import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
 import xyz.wagyourtail.minimap.client.gui.AbstractMapGui;
+import xyz.wagyourtail.minimap.client.gui.renderer.AbstractMapRenderer;
 import xyz.wagyourtail.minimap.client.gui.renderer.overlay.AbstractMapOverlayRenderer;
-import xyz.wagyourtail.minimap.client.gui.renderer.overlay.SquareMapBorderOverlay;
+import xyz.wagyourtail.minimap.client.gui.renderer.square.SquareMapBorderOverlay;
 
 public class SquareMapRotRenderer extends AbstractMapRenderer {
 
@@ -45,9 +45,9 @@ public class SquareMapRotRenderer extends AbstractMapRenderer {
 
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         Vec3 offset = center.subtract(player_pos);
-        matrixStack.translate(maxLength / 2 + offset.x * chunkScale / 16f, maxLength / 2 + offset.z * chunkScale / 16f, 0);
+        matrixStack.translate(maxLength / 2, maxLength / 2, 0);
         matrixStack.mulPose(Vector3f.ZN.rotationDegrees(player_rot-180));
-        matrixStack.translate(-(maxLength / 2 + offset.x * chunkScale / 16f), -(maxLength / 2 + offset.z * chunkScale / 16f), 0);
+        matrixStack.translate(-maxLength / 2, -maxLength / 2, 0);
 
         int i = 0;
         int j = 0;
@@ -74,24 +74,6 @@ public class SquareMapRotRenderer extends AbstractMapRenderer {
             drawPartialChunk(matrixStack, getChunk(topChunkX + i, topChunkZ + j), chunkScale * i - partialX, chunkScale * j - partialZ, chunkScale, 0, 0, blockX, 16);
         }
         drawPartialChunk(matrixStack, getChunk(topChunkX + i, topChunkZ + j), chunkScale * i - partialX, chunkScale * j - partialZ, chunkScale, 0, 0, blockX, blockZ);
-
-
-        //DRAW PLAYER POS
-        assert minecraft.player != null;
-//        Vec3 offset = center.subtract(player_pos);
-        matrixStack.translate(maxLength / 2 + offset.x * chunkScale / 16f, maxLength / 2 + offset.z * chunkScale / 16f, 0);
-//        matrixStack.mulPose(Vector3f.ZN.rotationDegrees(-(player_rot+180)));
-        matrixStack.mulPose(Vector3f.ZP.rotationDegrees(player_rot));
-        RenderSystem.setShaderTexture(0, player_icon_tex);
-        float texSize = Math.max(maxLength / 20, 8);
-        drawTexCol(matrixStack, -texSize, -texSize, texSize * 2, texSize * 2, 1, 1, 0, 0, 0xFF0000FF);
-        matrixStack.translate(-(maxLength / 2 + offset.x * chunkScale / 16f), -(maxLength / 2 + offset.z * chunkScale / 16f), 0);
-        //DRAW OVERLAYS
-        for (AbstractMapOverlayRenderer overlay : overlays) {
-            overlay.renderOverlay(matrixStack, center, maxLength, player_pos, player_rot);
-        }
-
-
     }
 
     @Override

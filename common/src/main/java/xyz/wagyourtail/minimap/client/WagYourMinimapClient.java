@@ -13,8 +13,9 @@ import xyz.wagyourtail.minimap.client.gui.InGameWaypointRenderer;
 import xyz.wagyourtail.minimap.client.gui.MapRendererBuilder;
 import xyz.wagyourtail.minimap.client.gui.image.BlockLightImageStrategy;
 import xyz.wagyourtail.minimap.client.gui.image.VanillaMapImageStrategy;
-import xyz.wagyourtail.minimap.client.gui.renderer.SquareMapNoRotRenderer;
-import xyz.wagyourtail.minimap.client.gui.renderer.overlay.SquareMapBorderOverlay;
+import xyz.wagyourtail.minimap.client.gui.renderer.square.norot.SquareMapNoRotRenderer;
+import xyz.wagyourtail.minimap.client.gui.renderer.square.SquareMapBorderOverlay;
+import xyz.wagyourtail.minimap.client.gui.renderer.overlay.NoRotPlayerArrowOverlay;
 import xyz.wagyourtail.minimap.map.chunkdata.cache.ZipCacher;
 import xyz.wagyourtail.minimap.map.chunkdata.updater.BlockUpdateStrategy;
 import xyz.wagyourtail.minimap.map.chunkdata.updater.ChunkLoadStrategy;
@@ -33,6 +34,7 @@ public class WagYourMinimapClient extends WagYourMinimap {
                 .addRenderLayer(VanillaMapImageStrategy.class)
                 .addRenderLayer(BlockLightImageStrategy.class)
                 .addOverlay(SquareMapBorderOverlay.class)
+                .addOverlay(NoRotPlayerArrowOverlay.class)
                 .build());
             MinimapApi.getInstance().addCacher(ZipCacher.class);
             MinimapApi.getInstance().registerChunkUpdateStrategy(ChunkLoadStrategy.class);

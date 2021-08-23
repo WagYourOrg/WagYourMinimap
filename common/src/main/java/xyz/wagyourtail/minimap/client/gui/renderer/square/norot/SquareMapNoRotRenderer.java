@@ -1,20 +1,17 @@
-package xyz.wagyourtail.minimap.client.gui.renderer;
+package xyz.wagyourtail.minimap.client.gui.renderer.square.norot;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Vector3f;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
-import xyz.wagyourtail.minimap.WagYourMinimap;
 import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
 import xyz.wagyourtail.minimap.client.gui.AbstractMapGui;
+import xyz.wagyourtail.minimap.client.gui.renderer.AbstractMapRenderer;
 import xyz.wagyourtail.minimap.client.gui.renderer.overlay.AbstractMapOverlayRenderer;
-import xyz.wagyourtail.minimap.client.gui.renderer.overlay.SquareMapBorderOverlay;
+import xyz.wagyourtail.minimap.client.gui.renderer.square.SquareMapBorderOverlay;
 
 public class SquareMapNoRotRenderer extends AbstractMapRenderer {
-    private static final ResourceLocation player_icon_tex = new ResourceLocation(WagYourMinimap.MOD_ID, "textures/player_arrow.png");
 
     public SquareMapNoRotRenderer(AbstractMapGui parent) {
         super(parent);
@@ -68,20 +65,6 @@ public class SquareMapNoRotRenderer extends AbstractMapRenderer {
             drawPartialChunk(matrixStack, getChunk(topChunkX + i, topChunkZ + j), chunkScale * i - partialX, chunkScale * j - partialZ, chunkScale, 0, 0, blockX, 16);
         }
         drawPartialChunk(matrixStack, getChunk(topChunkX + i, topChunkZ + j), chunkScale * i - partialX, chunkScale * j - partialZ, chunkScale, 0, 0, blockX, blockZ);
-
-        //DRAW OVERLAYS
-        for (AbstractMapOverlayRenderer overlay : overlays) {
-            overlay.renderOverlay(matrixStack, center, maxLength, player_pos, player_rot);
-        }
-
-        //DRAW PLAYER POS
-        assert minecraft.player != null;
-        Vec3 offset = center.subtract(player_pos);
-        matrixStack.translate(maxLength / 2 + offset.x * chunkScale / 16f, maxLength / 2 + offset.z * chunkScale / 16f, 0);
-        matrixStack.mulPose(Vector3f.ZP.rotationDegrees(player_rot));
-        RenderSystem.setShaderTexture(0, player_icon_tex);
-        float texSize = Math.max(maxLength / 20, 8);
-        drawTexCol(matrixStack, -texSize, -texSize, texSize * 2, texSize * 2, 1, 1, 0, 0, 0xFF0000FF);
     }
 
     @Override
