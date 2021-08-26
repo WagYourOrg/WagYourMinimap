@@ -9,7 +9,7 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import xyz.wagyourtail.minimap.WagYourMinimap;
 import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
-import xyz.wagyourtail.minimap.client.gui.AbstractMapGui;
+import xyz.wagyourtail.minimap.api.config.MinimapClientConfig;
 import xyz.wagyourtail.minimap.client.gui.renderer.AbstractMapRenderer;
 import xyz.wagyourtail.minimap.client.gui.renderer.overlay.AbstractMapOverlayRenderer;
 import xyz.wagyourtail.minimap.client.gui.renderer.square.SquareMapBorderOverlay;
@@ -18,14 +18,13 @@ public class SquareMapRotRenderer extends AbstractMapRenderer {
 
     private static final ResourceLocation player_icon_tex = new ResourceLocation(WagYourMinimap.MOD_ID, "textures/player_arrow.png");
 
-    public SquareMapRotRenderer(AbstractMapGui parent) {
-        super(parent);
+    public SquareMapRotRenderer() {
         overlays = new AbstractMapOverlayRenderer[] {new SquareMapBorderOverlay(this)};
     }
 
     @Override
     public void renderMinimap(PoseStack matrixStack, @NotNull Vec3 center, float maxLength, @NotNull Vec3 player_pos, float player_rot) {
-        int chunkRadius = MinimapClientApi.getInstance().getConfig().minimapChunkRadius;
+        int chunkRadius = MinimapClientApi.getInstance().getConfig().get(MinimapClientConfig.class).chunkRadius;
 
         float blockX = (float) (center.x % 16);
         float blockZ = (float) (center.z % 16);

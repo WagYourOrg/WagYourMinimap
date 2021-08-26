@@ -5,24 +5,25 @@ import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.server.IntegratedServer;
 import net.minecraft.world.level.storage.LevelResource;
 import xyz.wagyourtail.minimap.api.MinimapApi;
+import xyz.wagyourtail.minimap.api.config.MinimapClientConfig;
 import xyz.wagyourtail.minimap.client.gui.InGameHud;
 import xyz.wagyourtail.minimap.client.gui.InGameWaypointRenderer;
+import xyz.wagyourtail.minimap.client.gui.screen.MapScreen;
 
 public class MinimapClientApi extends MinimapApi {
     protected final Minecraft mc = Minecraft.getInstance();
     public final InGameHud inGameHud = new InGameHud();
+    public final MapScreen screen = new MapScreen();
     public final InGameWaypointRenderer waypointRenderer = new InGameWaypointRenderer();
 
+    protected MinimapClientApi() {
+        super();
+        config.registerConfig("client", MinimapClientConfig.class);
+    }
 
     public static MinimapClientApi getInstance() {
         if (INSTANCE == null) INSTANCE = new MinimapClientApi();
         return (MinimapClientApi) INSTANCE;
-    }
-
-    @Override
-    public synchronized WagYourMinimapClientConfig getConfig() {
-        if (config == null) getConfig(WagYourMinimapClientConfig.class);
-        return (WagYourMinimapClientConfig) config;
     }
 
     @Override

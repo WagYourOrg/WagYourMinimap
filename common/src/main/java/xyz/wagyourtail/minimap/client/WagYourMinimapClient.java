@@ -49,7 +49,7 @@ public class WagYourMinimapClient extends WagYourMinimap {
 
         ClientTickEvent.CLIENT_POST.register((mc) -> {
             if (key_openmap.consumeClick()) {
-                mc.setScreen(MinimapClientApi.getInstance().getConfig().getConfigScreen(null));
+                mc.setScreen(MinimapClientApi.getInstance().screen);
             }
         });
         ClientPlayerEvent.CLIENT_PLAYER_QUIT.register((player) -> {

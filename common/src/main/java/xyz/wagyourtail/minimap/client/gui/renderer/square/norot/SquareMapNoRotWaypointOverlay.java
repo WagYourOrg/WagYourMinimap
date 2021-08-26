@@ -11,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import xyz.wagyourtail.minimap.WagYourMinimap;
 import xyz.wagyourtail.minimap.api.MinimapApi;
 import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
+import xyz.wagyourtail.minimap.api.config.MinimapClientConfig;
 import xyz.wagyourtail.minimap.client.gui.renderer.AbstractMapRenderer;
 import xyz.wagyourtail.minimap.client.gui.renderer.overlay.AbstractMapOverlayRenderer;
 import xyz.wagyourtail.minimap.waypoint.Waypoint;
@@ -18,6 +19,7 @@ import xyz.wagyourtail.minimap.waypoint.Waypoint;
 import java.awt.*;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 public class SquareMapNoRotWaypointOverlay extends AbstractMapOverlayRenderer {
 
@@ -31,7 +33,7 @@ public class SquareMapNoRotWaypointOverlay extends AbstractMapOverlayRenderer {
 
     @Override
     public void renderOverlay(PoseStack stack, @NotNull Vec3 center, float maxLength, @NotNull Vec3 player_pos, float player_rot) {
-        int chunkRadius = MinimapClientApi.getInstance().getConfig().minimapChunkRadius;
+        int chunkRadius = MinimapClientApi.getInstance().getConfig().get(MinimapClientConfig.class).chunkRadius;
 
         int chunkDiam = chunkRadius * 2 - 1;
         float chunkScale = maxLength / ((float) chunkDiam - 1);

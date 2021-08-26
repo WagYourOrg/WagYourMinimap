@@ -8,6 +8,7 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import xyz.wagyourtail.minimap.WagYourMinimap;
 import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
+import xyz.wagyourtail.minimap.api.config.MinimapClientConfig;
 import xyz.wagyourtail.minimap.client.gui.renderer.AbstractMapRenderer;
 
 public class NoRotPlayerArrowOverlay extends AbstractMapOverlayRenderer {
@@ -19,7 +20,7 @@ public class NoRotPlayerArrowOverlay extends AbstractMapOverlayRenderer {
 
     @Override
     public void renderOverlay(PoseStack stack, @NotNull Vec3 center, float maxLength, @NotNull Vec3 player_pos, float player_rot) {
-        int chunkRadius = MinimapClientApi.getInstance().getConfig().minimapChunkRadius;
+        int chunkRadius = MinimapClientApi.getInstance().getConfig().get(MinimapClientConfig.class).chunkRadius;
 
         int chunkDiam = chunkRadius * 2 - 1;
         float chunkScale = maxLength / ((float) chunkDiam - 1);

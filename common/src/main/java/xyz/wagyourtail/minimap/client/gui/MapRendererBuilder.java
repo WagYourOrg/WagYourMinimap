@@ -1,6 +1,5 @@
 package xyz.wagyourtail.minimap.client.gui;
 
-import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
 import xyz.wagyourtail.minimap.client.gui.image.AbstractImageStrategy;
 import xyz.wagyourtail.minimap.client.gui.renderer.AbstractMapRenderer;
 import xyz.wagyourtail.minimap.client.gui.renderer.overlay.AbstractMapOverlayRenderer;
@@ -17,7 +16,7 @@ public class MapRendererBuilder<T extends AbstractMapRenderer> {
 
 
     private MapRendererBuilder(Class<T> mapRenderer) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-        this.mapRenderer = mapRenderer.getConstructor(AbstractMapGui.class).newInstance(MinimapClientApi.getInstance().inGameHud);
+        this.mapRenderer = mapRenderer.getConstructor().newInstance();
     }
 
     public static <T extends AbstractMapRenderer> MapRendererBuilder<T> createBuilder(Class<T> mapRenderer) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {

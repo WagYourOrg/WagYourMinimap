@@ -12,8 +12,8 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import xyz.wagyourtail.ResolveQueue;
 import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
+import xyz.wagyourtail.minimap.api.config.MinimapClientConfig;
 import xyz.wagyourtail.minimap.map.chunkdata.ChunkLocation;
-import xyz.wagyourtail.minimap.client.gui.AbstractMapGui;
 import xyz.wagyourtail.minimap.client.gui.ThreadsafeDynamicTexture;
 import xyz.wagyourtail.minimap.client.gui.image.AbstractImageStrategy;
 import xyz.wagyourtail.minimap.client.gui.image.BlockLightImageStrategy;
@@ -25,13 +25,8 @@ import java.util.concurrent.ExecutionException;
 
 public abstract class AbstractMapRenderer {
     public static final Minecraft minecraft = Minecraft.getInstance();
-    public final AbstractMapGui parent;
     private AbstractImageStrategy[] rendererLayers = new AbstractImageStrategy[] {new VanillaMapImageStrategy(), new BlockLightImageStrategy()};
     public AbstractMapOverlayRenderer[] overlays = new AbstractMapOverlayRenderer[0];
-
-    protected AbstractMapRenderer(AbstractMapGui parent) {
-        this.parent = parent;
-    }
 
     public static void drawTexSideways(PoseStack matrixStack, float x, float y, float width, float height, float startU, float startV, float endU, float endV) {
         Matrix4f matrix = matrixStack.last().pose();
@@ -87,14 +82,14 @@ public abstract class AbstractMapRenderer {
         int w = minecraft.getWindow().getGuiScaledWidth();
         int h = minecraft.getWindow().getGuiScaledHeight();
 
-        float minimapSize = Math.min(w, h) * MinimapClientApi.getInstance().getConfig().mapScreenPercent;
+        float minimapSize = Math.min(w, h) * MinimapClientApi.getInstance().getConfig().get(MinimapClientConfig.class).minimapScale;
 
         LocalPlayer player = minecraft.player;
         assert player != null;
 
-        boolean bottom = MinimapClientApi.getInstance().getConfig().snapSide.bottom;
+        boolean bottom = MinimapClientApi.getInstance().getConfig().get(MinimapClientConfig.class).snapSide.bottom;
 
-        float posX = MinimapClientApi.getInstance().getConfig().snapSide.right ? w - minimapSize - 5 : MinimapClientApi.getInstance().getConfig().snapSide.center ? w / 2f - minimapSize / 2f : 5;
+        float posX = MinimapClientApi.getInstance().getConfig().get(MinimapClientConfig.class).snapSide.right ? w - minimapSize - 5 : MinimapClientApi.getInstance().getConfig().get(MinimapClientConfig.class).snapSide.center ? w / 2f - minimapSize / 2f : 5;
         float posZ = bottom ? h - minimapSize - minecraft.font.lineHeight - 10 : 5;
         Vec3 player_pos = player.getPosition(tickDelta);
         float player_rot = player.getYRot();

@@ -13,9 +13,9 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fmlclient.ConfigGuiHandler;
 import xyz.wagyourtail.minimap.WagYourMinimap;
-import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
 import xyz.wagyourtail.minimap.client.WagYourMinimapClient;
 import xyz.wagyourtail.minimap.client.gui.InGameWaypointRenderer;
+import xyz.wagyourtail.minimap.client.gui.screen.settings.SettingsScreen;
 import xyz.wagyourtail.minimap.map.chunkdata.updater.BlockUpdateStrategy;
 import xyz.wagyourtail.minimap.map.chunkdata.updater.ChunkLoadStrategy;
 
@@ -29,7 +29,7 @@ public class WagYourMinimapForge {
 
     public void onClientInit(FMLClientSetupEvent setup) {
         WagYourMinimapClient.init();
-        ModLoadingContext.get().registerExtensionPoint(ConfigGuiHandler.ConfigGuiFactory.class, () -> new ConfigGuiHandler.ConfigGuiFactory((mc, parent) -> MinimapClientApi.getInstance().getConfig().getConfigScreen(parent)));
+        ModLoadingContext.get().registerExtensionPoint(ConfigGuiHandler.ConfigGuiFactory.class, () -> new ConfigGuiHandler.ConfigGuiFactory((mc, parent) -> new SettingsScreen(parent)));
     }
 
     @SubscribeEvent
