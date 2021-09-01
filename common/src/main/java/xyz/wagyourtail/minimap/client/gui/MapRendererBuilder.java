@@ -24,13 +24,27 @@ public class MapRendererBuilder<T extends AbstractMapRenderer> {
     }
 
     public MapRendererBuilder<T> addRenderLayer(Class<? extends AbstractImageStrategy> renderLayer) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-        renderLayers.add(renderLayer.getConstructor().newInstance());
+        addRenderLayer(renderLayer.getConstructor().newInstance());
+        return this;
+    }
+
+    public MapRendererBuilder<T> addRenderLayer(AbstractImageStrategy renderLayer) {
+        renderLayers.add(renderLayer);
         return this;
     }
 
     public MapRendererBuilder<T> addOverlay(Class<? extends AbstractMapOverlayRenderer> overlay) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-        overlays.add(overlay.getConstructor(AbstractMapRenderer.class).newInstance(mapRenderer));
+        addOverlay(overlay.getConstructor(AbstractMapRenderer.class).newInstance(mapRenderer));
         return this;
+    }
+
+    public MapRendererBuilder<T> addOverlay(AbstractMapOverlayRenderer overlay) {
+        overlays.add(overlay);
+        return this;
+    }
+
+    public T getPartialMapRenderer() {
+        return mapRenderer;
     }
 
     public T build() {

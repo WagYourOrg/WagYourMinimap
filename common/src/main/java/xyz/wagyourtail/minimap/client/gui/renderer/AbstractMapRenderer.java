@@ -12,7 +12,7 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import xyz.wagyourtail.ResolveQueue;
 import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
-import xyz.wagyourtail.minimap.api.config.MinimapClientConfig;
+import xyz.wagyourtail.minimap.api.config.settings.MinimapClientConfig;
 import xyz.wagyourtail.minimap.map.chunkdata.ChunkLocation;
 import xyz.wagyourtail.minimap.client.gui.ThreadsafeDynamicTexture;
 import xyz.wagyourtail.minimap.client.gui.image.AbstractImageStrategy;
@@ -82,7 +82,7 @@ public abstract class AbstractMapRenderer {
         int w = minecraft.getWindow().getGuiScaledWidth();
         int h = minecraft.getWindow().getGuiScaledHeight();
 
-        float minimapSize = Math.min(w, h) * MinimapClientApi.getInstance().getConfig().get(MinimapClientConfig.class).minimapScale;
+        float minimapSize = Math.min(w, h) * MinimapClientApi.getInstance().getConfig().get(MinimapClientConfig.class).minimapScale / 100f;
 
         LocalPlayer player = minecraft.player;
         assert player != null;

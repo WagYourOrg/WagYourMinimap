@@ -28,16 +28,10 @@ public class WagYourMinimapClient extends WagYourMinimap {
 
     public static void init() {
         KeyMappingRegistry.register(key_openmap);
+        //client api getInstance first so we establish the instance as a ClientApi.
+        MinimapClientApi.getInstance();
 
         try {
-            //client api getInstance first so we establish the instance as a ClientApi.
-            MinimapClientApi.getInstance().inGameHud.setRenderer(MapRendererBuilder.createBuilder(SquareMapNoRotRenderer.class)
-                .addRenderLayer(VanillaMapImageStrategy.class)
-                .addRenderLayer(BlockLightImageStrategy.class)
-                .addOverlay(SquareMapBorderOverlay.class)
-                .addOverlay(NoRotPlayerArrowOverlay.class)
-                .addOverlay(SquareMapNoRotWaypointOverlay.class)
-                .build());
             MinimapApi.getInstance().addCacher(ZipCacher.class);
             MinimapApi.getInstance().registerChunkUpdateStrategy(ChunkLoadStrategy.class);
             MinimapApi.getInstance().registerChunkUpdateStrategy(BlockUpdateStrategy.class);

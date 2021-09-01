@@ -6,7 +6,7 @@ import com.google.gson.GsonBuilder;
 import dev.architectury.platform.Platform;
 import net.minecraft.world.level.Level;
 import xyz.wagyourtail.minimap.api.config.ConfigManager;
-import xyz.wagyourtail.minimap.api.config.MinimapConfig;
+import xyz.wagyourtail.minimap.api.config.settings.MinimapConfig;
 import xyz.wagyourtail.minimap.map.chunkdata.cache.AbstractCacher;
 import xyz.wagyourtail.minimap.map.chunkdata.updater.AbstractChunkUpdateStrategy;
 import xyz.wagyourtail.minimap.map.MapLevel;
@@ -33,6 +33,7 @@ public abstract class MinimapApi {
     protected ConfigManager config = new ConfigManager(configFolder.resolve("config.json"));
 
     protected MinimapApi() {
+        INSTANCE = this;
         config.registerConfig("common", MinimapConfig.class);
     }
 

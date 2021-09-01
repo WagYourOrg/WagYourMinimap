@@ -19,6 +19,7 @@ public class ConfigManager {
     private final Path configPath;
     private JsonObject rawConfig;
     private final Map<Class<?>, Object>  config = new HashMap<>();
+    private boolean dirty = false;
 
     public ConfigManager(Path configPath) {
         this.configPath = configPath;
@@ -28,6 +29,7 @@ public class ConfigManager {
         synchronized (configRegistry) {
             configRegistry.put(config, key);
         }
+        get(config);
     }
 
     public Set<Class<?>> getRegisteredConfigs() {
@@ -49,12 +51,17 @@ public class ConfigManager {
             if (rawConfig == null) reloadConfigFromDisk();
             if (!rawConfig.has(configRegistry.get(configClass))) {
                 try {
+                    dirty = true;
                     return configClass.getConstructor().newInstance();
                 } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
                     throw new RuntimeException(e);
                 }
             }
-            return gson.fromJson(rawConfig.get(configRegistry.get(configClass)), configClass);
+            try {
+                return SettingContainerSerializer.deserialize(rawConfig.get(configRegistry.get(configClass)).getAsJsonObject(), configClass);
+            } catch (ClassNotFoundException | InvocationTargetException | NoSuchMethodException | InstantiationException | IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
@@ -63,8 +70,10 @@ public class ConfigManager {
      */
     public void reloadConfigFromDisk() {
         synchronized (configPath) {
-            if (!Files.exists(configPath))
+            if (!Files.exists(configPath)) {
                 rawConfig = new JsonObject();
+                return;
+            }
             try {
                 rawConfig = new JsonParser().parse(Files.newBufferedReader(configPath)).getAsJsonObject();
             } catch (IOException e) {
@@ -80,8 +89,12 @@ public class ConfigManager {
      *
      * @return instance of queried config.
      */
-    public <T> T get(Class<T> configClass) {
-        return (T) config.computeIfAbsent(configClass, this::loadConfig);
+    public synchronized <T> T get(Class<T> configClass) {
+        T cfg = (T) config.computeIfAbsent(configClass, this::loadConfig);
+        if (dirty) {
+            saveConfig();
+        }
+        return cfg;
     }
 
     public void saveConfig() {
@@ -89,12 +102,13 @@ public class ConfigManager {
             synchronized (configRegistry) {
                 try {
                     for (Map.Entry<Class<?>, Object> config : config.entrySet()) {
-                        rawConfig.add(configRegistry.get(config.getKey()), gson.toJsonTree(config.getValue()));
+                        rawConfig.add(configRegistry.get(config.getKey()), SettingContainerSerializer.serialize(config.getValue()));
                     }
                     Files.writeString(configPath, gson.toJson(rawConfig));
-                } catch (IOException e) {
+                } catch (IOException | IllegalAccessException e) {
                     throw new RuntimeException(e);
                 }
+                dirty = false;
             }
         }
     }

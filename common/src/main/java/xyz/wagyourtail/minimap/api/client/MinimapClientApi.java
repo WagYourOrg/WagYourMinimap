@@ -5,7 +5,7 @@ import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.server.IntegratedServer;
 import net.minecraft.world.level.storage.LevelResource;
 import xyz.wagyourtail.minimap.api.MinimapApi;
-import xyz.wagyourtail.minimap.api.config.MinimapClientConfig;
+import xyz.wagyourtail.minimap.api.config.settings.MinimapClientConfig;
 import xyz.wagyourtail.minimap.client.gui.InGameHud;
 import xyz.wagyourtail.minimap.client.gui.InGameWaypointRenderer;
 import xyz.wagyourtail.minimap.client.gui.screen.MapScreen;
@@ -22,7 +22,7 @@ public class MinimapClientApi extends MinimapApi {
     }
 
     public static MinimapClientApi getInstance() {
-        if (INSTANCE == null) INSTANCE = new MinimapClientApi();
+        if (INSTANCE == null) new MinimapClientApi();
         return (MinimapClientApi) INSTANCE;
     }
 
