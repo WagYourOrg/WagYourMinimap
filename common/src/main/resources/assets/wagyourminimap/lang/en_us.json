@@ -1,3 +1,13 @@
 {
-  "gui.wagyourminimap.config_title": "WagYourMinimap Config"
+  "gui.wagyourminimap.settings": "WagYourMinimap Config",
+  "gui.wagyourminimap.settings.client": "Client",
+  "gui.wagyourminimap.settings.common": "Common",
+  "gui.wagyourminimap.settings.minimap_scale": "Minimap Scale:",
+  "gui.wagyourminimap.settings.map_location": "Map Location",
+  "gui.wagyourminimap.settings.minimap_style": "Map Style:",
+  "gui.wagyourminimap.settings.square_norot_style": "Square (no rotate)",
+  "gui.wagyourminimap.settings.show_waypoints": "Waypoints",
+  "gui.wagyourminimap.settings.chunk_radius": "Minimap Chunk Radius:",
+  "gui.wagyourconfig.back": "back",
+  "gui.wagyourconfig.forward": "forward"
 }

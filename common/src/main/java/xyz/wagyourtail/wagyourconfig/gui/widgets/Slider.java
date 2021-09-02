@@ -19,6 +19,7 @@ public class Slider extends AbstractSliderButton {
         this.max = max;
         this.min = min;
         this.steps = steps;
+        updateMessage();
     }
 
     @Override
