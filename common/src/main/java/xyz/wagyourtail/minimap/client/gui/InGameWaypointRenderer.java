@@ -45,9 +45,10 @@ public class InGameWaypointRenderer {
         stack.mulPose(Vector3f.YP.rotationDegrees(-yRot));
         stack.mulPose(Vector3f.XP.rotationDegrees(xRot));
         stack.mulPose(Vector3f.ZP.rotationDegrees(180));
-        stack.scale(.25f, .25f, .25f);
+        float scale = (float) Math.max(.0675, -offset.distanceTo(Vec3.ZERO)/50f*.0625+.125f);
+        stack.scale(scale, scale, scale);
         int abgr = 0xFF000000 | waypoint.colB() << 0x10 | waypoint.colG() << 0x8 | waypoint.colR() & 255;
-        AbstractMapRenderer.drawTexCol(stack, -10, -10, 20, 20, 0, 0, 1, 1, abgr);
+        AbstractMapRenderer.drawTexCol(stack, -20, -20, 40, 40, 0, 0, 1, 1, abgr);
         if (isLookingAt(offset.normalize(), xRot, yRot)) {
             drawText(stack, String.format("%s (%.2f m)",waypoint.name(), offset.distanceTo(Vec3.ZERO)));
         }
@@ -59,7 +60,7 @@ public class InGameWaypointRenderer {
 
     public void drawText(PoseStack stack, String text) {
         MultiBufferSource.BufferSource buffer = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
-        mc.font.drawInBatch(text, -mc.font.width(text) / 2f, 10, -1, false, stack.last().pose(), buffer, true, 0x20000000, 0xF000F0);
+        mc.font.drawInBatch(text, -mc.font.width(text) / 2f, 20, -1, false, stack.last().pose(), buffer, true, 0x20000000, 0xF000F0);
         buffer.endBatch();
     }
 

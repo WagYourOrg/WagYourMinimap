@@ -1,4 +1,4 @@
-package xyz.wagyourtail.minimap.api.config.settings.layers;
+package xyz.wagyourtail.minimap.api.config.layers;
 
 import xyz.wagyourtail.minimap.client.gui.image.AbstractImageStrategy;
 

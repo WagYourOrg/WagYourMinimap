@@ -1,4 +1,4 @@
-package xyz.wagyourtail.minimap.api.config.settings;
+package xyz.wagyourtail.minimap.api.config;
 
 import xyz.wagyourtail.minimap.client.gui.renderer.AbstractMapRenderer;
 import xyz.wagyourtail.minimap.client.gui.renderer.overlay.NoRotPlayerArrowOverlay;

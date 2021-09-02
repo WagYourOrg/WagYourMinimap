@@ -1,4 +1,4 @@
-package xyz.wagyourtail.minimap.api.config;
+package xyz.wagyourtail.wagyourconfig;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

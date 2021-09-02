@@ -1,9 +1,11 @@
-package xyz.wagyourtail.minimap.api.config;
+package xyz.wagyourtail.wagyourconfig;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import xyz.wagyourtail.wagyourconfig.field.Setting;
+import xyz.wagyourtail.wagyourconfig.field.SettingsContainer;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
@@ -61,12 +63,16 @@ public class SettingContainerSerializer {
     private static <T> void deserialize(JsonObject obj, T settingsContainer) throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         Field[] fields = settingsContainer.getClass().getFields();
         for (Field field : fields) {
-            if (field.isAnnotationPresent(Setting.class)) {
-                if (obj.has(field.getName()))
-                    field.set(settingsContainer, deserializeField(obj.get(field.getName()), field.getType()));
-            } else if (field.isAnnotationPresent(SettingsContainer.class)) {
-                if (obj.has(field.getName()))
-                    deserialize(obj.get(field.getName()).getAsJsonObject(), field.get(settingsContainer));
+            try {
+                if (field.isAnnotationPresent(Setting.class)) {
+                    if (obj.has(field.getName()))
+                        field.set(settingsContainer, deserializeField(obj.get(field.getName()), field.getType()));
+                } else if (field.isAnnotationPresent(SettingsContainer.class)) {
+                    if (obj.has(field.getName()))
+                        deserialize(obj.get(field.getName()).getAsJsonObject(), field.get(settingsContainer));
+                }
+            } catch (Throwable t) {
+                t.printStackTrace();
             }
         }
     }

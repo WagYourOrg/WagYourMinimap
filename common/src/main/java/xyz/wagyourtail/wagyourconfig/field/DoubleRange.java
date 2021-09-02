@@ -1,4 +1,4 @@
-package xyz.wagyourtail.minimap.api.config;
+package xyz.wagyourtail.wagyourconfig.field;
 
 import java.lang.annotation.*;
 
@@ -8,4 +8,5 @@ import java.lang.annotation.*;
 public @interface DoubleRange {
     double from();
     double to();
+    int steps() default 20;
 }

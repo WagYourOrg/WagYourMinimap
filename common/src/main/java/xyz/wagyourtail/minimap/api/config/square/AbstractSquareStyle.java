@@ -1,6 +1,6 @@
-package xyz.wagyourtail.minimap.api.config.settings.square;
+package xyz.wagyourtail.minimap.api.config.square;
 
-import xyz.wagyourtail.minimap.api.config.settings.AbstractMinimapStyle;
+import xyz.wagyourtail.minimap.api.config.AbstractMinimapStyle;
 import xyz.wagyourtail.minimap.client.gui.renderer.AbstractMapRenderer;
 import xyz.wagyourtail.minimap.client.gui.renderer.square.SquareMapBorderOverlay;
 

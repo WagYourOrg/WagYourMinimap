@@ -1,4 +1,4 @@
-package xyz.wagyourtail.minimap.api.config;
+package xyz.wagyourtail.wagyourconfig.field;
 
 import java.lang.annotation.*;
 
@@ -32,5 +32,5 @@ public @interface Setting {
     /**
      * @return name of function (boolean returning) that determines wether this field should be disabled.
      */
-    String disabled() default "";
+    String enabled() default "";
 }

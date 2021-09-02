@@ -1,9 +1,9 @@
-package xyz.wagyourtail.minimap.api.config.settings;
+package xyz.wagyourtail.minimap.api.config;
 
-import xyz.wagyourtail.minimap.api.config.Setting;
-import xyz.wagyourtail.minimap.api.config.settings.layers.AbstractLayerOptions;
-import xyz.wagyourtail.minimap.api.config.settings.layers.LightLayer;
-import xyz.wagyourtail.minimap.api.config.settings.layers.VanillaMapLayer;
+import xyz.wagyourtail.wagyourconfig.field.Setting;
+import xyz.wagyourtail.minimap.api.config.layers.AbstractLayerOptions;
+import xyz.wagyourtail.minimap.api.config.layers.LightLayer;
+import xyz.wagyourtail.minimap.api.config.layers.VanillaMapLayer;
 import xyz.wagyourtail.minimap.client.gui.MapRendererBuilder;
 import xyz.wagyourtail.minimap.client.gui.image.AbstractImageStrategy;
 import xyz.wagyourtail.minimap.client.gui.image.BlockLightImageStrategy;
