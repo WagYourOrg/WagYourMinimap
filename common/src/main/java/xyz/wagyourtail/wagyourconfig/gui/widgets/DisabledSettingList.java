@@ -22,6 +22,8 @@ public class DisabledSettingList<T> extends ObjectSelectionList<DisabledSettingL
 
     public DisabledSettingList(Minecraft minecraft, int i, int j) {
         super(minecraft, i, j, 32, j - 55 + 4, 36);
+        this.centerListVertically = false;
+        this.setRenderHeader(true, 13);
     }
 
     @Override
