@@ -18,7 +18,7 @@ public class MainSettingScreen extends Screen {
     private final Screen parent;
     private final ConfigManager config;
 
-    private List<Button> pageButtons = new LinkedList<>();
+    private final List<Button> pageButtons = new LinkedList<>();
     private final Class[] configs;
     private Button backButton;
     private Button forwardButton;

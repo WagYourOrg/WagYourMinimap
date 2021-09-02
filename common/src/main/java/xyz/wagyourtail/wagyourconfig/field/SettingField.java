@@ -61,9 +61,9 @@ public class SettingField<T> {
         }
     }
 
-    public Collection<T> options() throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        if (options != null) return (Collection<T>) options.invoke(parent);
-        if (fieldType.isEnum()) return Arrays.asList((T[])fieldType.getDeclaredMethod("values").invoke(null));
+    public Collection<?> options() throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        if (options != null) return (Collection<?>) options.invoke(parent);
+        if (fieldType.isEnum()) return Arrays.asList((Object[])fieldType.getDeclaredMethod("values").invoke(null));
         return null;
     }
 }

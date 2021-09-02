@@ -4,14 +4,12 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.client.gui.components.SliderButton;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.util.Mth;
-import xyz.wagyourtail.wagyourconfig.field.IntRange;
 import xyz.wagyourtail.wagyourconfig.field.Setting;
 import xyz.wagyourtail.wagyourconfig.field.SettingField;
 import xyz.wagyourtail.wagyourconfig.field.SettingsContainer;
@@ -207,7 +205,7 @@ public class SettingScreen extends Screen {
             //array
             if (settingField.fieldType.isArray()) {
                 element = new Button(x, y, width, height, new TranslatableComponent(settingField.setting.value()), (btn) -> {
-                    minecraft.setScreen(new ListSettingScreen<>(new TranslatableComponent(settingField.setting.value()), this, (SettingField<Object[]>) settingField));
+                    minecraft.setScreen(new ListScreen<>(new TranslatableComponent(settingField.setting.value()), this, (SettingField<Object[]>) settingField));
                 });
             } else
 

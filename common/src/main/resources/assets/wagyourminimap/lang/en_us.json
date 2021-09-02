@@ -8,6 +8,9 @@
   "gui.wagyourminimap.settings.square_norot_style": "Square (no rotate)",
   "gui.wagyourminimap.settings.show_waypoints": "Waypoints",
   "gui.wagyourminimap.settings.chunk_radius": "Minimap Chunk Radius:",
+  "gui.wagyourminimap.settings.style.overlay": "Overlay",
+  "gui.wagyourminimap.settings.style.layers": "Layers",
   "gui.wagyourconfig.back": "back",
-  "gui.wagyourconfig.forward": "forward"
+  "gui.wagyourconfig.forward": "forward",
+  "gui.wagyourconfig.enabled": "enabled"
 }
