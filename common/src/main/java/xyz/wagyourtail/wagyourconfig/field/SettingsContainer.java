@@ -7,11 +7,11 @@ import java.lang.annotation.*;
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.FIELD, ElementType.TYPE})
+@Target(ElementType.TYPE)
 public @interface SettingsContainer {
 
     /**
-     * @return translation key for setting groups
+     * @return translation key for class
      */
     String value();
 }

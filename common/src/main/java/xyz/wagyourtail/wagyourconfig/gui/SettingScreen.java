@@ -20,6 +20,7 @@ import xyz.wagyourtail.wagyourconfig.gui.widgets.Slider;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -81,7 +82,7 @@ public class SettingScreen extends Screen {
 
     public AbstractWidget[] compileSetting(int x, int y, int width, int height, Field setting) {
         // pure subsetting
-        if (setting.isAnnotationPresent(SettingsContainer.class))
+        if (Modifier.isFinal(setting.getModifiers()) && setting.getClass().isAnnotationPresent(SettingsContainer.class))
             return new AbstractWidget[] {
                 new Button(x, y, width, height, new TranslatableComponent(setting.getAnnotation(SettingsContainer.class).value()), (btn) -> {
                     try {
@@ -92,7 +93,7 @@ public class SettingScreen extends Screen {
                 })
             };
         try {
-            AbstractWidget element = null;
+            AbstractWidget element;
             AbstractWidget settingButton = null;
             SettingField<?> settingField = new SettingField<>(settingContainer, setting, setting.getType());
 

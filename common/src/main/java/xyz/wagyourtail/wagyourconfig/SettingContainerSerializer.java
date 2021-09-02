@@ -10,6 +10,7 @@ import xyz.wagyourtail.wagyourconfig.field.SettingsContainer;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
 
 public class SettingContainerSerializer {
 
@@ -22,7 +23,7 @@ public class SettingContainerSerializer {
             if (field.isAnnotationPresent(Setting.class)) {
                 serializedSettings.add(field.getName(), serializeSettingsField(field.get(settingContainer)));
             //pure subsettings class
-            } else if (field.isAnnotationPresent(SettingsContainer.class)) {
+            } else if (Modifier.isFinal(field.getModifiers()) && field.getType().isAnnotationPresent(SettingsContainer.class)) {
                 serializedSettings.add(field.getName(), serialize(field.get(settingContainer)));
             }
         }
@@ -67,7 +68,7 @@ public class SettingContainerSerializer {
                 if (field.isAnnotationPresent(Setting.class)) {
                     if (obj.has(field.getName()))
                         field.set(settingsContainer, deserializeField(obj.get(field.getName()), field.getType()));
-                } else if (field.isAnnotationPresent(SettingsContainer.class)) {
+                } else if (Modifier.isFinal(field.getModifiers()) && field.getType().isAnnotationPresent(SettingsContainer.class)) {
                     if (obj.has(field.getName()))
                         deserialize(obj.get(field.getName()).getAsJsonObject(), field.get(settingsContainer));
                 }
