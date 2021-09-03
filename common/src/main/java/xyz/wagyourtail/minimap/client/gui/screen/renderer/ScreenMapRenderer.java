@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import xyz.wagyourtail.minimap.client.gui.renderer.AbstractMapRenderer;
 
 public class ScreenMapRenderer extends AbstractMapRenderer {
@@ -26,29 +27,46 @@ public class ScreenMapRenderer extends AbstractMapRenderer {
             chunkWidth = height * 16 / (float) blockRadius;
             xDiam = width * zDiam / height;
         }
+        moveCenter(center);
     }
 
-    @Override
-    public void renderMinimap(PoseStack matrixStack, @NotNull Vec3 center, float maxLength, @NotNull Vec3 player_pos, float player_rot) {
-        int blockX = (int) (center.x % 16);
-        int blockZ = (int) (center.z % 16);
+    public void changeZoom(int radius) {
+        this.blockRadius = radius;
+        computeDimensions(width, height);
+        moveCenter(center);
+    }
+
+    public Vec3 center = Vec3.ZERO;
+    public int topX, topZ, chunkX, chunkZ, chunkXDiam, chunkZDiam;
+    public float blockX, blockZ, endBlockX, endBlockZ, offsetX, offsetZ;
+
+    public void moveCenter(Vec3 center) {
+        this.center = center;
+        //todo debug stuttering at chunk edge...
+        blockX = (float) (center.x % 16);
+        blockZ = (float) (center.z % 16);
         if (blockX < 0) blockX += 16;
         if (blockZ < 0) blockZ += 16;
 
-        int endBlockX = (blockX + xDiam) % 16;
-        int endBlockZ = (blockZ + zDiam) % 16;
+        endBlockX = (this.blockX + xDiam) % 16;
+        endBlockZ = (this.blockZ + zDiam) % 16;
 
-        int topX = (int) center.x - xDiam / 2;
-        int topZ = (int) center.z - zDiam / 2;
+        topX = ((int) Math.floor(center.x)) - xDiam / 2;
+        topZ = ((int) Math.floor(center.z)) - zDiam / 2;
 
-        int chunkX = topX >> 4;
-        int chunkZ = topZ >> 4;
+        chunkX = topX >> 4;
+        chunkZ = topZ >> 4;
 
-        int chunkXDiam = (int) Math.ceil(xDiam / 16f);
-        int chunkZDiam = (int) Math.ceil(zDiam / 16f);
+        chunkXDiam = (int) Math.ceil(xDiam / 16f);
+        chunkZDiam = (int) Math.ceil(zDiam / 16f);
 
-        float offsetX = blockX * chunkWidth / 16f;
-        float offsetZ = blockZ * chunkWidth / 16f;
+        offsetX = this.blockX * chunkWidth / 16f;
+        offsetZ = this.blockZ * chunkWidth / 16f;
+    }
+
+    @Override
+    public void renderMinimap(PoseStack matrixStack, @Nullable Vec3 ignored1, float ignored2, @NotNull Vec3 player_pos, float player_rot) {
+
 
         drawPartialChunk(matrixStack, getChunk(chunkX, chunkZ), 0, 0, chunkWidth, blockX, blockZ, 16, 16);
         for (int j = 1; j < chunkZDiam; ++j) {

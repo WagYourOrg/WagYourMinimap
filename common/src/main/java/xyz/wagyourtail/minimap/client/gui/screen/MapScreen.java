@@ -23,7 +23,6 @@ public class MapScreen extends Screen {
     private static final ResourceLocation menu_end_tex = new ResourceLocation(WagYourMinimap.MOD_ID, "textures/gui/menu_end.png");
     private static final ResourceLocation menu_tex = new ResourceLocation(WagYourMinimap.MOD_ID, "textures/gui/menu.png");
 
-    private Vec3 screen_center;
     private ScreenMapRenderer renderer;
 
     private int menuHeight;
@@ -35,10 +34,10 @@ public class MapScreen extends Screen {
     @Override
     protected void init() {
         super.init();
-        screen_center = minecraft.player.position();
 
         renderer = new ScreenMapRenderer();
         renderer.computeDimensions(width, height);
+        renderer.moveCenter(minecraft.player.position());
 
         List<MenuButton> buttonList = new ArrayList<>();
 
@@ -83,7 +82,16 @@ public class MapScreen extends Screen {
     public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
         boolean consumed = super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
         if (!consumed) {
-            screen_center = screen_center.subtract((dragX / renderer.chunkWidth) * 16, 0, (dragY / renderer.chunkWidth) * 16);
+            renderer.moveCenter(renderer.center.subtract((dragX / renderer.chunkWidth) * 16, 0, (dragY / renderer.chunkWidth) * 16));
+        }
+        return true;
+    }
+
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
+        boolean consumed = super.mouseScrolled(mouseX, mouseY, delta);
+        if (!consumed) {
+            renderer.changeZoom(renderer.blockRadius - (int) delta);
         }
         return true;
     }
@@ -92,7 +100,7 @@ public class MapScreen extends Screen {
     public void render(PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
         renderBackground(poseStack);
 
-        renderer.renderMinimap(poseStack, screen_center, 0, minecraft.player.position(), minecraft.player.getYRot());
+        renderer.renderMinimap(poseStack, null, 0, minecraft.player.position(), minecraft.player.getYRot());
 
         RenderSystem.setShaderTexture(0, menu_end_tex);
         int menuTop = height / 2 - menuHeight / 2 - 15;
