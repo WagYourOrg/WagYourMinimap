@@ -61,7 +61,7 @@ public class SettingContainerSerializer {
         return settingContainer;
     }
 
-    private static <T> void deserialize(JsonObject obj, T settingsContainer) throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+    private static <T> void deserialize(JsonObject obj, T settingsContainer) {
         Field[] fields = settingsContainer.getClass().getFields();
         for (Field field : fields) {
             try {

@@ -31,6 +31,8 @@ public class MinimapClientConfig {
     @Setting(value = "gui.wagyourminimap.settings.minimap_style", options = "mapStyles", setter = "setMinimapStyle")
     public AbstractMinimapStyle<?> style;
 
+    public final FullscreenMapStyle fullscreenMapStyle = new FullscreenMapStyle();
+
     @Setting(value = "gui.wagyourminimap.settings.show_waypoints")
     public boolean showWaypoints = true;
 

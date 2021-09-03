@@ -91,7 +91,6 @@ public class ScreenMapRenderer extends AbstractMapRenderer {
 
     @Override
     public void renderText(PoseStack matrixStack, float maxLength, boolean bottom, Component... textLines) {
-
     }
 
 }

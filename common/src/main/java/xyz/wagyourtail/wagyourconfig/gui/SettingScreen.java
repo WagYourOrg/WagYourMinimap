@@ -37,7 +37,7 @@ public class SettingScreen extends Screen {
         super(title);
         this.parent = parent;
         this.settingContainer = container;
-        settings = Arrays.stream(settingContainer.getClass().getFields()).filter(e -> e.isAnnotationPresent(Setting.class) || e.isAnnotationPresent(SettingsContainer.class)).toArray(Field[]::new);
+        settings = Arrays.stream(settingContainer.getClass().getFields()).filter(e -> e.isAnnotationPresent(Setting.class) || (Modifier.isFinal(e.getModifiers()) && e.getType().isAnnotationPresent(SettingsContainer.class))).toArray(Field[]::new);
     }
 
     @Override
@@ -80,11 +80,11 @@ public class SettingScreen extends Screen {
 
     public AbstractWidget[] compileSetting(int x, int y, int width, int height, Field setting) {
         // pure subsetting
-        if (Modifier.isFinal(setting.getModifiers()) && setting.getClass().isAnnotationPresent(SettingsContainer.class))
+        if (Modifier.isFinal(setting.getModifiers()) && setting.getType().isAnnotationPresent(SettingsContainer.class))
             return new AbstractWidget[] {
-                new Button(x, y, width, height, new TranslatableComponent(setting.getAnnotation(SettingsContainer.class).value()), (btn) -> {
+                new Button(x, y, width, height, new TranslatableComponent(setting.getType().getAnnotation(SettingsContainer.class).value()), (btn) -> {
                     try {
-                        minecraft.setScreen(new SettingScreen(new TranslatableComponent(setting.getAnnotation(SettingsContainer.class).value()), this, setting.get(settingContainer)));
+                        minecraft.setScreen(new SettingScreen(new TranslatableComponent(setting.getType().getAnnotation(SettingsContainer.class).value()), this, setting.get(settingContainer)));
                     } catch (IllegalAccessException e) {
                         e.printStackTrace();
                     }
@@ -253,7 +253,7 @@ public class SettingScreen extends Screen {
 
         } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException ex) {
             ex.printStackTrace();
-            return null;
+            return new AbstractWidget[] {};
         }
     }
 
