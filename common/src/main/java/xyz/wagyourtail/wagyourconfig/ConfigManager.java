@@ -10,12 +10,13 @@ import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
 public class ConfigManager {
     private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
-    private final Map<Class<?>, String> configRegistry = new HashMap<>();
+    private final Map<Class<?>, String> configRegistry = new LinkedHashMap<>();
     private final Path configPath;
     private JsonObject rawConfig;
     private final Map<Class<?>, Object>  config = new HashMap<>();
