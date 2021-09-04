@@ -2,13 +2,14 @@ package xyz.wagyourtail.minimap.client.gui;
 
 import xyz.wagyourtail.minimap.client.gui.image.AbstractImageStrategy;
 import xyz.wagyourtail.minimap.client.gui.renderer.AbstractMapRenderer;
+import xyz.wagyourtail.minimap.client.gui.renderer.AbstractMinimapRenderer;
 import xyz.wagyourtail.minimap.client.gui.renderer.overlay.AbstractMapOverlayRenderer;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MapRendererBuilder<T extends AbstractMapRenderer> {
+public class MapRendererBuilder<T extends AbstractMinimapRenderer> {
 
     private final T mapRenderer;
     private final List<AbstractImageStrategy> renderLayers = new ArrayList<>();
@@ -19,7 +20,7 @@ public class MapRendererBuilder<T extends AbstractMapRenderer> {
         this.mapRenderer = mapRenderer.getConstructor().newInstance();
     }
 
-    public static <T extends AbstractMapRenderer> MapRendererBuilder<T> createBuilder(Class<T> mapRenderer) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+    public static <T extends AbstractMinimapRenderer> MapRendererBuilder<T> createBuilder(Class<T> mapRenderer) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         return new MapRendererBuilder<>(mapRenderer);
     }
 

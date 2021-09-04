@@ -1,6 +1,7 @@
 package xyz.wagyourtail.minimap.api.config;
 
 import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
+import xyz.wagyourtail.minimap.client.gui.renderer.AbstractMinimapRenderer;
 import xyz.wagyourtail.wagyourconfig.field.Setting;
 import xyz.wagyourtail.minimap.api.config.layers.AbstractLayerOptions;
 import xyz.wagyourtail.minimap.api.config.layers.LightLayer;
@@ -20,7 +21,7 @@ import java.util.Map;
 
 
 @SuppressWarnings("rawtypes")
-public abstract class AbstractMinimapStyle<T extends AbstractMapRenderer> {
+public abstract class AbstractMinimapStyle<T extends AbstractMinimapRenderer> {
     public Map<Class<? extends AbstractMapOverlayRenderer>, Class<? extends AbstractOverlayOptions>> availableOverlays = new HashMap<>();
 
     public Map<Class<? extends AbstractImageStrategy>, Class<? extends AbstractLayerOptions>> availableLayers = new HashMap<>();
@@ -50,7 +51,7 @@ public abstract class AbstractMinimapStyle<T extends AbstractMapRenderer> {
 
     public void setOverlays(AbstractOverlayOptions<?>[] overlays) {
         this.overlays = overlays;
-        AbstractMapRenderer renderer = MinimapClientApi.getInstance().inGameHud.getRenderer();
+        AbstractMinimapRenderer renderer = MinimapClientApi.getInstance().inGameHud.getRenderer();
         renderer.setOverlays(Arrays.stream(overlays).map(e -> e.compileOverlay(renderer)).toArray(AbstractMapOverlayRenderer[]::new));
     }
 

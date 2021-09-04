@@ -7,12 +7,13 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import xyz.wagyourtail.minimap.WagYourMinimap;
 import xyz.wagyourtail.minimap.client.gui.renderer.AbstractMapRenderer;
+import xyz.wagyourtail.minimap.client.gui.renderer.AbstractMinimapRenderer;
 import xyz.wagyourtail.minimap.client.gui.renderer.overlay.AbstractMapOverlayRenderer;
 
 public class SquareMapBorderOverlay extends AbstractMapOverlayRenderer {
     private static final ResourceLocation map_corner = new ResourceLocation(WagYourMinimap.MOD_ID, "textures/square_border_corner.png");
     private static final ResourceLocation map_side = new ResourceLocation(WagYourMinimap.MOD_ID, "textures/square_border_side.png");
-    public SquareMapBorderOverlay(AbstractMapRenderer parent) {
+    public SquareMapBorderOverlay(AbstractMinimapRenderer parent) {
         super(parent);
     }
 

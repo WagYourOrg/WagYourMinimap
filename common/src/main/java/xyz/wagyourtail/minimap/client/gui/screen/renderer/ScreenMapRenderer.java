@@ -1,18 +1,14 @@
 package xyz.wagyourtail.minimap.client.gui.screen.renderer;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import xyz.wagyourtail.minimap.client.gui.renderer.AbstractMapRenderer;
 
 public class ScreenMapRenderer extends AbstractMapRenderer {
 
     public int blockRadius = 30 * 16;
-    public int width;
-    public int height;
-    private int xDiam, zDiam;
+    public int width, height, xDiam, zDiam;
     public float chunkWidth;
 
     public void computeDimensions(int width, int height) {
@@ -31,7 +27,7 @@ public class ScreenMapRenderer extends AbstractMapRenderer {
     }
 
     public void changeZoom(int radius) {
-        this.blockRadius = radius;
+        this.blockRadius = Math.max(16, radius);
         computeDimensions(width, height);
         moveCenter(center);
     }
@@ -64,8 +60,7 @@ public class ScreenMapRenderer extends AbstractMapRenderer {
         offsetZ = this.blockZ * chunkWidth / 16f;
     }
 
-    @Override
-    public void renderMinimap(PoseStack matrixStack, @Nullable Vec3 ignored1, float ignored2, @NotNull Vec3 player_pos, float player_rot) {
+    public void renderMinimap(PoseStack matrixStack, @NotNull Vec3 player_pos, float player_rot) {
 
 
         drawPartialChunk(matrixStack, getChunk(chunkX, chunkZ), 0, 0, chunkWidth, blockX, blockZ, 16, 16);
@@ -87,10 +82,6 @@ public class ScreenMapRenderer extends AbstractMapRenderer {
             drawPartialChunk(matrixStack, getChunk(chunkX + chunkXDiam, chunkZ + j), chunkXDiam * chunkWidth - offsetX, j * chunkWidth - offsetZ, chunkWidth, 0, 0, endBlockX, 16);
         }
         drawPartialChunk(matrixStack, getChunk(chunkX + chunkXDiam, chunkZ + chunkZDiam), chunkXDiam * chunkWidth - offsetX, chunkZDiam * chunkWidth - offsetZ, chunkWidth, 0, 0, endBlockX, endBlockZ);
-    }
-
-    @Override
-    public void renderText(PoseStack matrixStack, float maxLength, boolean bottom, Component... textLines) {
     }
 
 }

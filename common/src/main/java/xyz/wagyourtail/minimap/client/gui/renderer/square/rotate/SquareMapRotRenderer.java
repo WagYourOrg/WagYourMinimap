@@ -11,10 +11,11 @@ import xyz.wagyourtail.minimap.WagYourMinimap;
 import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
 import xyz.wagyourtail.minimap.api.config.MinimapClientConfig;
 import xyz.wagyourtail.minimap.client.gui.renderer.AbstractMapRenderer;
+import xyz.wagyourtail.minimap.client.gui.renderer.AbstractMinimapRenderer;
 import xyz.wagyourtail.minimap.client.gui.renderer.overlay.AbstractMapOverlayRenderer;
 import xyz.wagyourtail.minimap.client.gui.renderer.square.SquareMapBorderOverlay;
 
-public class SquareMapRotRenderer extends AbstractMapRenderer {
+public class SquareMapRotRenderer extends AbstractMinimapRenderer {
 
     private static final ResourceLocation player_icon_tex = new ResourceLocation(WagYourMinimap.MOD_ID, "textures/player_arrow.png");
 

@@ -11,6 +11,7 @@ import xyz.wagyourtail.minimap.api.MinimapApi;
 import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
 import xyz.wagyourtail.minimap.api.config.MinimapClientConfig;
 import xyz.wagyourtail.minimap.client.gui.renderer.AbstractMapRenderer;
+import xyz.wagyourtail.minimap.client.gui.renderer.AbstractMinimapRenderer;
 import xyz.wagyourtail.minimap.client.gui.renderer.overlay.AbstractMapOverlayRenderer;
 import xyz.wagyourtail.minimap.waypoint.Waypoint;
 
@@ -22,7 +23,7 @@ public class SquareMapNoRotWaypointOverlay extends AbstractMapOverlayRenderer {
     private static final ResourceLocation waypoint_arrow_tex = new ResourceLocation(WagYourMinimap.MOD_ID, "textures/waypoint_arrow.png");
 
 
-    public SquareMapNoRotWaypointOverlay(AbstractMapRenderer parent) {
+    public SquareMapNoRotWaypointOverlay(AbstractMinimapRenderer parent) {
         super(parent);
     }
 

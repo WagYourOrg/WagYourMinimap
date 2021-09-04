@@ -8,10 +8,11 @@ import org.jetbrains.annotations.NotNull;
 import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
 import xyz.wagyourtail.minimap.api.config.MinimapClientConfig;
 import xyz.wagyourtail.minimap.client.gui.renderer.AbstractMapRenderer;
+import xyz.wagyourtail.minimap.client.gui.renderer.AbstractMinimapRenderer;
 import xyz.wagyourtail.minimap.client.gui.renderer.overlay.AbstractMapOverlayRenderer;
 import xyz.wagyourtail.minimap.client.gui.renderer.square.SquareMapBorderOverlay;
 
-public class SquareMapNoRotRenderer extends AbstractMapRenderer {
+public class SquareMapNoRotRenderer extends AbstractMinimapRenderer {
 
     public SquareMapNoRotRenderer() {
         overlays = new AbstractMapOverlayRenderer[] {new SquareMapBorderOverlay(this)};

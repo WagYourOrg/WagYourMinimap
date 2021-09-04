@@ -42,7 +42,7 @@ public class MapScreen extends Screen {
         super.init();
 
         renderer = new ScreenMapRenderer();
-        renderer.setOverlays(Arrays.stream(MinimapClientApi.getInstance().getConfig().get(MinimapClientConfig.class).fullscreenMapStyle.overlays).map(e -> e.compileOverlay(renderer)).toArray(AbstractMapOverlayRenderer[]::new));
+//        renderer.setOverlays(Arrays.stream(MinimapClientApi.getInstance().getConfig().get(MinimapClientConfig.class).fullscreenMapStyle.overlays).map(e -> e.compileOverlay(renderer)).toArray(AbstractMapOverlayRenderer[]::new));
         renderer.setRenderLayers(Arrays.stream(MinimapClientApi.getInstance().getConfig().get(MinimapClientConfig.class).fullscreenMapStyle.layers).map(AbstractLayerOptions::compileLayer).toArray(AbstractImageStrategy[]::new));
         renderer.computeDimensions(width, height);
         renderer.moveCenter(minecraft.player.position());
@@ -99,7 +99,7 @@ public class MapScreen extends Screen {
     public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
         boolean consumed = super.mouseScrolled(mouseX, mouseY, delta);
         if (!consumed) {
-            renderer.changeZoom(renderer.blockRadius - (int) delta);
+            renderer.changeZoom(renderer.blockRadius - (int) delta * 5);
         }
         return true;
     }
@@ -108,7 +108,7 @@ public class MapScreen extends Screen {
     public void render(PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
         renderBackground(poseStack);
 
-        renderer.renderMinimap(poseStack, null, 0, minecraft.player.position(), minecraft.player.getYRot());
+        renderer.renderMinimap(poseStack, minecraft.player.position(), minecraft.player.getYRot());
 
         RenderSystem.setShaderTexture(0, menu_end_tex);
         int menuTop = height / 2 - menuHeight / 2 - 15;

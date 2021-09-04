@@ -5,12 +5,13 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import xyz.wagyourtail.minimap.client.gui.renderer.AbstractMapRenderer;
+import xyz.wagyourtail.minimap.client.gui.renderer.AbstractMinimapRenderer;
 
 public abstract class AbstractMapOverlayRenderer {
     protected static final Minecraft minecraft = Minecraft.getInstance();
     public final AbstractMapRenderer parent;
 
-    protected AbstractMapOverlayRenderer(AbstractMapRenderer parent) {
+    protected AbstractMapOverlayRenderer(AbstractMinimapRenderer parent) {
         this.parent = parent;
     }
 
