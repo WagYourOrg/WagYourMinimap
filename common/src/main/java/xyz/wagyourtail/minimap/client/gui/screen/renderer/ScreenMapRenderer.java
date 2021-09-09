@@ -2,10 +2,13 @@ package xyz.wagyourtail.minimap.client.gui.screen.renderer;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.world.phys.Vec3;
-import org.jetbrains.annotations.NotNull;
 import xyz.wagyourtail.minimap.client.gui.renderer.AbstractMapRenderer;
+import xyz.wagyourtail.minimap.client.gui.screen.renderer.overlay.PlayerIconOverlay;
+import xyz.wagyourtail.minimap.client.gui.screen.renderer.overlay.WaypointOverlay;
 
 public class ScreenMapRenderer extends AbstractMapRenderer {
+
+    public AbstractFullscreenOverlay[] overlays = new AbstractFullscreenOverlay[] {new PlayerIconOverlay(this), new WaypointOverlay(this)};
 
     public int blockRadius = 30 * 16;
     public int width, height, xDiam, zDiam;
@@ -33,12 +36,12 @@ public class ScreenMapRenderer extends AbstractMapRenderer {
     }
 
     public Vec3 center = Vec3.ZERO;
-    public int topX, topZ, chunkX, chunkZ, chunkXDiam, chunkZDiam;
+    public int chunkX, chunkZ, chunkXDiam, chunkZDiam;
+    public float topX, topZ;
     public float blockX, blockZ, endBlockX, endBlockZ, offsetX, offsetZ;
 
     public void moveCenter(Vec3 center) {
         this.center = center;
-        //todo debug stuttering at chunk edge...
         blockX = (float) (center.x % 16);
         blockZ = (float) (center.z % 16);
         if (blockX < 0) blockX += 16;
@@ -47,20 +50,22 @@ public class ScreenMapRenderer extends AbstractMapRenderer {
         endBlockX = (this.blockX + xDiam) % 16;
         endBlockZ = (this.blockZ + zDiam) % 16;
 
-        topX = ((int) Math.floor(center.x)) - xDiam / 2;
-        topZ = ((int) Math.floor(center.z)) - zDiam / 2;
+        topX = (float) (center.x - xDiam / 2f);
+        topZ = (float) (center.z - zDiam / 2f);
 
-        chunkX = topX >> 4;
-        chunkZ = topZ >> 4;
+        chunkX = (int) (topX - blockX) >> 4;
+        chunkZ = (int) (topZ - blockZ) >> 4;
 
-        chunkXDiam = (int) Math.ceil(xDiam / 16f);
-        chunkZDiam = (int) Math.ceil(zDiam / 16f);
+        chunkXDiam = ((int)(topX + xDiam - endBlockX) >> 4) - chunkX;
+        chunkZDiam = ((int)(topZ + zDiam - endBlockZ) >> 4) - chunkZ;
 
         offsetX = this.blockX * chunkWidth / 16f;
         offsetZ = this.blockZ * chunkWidth / 16f;
     }
 
-    public void renderMinimap(PoseStack matrixStack, @NotNull Vec3 player_pos, float player_rot) {
+
+
+    public void renderMinimap(PoseStack matrixStack) {
 
 
         drawPartialChunk(matrixStack, getChunk(chunkX, chunkZ), 0, 0, chunkWidth, blockX, blockZ, 16, 16);
@@ -82,6 +87,10 @@ public class ScreenMapRenderer extends AbstractMapRenderer {
             drawPartialChunk(matrixStack, getChunk(chunkX + chunkXDiam, chunkZ + j), chunkXDiam * chunkWidth - offsetX, j * chunkWidth - offsetZ, chunkWidth, 0, 0, endBlockX, 16);
         }
         drawPartialChunk(matrixStack, getChunk(chunkX + chunkXDiam, chunkZ + chunkZDiam), chunkXDiam * chunkWidth - offsetX, chunkZDiam * chunkWidth - offsetZ, chunkWidth, 0, 0, endBlockX, endBlockZ);
+
+        for (AbstractFullscreenOverlay overlay : overlays) {
+            overlay.renderOverlay(matrixStack);
+        }
     }
 
 }

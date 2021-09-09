@@ -45,7 +45,6 @@ public class VanillaMapImageStrategy extends AbstractImageStrategy {
         NativeImage image = new NativeImage(16, 16, false);
         int min = location.level().minHeight;
         int max = location.level().maxHeight;
-        int height = max - min;
         assert minecraft.level != null;
         Registry<Biome> biomeRegistry = minecraft.level.registryAccess().registryOrThrow(Registry.BIOME_REGISTRY);
         for (int i = 0; i < 256; ++i) {
@@ -73,7 +72,7 @@ public class VanillaMapImageStrategy extends AbstractImageStrategy {
             } else {
                 color = 0xFF000000 | getBlockColor(currentBlock);
             }
-            color = brightnessForHeight(color, (data.heightmap[i] - min) / (float) height);
+            color = brightnessForHeight(color, data.heightmap[i] - min);
             image.setPixelRGBA(x, z, colorFormatSwap(color));
         }
         return new ThreadsafeDynamicTexture(image);
@@ -95,10 +94,13 @@ public class VanillaMapImageStrategy extends AbstractImageStrategy {
         return red << 0x10 | green << 0x8 | blue;
     }
 
-    private int brightnessForHeight(int color, float height) {
+    private int brightnessForHeight(int color, int height) {
         float[] hsb = Color.RGBtoHSB((color & 0xFF0000) >> 0x10, (color & 0xFF00) >> 0x8, color & 0xFF, null);
         //brightness scaled by .75 - 1.0 based on height
-        hsb[2] *= .75F + height * .25F;
+//        hsb[2] *= .75F + height * .25F;
+        if (height % 2 == 1) {
+            hsb[2] *= .9f;
+        }
         return color & 0xFF000000 | Color.HSBtoRGB(hsb[0], hsb[1], hsb[2]);
     }
 

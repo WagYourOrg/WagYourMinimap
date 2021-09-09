@@ -108,7 +108,7 @@ public class MapScreen extends Screen {
     public void render(PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
         renderBackground(poseStack);
 
-        renderer.renderMinimap(poseStack, minecraft.player.position(), minecraft.player.getYRot());
+        renderer.renderMinimap(poseStack);
 
         RenderSystem.setShaderTexture(0, menu_end_tex);
         int menuTop = height / 2 - menuHeight / 2 - 15;

@@ -10,6 +10,7 @@ import java.awt.*;
 public class BlockLightImageStrategy extends AbstractImageStrategy {
 
     private static final int TICKS_PER_DAY = 24000;
+    private static final float HUE = 50F / 360F;
 
     @Override
     public ThreadsafeDynamicTexture load(ChunkLocation location, ChunkData key) {
@@ -23,7 +24,7 @@ public class BlockLightImageStrategy extends AbstractImageStrategy {
     }
 
     private int colorForLightLevel(byte lightLevel) {
-        return Color.HSBtoRGB(50F / 360F, 1F, lightLevel / 15F);
+        return Color.HSBtoRGB(HUE, 1F, lightLevel / 15F);
     }
 
     @Override
