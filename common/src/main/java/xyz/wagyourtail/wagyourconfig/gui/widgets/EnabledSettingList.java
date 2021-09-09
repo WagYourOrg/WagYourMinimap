@@ -29,14 +29,14 @@ public class EnabledSettingList<T> extends ObjectSelectionList<EnabledSettingLis
     }
 
     @Override
-    protected void renderHeader(PoseStack poseStack, int x, int y, Tesselator tessellator) {
-        Component component = (new TextComponent("")).append(this.title).withStyle(ChatFormatting.UNDERLINE, ChatFormatting.BOLD);
-        this.minecraft.font.draw(poseStack, component, (float)(x + this.width / 2 - this.minecraft.font.width(component) / 2), (float)Math.min(this.y0 + 3, y), 0xFFFFFF);
+    public int getRowWidth() {
+        return this.width;
     }
 
     @Override
-    public int getRowWidth() {
-        return this.width;
+    protected void renderHeader(PoseStack poseStack, int x, int y, Tesselator tessellator) {
+        Component component = (new TextComponent("")).append(this.title).withStyle(ChatFormatting.UNDERLINE, ChatFormatting.BOLD);
+        this.minecraft.font.draw(poseStack, component, (float) (x + this.width / 2 - this.minecraft.font.width(component) / 2), (float) Math.min(this.y0 + 3, y), 0xFFFFFF);
     }
 
     @Override
@@ -46,10 +46,15 @@ public class EnabledSettingList<T> extends ObjectSelectionList<EnabledSettingLis
 
     public interface EntryController<T> {
         boolean canMoveUp(EnabledSettingList.EnabledSettingEntry<T> option);
+
         boolean canMoveDown(EnabledSettingList.EnabledSettingEntry<T> option);
+
         void moveUp(EnabledSettingList.EnabledSettingEntry<T> option);
+
         void moveDown(EnabledSettingList.EnabledSettingEntry<T> option);
+
         void unselect(EnabledSettingList.EnabledSettingEntry<T> option);
+
     }
 
     public static class EnabledSettingEntry<T> extends ObjectSelectionList.Entry<EnabledSettingEntry<T>> {
@@ -126,8 +131,8 @@ public class EnabledSettingList<T> extends ObjectSelectionList<EnabledSettingLis
 
         @Override
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
-            double d = mouseX - (double)this.parent.getRowLeft();
-            double e = mouseY - (double)this.parent.getRowTop(this.parent.children().indexOf(this));
+            double d = mouseX - (double) this.parent.getRowLeft();
+            double e = mouseY - (double) this.parent.getRowTop(this.parent.children().indexOf(this));
             if (d <= 32.0D) {
                 if (d < 16.0D) {
                     minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
@@ -156,4 +161,5 @@ public class EnabledSettingList<T> extends ObjectSelectionList<EnabledSettingLis
         }
 
     }
+
 }

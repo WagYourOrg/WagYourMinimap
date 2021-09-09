@@ -7,6 +7,9 @@ import java.lang.annotation.*;
 @Target(ElementType.FIELD)
 public @interface DoubleRange {
     double from();
+
     double to();
+
     int steps() default 20;
+
 }

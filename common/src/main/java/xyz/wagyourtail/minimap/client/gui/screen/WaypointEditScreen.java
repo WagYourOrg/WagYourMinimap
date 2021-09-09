@@ -13,8 +13,9 @@ public class WaypointEditScreen extends Screen {
     }
 
     @Override
-    protected void init() {
-        super.init();
+    public void render(PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
+        renderBackground(poseStack);
+        super.render(poseStack, mouseX, mouseY, partialTicks);
     }
 
     @Override
@@ -23,9 +24,8 @@ public class WaypointEditScreen extends Screen {
     }
 
     @Override
-    public void render(PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
-        renderBackground(poseStack);
-        super.render(poseStack, mouseX, mouseY, partialTicks);
+    protected void init() {
+        super.init();
     }
 
 }

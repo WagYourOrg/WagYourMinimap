@@ -4,22 +4,15 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Matrix4f;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.world.phys.Vec3;
-import org.jetbrains.annotations.NotNull;
 import xyz.wagyourtail.ResolveQueue;
 import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
-import xyz.wagyourtail.minimap.api.config.MinimapClientConfig;
-import xyz.wagyourtail.minimap.map.chunkdata.ChunkLocation;
 import xyz.wagyourtail.minimap.client.gui.ThreadsafeDynamicTexture;
 import xyz.wagyourtail.minimap.client.gui.image.AbstractImageStrategy;
 import xyz.wagyourtail.minimap.client.gui.image.BlockLightImageStrategy;
 import xyz.wagyourtail.minimap.client.gui.image.VanillaMapImageStrategy;
-import xyz.wagyourtail.minimap.client.gui.renderer.overlay.AbstractMapOverlayRenderer;
 import xyz.wagyourtail.minimap.map.MapLevel;
+import xyz.wagyourtail.minimap.map.chunkdata.ChunkLocation;
 
 import java.util.concurrent.ExecutionException;
 

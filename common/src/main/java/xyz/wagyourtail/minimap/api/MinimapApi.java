@@ -5,12 +5,12 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import dev.architectury.platform.Platform;
 import net.minecraft.world.level.Level;
-import xyz.wagyourtail.wagyourconfig.ConfigManager;
 import xyz.wagyourtail.minimap.api.config.MinimapConfig;
-import xyz.wagyourtail.minimap.map.chunkdata.cache.AbstractCacher;
-import xyz.wagyourtail.minimap.map.chunkdata.updater.AbstractChunkUpdateStrategy;
 import xyz.wagyourtail.minimap.map.MapLevel;
 import xyz.wagyourtail.minimap.map.MapServer;
+import xyz.wagyourtail.minimap.map.chunkdata.cache.AbstractCacher;
+import xyz.wagyourtail.minimap.map.chunkdata.updater.AbstractChunkUpdateStrategy;
+import xyz.wagyourtail.wagyourconfig.ConfigManager;
 
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
@@ -20,8 +20,8 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class MinimapApi {
-    protected static MinimapApi INSTANCE;
     public static final AtomicInteger saving = new AtomicInteger(0);
+    protected static MinimapApi INSTANCE;
     private final Map<Class<? extends AbstractCacher>, AbstractCacher> cachers = new HashMap<>();
 
     protected final Map<Class<? extends AbstractChunkUpdateStrategy>, AbstractChunkUpdateStrategy> chunkUpdateStrategies = new HashMap<>();

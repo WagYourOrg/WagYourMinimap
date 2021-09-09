@@ -1,8 +1,8 @@
 package xyz.wagyourtail.minimap.map.chunkdata.cache;
 
+import xyz.wagyourtail.minimap.map.MapServer;
 import xyz.wagyourtail.minimap.map.chunkdata.ChunkData;
 import xyz.wagyourtail.minimap.map.chunkdata.ChunkLocation;
-import xyz.wagyourtail.minimap.map.MapServer;
 import xyz.wagyourtail.minimap.waypoint.Waypoint;
 
 import java.util.Collection;

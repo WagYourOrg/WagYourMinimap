@@ -7,6 +7,9 @@ import java.lang.annotation.*;
 @Target(ElementType.FIELD)
 public @interface IntRange {
     int from();
+
     int to();
+
     int stepVal() default 1;
+
 }

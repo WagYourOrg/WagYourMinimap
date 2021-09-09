@@ -2,9 +2,9 @@ package xyz.wagyourtail.minimap.map.chunkdata.cache;
 
 import net.minecraft.resources.ResourceLocation;
 import xyz.wagyourtail.minimap.api.MinimapApi;
+import xyz.wagyourtail.minimap.map.MapServer;
 import xyz.wagyourtail.minimap.map.chunkdata.ChunkData;
 import xyz.wagyourtail.minimap.map.chunkdata.ChunkLocation;
-import xyz.wagyourtail.minimap.map.MapServer;
 import xyz.wagyourtail.minimap.waypoint.Waypoint;
 
 import java.io.IOException;
@@ -35,10 +35,6 @@ public class ZipCacher extends AbstractCacher {
             e.printStackTrace();
         }
         return null;
-    }
-
-    private Path serverPath(MapServer server) {
-        return MinimapApi.getInstance().configFolder.resolve(server.server_slug);
     }
 
     private Path locationToPath(ChunkLocation location) {
@@ -100,6 +96,10 @@ public class ZipCacher extends AbstractCacher {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private Path serverPath(MapServer server) {
+        return MinimapApi.getInstance().configFolder.resolve(server.server_slug);
     }
 
     @Override

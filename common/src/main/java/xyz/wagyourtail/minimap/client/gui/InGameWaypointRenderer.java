@@ -45,12 +45,12 @@ public class InGameWaypointRenderer {
         stack.mulPose(Vector3f.YP.rotationDegrees(-yRot));
         stack.mulPose(Vector3f.XP.rotationDegrees(xRot));
         stack.mulPose(Vector3f.ZP.rotationDegrees(180));
-        float scale = (float) Math.max(.0675, -offset.distanceTo(Vec3.ZERO)/50f*.0625+.125f);
+        float scale = (float) Math.max(.0675, -offset.distanceTo(Vec3.ZERO) / 50f * .0625 + .125f);
         stack.scale(scale, scale, scale);
         int abgr = 0xFF000000 | waypoint.colB() << 0x10 | waypoint.colG() << 0x8 | waypoint.colR() & 255;
         AbstractMapRenderer.drawTexCol(stack, -20, -20, 40, 40, 0, 0, 1, 1, abgr);
         if (isLookingAt(offset.normalize(), xRot, yRot)) {
-            drawText(stack, String.format("%s (%.2f m)",waypoint.name(), offset.distanceTo(Vec3.ZERO)));
+            drawText(stack, String.format("%s (%.2f m)", waypoint.name(), offset.distanceTo(Vec3.ZERO)));
         }
     }
 
@@ -66,5 +66,7 @@ public class InGameWaypointRenderer {
 
     public interface RenderLastEvent {
         void onRenderLast(PoseStack stack, float partialTicks, long finishTimeNano);
+
     }
+
 }

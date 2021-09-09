@@ -16,5 +16,4 @@ public record Waypoint(int posX, int posY, int posZ, byte colR, byte colG, byte 
     }
 
 
-
 }

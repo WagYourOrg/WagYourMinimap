@@ -60,15 +60,6 @@ public class WaypointManager {
         saveWaypoints();
     }
 
-    public synchronized void removeWaypoint(Waypoint waypoint) {
-        waypointList.remove(waypoint);
-        saveWaypoints();
-    }
-
-    public Set<Waypoint> getVisibleWaypoints() {
-        return visibleWaypoints = waypointList.parallelStream().filter(compiledFilter).collect(Collectors.toSet());
-    }
-
     public void saveWaypoints() {
         MapServer.addToSaveQueue(() -> {
             synchronized (this) {
@@ -79,4 +70,14 @@ public class WaypointManager {
             }
         });
     }
+
+    public synchronized void removeWaypoint(Waypoint waypoint) {
+        waypointList.remove(waypoint);
+        saveWaypoints();
+    }
+
+    public Set<Waypoint> getVisibleWaypoints() {
+        return visibleWaypoints = waypointList.parallelStream().filter(compiledFilter).collect(Collectors.toSet());
+    }
+
 }

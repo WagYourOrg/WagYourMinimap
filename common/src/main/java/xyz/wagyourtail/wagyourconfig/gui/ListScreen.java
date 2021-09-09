@@ -29,6 +29,29 @@ public class ListScreen<T> extends Screen implements EnabledSettingList.EntryCon
     }
 
     @Override
+    public void render(PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
+        this.renderBackground(poseStack);
+        this.enabledEntries.render(poseStack, mouseX, mouseY, partialTicks);
+        this.availableEntries.render(poseStack, mouseX, mouseY, partialTicks);
+
+        drawCenteredString(poseStack, this.font, this.title, this.width / 2, 17, 0xFFFFFF);
+
+        super.render(poseStack, mouseX, mouseY, partialTicks);
+
+    }
+
+    @Override
+    public void onClose() {
+        T[] arr = enabledEntries.children().stream().map(e -> e.option).toArray((i) -> (T[]) Array.newInstance(setting.fieldType.componentType(), i));
+        try {
+            setting.set(arr);
+        } catch (InvocationTargetException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        minecraft.setScreen(parent);
+    }
+
+    @Override
     protected void init() {
         super.init();
         this.addWidget(enabledEntries = new EnabledSettingList<>(minecraft, 400, this.height));
@@ -42,7 +65,7 @@ public class ListScreen<T> extends Screen implements EnabledSettingList.EntryCon
                     e.getClass().isAnnotationPresent(SettingsContainer.class) ?
                         new TranslatableComponent(e.getClass().getAnnotation(SettingsContainer.class).value()) :
                         new TextComponent(e.toString()))
-                ).collect(Collectors.toList()));
+            ).collect(Collectors.toList()));
         } catch (InvocationTargetException | IllegalAccessException e) {
             e.printStackTrace();
         }
@@ -56,7 +79,7 @@ public class ListScreen<T> extends Screen implements EnabledSettingList.EntryCon
                 throw new RuntimeException("NON Object List not yet implemented");
             } else if (setting.fieldType.componentType().isEnum()) {
                 throw new RuntimeException("NON Object List not yet implemented");
-            } else if (setting.fieldType.componentType().isArray()){
+            } else if (setting.fieldType.componentType().isArray()) {
                 throw new RuntimeException("NON Object List not yet implemented");
             } else {
                 Collection<Class<T>> options = (Collection<Class<T>>) setting.options();
@@ -80,29 +103,6 @@ public class ListScreen<T> extends Screen implements EnabledSettingList.EntryCon
     }
 
     @Override
-    public void render(PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
-        this.renderBackground(poseStack);
-        this.enabledEntries.render(poseStack, mouseX, mouseY, partialTicks);
-        this.availableEntries.render(poseStack, mouseX, mouseY, partialTicks);
-
-        drawCenteredString(poseStack, this.font, this.title, this.width / 2, 17, 0xFFFFFF);
-
-        super.render(poseStack, mouseX, mouseY, partialTicks);
-
-    }
-
-    @Override
-    public void onClose() {
-        T[] arr = enabledEntries.children().stream().map(e -> e.option).toArray((i) -> (T[])Array.newInstance(setting.fieldType.componentType(), i));
-        try {
-            setting.set(arr);
-        } catch (InvocationTargetException | IllegalAccessException e) {
-            e.printStackTrace();
-        }
-        minecraft.setScreen(parent);
-    }
-
-    @Override
     public boolean canMoveUp(EnabledSettingList.EnabledSettingEntry<T> option) {
         return enabledEntries.children().get(0) != option;
     }
@@ -121,7 +121,7 @@ public class ListScreen<T> extends Screen implements EnabledSettingList.EntryCon
 
     @Override
     public void moveDown(EnabledSettingList.EnabledSettingEntry<T> option) {
-        int index = Math.min(enabledEntries.children().size()- 1, enabledEntries.children().indexOf(option));
+        int index = Math.min(enabledEntries.children().size() - 1, enabledEntries.children().indexOf(option));
         enabledEntries.children().remove(option);
         enabledEntries.children().add(index + 1, option);
     }

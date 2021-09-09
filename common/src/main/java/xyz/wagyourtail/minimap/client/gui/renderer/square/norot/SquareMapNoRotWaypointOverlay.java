@@ -38,7 +38,7 @@ public class SquareMapNoRotWaypointOverlay extends AbstractMapOverlayRenderer {
         for (Waypoint point : points) {
             stack.pushPose();
             Vec3 pointVec = new Vec3(point.posX(), point.posY(), point.posZ()).subtract(center);
-            float scale = ((chunkRadius - 1) * 16f) / (float)Math.max(Math.abs(pointVec.x) , Math.abs(pointVec.z));
+            float scale = ((chunkRadius - 1) * 16f) / (float) Math.max(Math.abs(pointVec.x), Math.abs(pointVec.z));
             if (scale < 1) {
                 pointVec = pointVec.multiply(scale, scale, scale);
             }
@@ -53,7 +53,7 @@ public class SquareMapNoRotWaypointOverlay extends AbstractMapOverlayRenderer {
             int abgr = 0xFF000000 | point.colB() << 0x10 | point.colG() << 0x8 | point.colR() & 255;
             AbstractMapRenderer.drawTexCol(stack, -10, -10, 20, 20, 1, 1, 0, 0, abgr);
             if (scale >= 1)
-                minecraft.font.draw(stack, point.name(), -minecraft.font.width(point.name())/2f, 10, 0xFFFFFF);
+                minecraft.font.draw(stack, point.name(), -minecraft.font.width(point.name()) / 2f, 10, 0xFFFFFF);
             stack.popPose();
         }
     }

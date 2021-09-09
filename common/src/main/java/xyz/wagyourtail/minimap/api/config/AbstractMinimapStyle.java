@@ -1,8 +1,6 @@
 package xyz.wagyourtail.minimap.api.config;
 
 import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
-import xyz.wagyourtail.minimap.client.gui.renderer.AbstractMinimapRenderer;
-import xyz.wagyourtail.wagyourconfig.field.Setting;
 import xyz.wagyourtail.minimap.api.config.layers.AbstractLayerOptions;
 import xyz.wagyourtail.minimap.api.config.layers.LightLayer;
 import xyz.wagyourtail.minimap.api.config.layers.VanillaMapLayer;
@@ -10,8 +8,9 @@ import xyz.wagyourtail.minimap.client.gui.MapRendererBuilder;
 import xyz.wagyourtail.minimap.client.gui.image.AbstractImageStrategy;
 import xyz.wagyourtail.minimap.client.gui.image.BlockLightImageStrategy;
 import xyz.wagyourtail.minimap.client.gui.image.VanillaMapImageStrategy;
-import xyz.wagyourtail.minimap.client.gui.renderer.AbstractMapRenderer;
+import xyz.wagyourtail.minimap.client.gui.renderer.AbstractMinimapRenderer;
 import xyz.wagyourtail.minimap.client.gui.renderer.overlay.AbstractMapOverlayRenderer;
+import xyz.wagyourtail.wagyourconfig.field.Setting;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
@@ -60,8 +59,6 @@ public abstract class AbstractMinimapStyle<T extends AbstractMinimapRenderer> {
         MinimapClientApi.getInstance().inGameHud.getRenderer().setRenderLayers(Arrays.stream(layers).map(AbstractLayerOptions::compileLayer).toArray(AbstractImageStrategy[]::new));
     }
 
-    protected abstract Class<T> getMapRenderer();
-
     public T compileMapRenderer() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         MapRendererBuilder<T> builder = MapRendererBuilder.createBuilder(getMapRenderer());
         for (AbstractLayerOptions<?> layer : layers) {
@@ -72,4 +69,7 @@ public abstract class AbstractMinimapStyle<T extends AbstractMinimapRenderer> {
         }
         return builder.build();
     }
+
+    protected abstract Class<T> getMapRenderer();
+
 }

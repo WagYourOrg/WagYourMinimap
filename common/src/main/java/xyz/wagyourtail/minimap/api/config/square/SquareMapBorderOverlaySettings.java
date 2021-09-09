@@ -1,7 +1,6 @@
 package xyz.wagyourtail.minimap.api.config.square;
 
 import xyz.wagyourtail.minimap.api.config.AbstractOverlayOptions;
-import xyz.wagyourtail.minimap.client.gui.renderer.AbstractMapRenderer;
 import xyz.wagyourtail.minimap.client.gui.renderer.AbstractMinimapRenderer;
 import xyz.wagyourtail.minimap.client.gui.renderer.square.SquareMapBorderOverlay;
 import xyz.wagyourtail.wagyourconfig.field.SettingsContainer;

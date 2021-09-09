@@ -22,7 +22,7 @@ public class SettingContainerSerializer {
             //setting field
             if (field.isAnnotationPresent(Setting.class)) {
                 serializedSettings.add(field.getName(), serializeSettingsField(field.get(settingContainer)));
-            //pure subsettings class
+                //pure subsettings class
             } else if (Modifier.isFinal(field.getModifiers()) && field.getType().isAnnotationPresent(SettingsContainer.class)) {
                 serializedSettings.add(field.getName(), serialize(field.get(settingContainer)));
             }
@@ -86,9 +86,9 @@ public class SettingContainerSerializer {
         } else if (fieldClass.equals(String.class)) {
             return (T) element.getAsString();
         } else if (fieldClass.isPrimitive() || Number.class.isAssignableFrom(fieldClass)) {
-            return (T) castNumber((Class<Number>)fieldClass, element.getAsNumber());
+            return (T) castNumber((Class<Number>) fieldClass, element.getAsNumber());
         } else if (fieldClass.isEnum()) {
-            return (T) Enum.valueOf((Class<Enum>)fieldClass, element.getAsString());
+            return (T) Enum.valueOf((Class<Enum>) fieldClass, element.getAsString());
         } else if (fieldClass.isArray()) {
             JsonArray arr = element.getAsJsonArray();
             Class<?> arrElementClass = fieldClass.componentType();
@@ -119,4 +119,5 @@ public class SettingContainerSerializer {
         }
         return null;
     }
+
 }

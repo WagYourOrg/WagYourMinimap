@@ -18,8 +18,8 @@ public class ConfigManager {
     private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
     private final Map<Class<?>, String> configRegistry = new LinkedHashMap<>();
     private final Path configPath;
+    private final Map<Class<?>, Object> config = new HashMap<>();
     private JsonObject rawConfig;
-    private final Map<Class<?>, Object>  config = new HashMap<>();
     private boolean dirty = false;
 
     public ConfigManager(Path configPath) {
@@ -33,10 +33,18 @@ public class ConfigManager {
         get(config);
     }
 
-    public Set<Class<?>> getRegisteredConfigs() {
-        synchronized (configRegistry) {
-            return configRegistry.keySet();
+    /**
+     * @param configClass the config type to query
+     * @param <T>
+     *
+     * @return instance of queried config.
+     */
+    public synchronized <T> T get(Class<T> configClass) {
+        T cfg = (T) config.computeIfAbsent(configClass, this::loadConfig);
+        if (dirty) {
+            saveConfig();
         }
+        return cfg;
     }
 
     /**
@@ -83,21 +91,6 @@ public class ConfigManager {
         }
     }
 
-    /**
-     *
-     * @param configClass the config type to query
-     * @param <T>
-     *
-     * @return instance of queried config.
-     */
-    public synchronized <T> T get(Class<T> configClass) {
-        T cfg = (T) config.computeIfAbsent(configClass, this::loadConfig);
-        if (dirty) {
-            saveConfig();
-        }
-        return cfg;
-    }
-
     public void saveConfig() {
         synchronized (configPath) {
             synchronized (configRegistry) {
@@ -113,4 +106,11 @@ public class ConfigManager {
             }
         }
     }
+
+    public Set<Class<?>> getRegisteredConfigs() {
+        synchronized (configRegistry) {
+            return configRegistry.keySet();
+        }
+    }
+
 }

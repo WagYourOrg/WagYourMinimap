@@ -13,6 +13,16 @@ public class ScreenMapRenderer extends AbstractMapRenderer {
     public int blockRadius = 30 * 16;
     public int width, height, xDiam, zDiam;
     public float chunkWidth;
+    public Vec3 center = Vec3.ZERO;
+    public int chunkX, chunkZ, chunkXDiam, chunkZDiam;
+    public float topX, topZ;
+    public float blockX, blockZ, endBlockX, endBlockZ, offsetX, offsetZ;
+
+    public void changeZoom(int radius) {
+        this.blockRadius = Math.max(16, radius);
+        computeDimensions(width, height);
+        moveCenter(center);
+    }
 
     public void computeDimensions(int width, int height) {
         this.width = width;
@@ -29,40 +39,29 @@ public class ScreenMapRenderer extends AbstractMapRenderer {
         moveCenter(center);
     }
 
-    public void changeZoom(int radius) {
-        this.blockRadius = Math.max(16, radius);
-        computeDimensions(width, height);
-        moveCenter(center);
-    }
-
-    public Vec3 center = Vec3.ZERO;
-    public int chunkX, chunkZ, chunkXDiam, chunkZDiam;
-    public float topX, topZ;
-    public float blockX, blockZ, endBlockX, endBlockZ, offsetX, offsetZ;
-
     public void moveCenter(Vec3 center) {
         this.center = center;
-        blockX = (float) (center.x % 16);
-        blockZ = (float) (center.z % 16);
+
+        topX = (float) (center.x - xDiam / 2f);
+        topZ = (float) (center.z - zDiam / 2f);
+
+        blockX = topX % 16;
+        blockZ = topZ % 16;
         if (blockX < 0) blockX += 16;
         if (blockZ < 0) blockZ += 16;
 
         endBlockX = (this.blockX + xDiam) % 16;
         endBlockZ = (this.blockZ + zDiam) % 16;
 
-        topX = (float) (center.x - xDiam / 2f);
-        topZ = (float) (center.z - zDiam / 2f);
-
         chunkX = (int) (topX - blockX) >> 4;
         chunkZ = (int) (topZ - blockZ) >> 4;
 
-        chunkXDiam = ((int)(topX + xDiam - endBlockX) >> 4) - chunkX;
-        chunkZDiam = ((int)(topZ + zDiam - endBlockZ) >> 4) - chunkZ;
+        chunkXDiam = (int) Math.ceil(xDiam / 16f);
+        chunkZDiam = (int) Math.ceil(zDiam / 16f);
 
         offsetX = this.blockX * chunkWidth / 16f;
         offsetZ = this.blockZ * chunkWidth / 16f;
     }
-
 
 
     public void renderMinimap(PoseStack matrixStack) {

@@ -33,4 +33,5 @@ public @interface Setting {
      * @return name of function (boolean returning) that determines wether this field should be disabled.
      */
     String enabled() default "";
+
 }

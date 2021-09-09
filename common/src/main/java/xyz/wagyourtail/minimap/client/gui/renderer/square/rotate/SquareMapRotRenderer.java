@@ -10,7 +10,6 @@ import org.jetbrains.annotations.NotNull;
 import xyz.wagyourtail.minimap.WagYourMinimap;
 import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
 import xyz.wagyourtail.minimap.api.config.MinimapClientConfig;
-import xyz.wagyourtail.minimap.client.gui.renderer.AbstractMapRenderer;
 import xyz.wagyourtail.minimap.client.gui.renderer.AbstractMinimapRenderer;
 import xyz.wagyourtail.minimap.client.gui.renderer.overlay.AbstractMapOverlayRenderer;
 import xyz.wagyourtail.minimap.client.gui.renderer.square.SquareMapBorderOverlay;
@@ -46,7 +45,7 @@ public class SquareMapRotRenderer extends AbstractMinimapRenderer {
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         Vec3 offset = center.subtract(player_pos);
         matrixStack.translate(maxLength / 2, maxLength / 2, 0);
-        matrixStack.mulPose(Vector3f.ZN.rotationDegrees(player_rot-180));
+        matrixStack.mulPose(Vector3f.ZN.rotationDegrees(player_rot - 180));
         matrixStack.translate(-maxLength / 2, -maxLength / 2, 0);
 
         int i = 0;
@@ -80,4 +79,5 @@ public class SquareMapRotRenderer extends AbstractMinimapRenderer {
     public void renderText(PoseStack matrixStack, float maxLength, boolean bottom, Component... textLines) {
 
     }
+
 }

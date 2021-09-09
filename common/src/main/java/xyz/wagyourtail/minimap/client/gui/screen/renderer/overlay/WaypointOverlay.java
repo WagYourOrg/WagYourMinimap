@@ -19,28 +19,25 @@ public class WaypointOverlay extends AbstractFullscreenOverlay {
 
     @Override
     public void renderOverlay(PoseStack stack) {
-        float topX = parent.topX;
-        float topZ = parent.topZ;
         float endX = parent.topX + parent.xDiam;
         float endZ = parent.topZ + parent.zDiam;
 
 
         for (Waypoint point : MinimapApi.getInstance().getMapServer().waypoints.getVisibleWaypoints()) {
-            if (point.posX() > topX && point.posX() < endX && point.posZ() > topZ && point.posZ() < endZ) {
+            if (point.posX() > parent.topX && point.posX() < endX && point.posZ() > parent.topZ && point.posZ() < endZ) {
                 stack.pushPose();
 
-                stack.translate((point.posX() - topX) * parent.width / (endX - topX), (point.posZ() - topZ) * parent.height / (endZ - topZ), 0);
-//                stack.scale(.0025f * Math.max(parent.width, parent.height), .0025f * Math.max(parent.width, parent.height), 1);
+                stack.translate((point.posX() - parent.topX) * parent.chunkWidth / 16f, (point.posZ() - parent.topZ) * parent.chunkWidth / 16f, 0);
+                stack.scale(.75f, .75f, 1);
                 RenderSystem.setShaderTexture(0, waypoint_tex);
                 int abgr = 0xFF000000 | point.colB() << 0x10 | point.colG() << 0x8 | point.colR() & 255;
                 AbstractMapRenderer.drawTexCol(stack, -10, -10, 20, 20, 1, 1, 0, 0, abgr);
-                stack.scale(.75f,.75f,1f);
-                minecraft.font.draw(stack, point.name(), -minecraft.font.width(point.name())/2f, 15, 0xFFFFFF);
+                stack.scale(.75f, .75f, 1f);
+                minecraft.font.draw(stack, point.name(), -minecraft.font.width(point.name()) / 2f, 15, 0xFFFFFF);
                 stack.popPose();
             }
         }
     }
-
 
 
 }

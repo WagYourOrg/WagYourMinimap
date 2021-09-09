@@ -9,4 +9,5 @@ public class SettingsScreen extends MainSettingScreen {
     public SettingsScreen(Screen parent) {
         super(new TranslatableComponent("gui.wagyourminimap.settings"), parent, MinimapApi.getInstance().getConfig());
     }
+
 }

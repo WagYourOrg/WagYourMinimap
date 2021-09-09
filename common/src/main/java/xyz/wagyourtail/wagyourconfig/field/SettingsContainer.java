@@ -14,4 +14,5 @@ public @interface SettingsContainer {
      * @return translation key for class
      */
     String value();
+
 }

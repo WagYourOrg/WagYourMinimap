@@ -13,6 +13,7 @@ import xyz.wagyourtail.minimap.client.gui.renderer.overlay.AbstractMapOverlayRen
 public class SquareMapBorderOverlay extends AbstractMapOverlayRenderer {
     private static final ResourceLocation map_corner = new ResourceLocation(WagYourMinimap.MOD_ID, "textures/square_border_corner.png");
     private static final ResourceLocation map_side = new ResourceLocation(WagYourMinimap.MOD_ID, "textures/square_border_side.png");
+
     public SquareMapBorderOverlay(AbstractMinimapRenderer parent) {
         super(parent);
     }

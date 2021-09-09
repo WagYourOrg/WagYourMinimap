@@ -12,5 +12,7 @@ public class MinimapClientEvents {
 
     public interface EventMenuButtons {
         void onPopulate(List<MenuButton> buttons);
+
     }
+
 }

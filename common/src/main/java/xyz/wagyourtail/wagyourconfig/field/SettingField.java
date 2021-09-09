@@ -7,16 +7,16 @@ import java.util.Arrays;
 import java.util.Collection;
 
 public class SettingField<T> {
-    public final Class<T> fieldType;
-    public final Setting setting;
-    public final IntRange intRange;
-    public final DoubleRange doubleRange;
     private final Object parent;
     private final Field field;
     private final Method enabled;
     private final Method getter;
     private final Method setter;
     private final Method options;
+    public final Class<T> fieldType;
+    public final Setting setting;
+    public final IntRange intRange;
+    public final DoubleRange doubleRange;
 
     public SettingField(Object parent, Field field, Class<T> fieldType) throws NoSuchMethodException {
         this.parent = parent;
@@ -63,7 +63,8 @@ public class SettingField<T> {
 
     public Collection<?> options() throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         if (options != null) return (Collection<?>) options.invoke(parent);
-        if (fieldType.isEnum()) return Arrays.asList((Object[])fieldType.getDeclaredMethod("values").invoke(null));
+        if (fieldType.isEnum()) return Arrays.asList((Object[]) fieldType.getDeclaredMethod("values").invoke(null));
         return null;
     }
+
 }

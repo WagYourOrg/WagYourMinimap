@@ -47,7 +47,7 @@ public class MenuButton extends AbstractButton {
     @Override
     public void renderToolTip(PoseStack poseStack, int mouseX, int mouseY) {
         Font font = Minecraft.getInstance().font;
-        fill(poseStack, mouseX + 8, mouseY - 2, mouseX + font.width(getMessage()) + 12,mouseY + font.lineHeight + 2, 0x7F000000);
+        fill(poseStack, mouseX + 8, mouseY - 2, mouseX + font.width(getMessage()) + 12, mouseY + font.lineHeight + 2, 0x7F000000);
         font.draw(poseStack, getMessage(), mouseX + 10, mouseY, 0xFFFFFF);
     }
 

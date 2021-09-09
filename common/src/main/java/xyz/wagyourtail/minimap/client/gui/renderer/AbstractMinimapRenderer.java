@@ -17,10 +17,6 @@ public abstract class AbstractMinimapRenderer extends AbstractMapRenderer {
         this.overlays = overlays;
     }
 
-    public abstract void renderMinimap(PoseStack matrixStack, @NotNull Vec3 center, float maxLength, @NotNull Vec3 player_pos, float player_rot);
-
-    public abstract void renderText(PoseStack matrixStack, float maxLength, boolean bottom, Component... textLines);
-
     public void render(PoseStack matrixStack, float tickDelta) {
         if (minecraft.options.renderDebug) return;
         matrixStack.pushPose();
@@ -62,4 +58,9 @@ public abstract class AbstractMinimapRenderer extends AbstractMapRenderer {
         renderText(matrixStack, minimapSize, bottom, new TextComponent(String.format("%.2f %.2f %.2f", player_pos.x, player_pos.y, player_pos.z)));
         matrixStack.popPose();
     }
+
+    public abstract void renderMinimap(PoseStack matrixStack, @NotNull Vec3 center, float maxLength, @NotNull Vec3 player_pos, float player_rot);
+
+    public abstract void renderText(PoseStack matrixStack, float maxLength, boolean bottom, Component... textLines);
+
 }

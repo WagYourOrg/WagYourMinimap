@@ -14,14 +14,12 @@ public class PlayerIconOverlay extends AbstractFullscreenOverlay {
 
     @Override
     public void renderOverlay(PoseStack stack) {
-        float topX = parent.topX;
-        float topZ = parent.topZ;
         float endX = parent.topX + parent.xDiam;
         float endZ = parent.topZ + parent.zDiam;
 
         Vec3 pos = minecraft.player.position();
 
-        if (pos.x > topX && pos.x < endX && pos.z > topZ && pos.z < endZ) {
+        if (pos.x > parent.topX && pos.x < endX && pos.z > parent.topZ && pos.z < endZ) {
             RenderSystem.enableBlend();
             RenderSystem.defaultBlendFunc();
             RenderSystem.setShaderTexture(0, minecraft.player.getSkinTextureLocation());
@@ -29,7 +27,7 @@ public class PlayerIconOverlay extends AbstractFullscreenOverlay {
             float posZ = (float) (pos.z - parent.topZ) * parent.chunkWidth / 16f;
             stack.pushPose();
             stack.translate(posX, posZ, 0);
-            GuiComponent.blit(stack, -4,-4, 8, 8, 8.0F, 8, 8, 8, 64, 64);
+            GuiComponent.blit(stack, -4, -4, 8, 8, 8.0F, 8, 8, 8, 64, 64);
             stack.popPose();
         }
 

@@ -7,14 +7,12 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.phys.Vec3;
 import xyz.wagyourtail.minimap.WagYourMinimap;
 import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
 import xyz.wagyourtail.minimap.api.client.MinimapClientEvents;
 import xyz.wagyourtail.minimap.api.config.MinimapClientConfig;
 import xyz.wagyourtail.minimap.api.config.layers.AbstractLayerOptions;
 import xyz.wagyourtail.minimap.client.gui.image.AbstractImageStrategy;
-import xyz.wagyourtail.minimap.client.gui.renderer.overlay.AbstractMapOverlayRenderer;
 import xyz.wagyourtail.minimap.client.gui.screen.renderer.ScreenMapRenderer;
 import xyz.wagyourtail.minimap.client.gui.screen.settings.SettingsScreen;
 import xyz.wagyourtail.minimap.client.gui.screen.widget.MenuButton;
@@ -28,53 +26,11 @@ public class MapScreen extends Screen {
     private static final ResourceLocation waypoint_tex = new ResourceLocation(WagYourMinimap.MOD_ID, "textures/gui/waypoint_icon.png");
     private static final ResourceLocation menu_end_tex = new ResourceLocation(WagYourMinimap.MOD_ID, "textures/gui/menu_end.png");
     private static final ResourceLocation menu_tex = new ResourceLocation(WagYourMinimap.MOD_ID, "textures/gui/menu.png");
-
-    public ScreenMapRenderer renderer;
-
     private int menuHeight;
+    public ScreenMapRenderer renderer;
 
     public MapScreen() {
         super(new TranslatableComponent("gui.wagyourminimap.title"));
-    }
-
-    @Override
-    protected void init() {
-        super.init();
-
-        renderer = new ScreenMapRenderer();
-//        renderer.setOverlays(Arrays.stream(MinimapClientApi.getInstance().getConfig().get(MinimapClientConfig.class).fullscreenMapStyle.overlays).map(e -> e.compileOverlay(renderer)).toArray(AbstractMapOverlayRenderer[]::new));
-        renderer.setRenderLayers(Arrays.stream(MinimapClientApi.getInstance().getConfig().get(MinimapClientConfig.class).fullscreenMapStyle.layers).map(AbstractLayerOptions::compileLayer).toArray(AbstractImageStrategy[]::new));
-        renderer.computeDimensions(width, height);
-        renderer.moveCenter(minecraft.player.position());
-
-        List<MenuButton> buttonList = new ArrayList<>();
-
-        buttonList.add(new MenuButton(new TranslatableComponent("gui.wagyourminimap.settings"), settings_tex, (btn) -> {
-            minecraft.setScreen(new SettingsScreen(this));
-        }));
-
-//        buttonList.add(new MenuButton(new TranslatableComponent("gui.wagyourminimap.test"), waypoint_tex, null));
-//        buttonList.add(new MenuButton(new TranslatableComponent("gui.wagyourminimap.test"), waypoint_tex, null));
-
-        buttonList.add(new MenuButton(new TranslatableComponent("gui.wagyourminimap.waypoints"), waypoint_tex, (btn) -> {
-            minecraft.setScreen(new WaypointsScreen(this));
-        }));
-
-        MinimapClientEvents.EVENT_MENU_BUTTONS.invoker().onPopulate(buttonList);
-
-        setupMenu(buttonList);
-
-    }
-
-    private void setupMenu(List<MenuButton> buttons) {
-        int i = height / 2 - buttons.size() * 30 + 5;
-        for (MenuButton btn : buttons) {
-            btn.x = 2;
-            btn.y = i;
-            i += 50;
-            addRenderableWidget(btn);
-        }
-        menuHeight = (buttons.size() + 1) * 50;
     }
 
     @Override
@@ -120,15 +76,55 @@ public class MapScreen extends Screen {
         super.render(poseStack, mouseX, mouseY, partialTicks);
     }
 
+    @Override
+    protected void init() {
+        super.init();
+
+        renderer = new ScreenMapRenderer();
+//        renderer.setOverlays(Arrays.stream(MinimapClientApi.getInstance().getConfig().get(MinimapClientConfig.class).fullscreenMapStyle.overlays).map(e -> e.compileOverlay(renderer)).toArray(AbstractMapOverlayRenderer[]::new));
+        renderer.setRenderLayers(Arrays.stream(MinimapClientApi.getInstance().getConfig().get(MinimapClientConfig.class).fullscreenMapStyle.layers).map(AbstractLayerOptions::compileLayer).toArray(AbstractImageStrategy[]::new));
+        renderer.computeDimensions(width, height);
+        renderer.moveCenter(minecraft.player.position());
+
+        List<MenuButton> buttonList = new ArrayList<>();
+
+        buttonList.add(new MenuButton(new TranslatableComponent("gui.wagyourminimap.settings"), settings_tex, (btn) -> {
+            minecraft.setScreen(new SettingsScreen(this));
+        }));
+
+//        buttonList.add(new MenuButton(new TranslatableComponent("gui.wagyourminimap.test"), waypoint_tex, null));
+//        buttonList.add(new MenuButton(new TranslatableComponent("gui.wagyourminimap.test"), waypoint_tex, null));
+
+        buttonList.add(new MenuButton(new TranslatableComponent("gui.wagyourminimap.waypoints"), waypoint_tex, (btn) -> {
+            minecraft.setScreen(new WaypointsScreen(this));
+        }));
+
+        MinimapClientEvents.EVENT_MENU_BUTTONS.invoker().onPopulate(buttonList);
+
+        setupMenu(buttonList);
+
+    }
+
+    private void setupMenu(List<MenuButton> buttons) {
+        int i = height / 2 - buttons.size() * 30 + 5;
+        for (MenuButton btn : buttons) {
+            btn.x = 2;
+            btn.y = i;
+            i += 50;
+            addRenderableWidget(btn);
+        }
+        menuHeight = (buttons.size() + 1) * 50;
+    }
+
     private static void drawTex(PoseStack pose, int x1, int y1, int w, int h, float minU, float maxU, float minV, float maxV) {
         Matrix4f matrix = pose.last().pose();
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         BufferBuilder bufferBuilder = Tesselator.getInstance().getBuilder();
         bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
-        bufferBuilder.vertex(matrix, (float)x1, (float)(y1 + h), 0f).uv(minU, maxV).endVertex();
-        bufferBuilder.vertex(matrix, (float)(x1 + w), (float)(y1 + h), 0f).uv(maxU, maxV).endVertex();
-        bufferBuilder.vertex(matrix, (float)(x1 + w), (float)y1, 0f).uv(maxU, minV).endVertex();
-        bufferBuilder.vertex(matrix, (float)x1, (float)y1, 0f).uv(minU, minV).endVertex();
+        bufferBuilder.vertex(matrix, (float) x1, (float) (y1 + h), 0f).uv(minU, maxV).endVertex();
+        bufferBuilder.vertex(matrix, (float) (x1 + w), (float) (y1 + h), 0f).uv(maxU, maxV).endVertex();
+        bufferBuilder.vertex(matrix, (float) (x1 + w), (float) y1, 0f).uv(maxU, minV).endVertex();
+        bufferBuilder.vertex(matrix, (float) x1, (float) y1, 0f).uv(minU, minV).endVertex();
         bufferBuilder.end();
         BufferUploader.end(bufferBuilder);
     }

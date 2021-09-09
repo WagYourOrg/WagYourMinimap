@@ -41,4 +41,5 @@ public class FullscreenMapStyle {
     public Collection<Class<? extends AbstractLayerOptions>> layerOptions() {
         return availableLayers.values();
     }
+
 }

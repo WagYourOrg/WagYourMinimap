@@ -41,6 +41,18 @@ public class SettingScreen extends Screen {
     }
 
     @Override
+    public void render(PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
+        renderBackground(poseStack);
+        super.render(poseStack, mouseX, mouseY, partialTicks);
+        drawCenteredString(poseStack, this.font, this.title, this.width / 2, 17, 0xFFFFFF);
+    }
+
+    @Override
+    public void onClose() {
+        minecraft.setScreen(parent);
+    }
+
+    @Override
     protected void init() {
         super.init();
         AtomicInteger currentPage = new AtomicInteger();
@@ -55,6 +67,7 @@ public class SettingScreen extends Screen {
 
         drawPage(0);
     }
+
     public void drawPage(int page) {
         pageButtons.forEach(this::removeWidget);
         pageButtons.clear();
@@ -106,130 +119,130 @@ public class SettingScreen extends Screen {
                 });
             } else
 
-            //char
-            if (settingField.fieldType.equals(char.class) || settingField.fieldType.equals(Character.class)) {
-                throw new RuntimeException("CHAR NOT IMPLEMENTED YET!");
-            } else
+                //char
+                if (settingField.fieldType.equals(char.class) || settingField.fieldType.equals(Character.class)) {
+                    throw new RuntimeException("CHAR NOT IMPLEMENTED YET!");
+                } else
 
-            //number
-            if (settingField.fieldType.isPrimitive() || Number.class.isAssignableFrom(settingField.fieldType)) {
-                if (settingField.intRange != null) {
-                    element = new Slider(x, y, width, height, new TranslatableComponent(settingField.setting.value()), ((Number) settingField.get()).doubleValue(), settingField.intRange.from(), settingField.intRange.to(), settingField.intRange.stepVal() * (settingField.intRange.to() - settingField.intRange.from()), (val) -> {
-                        try {
-                            ((SettingField) settingField).set(val.intValue());
-                        } catch (InvocationTargetException | IllegalAccessException e) {
-                            e.printStackTrace();
-                        }
-                    });
-                } else if (settingField.doubleRange != null) {
-                    element = new Slider(x, y, width, height, new TranslatableComponent(settingField.setting.value()), ((Number) settingField.get()).doubleValue(), settingField.doubleRange.from(), settingField.doubleRange.to(), settingField.doubleRange.steps(), (val) -> {
-                        try {
-                            ((SettingField) settingField).set(val);
-                        } catch (InvocationTargetException | IllegalAccessException e) {
-                            e.printStackTrace();
-                        }
-                    });
-                } else {
-                    element = new EditBox(font, x, y, width, height, new TranslatableComponent(settingField.setting.value()));
-                    ((EditBox) element).setResponder((val) -> {
-                        if (settingField.fieldType.equals(int.class) || settingField.fieldType.equals(Integer.class)) {
-                            try {
-                                ((SettingField) settingField).set(val.equals("") ? 0 : Integer.valueOf(val));
-                            } catch (InvocationTargetException | IllegalAccessException e) {
-                                e.printStackTrace();
-                            }
-                        } else if (settingField.fieldType.equals(double.class) || settingField.fieldType.equals(Double.class)) {
-                            try {
-                                ((SettingField) settingField).set(val.equals("") ? 0D : Double.valueOf(val));
-                            } catch (InvocationTargetException | IllegalAccessException e) {
-                                e.printStackTrace();
-                            }
+                    //number
+                    if (settingField.fieldType.isPrimitive() || Number.class.isAssignableFrom(settingField.fieldType)) {
+                        if (settingField.intRange != null) {
+                            element = new Slider(x, y, width, height, new TranslatableComponent(settingField.setting.value()), ((Number) settingField.get()).doubleValue(), settingField.intRange.from(), settingField.intRange.to(), settingField.intRange.stepVal() * (settingField.intRange.to() - settingField.intRange.from()), (val) -> {
+                                try {
+                                    ((SettingField) settingField).set(val.intValue());
+                                } catch (InvocationTargetException | IllegalAccessException e) {
+                                    e.printStackTrace();
+                                }
+                            });
+                        } else if (settingField.doubleRange != null) {
+                            element = new Slider(x, y, width, height, new TranslatableComponent(settingField.setting.value()), ((Number) settingField.get()).doubleValue(), settingField.doubleRange.from(), settingField.doubleRange.to(), settingField.doubleRange.steps(), (val) -> {
+                                try {
+                                    ((SettingField) settingField).set(val);
+                                } catch (InvocationTargetException | IllegalAccessException e) {
+                                    e.printStackTrace();
+                                }
+                            });
                         } else {
-                            throw new RuntimeException("Number type " + settingField.fieldType + " not implemented");
+                            element = new EditBox(font, x, y, width, height, new TranslatableComponent(settingField.setting.value()));
+                            ((EditBox) element).setResponder((val) -> {
+                                if (settingField.fieldType.equals(int.class) || settingField.fieldType.equals(Integer.class)) {
+                                    try {
+                                        ((SettingField) settingField).set(val.equals("") ? 0 : Integer.valueOf(val));
+                                    } catch (InvocationTargetException | IllegalAccessException e) {
+                                        e.printStackTrace();
+                                    }
+                                } else if (settingField.fieldType.equals(double.class) || settingField.fieldType.equals(Double.class)) {
+                                    try {
+                                        ((SettingField) settingField).set(val.equals("") ? 0D : Double.valueOf(val));
+                                    } catch (InvocationTargetException | IllegalAccessException e) {
+                                        e.printStackTrace();
+                                    }
+                                } else {
+                                    throw new RuntimeException("Number type " + settingField.fieldType + " not implemented");
+                                }
+                            });
+                            if (settingField.fieldType.equals(int.class) || settingField.fieldType.equals(Integer.class)) {
+                                ((EditBox) element).setFilter((str) ->
+                                    str.matches("\\d*")
+                                );
+                            } else if (settingField.fieldType.equals(double.class) || settingField.fieldType.equals(Double.class)) {
+
+                                ((EditBox) element).setFilter((str) ->
+                                    str.matches("\\d*.?\\d*")
+                                );
+                            } else {
+                                throw new RuntimeException("Number type " + settingField.fieldType + " not implemented");
+                            }
                         }
-                    });
-                    if (settingField.fieldType.equals(int.class) || settingField.fieldType.equals(Integer.class)) {
-                        ((EditBox) element).setFilter((str) ->
-                            str.matches("\\d*")
-                        );
-                    } else if (settingField.fieldType.equals(double.class) || settingField.fieldType.equals(Double.class)) {
+                    } else
 
-                        ((EditBox) element).setFilter((str) ->
-                            str.matches("\\d*.?\\d*")
-                        );
-                    } else {
-                        throw new RuntimeException("Number type " + settingField.fieldType + " not implemented");
-                    }
-                }
-            } else
+                        //string
+                        if (settingField.fieldType.equals(String.class)) {
+                            if (settingField.options() != null) {
+                                MutableComponent title = new TranslatableComponent(settingField.setting.value());
+                                List<String> settings = (List<String>) settingField.options().stream().toList();
+                                element = new Button(x, y, width, height, title.copy().append(" " + settingField.get()), (btn) -> {
+                                    try {
+                                        ((SettingField) settingField).set(settings.get((settings.indexOf(settingField.get()) + 1) % settings.size()));
+                                        btn.setMessage(title.copy().append(" " + settingField.get()));
+                                    } catch (InvocationTargetException | IllegalAccessException e) {
+                                        e.printStackTrace();
+                                    }
+                                });
+                            } else {
+                                element = new EditBox(font, x, y, width, height, new TranslatableComponent(settingField.setting.value()));
+                                ((EditBox) element).setResponder((val) -> {
+                                    try {
+                                        ((SettingField) settingField).set(val);
+                                    } catch (InvocationTargetException | IllegalAccessException e) {
+                                        e.printStackTrace();
+                                    }
+                                });
+                            }
+                        } else
 
-            //string
-            if (settingField.fieldType.equals(String.class)) {
-                if (settingField.options() != null) {
-                    MutableComponent title = new TranslatableComponent(settingField.setting.value());
-                    List<String> settings = (List<String>) settingField.options().stream().toList();
-                    element = new Button(x, y, width, height, title.copy().append(" " + settingField.get()), (btn) -> {
-                        try {
-                            ((SettingField) settingField).set(settings.get((settings.indexOf(settingField.get()) + 1) % settings.size()));
-                            btn.setMessage(title.copy().append(" " + settingField.get()));
-                        } catch (InvocationTargetException | IllegalAccessException e) {
-                            e.printStackTrace();
-                        }
-                    });
-                } else {
-                    element = new EditBox(font, x, y, width, height, new TranslatableComponent(settingField.setting.value()));
-                    ((EditBox) element).setResponder((val) -> {
-                        try {
-                            ((SettingField) settingField).set(val);
-                        } catch (InvocationTargetException | IllegalAccessException e) {
-                            e.printStackTrace();
-                        }
-                    });
-                }
-            } else
+                            //enum
+                            if (settingField.fieldType.isEnum()) {
+                                MutableComponent title = new TranslatableComponent(settingField.setting.value());
+                                List<?> settings = settingField.options().stream().toList();
+                                element = new Button(x, y, width, height, title.copy().append(" " + settingField.get()), (btn) -> {
+                                    try {
+                                        ((SettingField) settingField).set(settings.get((settings.indexOf(settingField.get()) + 1) % settings.size()));
+                                        btn.setMessage(title.copy().append(" " + settingField.get()));
+                                    } catch (InvocationTargetException | IllegalAccessException e) {
+                                        e.printStackTrace();
+                                    }
+                                });
+                            } else
 
-            //enum
-            if (settingField.fieldType.isEnum()) {
-                MutableComponent title = new TranslatableComponent(settingField.setting.value());
-                List<?> settings = settingField.options().stream().toList();
-                element = new Button(x, y, width, height, title.copy().append(" " + settingField.get()), (btn) -> {
-                    try {
-                        ((SettingField) settingField).set(settings.get((settings.indexOf(settingField.get()) + 1) % settings.size()));
-                        btn.setMessage(title.copy().append(" " + settingField.get()));
-                    } catch (InvocationTargetException | IllegalAccessException e) {
-                        e.printStackTrace();
-                    }
-                });
-            } else
+                                //array
+                                if (settingField.fieldType.isArray()) {
+                                    element = new Button(x, y, width, height, new TranslatableComponent(settingField.setting.value()), (btn) -> {
+                                        minecraft.setScreen(new ListScreen<>(new TranslatableComponent(settingField.setting.value()), this, (SettingField<Object[]>) settingField));
+                                    });
+                                } else
 
-            //array
-            if (settingField.fieldType.isArray()) {
-                element = new Button(x, y, width, height, new TranslatableComponent(settingField.setting.value()), (btn) -> {
-                    minecraft.setScreen(new ListScreen<>(new TranslatableComponent(settingField.setting.value()), this, (SettingField<Object[]>) settingField));
-                });
-            } else
-
-            //object
-            {
-                MutableComponent title = new TranslatableComponent(settingField.setting.value());
-                List<Class<?>> settings = (List<Class<?>>) settingField.options().stream().toList();
-                element = new Button(x, y, width - height - 5, height, title.copy().append(" ").append(new TranslatableComponent(settingField.get().getClass().getAnnotation(SettingsContainer.class).value())), (btn) -> {
-                    try {
-                        ((SettingField) settingField).set(settings.get((settings.indexOf(settingField.get().getClass()) + 1) % settings.size()).getConstructor().newInstance());
-                        btn.setMessage(title.copy().append(" ").append(new TranslatableComponent(settingField.get().getClass().getAnnotation(SettingsContainer.class).value())));
-                    } catch (InvocationTargetException | IllegalAccessException | NoSuchMethodException | InstantiationException e) {
-                        e.printStackTrace();
-                    }
-                });
-                settingButton = new Button(x + width - height, y, height, height, new TextComponent("⚙"), (btn) -> {
-                    try {
-                        Object settingVal = settingField.get();
-                        minecraft.setScreen(new SettingScreen(new TranslatableComponent(settingVal.getClass().getAnnotation(SettingsContainer.class).value()), this, settingVal));
-                    } catch (InvocationTargetException | IllegalAccessException e) {
-                        e.printStackTrace();
-                    }
-                });
-            }
+                                //object
+                                {
+                                    MutableComponent title = new TranslatableComponent(settingField.setting.value());
+                                    List<Class<?>> settings = (List<Class<?>>) settingField.options().stream().toList();
+                                    element = new Button(x, y, width - height - 5, height, title.copy().append(" ").append(new TranslatableComponent(settingField.get().getClass().getAnnotation(SettingsContainer.class).value())), (btn) -> {
+                                        try {
+                                            ((SettingField) settingField).set(settings.get((settings.indexOf(settingField.get().getClass()) + 1) % settings.size()).getConstructor().newInstance());
+                                            btn.setMessage(title.copy().append(" ").append(new TranslatableComponent(settingField.get().getClass().getAnnotation(SettingsContainer.class).value())));
+                                        } catch (InvocationTargetException | IllegalAccessException | NoSuchMethodException | InstantiationException e) {
+                                            e.printStackTrace();
+                                        }
+                                    });
+                                    settingButton = new Button(x + width - height, y, height, height, new TextComponent("⚙"), (btn) -> {
+                                        try {
+                                            Object settingVal = settingField.get();
+                                            minecraft.setScreen(new SettingScreen(new TranslatableComponent(settingVal.getClass().getAnnotation(SettingsContainer.class).value()), this, settingVal));
+                                        } catch (InvocationTargetException | IllegalAccessException e) {
+                                            e.printStackTrace();
+                                        }
+                                    });
+                                }
 
             if (!settingField.setting.enabled().equals("")) {
                 AbstractWidget finalElement = element;
@@ -258,21 +271,9 @@ public class SettingScreen extends Screen {
     }
 
     @Override
-    public void render(PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
-        renderBackground(poseStack);
-        super.render(poseStack, mouseX, mouseY, partialTicks);
-        drawCenteredString(poseStack, this.font, this.title, this.width / 2, 17, 0xFFFFFF);
-    }
-
-    @Override
     public void tick() {
         super.tick();
         enabledListeners.forEach(Runnable::run);
-    }
-
-    @Override
-    public void onClose() {
-        minecraft.setScreen(parent);
     }
 
 }

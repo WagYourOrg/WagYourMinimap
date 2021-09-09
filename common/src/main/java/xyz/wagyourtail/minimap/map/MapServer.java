@@ -40,15 +40,14 @@ public class MapServer implements AutoCloseable {
         });
     }
 
-
-    private static String getLevelName(Level level) {
-        return level.dimension().location().toString().replace(":", "_");
-    }
-
     public synchronized MapLevel getLevel(Level level) {
         //TODO: test and figure out how to deal with on multiverse/waterfall servers
         String level_slug = getLevelName(level);
         return levels.computeIfAbsent(level_slug, (slug) -> new MapLevel(this, level_slug, level.getMinBuildHeight(), level.getMaxBuildHeight()));
+    }
+
+    private static String getLevelName(Level level) {
+        return level.dimension().location().toString().replace(":", "_");
     }
 
     @Override

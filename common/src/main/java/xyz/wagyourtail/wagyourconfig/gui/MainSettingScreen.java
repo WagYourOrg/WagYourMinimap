@@ -31,6 +31,19 @@ public class MainSettingScreen extends Screen {
     }
 
     @Override
+    public void render(PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
+        renderBackground(poseStack);
+        super.render(poseStack, mouseX, mouseY, partialTicks);
+        drawCenteredString(poseStack, this.font, this.title, this.width / 2, 17, 0xFFFFFF);
+    }
+
+    @Override
+    public void onClose() {
+        config.saveConfig();
+        minecraft.setScreen(parent);
+    }
+
+    @Override
     protected void init() {
         super.init();
         AtomicInteger currentPage = new AtomicInteger();
@@ -67,19 +80,6 @@ public class MainSettingScreen extends Screen {
         }
         backButton.active = page != 0;
         forwardButton.active = page < pages;
-    }
-
-    @Override
-    public void render(PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
-        renderBackground(poseStack);
-        super.render(poseStack, mouseX, mouseY, partialTicks);
-        drawCenteredString(poseStack, this.font, this.title, this.width / 2, 17, 0xFFFFFF);
-    }
-
-    @Override
-    public void onClose() {
-        config.saveConfig();
-        minecraft.setScreen(parent);
     }
 
 }
