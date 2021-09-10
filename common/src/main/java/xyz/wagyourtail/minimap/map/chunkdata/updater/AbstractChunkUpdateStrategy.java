@@ -29,8 +29,12 @@ public abstract class AbstractChunkUpdateStrategy {
     protected void updateChunk(ChunkLocation location, BiFunction<ChunkLocation, ChunkData, ChunkData> newChunkDataCreator) {
         synchronized (location.level()) {
             ResolveQueue<ChunkData> chunkData = location.level().getChunk(location);
-            chunkData.addTask((od) -> newChunkDataCreator.apply(location, od), priority);
-            MinimapEvents.CHUNK_UPDATED.invoker().onChunkUpdated(location, chunkData, this.getClass());
+            chunkData.addTask((od) -> {
+                ChunkData data = newChunkDataCreator.apply(location, od);
+                MinimapEvents.CHUNK_UPDATED.invoker().onChunkUpdate(location, data, this.getClass());
+                return data;
+            }, priority);
+            MinimapEvents.CHUNK_UPDATE_QUEUED.invoker().onChunkUpdateQueued(location, chunkData, this.getClass());
         }
     }
 

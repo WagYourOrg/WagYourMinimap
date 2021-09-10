@@ -34,6 +34,14 @@ public class ChunkData implements AutoCloseable {
         this.location = location;
     }
 
+    public static int blockPosToIndex(int posX, int posZ) {
+        int x = posX % 16;
+        int z = posZ % 16;
+        if (x < 0) x += 16;
+        if (z < 0) z += 16;
+        return (x << 4) + z;
+    }
+
     public static int blockPosToIndex(BlockPos pos) {
         int x = pos.getX() % 16;
         int z = pos.getZ() % 16;

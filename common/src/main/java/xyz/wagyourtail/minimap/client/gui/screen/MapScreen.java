@@ -3,6 +3,9 @@ package xyz.wagyourtail.minimap.client.gui.screen;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Matrix4f;
+import net.minecraft.client.gui.components.Widget;
+import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.TranslatableComponent;
@@ -15,10 +18,10 @@ import xyz.wagyourtail.minimap.api.config.layers.AbstractLayerOptions;
 import xyz.wagyourtail.minimap.client.gui.image.AbstractImageStrategy;
 import xyz.wagyourtail.minimap.client.gui.screen.renderer.ScreenMapRenderer;
 import xyz.wagyourtail.minimap.client.gui.screen.settings.SettingsScreen;
+import xyz.wagyourtail.minimap.client.gui.screen.widget.InteractMenu;
 import xyz.wagyourtail.minimap.client.gui.screen.widget.MenuButton;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
 import java.util.List;
 
 public class MapScreen extends Screen {
@@ -26,18 +29,37 @@ public class MapScreen extends Screen {
     private static final ResourceLocation waypoint_tex = new ResourceLocation(WagYourMinimap.MOD_ID, "textures/gui/waypoint_icon.png");
     private static final ResourceLocation menu_end_tex = new ResourceLocation(WagYourMinimap.MOD_ID, "textures/gui/menu_end.png");
     private static final ResourceLocation menu_tex = new ResourceLocation(WagYourMinimap.MOD_ID, "textures/gui/menu.png");
+
     private int menuHeight;
     public ScreenMapRenderer renderer;
+    public InteractMenu interact;
 
     public MapScreen() {
         super(new TranslatableComponent("gui.wagyourminimap.title"));
     }
 
     @Override
+    public <T extends GuiEventListener & Widget & NarratableEntry> T addRenderableWidget(T widget) {
+        return super.addRenderableWidget(widget);
+    }
+
+    @Override
+    public void removeWidget(GuiEventListener guiEventListener) {
+        super.removeWidget(guiEventListener);
+    }
+
+    @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         boolean consumed = super.mouseClicked(mouseX, mouseY, button);
+        if (interact != null) {
+            interact.remove();
+            interact = null;
+        }
         if (!consumed && button == 1) {
-            //on right click map
+            float x = (float) (renderer.topX + renderer.xDiam * mouseX / width);
+            float z = (float) (renderer.topZ + renderer.zDiam * mouseY / height);
+
+            interact = new InteractMenu(this, x, z, mouseX, mouseY);
         }
         return true;
     }
@@ -45,6 +67,7 @@ public class MapScreen extends Screen {
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
         boolean consumed = super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
+        if (button == 1) return true;
         if (!consumed) {
             renderer.moveCenter(renderer.center.subtract((dragX / renderer.chunkWidth) * 16, 0, (dragY / renderer.chunkWidth) * 16));
         }
@@ -66,13 +89,18 @@ public class MapScreen extends Screen {
 
         renderer.renderMinimap(poseStack);
 
+        if (interact != null) {
+            interact.render(poseStack, mouseX, mouseY, partialTicks);
+        }
+
         RenderSystem.setShaderTexture(0, menu_end_tex);
         int menuTop = height / 2 - menuHeight / 2 - 15;
-        drawTex(poseStack, 0, menuTop, 60, 60, 0, 1, 0, 1);
-        int menuBottom = height / 2 + menuHeight / 2 - 65;
-        drawTex(poseStack, 0, menuBottom, 60, 60, 0, 1, 1, 0);
+        drawTex(poseStack, 0, menuTop, 45, 45, 0, 1, 0, 1);
+        int menuBottom = height / 2 + menuHeight / 2 - 75;
+        drawTex(poseStack, 0, menuBottom, 45, 45, 0, 1, 1, 0);
         RenderSystem.setShaderTexture(0, menu_tex);
-        drawTex(poseStack, 0, menuTop + 60, 60, menuHeight - 110, 0, 1, 0, 1);
+        drawTex(poseStack, 0, menuTop + 45, 45, menuHeight - 110, 0, 1, 0, 1);
+
         super.render(poseStack, mouseX, mouseY, partialTicks);
     }
 
@@ -99,7 +127,7 @@ public class MapScreen extends Screen {
             minecraft.setScreen(new WaypointsScreen(this));
         }));
 
-        MinimapClientEvents.EVENT_MENU_BUTTONS.invoker().onPopulate(buttonList);
+        MinimapClientEvents.FULLSCREEN_MENU.invoker().onPopulate(buttonList);
 
         setupMenu(buttonList);
 
@@ -110,10 +138,10 @@ public class MapScreen extends Screen {
         for (MenuButton btn : buttons) {
             btn.x = 2;
             btn.y = i;
-            i += 50;
+            i += 35;
             addRenderableWidget(btn);
         }
-        menuHeight = (buttons.size() + 1) * 50;
+        menuHeight = (buttons.size() + 1) * 35;
     }
 
     private static void drawTex(PoseStack pose, int x1, int y1, int w, int h, float minU, float maxU, float minV, float maxV) {

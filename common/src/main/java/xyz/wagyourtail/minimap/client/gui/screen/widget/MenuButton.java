@@ -22,7 +22,7 @@ public class MenuButton extends AbstractButton {
     protected final Consumer<MenuButton> onPress;
 
     public MenuButton(Component component, ResourceLocation tex, Consumer<MenuButton> onPress) {
-        super(0, 0, 45, 45, component);
+        super(0, 0, 30, 30, component);
         this.tex = tex;
         this.onPress = onPress;
     }

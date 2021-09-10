@@ -24,10 +24,10 @@ public class WaypointManager {
         for (AbstractCacher cacher : MinimapApi.getInstance().getCachers()) {
             waypointList.addAll(cacher.loadWaypoints(server));
         }
-        //test waypoint
-        if (waypointList.isEmpty()) {
-            waypointList.add(new Waypoint(0, 0, 0, (byte) 255, (byte) 0, (byte) 0, "TEST", new String[] {}, new String[] {}));
-        }
+//        //test waypoint
+//        if (waypointList.isEmpty()) {
+//            waypointList.add(new Waypoint(0, 0, 0, (byte) 255, (byte) 0, (byte) 0, "TEST", new String[] {}, new String[] {}));
+//        }
     }
 
     public static void addFilter(Class<? extends Predicate<Waypoint>> filter) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
