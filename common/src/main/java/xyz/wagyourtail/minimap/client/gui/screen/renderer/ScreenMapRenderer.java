@@ -93,4 +93,8 @@ public class ScreenMapRenderer extends AbstractMapRenderer {
         }
     }
 
+
+    public void setOverlays(AbstractFullscreenOverlay... overlays) {
+        this.overlays = overlays;
+    }
 }
