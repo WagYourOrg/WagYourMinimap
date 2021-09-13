@@ -1,4 +1,4 @@
-package xyz.wagyourtail.wagyourconfig.gui.widgets;
+package xyz.wagyourtail.config.gui.widgets;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -15,8 +15,8 @@ import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
-import xyz.wagyourtail.wagyourconfig.field.SettingsContainer;
-import xyz.wagyourtail.wagyourconfig.gui.SettingScreen;
+import xyz.wagyourtail.config.field.SettingsContainer;
+import xyz.wagyourtail.config.gui.SettingScreen;
 
 public class EnabledSettingList<T> extends ObjectSelectionList<EnabledSettingList.EnabledSettingEntry<T>> {
 

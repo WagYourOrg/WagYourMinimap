@@ -1,4 +1,4 @@
-package xyz.wagyourtail.wagyourconfig.gui;
+package xyz.wagyourtail.config.gui;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.components.AbstractWidget;
@@ -10,11 +10,12 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.util.Mth;
-import xyz.wagyourtail.wagyourconfig.field.Setting;
-import xyz.wagyourtail.wagyourconfig.field.SettingField;
-import xyz.wagyourtail.wagyourconfig.field.SettingsContainer;
-import xyz.wagyourtail.wagyourconfig.gui.widgets.Checkbox;
-import xyz.wagyourtail.wagyourconfig.gui.widgets.Slider;
+import xyz.wagyourtail.config.field.Setting;
+import xyz.wagyourtail.config.field.SettingField;
+import xyz.wagyourtail.config.field.SettingsContainer;
+import xyz.wagyourtail.config.gui.widgets.Checkbox;
+import xyz.wagyourtail.config.gui.widgets.NamedEditBox;
+import xyz.wagyourtail.config.gui.widgets.Slider;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -143,7 +144,7 @@ public class SettingScreen extends Screen {
                                 }
                             });
                         } else {
-                            element = new EditBox(font, x, y, width, height, new TranslatableComponent(settingField.setting.value()));
+                            element = new NamedEditBox(font, x, y, width, height, new TranslatableComponent(settingField.setting.value()));
                             ((EditBox) element).setResponder((val) -> {
                                 if (settingField.fieldType.equals(int.class) || settingField.fieldType.equals(Integer.class)) {
                                     try {
@@ -163,12 +164,12 @@ public class SettingScreen extends Screen {
                             });
                             if (settingField.fieldType.equals(int.class) || settingField.fieldType.equals(Integer.class)) {
                                 ((EditBox) element).setFilter((str) ->
-                                    str.matches("\\d*")
+                                    str.matches("-?\\d*")
                                 );
                             } else if (settingField.fieldType.equals(double.class) || settingField.fieldType.equals(Double.class)) {
 
                                 ((EditBox) element).setFilter((str) ->
-                                    str.matches("\\d*.?\\d*")
+                                    str.matches("-?\\d*.?\\d*")
                                 );
                             } else {
                                 throw new RuntimeException("Number type " + settingField.fieldType + " not implemented");
@@ -190,7 +191,7 @@ public class SettingScreen extends Screen {
                                     }
                                 });
                             } else {
-                                element = new EditBox(font, x, y, width, height, new TranslatableComponent(settingField.setting.value()));
+                                element = new NamedEditBox(font, x, y, width, height, new TranslatableComponent(settingField.setting.value()));
                                 ((EditBox) element).setResponder((val) -> {
                                     try {
                                         ((SettingField) settingField).set(val);

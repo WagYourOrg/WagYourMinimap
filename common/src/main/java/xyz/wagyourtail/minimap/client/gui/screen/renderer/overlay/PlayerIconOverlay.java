@@ -13,7 +13,7 @@ public class PlayerIconOverlay extends AbstractFullscreenOverlay {
     }
 
     @Override
-    public void renderOverlay(PoseStack stack) {
+    public void renderOverlay(PoseStack stack, int mouseX, int mouseY) {
         float endX = parent.topX + parent.xDiam;
         float endZ = parent.topZ + parent.zDiam;
 

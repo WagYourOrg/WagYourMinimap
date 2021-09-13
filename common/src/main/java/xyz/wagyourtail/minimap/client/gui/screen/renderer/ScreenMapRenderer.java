@@ -3,12 +3,13 @@ package xyz.wagyourtail.minimap.client.gui.screen.renderer;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.world.phys.Vec3;
 import xyz.wagyourtail.minimap.client.gui.renderer.AbstractMapRenderer;
+import xyz.wagyourtail.minimap.client.gui.screen.renderer.overlay.DataOverlay;
 import xyz.wagyourtail.minimap.client.gui.screen.renderer.overlay.PlayerIconOverlay;
 import xyz.wagyourtail.minimap.client.gui.screen.renderer.overlay.WaypointOverlay;
 
 public class ScreenMapRenderer extends AbstractMapRenderer {
 
-    public AbstractFullscreenOverlay[] overlays = new AbstractFullscreenOverlay[] {new PlayerIconOverlay(this), new WaypointOverlay(this)};
+    public AbstractFullscreenOverlay[] overlays = new AbstractFullscreenOverlay[] {new PlayerIconOverlay(this), new WaypointOverlay(this), new DataOverlay(this)};
 
     public int blockRadius = 30 * 16;
     public int width, height, xDiam, zDiam;
@@ -64,7 +65,7 @@ public class ScreenMapRenderer extends AbstractMapRenderer {
     }
 
 
-    public void renderMinimap(PoseStack matrixStack) {
+    public void renderMinimap(PoseStack matrixStack, int mouseX, int mouseY) {
 
 
         drawPartialChunk(matrixStack, getChunk(chunkX, chunkZ), 0, 0, chunkWidth, blockX, blockZ, 16, 16);
@@ -88,7 +89,7 @@ public class ScreenMapRenderer extends AbstractMapRenderer {
         drawPartialChunk(matrixStack, getChunk(chunkX + chunkXDiam, chunkZ + chunkZDiam), chunkXDiam * chunkWidth - offsetX, chunkZDiam * chunkWidth - offsetZ, chunkWidth, 0, 0, endBlockX, endBlockZ);
 
         for (AbstractFullscreenOverlay overlay : overlays) {
-            overlay.renderOverlay(matrixStack);
+            overlay.renderOverlay(matrixStack, mouseX, mouseY);
         }
     }
 

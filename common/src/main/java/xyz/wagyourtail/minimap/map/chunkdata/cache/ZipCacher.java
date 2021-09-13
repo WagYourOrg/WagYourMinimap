@@ -19,6 +19,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class ZipCacher extends AbstractCacher {
     @Override
@@ -88,9 +89,9 @@ public class ZipCacher extends AbstractCacher {
     }
 
     @Override
-    public synchronized void saveWaypoints(MapServer server, Collection<Waypoint> waypointList) {
+    public synchronized void saveWaypoints(MapServer server, Stream<Waypoint> waypointList) {
         Path wpFile = serverPath(server).resolve("way.points");
-        String points = waypointList.stream().map(Waypoint::serialize).collect(Collectors.joining("\n"));
+        String points = waypointList.map(Waypoint::serialize).collect(Collectors.joining("\n"));
         try {
             Files.writeString(wpFile, points);
         } catch (IOException e) {

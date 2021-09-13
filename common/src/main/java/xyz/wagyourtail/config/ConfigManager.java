@@ -1,4 +1,4 @@
-package xyz.wagyourtail.wagyourconfig;
+package xyz.wagyourtail.config;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

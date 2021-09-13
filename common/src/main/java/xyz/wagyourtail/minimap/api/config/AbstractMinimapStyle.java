@@ -10,7 +10,7 @@ import xyz.wagyourtail.minimap.client.gui.image.BlockLightImageStrategy;
 import xyz.wagyourtail.minimap.client.gui.image.VanillaMapImageStrategy;
 import xyz.wagyourtail.minimap.client.gui.renderer.AbstractMinimapRenderer;
 import xyz.wagyourtail.minimap.client.gui.renderer.overlay.AbstractMapOverlayRenderer;
-import xyz.wagyourtail.wagyourconfig.field.Setting;
+import xyz.wagyourtail.config.field.Setting;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;

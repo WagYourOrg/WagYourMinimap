@@ -43,11 +43,11 @@ public class ChunkLoadStrategy extends AbstractChunkUpdateStrategy {
         Registry<Biome> biomeRegistry = level.registryAccess().registryOrThrow(Registry.BIOME_REGISTRY);
         LayerLightEventListener light = getBlockLightLayer(level);
         if (level.dimensionType().hasCeiling()) {
+            int ceiling = level.dimensionType().logicalHeight() - 1;
             for (int i = 0; i < 256; ++i) {
                 int x = (i >> 4) % 16;
                 int z = i % 16;
                 blockPos.set((pos.x << 4) + x, 0, (pos.z << 4) + z);
-                int ceiling = level.dimensionType().logicalHeight() - 1;
                 boolean air = false;
                 for (int j = ceiling; j > level.getMinBuildHeight(); --j) {
                     Block block = chunk.getBlockState(blockPos.setY(j)).getBlock();
@@ -56,7 +56,8 @@ public class ChunkLoadStrategy extends AbstractChunkUpdateStrategy {
                     } else if (air) {
                         data.heightmap[i] = j;
                         data.blockid[i] = data.getOrRegisterResourceLocation(Registry.BLOCK.getKey(block));
-                        data.biomeid[i] = data.getOrRegisterResourceLocation(biomeRegistry.getKey(level.getBiome(blockPos)));
+                        data.biomeid[i] = data.getOrRegisterResourceLocation(biomeRegistry.getKey(chunk.getBiomes().getNoiseBiome(x >> 2, data.heightmap[i] >> 2, z >> 2)));
+//                        data.biomeid[i] = data.getOrRegisterResourceLocation(biomeRegistry.getKey(level.getBiome(blockPos)));
                         data.blocklight[i] = (byte) light.getLightValue(blockPos.setY(data.heightmap[i] + 1));
                         break;
                     }
@@ -69,7 +70,8 @@ public class ChunkLoadStrategy extends AbstractChunkUpdateStrategy {
                 data.heightmap[i] = chunk.getHeight(Heightmap.Types.MOTION_BLOCKING, x, z);
                 Block top = chunk.getBlockState(blockPos.set((pos.x << 4) + x, data.heightmap[i], (pos.z << 4) + z)).getBlock();
                 data.blockid[i] = data.getOrRegisterResourceLocation(Registry.BLOCK.getKey(top));
-                data.biomeid[i] = data.getOrRegisterResourceLocation(biomeRegistry.getKey(level.getBiome(blockPos)));
+                data.biomeid[i] = data.getOrRegisterResourceLocation(biomeRegistry.getKey(chunk.getBiomes().getNoiseBiome(x >> 2, data.heightmap[i] >> 2, z >> 2)));
+ //                data.biomeid[i] = data.getOrRegisterResourceLocation(biomeRegistry.getKey(level.getBiome(blockPos)));
                 data.blocklight[i] = (byte) light.getLightValue(blockPos.setY(data.heightmap[i] + 1));
 
                 if (top.equals(Blocks.WATER)) {

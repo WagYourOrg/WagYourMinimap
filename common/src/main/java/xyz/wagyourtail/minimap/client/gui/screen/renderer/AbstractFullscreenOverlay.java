@@ -11,6 +11,6 @@ public abstract class AbstractFullscreenOverlay {
         this.parent = parent;
     }
 
-    public abstract void renderOverlay(PoseStack stack);
+    public abstract void renderOverlay(PoseStack stack, int mouseX, int mouseY);
 
 }

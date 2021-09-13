@@ -1,11 +1,11 @@
-package xyz.wagyourtail.wagyourconfig;
+package xyz.wagyourtail.config;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import xyz.wagyourtail.wagyourconfig.field.Setting;
-import xyz.wagyourtail.wagyourconfig.field.SettingsContainer;
+import xyz.wagyourtail.config.field.Setting;
+import xyz.wagyourtail.config.field.SettingsContainer;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;

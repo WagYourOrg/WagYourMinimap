@@ -7,6 +7,7 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Widget;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import xyz.wagyourtail.minimap.api.MinimapApi;
 import xyz.wagyourtail.minimap.api.client.MinimapClientEvents;
@@ -99,7 +100,13 @@ public class InteractMenu extends GuiComponent implements Widget {
         List<InteractMenuButton> buttons = new ArrayList<>();
         buttons.add(new InteractMenuButton(new TranslatableComponent("gui.wagyourminimap.create_waypoint"), (btn) -> {
             int color = Color.HSBtoRGB((float)Math.random(), 1f, 1f);
-            minecraft.setScreen(new WaypointEditScreen(parent, new Waypoint((int)Math.floor(pos.x), (int)Math.floor(pos.y) + 1, (int)Math.floor(pos.z), (byte)((color >> 16) & 255), (byte)((color >> 8) & 255), (byte)(color & 255), "", new String[] {"default"}, new String[] {MapServer.getLevelName(minecraft.level)})));
+            String[] dims;
+            if (minecraft.level.dimension().equals(Level.OVERWORLD) || minecraft.level.dimension().equals(Level.NETHER)) {
+                dims = new String[]{MapServer.getLevelName(Level.OVERWORLD), MapServer.getLevelName(Level.NETHER)};
+            } else {
+                dims = new String[]{MapServer.getLevelName(minecraft.level)};
+            }
+            minecraft.setScreen(new WaypointEditScreen(parent, new Waypoint((int)Math.floor(pos.x), (int)Math.floor(pos.y) + 1, (int)Math.floor(pos.z), (byte)((color >> 16) & 255), (byte)((color >> 8) & 255), (byte)(color & 255), "", new String[] {"default"}, dims, false)));
         }));
 
         buttons.add(new InteractMenuButton(new TranslatableComponent("gui.wagyourminimap.teleport_to"), (btn) -> {

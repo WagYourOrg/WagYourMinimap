@@ -7,13 +7,14 @@ import xyz.wagyourtail.minimap.waypoint.Waypoint;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Stream;
 
 public abstract class AbstractCacher {
     public abstract ChunkData loadChunk(ChunkLocation location);
 
     public abstract void saveChunk(ChunkLocation location, ChunkData data);
 
-    public abstract void saveWaypoints(MapServer server, Collection<Waypoint> waypointList);
+    public abstract void saveWaypoints(MapServer server, Stream<Waypoint> waypointList);
 
     public abstract List<Waypoint> loadWaypoints(MapServer server);
 

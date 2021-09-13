@@ -10,7 +10,7 @@ import xyz.wagyourtail.minimap.map.MapLevel;
 import xyz.wagyourtail.minimap.map.MapServer;
 import xyz.wagyourtail.minimap.map.chunkdata.cache.AbstractCacher;
 import xyz.wagyourtail.minimap.map.chunkdata.updater.AbstractChunkUpdateStrategy;
-import xyz.wagyourtail.wagyourconfig.ConfigManager;
+import xyz.wagyourtail.config.ConfigManager;
 
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;

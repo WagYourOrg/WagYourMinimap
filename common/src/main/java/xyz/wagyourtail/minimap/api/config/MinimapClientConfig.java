@@ -5,9 +5,9 @@ import xyz.wagyourtail.minimap.api.config.square.norot.SquareNoRotStyle;
 import xyz.wagyourtail.minimap.client.gui.InGameHud;
 import xyz.wagyourtail.minimap.client.gui.renderer.AbstractMapRenderer;
 import xyz.wagyourtail.minimap.client.gui.renderer.square.norot.SquareMapNoRotRenderer;
-import xyz.wagyourtail.wagyourconfig.field.IntRange;
-import xyz.wagyourtail.wagyourconfig.field.Setting;
-import xyz.wagyourtail.wagyourconfig.field.SettingsContainer;
+import xyz.wagyourtail.config.field.IntRange;
+import xyz.wagyourtail.config.field.Setting;
+import xyz.wagyourtail.config.field.SettingsContainer;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;

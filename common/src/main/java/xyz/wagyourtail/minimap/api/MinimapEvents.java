@@ -13,12 +13,10 @@ public class MinimapEvents {
 
     public interface ChunkUpdated {
         void onChunkUpdate(ChunkLocation location, ChunkData chunkData, Class<? extends AbstractChunkUpdateStrategy> strategy);
-
     }
 
     public interface ChunkUpdateQueued {
         void onChunkUpdateQueued(ChunkLocation location, ResolveQueue<ChunkData> chunkData, Class<? extends AbstractChunkUpdateStrategy> strategy);
-
     }
 
 }

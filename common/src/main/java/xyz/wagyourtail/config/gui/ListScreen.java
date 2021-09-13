@@ -1,14 +1,14 @@
-package xyz.wagyourtail.wagyourconfig.gui;
+package xyz.wagyourtail.config.gui;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
-import xyz.wagyourtail.wagyourconfig.field.SettingField;
-import xyz.wagyourtail.wagyourconfig.field.SettingsContainer;
-import xyz.wagyourtail.wagyourconfig.gui.widgets.DisabledSettingList;
-import xyz.wagyourtail.wagyourconfig.gui.widgets.EnabledSettingList;
+import xyz.wagyourtail.config.field.SettingField;
+import xyz.wagyourtail.config.field.SettingsContainer;
+import xyz.wagyourtail.config.gui.widgets.DisabledSettingList;
+import xyz.wagyourtail.config.gui.widgets.EnabledSettingList;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;

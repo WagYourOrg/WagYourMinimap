@@ -87,7 +87,7 @@ public class MapScreen extends Screen {
     public void render(PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
         renderBackground(poseStack);
 
-        renderer.renderMinimap(poseStack);
+        renderer.renderMinimap(poseStack, mouseX, mouseY);
 
         if (interact != null) {
             interact.render(poseStack, mouseX, mouseY, partialTicks);

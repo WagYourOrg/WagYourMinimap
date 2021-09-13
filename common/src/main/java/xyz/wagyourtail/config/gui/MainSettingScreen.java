@@ -1,4 +1,4 @@
-package xyz.wagyourtail.wagyourconfig.gui;
+package xyz.wagyourtail.config.gui;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.components.Button;
@@ -7,8 +7,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.util.Mth;
-import xyz.wagyourtail.wagyourconfig.ConfigManager;
-import xyz.wagyourtail.wagyourconfig.field.SettingsContainer;
+import xyz.wagyourtail.config.ConfigManager;
+import xyz.wagyourtail.config.field.SettingsContainer;
 
 import java.util.LinkedList;
 import java.util.List;

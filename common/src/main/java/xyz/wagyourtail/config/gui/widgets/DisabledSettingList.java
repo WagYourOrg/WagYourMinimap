@@ -1,4 +1,4 @@
-package xyz.wagyourtail.wagyourconfig.gui.widgets;
+package xyz.wagyourtail.config.gui.widgets;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;

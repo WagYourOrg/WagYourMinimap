@@ -27,9 +27,9 @@ public class InGameWaypointRenderer {
         Vec3 center = mc.gameRenderer.getMainCamera().getPosition();
         float xRot = mc.gameRenderer.getMainCamera().getXRot();
         float yRot = mc.gameRenderer.getMainCamera().getYRot();
-        RenderSystem.setShaderTexture(0, waypoint_tex);
         RenderSystem.disableDepthTest();
         for (Waypoint visibleWaypoint : MinimapClientApi.getInstance().getMapServer().waypoints.getVisibleWaypoints()) {
+            RenderSystem.setShaderTexture(0, waypoint_tex);
             stack.pushPose();
             renderWaypoint(stack, center, xRot, yRot, visibleWaypoint);
             stack.popPose();
@@ -48,7 +48,7 @@ public class InGameWaypointRenderer {
         float scale = (float) Math.max(.0675, -offset.distanceTo(Vec3.ZERO) / 50f * .0625 + .125f);
         stack.scale(scale, scale, scale);
         int abgr = 0xFF000000 | waypoint.colB() << 0x10 | waypoint.colG() << 0x8 | waypoint.colR() & 255;
-        AbstractMapRenderer.drawTexCol(stack, -20, -20, 40, 40, 0, 0, 1, 1, abgr);
+        AbstractMapRenderer.drawTexCol(stack, -10, -10, 20, 20, 0, 0, 1, 1, abgr);
         if (isLookingAt(offset.normalize(), xRot, yRot)) {
             drawText(stack, String.format("%s (%.2f m)", waypoint.name(), offset.distanceTo(Vec3.ZERO)));
         }

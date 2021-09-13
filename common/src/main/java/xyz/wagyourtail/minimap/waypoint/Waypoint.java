@@ -3,10 +3,11 @@ package xyz.wagyourtail.minimap.waypoint;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.google.gson.stream.JsonReader;
+
+import java.util.Objects;
 
 public record Waypoint(int posX, int posY, int posZ, byte colR, byte colG, byte colB, String name, String[] groups,
-                       String[] levels) {
+                       String[] levels, boolean ephemeral) {
 
     private static final Gson gson = new Gson();
 
@@ -21,7 +22,8 @@ public record Waypoint(int posX, int posY, int posZ, byte colR, byte colG, byte 
             waypoint.get("colB").getAsByte(),
             waypoint.get("name").getAsString(),
             gson.fromJson(waypoint.get("groups"), String[].class),
-            gson.fromJson(waypoint.get("levels"), String[].class)
+            gson.fromJson(waypoint.get("levels"), String[].class),
+            false
         );
     }
 
@@ -29,5 +31,16 @@ public record Waypoint(int posX, int posY, int posZ, byte colR, byte colG, byte 
         return gson.toJson(this);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Waypoint waypoint)) return false;
+        return posX == waypoint.posX && posY == waypoint.posY && posZ == waypoint.posZ;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(posX, posY, posZ);
+    }
 
 }

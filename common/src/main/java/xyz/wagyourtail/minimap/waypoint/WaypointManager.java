@@ -11,7 +11,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class WaypointManager {
-    private static final Map<Class<Predicate<Waypoint>>, Predicate<Waypoint>> filters = new HashMap<>();
+    private static final Set<Predicate<Waypoint>> filters = new HashSet<>();
     private static Predicate<Waypoint> compiledFilter = (a) -> true;
     private final MapServer server;
     private final Set<Waypoint> waypointList = new LinkedHashSet<>();
@@ -30,13 +30,27 @@ public class WaypointManager {
 //        }
     }
 
-    public static void addFilter(Class<? extends Predicate<Waypoint>> filter) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-        filters.put((Class<Predicate<Waypoint>>) filter, filter.getConstructor().newInstance());
+    @SafeVarargs
+    public static void addFilter(Class<? extends Predicate<Waypoint>> ...filter) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        filters.addAll(Arrays.stream(filter).map(e -> {
+            try {
+                return e.getConstructor().newInstance();
+            } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException ex) {
+                ex.printStackTrace();
+            }
+            return null;
+        }).filter(Objects::nonNull).collect(Collectors.toList()));
+        compileFilter();
+    }
+
+    @SafeVarargs
+    public static void addFilter(Predicate<Waypoint> ...filter) {
+        filters.addAll(Arrays.asList(filter));
         compileFilter();
     }
 
     private static void compileFilter() {
-        Iterator<Predicate<Waypoint>> iterator = filters.values().iterator();
+        Iterator<Predicate<Waypoint>> iterator = filters.iterator();
         if (!iterator.hasNext()) {
             compiledFilter = (a) -> true;
             return;
@@ -47,9 +61,20 @@ public class WaypointManager {
     }
 
     public static void removeFilter(Class<? extends Predicate<Waypoint>> filter) {
+        filters.removeIf(e -> e.getClass().equals(filter));
+        compileFilter();
+    }
+
+    public static void removeFilter(Predicate<Waypoint> filter) {
         filters.remove(filter);
         compileFilter();
     }
+
+    public static void clearFilters(boolean compileChange) {
+        filters.clear();
+        if (compileChange) compileFilter();
+    }
+
 
     public Set<Waypoint> getAllWaypoints() {
         return ImmutableSet.copyOf(waypointList);
@@ -64,7 +89,7 @@ public class WaypointManager {
         MapServer.addToSaveQueue(() -> {
             synchronized (this) {
                 for (AbstractCacher cacher : MinimapApi.getInstance().getCachers()) {
-                    cacher.saveWaypoints(server, waypointList);
+                    cacher.saveWaypoints(server, waypointList.stream().filter(Predicate.not(Waypoint::ephemeral)));
                 }
 
             }

@@ -1,4 +1,4 @@
-package xyz.wagyourtail.wagyourconfig.field;
+package xyz.wagyourtail.config.field;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;

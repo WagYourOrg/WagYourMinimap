@@ -1,4 +1,4 @@
-package xyz.wagyourtail.wagyourconfig.gui.widgets;
+package xyz.wagyourtail.config.gui.widgets;
 
 import net.minecraft.client.gui.components.AbstractSliderButton;
 import net.minecraft.network.chat.Component;

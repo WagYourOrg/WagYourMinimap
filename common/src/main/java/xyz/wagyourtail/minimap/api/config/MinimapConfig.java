@@ -1,6 +1,6 @@
 package xyz.wagyourtail.minimap.api.config;
 
-import xyz.wagyourtail.wagyourconfig.field.SettingsContainer;
+import xyz.wagyourtail.config.field.SettingsContainer;
 
 @SettingsContainer("gui.wagyourminimap.settings.common")
 public class MinimapConfig {

@@ -6,8 +6,8 @@ import xyz.wagyourtail.minimap.api.config.layers.VanillaMapLayer;
 import xyz.wagyourtail.minimap.client.gui.image.AbstractImageStrategy;
 import xyz.wagyourtail.minimap.client.gui.image.BlockLightImageStrategy;
 import xyz.wagyourtail.minimap.client.gui.image.VanillaMapImageStrategy;
-import xyz.wagyourtail.wagyourconfig.field.Setting;
-import xyz.wagyourtail.wagyourconfig.field.SettingsContainer;
+import xyz.wagyourtail.config.field.Setting;
+import xyz.wagyourtail.config.field.SettingsContainer;
 
 import java.util.Collection;
 import java.util.HashMap;

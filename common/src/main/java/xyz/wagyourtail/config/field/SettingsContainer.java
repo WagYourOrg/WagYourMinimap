@@ -1,4 +1,4 @@
-package xyz.wagyourtail.wagyourconfig.field;
+package xyz.wagyourtail.config.field;
 
 import java.lang.annotation.*;
 
