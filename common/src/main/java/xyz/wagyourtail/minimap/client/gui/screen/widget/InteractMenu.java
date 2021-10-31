@@ -59,7 +59,7 @@ public class InteractMenu extends GuiComponent implements Widget {
         }
 
         Vec3 pos = new Vec3(x, y, z);
-        buttons.put(I18n.get("gui.wagyourminimap.general"), buttonsForPos(pos));
+        buttons.put(I18n.get("gui.wagyourminimap.general") + ": ", buttonsForPos(pos));
 
         for (Waypoint waypoint : waypoints) {
             buttons.put(I18n.get("gui.wagyourminimap.waypoint") + ": " + waypoint.name(), buttonsForWaypoint(waypoint));

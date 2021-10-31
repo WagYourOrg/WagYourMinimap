@@ -26,7 +26,7 @@ public class WagYourMinimapClient extends WagYourMinimap {
         MinimapClientApi.getInstance();
 
         try {
-            MinimapApi.getInstance().addCacher(ZipCacher.class);
+            MinimapApi.getInstance().addCacherAfter(ZipCacher.class, null);
             MinimapApi.getInstance().registerChunkUpdateStrategy(ChunkLoadStrategy.class);
             MinimapApi.getInstance().registerChunkUpdateStrategy(BlockUpdateStrategy.class);
         } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
