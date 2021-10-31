@@ -23,7 +23,7 @@ public class BlockUpdateStrategy extends AbstractChunkUpdateStrategy {
     });
 
     public BlockUpdateStrategy() {
-        super(3);
+        super();
     }
 
     public void updateNeighborLighting(Level level, int chunkX, int chunkZ) {
@@ -32,6 +32,7 @@ public class BlockUpdateStrategy extends AbstractChunkUpdateStrategy {
                 if (level.hasChunk(i, j)) {
                     ChunkAccess chunk = level.getChunk(i, j);
                     if (chunk == null) continue;
+                    //TODO: update lighting only function
                     updateChunk(getChunkLocation(level, i, j), (location, oldData) -> ChunkLoadStrategy.loadFromChunk(location, chunk, level, oldData));
                 }
             }

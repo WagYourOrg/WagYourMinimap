@@ -12,11 +12,8 @@ import xyz.wagyourtail.minimap.map.chunkdata.ChunkLocation;
 import java.util.function.BiFunction;
 
 public abstract class AbstractChunkUpdateStrategy {
-    private final int priority;
-
-    public AbstractChunkUpdateStrategy(int priority) {
+    public AbstractChunkUpdateStrategy() {
         registerEventListener();
-        this.priority = priority;
     }
 
     protected abstract void registerEventListener();

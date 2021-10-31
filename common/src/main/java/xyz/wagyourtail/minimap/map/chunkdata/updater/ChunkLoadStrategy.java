@@ -21,7 +21,7 @@ public class ChunkLoadStrategy extends AbstractChunkUpdateStrategy {
     public static Event<Load> LOAD = EventFactory.createLoop();
 
     public ChunkLoadStrategy() {
-        super(1);
+        super();
     }
 
     @Override
@@ -39,6 +39,7 @@ public class ChunkLoadStrategy extends AbstractChunkUpdateStrategy {
         ChunkData data = new ChunkData(location);
         data.updateTime = System.currentTimeMillis();
         ChunkPos pos = chunk.getPos();
+        //TODO: replace with chunk section stuff to not use a MutableBlockPos at all (see baritone)
         BlockPos.MutableBlockPos blockPos = new BlockPos.MutableBlockPos();
         Registry<Biome> biomeRegistry = level.registryAccess().registryOrThrow(Registry.BIOME_REGISTRY);
         LayerLightEventListener light = getBlockLightLayer(level);
