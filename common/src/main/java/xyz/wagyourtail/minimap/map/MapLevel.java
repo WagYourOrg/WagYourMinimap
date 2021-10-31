@@ -3,15 +3,14 @@ package xyz.wagyourtail.minimap.map;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import xyz.wagyourtail.ResolveQueue;
 import xyz.wagyourtail.minimap.map.chunkdata.ChunkData;
 import xyz.wagyourtail.minimap.map.chunkdata.ChunkLocation;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
-public class MapLevel extends CacheLoader<ChunkLocation, ResolveQueue<ChunkData>> implements AutoCloseable {
-    private final LoadingCache<ChunkLocation, ResolveQueue<ChunkData>> regionCache;
+public class MapLevel extends CacheLoader<ChunkLocation, ChunkData> implements AutoCloseable {
+    private final LoadingCache<ChunkLocation, ChunkData> regionCache;
     public final MapServer parent;
     public final String level_slug;
     public final int minHeight, maxHeight;
@@ -22,7 +21,7 @@ public class MapLevel extends CacheLoader<ChunkLocation, ResolveQueue<ChunkData>
         this.level_slug = level_slug;
         this.minHeight = minHeight;
         this.maxHeight = maxHeight;
-        CacheBuilder<ChunkLocation, ResolveQueue<ChunkData>> builder = CacheBuilder.newBuilder()
+        CacheBuilder<ChunkLocation, ChunkData> builder = CacheBuilder.newBuilder()
             .expireAfterAccess(60000, TimeUnit.MILLISECONDS).removalListener(e -> {
                 try {
                     e.getValue().close();
@@ -41,18 +40,27 @@ public class MapLevel extends CacheLoader<ChunkLocation, ResolveQueue<ChunkData>
         regionCache.cleanUp();
     }
 
-    public synchronized ResolveQueue<ChunkData> getChunk(ChunkLocation location) {
+    public synchronized ChunkData getChunk(ChunkLocation location) {
         try {
             return regionCache.get(location);
-        } catch (ExecutionException e) {
-            e.printStackTrace();
+        } catch (ExecutionException ignored) {}
+        return null;
+    }
+
+    public synchronized void putChunk(ChunkLocation location, ChunkData data) {
+        if (closed) {
+            return;
         }
-        return new ResolveQueue<>(null, null);
+        regionCache.put(location, data);
     }
 
     @Override
-    public ResolveQueue<ChunkData> load(ChunkLocation key) throws Exception {
-        return new ResolveQueue<>((n) -> MapServer.loadChunk(key));
+    public ChunkData load(ChunkLocation key) throws Exception {
+        ChunkData chunk = MapServer.loadChunk(key);
+        if (chunk != null) {
+            return chunk;
+        }
+        throw new Exception("Chunk not found");
     }
 
 }

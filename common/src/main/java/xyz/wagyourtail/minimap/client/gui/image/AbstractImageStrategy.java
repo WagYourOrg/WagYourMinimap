@@ -1,7 +1,6 @@
 package xyz.wagyourtail.minimap.client.gui.image;
 
 import net.minecraft.client.Minecraft;
-import xyz.wagyourtail.ResolveQueue;
 import xyz.wagyourtail.minimap.client.gui.ThreadsafeDynamicTexture;
 import xyz.wagyourtail.minimap.map.chunkdata.ChunkData;
 import xyz.wagyourtail.minimap.map.chunkdata.ChunkLocation;
@@ -15,15 +14,12 @@ public abstract class AbstractImageStrategy {
         return color & 0xFF00FF00 | (color & 0xFF) << 0x10 | color >> 0x10 & 0xFF;
     }
 
-    public synchronized ResolveQueue<ThreadsafeDynamicTexture> getImage(ChunkLocation key) throws ExecutionException {
-        ResolveQueue<ChunkData> data = key.level().getChunk(key);
+    public synchronized ThreadsafeDynamicTexture getImage(ChunkLocation key) throws ExecutionException {
+        ChunkData data = key.level().getChunk(key);
         if (data != null) {
-            ChunkData resolved = data.getNow();
-            if (resolved != null) {
-                return resolved.computeDerivitive(this.getClass().getCanonicalName(), () -> this.load(key, resolved));
-            }
+            return data.computeDerivitive(this.getClass().getCanonicalName(), () -> this.load(key, data));
         }
-        return new ResolveQueue<>(null, null);
+        return null;
     }
 
     public abstract ThreadsafeDynamicTexture load(ChunkLocation location, ChunkData data);

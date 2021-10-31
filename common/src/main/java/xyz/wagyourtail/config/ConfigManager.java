@@ -93,6 +93,7 @@ public class ConfigManager {
 
     public void saveConfig() {
         synchronized (configPath) {
+            configPath.getParent().toFile().mkdirs();
             synchronized (configRegistry) {
                 try {
                     for (Map.Entry<Class<?>, Object> config : config.entrySet()) {

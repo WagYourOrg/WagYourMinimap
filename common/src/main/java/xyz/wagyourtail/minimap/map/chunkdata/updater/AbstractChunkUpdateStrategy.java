@@ -4,7 +4,6 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.lighting.LayerLightEventListener;
-import xyz.wagyourtail.ResolveQueue;
 import xyz.wagyourtail.minimap.api.MinimapApi;
 import xyz.wagyourtail.minimap.api.MinimapEvents;
 import xyz.wagyourtail.minimap.map.chunkdata.ChunkData;
@@ -28,13 +27,12 @@ public abstract class AbstractChunkUpdateStrategy {
 
     protected void updateChunk(ChunkLocation location, BiFunction<ChunkLocation, ChunkData, ChunkData> newChunkDataCreator) {
         synchronized (location.level()) {
-            ResolveQueue<ChunkData> chunkData = location.level().getChunk(location);
-            chunkData.addTask((od) -> {
-                ChunkData data = newChunkDataCreator.apply(location, od);
-                MinimapEvents.CHUNK_UPDATED.invoker().onChunkUpdate(location, data, this.getClass());
-                return data;
-            }, priority);
-            MinimapEvents.CHUNK_UPDATE_QUEUED.invoker().onChunkUpdateQueued(location, chunkData, this.getClass());
+            ChunkData chunkData = location.level().getChunk(location);
+            ChunkData data = newChunkDataCreator.apply(location, chunkData);
+            MinimapEvents.CHUNK_UPDATED.invoker().onChunkUpdate(location, data, this.getClass());
+            if (chunkData != data) {
+                location.level().putChunk(location, data);
+            }
         }
     }
 

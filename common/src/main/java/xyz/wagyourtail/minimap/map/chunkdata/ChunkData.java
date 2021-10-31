@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
-import xyz.wagyourtail.ResolveQueue;
 import xyz.wagyourtail.minimap.api.MinimapApi;
 import xyz.wagyourtail.minimap.map.MapServer;
 import xyz.wagyourtail.minimap.map.chunkdata.cache.AbstractCacher;
@@ -70,7 +69,7 @@ public class ChunkData implements AutoCloseable {
         return ImmutableList.copyOf(resources);
     }
 
-    public synchronized <T> ResolveQueue<T> computeDerivitive(String key, Supplier<T> supplier) {
+    public synchronized <T> T computeDerivitive(String key, Supplier<T> supplier) {
         //chunk is closed???
         if (derrivitives instanceof ImmutableMap) {
             Derivitive<T> der = (Derivitive<T>) derrivitives.get(key);
@@ -79,10 +78,10 @@ public class ChunkData implements AutoCloseable {
             }
             return null;
         }
-        Derivitive<T> der = (Derivitive<T>) derrivitives.computeIfAbsent(key, (k) -> new Derivitive<>(false, new ResolveQueue<>((n) -> supplier.get())));
+        Derivitive<T> der = (Derivitive<T>) derrivitives.computeIfAbsent(key, (k) -> new Derivitive<>(false, supplier.get()));
         if (der.old) {
             der.old = false;
-            der.contained.addTask(old -> supplier.get(), 2);
+            der.contained = supplier.get();
         }
         return der.contained;
     }
@@ -154,10 +153,10 @@ public class ChunkData implements AutoCloseable {
     }
 
     public static class Derivitive<T> {
-        public final ResolveQueue<T> contained;
+        public T contained;
         public boolean old;
 
-        Derivitive(boolean old, ResolveQueue<T> contained) {
+        Derivitive(boolean old, T contained) {
             this.old = old;
             this.contained = contained;
         }
