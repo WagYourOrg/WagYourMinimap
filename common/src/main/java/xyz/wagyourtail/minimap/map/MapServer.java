@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -53,6 +54,15 @@ public class MapServer implements AutoCloseable {
             saver.run();
             MinimapApi.saving.decrementAndGet();
         });
+    }
+
+    public static void waitForSaveQueue() throws InterruptedException {
+        Semaphore lock = new Semaphore(0);
+        save_pool.execute(() -> {
+            lock.release();
+        });
+        save_pool.shutdown();
+        lock.acquire();
     }
 
     public synchronized MapLevel getLevel(Level level) {

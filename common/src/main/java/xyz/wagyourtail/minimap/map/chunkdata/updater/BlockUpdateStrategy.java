@@ -8,6 +8,7 @@ import dev.architectury.event.EventFactory;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.chunk.ChunkAccess;
+import net.minecraft.world.level.chunk.ChunkStatus;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -30,7 +31,7 @@ public class BlockUpdateStrategy extends AbstractChunkUpdateStrategy {
         for (int i = chunkX - 1; i < chunkX + 2; ++i) {
             for (int j = chunkZ - 1; j < chunkZ + 2; ++j) {
                 if (level.hasChunk(i, j)) {
-                    ChunkAccess chunk = level.getChunk(i, j);
+                    ChunkAccess chunk = level.getChunk(i, j, ChunkStatus.FULL, false);
                     if (chunk == null) continue;
                     //TODO: update lighting only function
                     updateChunk(getChunkLocation(level, i, j), (location, oldData) -> ChunkLoadStrategy.loadFromChunk(location, chunk, level, oldData));

@@ -89,4 +89,11 @@ public abstract class MinimapApi {
         return ".";
     }
 
+    public void close() {
+        if (currentServer != null) {
+            currentServer.close();
+        }
+        cachers.forEach((k, v) -> v.close());
+    }
+
 }

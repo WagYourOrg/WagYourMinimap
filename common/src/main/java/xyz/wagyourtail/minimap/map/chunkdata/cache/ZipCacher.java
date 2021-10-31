@@ -32,7 +32,7 @@ public class ZipCacher extends AbstractCacher {
     private final LoadingCache<Path, FileSystem> zipCache;
 
     public ZipCacher() {
-        zipCache = CacheBuilder.newBuilder().expireAfterAccess(60000, TimeUnit.MILLISECONDS).
+        zipCache = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.SECONDS).
             removalListener(e -> {
                 try {
                     ((FileSystem) e.getValue()).close();
@@ -48,7 +48,6 @@ public class ZipCacher extends AbstractCacher {
                     }
                 }
             );
-
     }
 
     public synchronized FileSystem getRegionZip(ChunkLocation location) {
@@ -141,6 +140,12 @@ public class ZipCacher extends AbstractCacher {
             }
         }
         return new ArrayList<>();
+    }
+
+    @Override
+    public void close() {
+        zipCache.invalidateAll();
+        zipCache.cleanUp();
     }
 
     private ChunkData loadFromDisk(ChunkLocation location, Path dataPath, Path resourcesPath) {

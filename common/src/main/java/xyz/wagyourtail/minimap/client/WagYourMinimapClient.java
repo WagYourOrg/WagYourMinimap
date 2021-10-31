@@ -10,6 +10,7 @@ import xyz.wagyourtail.minimap.WagYourMinimap;
 import xyz.wagyourtail.minimap.api.MinimapApi;
 import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
 import xyz.wagyourtail.minimap.client.gui.InGameWaypointRenderer;
+import xyz.wagyourtail.minimap.map.MapServer;
 import xyz.wagyourtail.minimap.map.chunkdata.cache.ZipCacher;
 import xyz.wagyourtail.minimap.map.chunkdata.updater.BlockUpdateStrategy;
 import xyz.wagyourtail.minimap.map.chunkdata.updater.ChunkLoadStrategy;
@@ -56,6 +57,15 @@ public class WagYourMinimapClient extends WagYourMinimap {
             }
         });
         InGameWaypointRenderer.RENDER_LAST.register(MinimapClientApi.getInstance().waypointRenderer::onRender);
+
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            MinimapApi.getInstance().close();
+            try {
+                MapServer.waitForSaveQueue();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }));
     }
 
 }

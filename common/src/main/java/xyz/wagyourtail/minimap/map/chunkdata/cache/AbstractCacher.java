@@ -18,4 +18,6 @@ public abstract class AbstractCacher {
 
     public abstract List<Waypoint> loadWaypoints(MapServer server);
 
+    public abstract void close();
+
 }
