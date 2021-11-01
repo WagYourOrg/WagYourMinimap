@@ -20,13 +20,15 @@ public class NorthHeightmap extends DataPart<NorthHeightmap>{
 
     @Override
     public void mergeFrom(NorthHeightmap other) {
-        boolean changed = false;
-        for (int i = 0; i < 16; ++i) {
-            int newHeight = other.heightmap[i];
-            changed = changed || newHeight != this.heightmap[i];
-            this.heightmap[i] = newHeight;
+        synchronized (parent) {
+            boolean changed = false;
+            for (int i = 0; i < 16; ++i) {
+                int newHeight = other.heightmap[i];
+                changed = changed || newHeight != this.heightmap[i];
+                this.heightmap[i] = newHeight;
+            }
+            if (changed) parent.markDirty();
         }
-        if (changed) parent.markDirty();
     }
 
     @Override

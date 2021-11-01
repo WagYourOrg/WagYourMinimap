@@ -22,37 +22,39 @@ public class SurfaceDataPart extends DataPart<SurfaceDataPart> {
 
     @Override
     public void mergeFrom(SurfaceDataPart other) {
-        if (other.parent.updateTime >= this.parent.updateTime) {
-            this.parent.updateTime = other.parent.updateTime;
-            this.parent.changed = true;
-            boolean changed = false;
-            Map<Integer, Integer> idmap = new Int2IntOpenHashMap();
-            for (int i = 0; i < 256; ++i) {
-                int newHeight = other.heightmap[i];
-                changed = changed || newHeight != this.heightmap[i];
-                this.heightmap[i] = newHeight;
+        synchronized (parent) {
+            if (other.parent.updateTime >= this.parent.updateTime) {
+                this.parent.updateTime = other.parent.updateTime;
+                this.parent.changed = true;
+                boolean changed = false;
+                Map<Integer, Integer> idmap = new Int2IntOpenHashMap();
+                for (int i = 0; i < 256; ++i) {
+                    int newHeight = other.heightmap[i];
+                    changed = changed || newHeight != this.heightmap[i];
+                    this.heightmap[i] = newHeight;
 
-                byte newLight = other.blocklight[i];
-                changed = changed || newLight != this.blocklight[i];
-                this.blocklight[i] = newLight;
+                    byte newLight = other.blocklight[i];
+                    changed = changed || newLight != this.blocklight[i];
+                    this.blocklight[i] = newLight;
 
-                int newBlockid = idmap.computeIfAbsent(other.blockid[i], k -> parent.getOrRegisterResourceLocation(other.parent.getResourceLocation(k)));
-                changed = changed || newBlockid != this.blockid[i];
-                this.blockid[i] = newBlockid;
+                    int newBlockid = idmap.computeIfAbsent(other.blockid[i], k -> parent.getOrRegisterResourceLocation(other.parent.getResourceLocation(k)));
+                    changed = changed || newBlockid != this.blockid[i];
+                    this.blockid[i] = newBlockid;
 
-                int newBiomeId = other.biomeid[i];
-                changed = changed || newBiomeId != this.biomeid[i];
-                this.biomeid[i] = newBiomeId;
+                    int newBiomeId = other.biomeid[i];
+                    changed = changed || newBiomeId != this.biomeid[i];
+                    this.biomeid[i] = newBiomeId;
 
-                int newOceanHeight = other.oceanFloorHeightmap[i];
-                changed = changed || newOceanHeight != this.oceanFloorHeightmap[i];
-                this.oceanFloorHeightmap[i] = newOceanHeight;
+                    int newOceanHeight = other.oceanFloorHeightmap[i];
+                    changed = changed || newOceanHeight != this.oceanFloorHeightmap[i];
+                    this.oceanFloorHeightmap[i] = newOceanHeight;
 
-                int newOceanBlock = other.oceanFloorBlockid[i];
-                changed = changed || newOceanBlock != this.oceanFloorBlockid[i];
-                this.oceanFloorBlockid[i] = newOceanBlock;
+                    int newOceanBlock = other.oceanFloorBlockid[i];
+                    changed = changed || newOceanBlock != this.oceanFloorBlockid[i];
+                    this.oceanFloorBlockid[i] = newOceanBlock;
+                }
+                if (changed) parent.markDirty();
             }
-            if (changed) parent.markDirty();
         }
     }
 
