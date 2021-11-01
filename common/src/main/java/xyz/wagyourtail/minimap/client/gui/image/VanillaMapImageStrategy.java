@@ -105,13 +105,11 @@ public class VanillaMapImageStrategy extends AbstractImageStrategy {
         return red << 0x10 | green << 0x8 | blue;
     }
 
-    private int brightnessForHeight(int color, int height, int above, int below) {
+    private int brightnessForHeight(int color, int height, int north, int south) {
         float[] hsb = Color.RGBtoHSB((color & 0xFF0000) >> 0x10, (color & 0xFF00) >> 0x8, color & 0xFF, null);
-        //brightness scaled by .75 - 1.0 based on height
-//        hsb[2] *= .75F + height * .25F;
-        if (above > height) {
+        if (north > height) {
             hsb[2] *= .8f;
-        } else if (!(below > height)) {
+        } else if (!(south > height)) {
             hsb[2] *= .9f;
         }
         return color & 0xFF000000 | Color.HSBtoRGB(hsb[0], hsb[1], hsb[2]);
