@@ -14,6 +14,7 @@ import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.concurrent.Semaphore;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -144,7 +145,7 @@ public class ChunkData implements AutoCloseable{
     }
 
     @Override
-    public synchronized void close() {
+    public synchronized void close() throws InterruptedException {
         if (derivatives instanceof ImmutableMap) return;
         derivatives.forEach((k, v) -> {
             if (v.contained instanceof AutoCloseable) {

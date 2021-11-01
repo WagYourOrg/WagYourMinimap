@@ -3,14 +3,18 @@ package xyz.wagyourtail.minimap.map;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import xyz.wagyourtail.minimap.api.MinimapApi;
 import xyz.wagyourtail.minimap.map.chunkdata.ChunkData;
 import xyz.wagyourtail.minimap.map.chunkdata.ChunkLocation;
+import xyz.wagyourtail.minimap.map.chunkdata.cache.AbstractCacher;
 
+import java.util.WeakHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
-public class MapLevel extends CacheLoader<ChunkLocation, ChunkData> implements AutoCloseable {
-    private final LoadingCache<ChunkLocation, ChunkData> regionCache;
+public class MapLevel implements AutoCloseable {
+    private final LoadingCache<ChunkLocation, ChunkData> chunkCache;
+    public final WeakHashMap<ChunkLocation, ChunkData> inMemoryStillCache = new WeakHashMap<>(1024);
     public final MapServer parent;
     public final String level_slug;
     public final int minHeight, maxHeight;
@@ -29,34 +33,40 @@ public class MapLevel extends CacheLoader<ChunkLocation, ChunkData> implements A
                     ex.printStackTrace();
                 }
             });
-        regionCache = builder.build(this);
+        chunkCache = builder.build(new CacheLoader<>() {
+            @Override
+            public ChunkData load(ChunkLocation key) {
+                ChunkData data = inMemoryStillCache.get(key);
+                if (data != null) {
+                    return data;
+                }
+                for (AbstractCacher cacher : MinimapApi.getInstance().getCachers()) {
+                    data = cacher.loadChunk(key);
+                    if (data != null) {
+                        inMemoryStillCache.put(key, data);
+                        return data;
+                    }
+                }
+                data = new ChunkData(key);
+                inMemoryStillCache.put(key, data);
+                return data;
+            }
+        });
     }
 
 
     @Override
     public synchronized void close() {
         closed = true;
-        regionCache.invalidateAll();
-        regionCache.cleanUp();
+        chunkCache.invalidateAll();
+        chunkCache.cleanUp();
     }
 
     public synchronized ChunkData getChunk(ChunkLocation location) {
         try {
-            return regionCache.get(location);
+            return chunkCache.get(location);
         } catch (ExecutionException ignored) {}
         return null;
-    }
-
-    public synchronized void putChunk(ChunkLocation location, ChunkData data) {
-        if (closed) {
-            return;
-        }
-        regionCache.put(location, data);
-    }
-
-    @Override
-    public ChunkData load(ChunkLocation key) throws Exception {
-        return MapServer.loadChunk(key);
     }
 
 }

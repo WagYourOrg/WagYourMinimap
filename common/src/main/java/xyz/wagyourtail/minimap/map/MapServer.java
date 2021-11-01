@@ -40,14 +40,6 @@ public class MapServer implements AutoCloseable {
         this.waypoints = new WaypointManager(this);
     }
 
-    public static ChunkData loadChunk(ChunkLocation location) {
-        for (AbstractCacher cacher : MinimapApi.getInstance().getCachers()) {
-            ChunkData data = cacher.loadChunk(location);
-            if (data != null) return data;
-        }
-        return new ChunkData(location);
-    }
-
     public static void addToSaveQueue(Runnable saver) {
         MinimapApi.saving.incrementAndGet();
         save_pool.execute(() -> {
