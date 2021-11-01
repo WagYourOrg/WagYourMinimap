@@ -18,22 +18,13 @@ public class MapLevel implements AutoCloseable {
     public final MapServer parent;
     public final String level_slug;
     public final int minHeight, maxHeight;
-    private boolean closed = false;
 
     public MapLevel(MapServer parent, String level_slug, int minHeight, int maxHeight) {
         this.parent = parent;
         this.level_slug = level_slug;
         this.minHeight = minHeight;
         this.maxHeight = maxHeight;
-        CacheBuilder<ChunkLocation, ChunkData> builder = CacheBuilder.newBuilder()
-            .expireAfterAccess(60000, TimeUnit.MILLISECONDS).removalListener(e -> {
-                try {
-                    e.getValue().close();
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
-            });
-        chunkCache = builder.build(new CacheLoader<>() {
+        chunkCache = CacheBuilder.newBuilder().expireAfterAccess(60000, TimeUnit.MILLISECONDS).build(new CacheLoader<>() {
             @Override
             public ChunkData load(ChunkLocation key) {
                 ChunkData data = inMemoryStillCache.get(key);
@@ -57,7 +48,6 @@ public class MapLevel implements AutoCloseable {
 
     @Override
     public synchronized void close() {
-        closed = true;
         chunkCache.invalidateAll();
         chunkCache.cleanUp();
     }
