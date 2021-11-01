@@ -3,7 +3,6 @@ package xyz.wagyourtail.minimap.client.gui.screen.widget;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
-import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Widget;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.TranslatableComponent;
@@ -13,11 +12,11 @@ import xyz.wagyourtail.minimap.api.MinimapApi;
 import xyz.wagyourtail.minimap.api.client.MinimapClientEvents;
 import xyz.wagyourtail.minimap.client.gui.screen.MapScreen;
 import xyz.wagyourtail.minimap.client.gui.screen.WaypointEditScreen;
-import xyz.wagyourtail.minimap.client.gui.screen.widget.InteractMenuButton;
 import xyz.wagyourtail.minimap.map.MapLevel;
 import xyz.wagyourtail.minimap.map.MapServer;
 import xyz.wagyourtail.minimap.map.chunkdata.ChunkData;
 import xyz.wagyourtail.minimap.map.chunkdata.ChunkLocation;
+import xyz.wagyourtail.minimap.map.chunkdata.parts.SurfaceDataPart;
 import xyz.wagyourtail.minimap.waypoint.Waypoint;
 
 import java.awt.*;
@@ -54,7 +53,10 @@ public class InteractMenu extends GuiComponent implements Widget {
         if (level != null) {
             ChunkData chunk = level.getChunk(ChunkLocation.locationForChunkPos(level, (int)x >> 4, (int)z >> 4));
             if (chunk != null) {
-                y = chunk.heightmap[ChunkData.blockPosToIndex((int)x, (int)z)];
+                SurfaceDataPart surface = chunk.getData(SurfaceDataPart.class);
+                if (surface != null) {
+                    y = surface.heightmap[SurfaceDataPart.blockPosToIndex((int)x, (int)z)];
+                }
             }
         }
 

@@ -1,10 +1,8 @@
 package xyz.wagyourtail.minimap.map.chunkdata.cache;
 
-import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import net.minecraft.resources.ResourceLocation;
 import xyz.wagyourtail.minimap.api.MinimapApi;
 import xyz.wagyourtail.minimap.map.MapServer;
 import xyz.wagyourtail.minimap.map.chunkdata.ChunkData;
@@ -19,7 +17,6 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -85,28 +82,9 @@ public class ZipCacher extends AbstractCacher {
 
     private synchronized void writeToZip(Path dataPath, Path resourcesPath, ChunkData chunk) {
         try {
-            String resources = chunk.getResources().stream().map(ResourceLocation::toString).reduce("", (a, b) -> a + b + "\n");
+            String resources = chunk.serializeResources();
             Files.writeString(resourcesPath, resources);
-            ByteBuffer data = ByteBuffer.allocate(Long.BYTES + Integer.BYTES * 256 * 6 + Byte.BYTES * 256);
-            data.putLong(chunk.updateTime);
-            for (int i = 0; i < 256; ++i) {
-                data.putInt(chunk.heightmap[i]);
-            }
-            for (int i = 0; i < 256; ++i) {
-                data.put(chunk.blocklight[i]);
-            }
-            for (int i = 0; i < 256; ++i) {
-                data.putInt(chunk.blockid[i]);
-            }
-            for (int i = 0; i < 256; ++i) {
-                data.putInt(chunk.biomeid[i]);
-            }
-            for (int i = 0; i < 256; ++i) {
-                data.putInt(chunk.oceanFloorHeightmap[i]);
-            }
-            for (int i = 0; i < 256; ++i) {
-                data.putInt(chunk.oceanFloorBlockid[i]);
-            }
+            ByteBuffer data = chunk.serialize();
             Files.write(dataPath, data.array());
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -131,7 +109,6 @@ public class ZipCacher extends AbstractCacher {
     @Override
     public synchronized List<Waypoint> loadWaypoints(MapServer server) {
         Path wpFile = serverPath(server).resolve("way.points");
-        List<Waypoint> points = new ArrayList<>();
         if (Files.exists(wpFile)) {
             try {
                 return Files.readAllLines(wpFile).stream().map(Waypoint::deserialize).collect(Collectors.toList());
@@ -149,40 +126,18 @@ public class ZipCacher extends AbstractCacher {
     }
 
     private ChunkData loadFromDisk(ChunkLocation location, Path dataPath, Path resourcesPath) {
-        ChunkData chunk = new ChunkData(location);
+        ByteBuffer data;
         try (InputStream stream = Files.newInputStream(dataPath)) {
-            ByteBuffer data = ByteBuffer.wrap(stream.readAllBytes());
+             data = ByteBuffer.wrap(stream.readAllBytes());
             data.rewind();
-            chunk.updateTime = data.getLong();
-            for (int i = 0; i < 256; ++i) {
-                chunk.heightmap[i] = data.getInt();
-            }
-            for (int i = 0; i < 256; ++i) {
-                chunk.blocklight[i] = data.get();
-            }
-            for (int i = 0; i < 256; ++i) {
-                chunk.blockid[i] = data.getInt();
-            }
-            for (int i = 0; i < 256; ++i) {
-                chunk.biomeid[i] = data.getInt();
-            }
-            for (int i = 0; i < 256; ++i) {
-                chunk.oceanFloorHeightmap[i] = data.getInt();
-            }
-            for (int i = 0; i < 256; ++i) {
-                chunk.oceanFloorBlockid[i] = data.getInt();
-            }
-        } catch (IOException ex) {
-            ex.printStackTrace();
+        } catch (IOException e) {
+            throw new RuntimeException("Chunk data error", e);
         }
         try (InputStream stream = Files.newInputStream(resourcesPath)) {
-            for (String resource : new String(stream.readAllBytes()).split("\n")) {
-                chunk.getOrRegisterResourceLocation(new ResourceLocation(resource));
-            }
+            return new ChunkData(location, data, new String(stream.readAllBytes()));
         } catch (IOException ex) {
-            ex.printStackTrace();
+            throw new RuntimeException("Chunk resources error", ex);
         }
-        return chunk;
     }
 
 }

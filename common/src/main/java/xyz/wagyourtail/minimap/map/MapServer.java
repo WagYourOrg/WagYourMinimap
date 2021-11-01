@@ -45,7 +45,7 @@ public class MapServer implements AutoCloseable {
             ChunkData data = cacher.loadChunk(location);
             if (data != null) return data;
         }
-        return null;
+        return new ChunkData(location);
     }
 
     public static void addToSaveQueue(Runnable saver) {

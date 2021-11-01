@@ -5,7 +5,6 @@ import xyz.wagyourtail.minimap.map.chunkdata.ChunkData;
 import xyz.wagyourtail.minimap.map.chunkdata.ChunkLocation;
 import xyz.wagyourtail.minimap.waypoint.Waypoint;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.Stream;
 

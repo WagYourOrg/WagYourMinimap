@@ -14,6 +14,8 @@ import xyz.wagyourtail.minimap.map.MapServer;
 import xyz.wagyourtail.minimap.map.chunkdata.cache.ZipCacher;
 import xyz.wagyourtail.minimap.map.chunkdata.updater.BlockUpdateStrategy;
 import xyz.wagyourtail.minimap.map.chunkdata.updater.ChunkLoadStrategy;
+import xyz.wagyourtail.minimap.map.chunkdata.updater.UpdateNorthHeightmapStrategy;
+import xyz.wagyourtail.minimap.map.chunkdata.updater.UpdateSouthHeightmapStrategy;
 
 import java.lang.reflect.InvocationTargetException;
 
@@ -29,6 +31,8 @@ public class WagYourMinimapClient extends WagYourMinimap {
             MinimapApi.getInstance().addCacherAfter(ZipCacher.class, null);
             MinimapApi.getInstance().registerChunkUpdateStrategy(ChunkLoadStrategy.class);
             MinimapApi.getInstance().registerChunkUpdateStrategy(BlockUpdateStrategy.class);
+            MinimapApi.getInstance().registerChunkUpdateStrategy(UpdateNorthHeightmapStrategy.class);
+            MinimapApi.getInstance().registerChunkUpdateStrategy(UpdateSouthHeightmapStrategy.class);
         } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
         }

@@ -11,15 +11,15 @@ import net.minecraft.world.level.block.AirBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.chunk.ChunkAccess;
-import net.minecraft.world.level.chunk.ChunkStatus;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.lighting.LayerLightEventListener;
 import xyz.wagyourtail.minimap.map.chunkdata.ChunkData;
 import xyz.wagyourtail.minimap.map.chunkdata.ChunkLocation;
+import xyz.wagyourtail.minimap.map.chunkdata.parts.SurfaceDataPart;
 
-public class ChunkLoadStrategy extends AbstractChunkUpdateStrategy {
+public class ChunkLoadStrategy extends AbstractChunkUpdateStrategy<SurfaceDataPart> {
 
-    public static Event<Load> LOAD = EventFactory.createLoop();
+    public static final Event<Load> LOAD = EventFactory.createLoop();
 
     public ChunkLoadStrategy() {
         super();
@@ -31,14 +31,19 @@ public class ChunkLoadStrategy extends AbstractChunkUpdateStrategy {
             ChunkPos pos = chunk.getPos();
             updateChunk(
                 getChunkLocation(level, pos),
-                (location, oldData) -> loadFromChunk(location, chunk, level, oldData)
+                (location, parent, oldData) -> loadFromChunk(location, chunk, level, parent, oldData)
             );
         });
     }
 
-    public static ChunkData loadFromChunk(ChunkLocation location, ChunkAccess chunk, Level level, ChunkData oldData) {
-        ChunkData data = new ChunkData(location);
-        data.updateTime = System.currentTimeMillis();
+    @Override
+    public Class<SurfaceDataPart> getType() {
+        return SurfaceDataPart.class;
+    }
+
+    public static SurfaceDataPart loadFromChunk(ChunkLocation location, ChunkAccess chunk, Level level, ChunkData parent, SurfaceDataPart oldSurfaceData) {
+        SurfaceDataPart data = new SurfaceDataPart(parent);
+        data.parent.updateTime = System.currentTimeMillis();
         ChunkPos pos = chunk.getPos();
         //TODO: replace with chunk section stuff to not use a MutableBlockPos at all (see baritone)
         BlockPos.MutableBlockPos blockPos = new BlockPos.MutableBlockPos();
@@ -57,8 +62,8 @@ public class ChunkLoadStrategy extends AbstractChunkUpdateStrategy {
                         air = true;
                     } else if (air) {
                         data.heightmap[i] = j;
-                        data.blockid[i] = data.getOrRegisterResourceLocation(Registry.BLOCK.getKey(block));
-                        data.biomeid[i] = data.getOrRegisterResourceLocation(biomeRegistry.getKey(chunk.getBiomes().getNoiseBiome(x >> 2, data.heightmap[i] >> 2, z >> 2)));
+                        data.blockid[i] = parent.getOrRegisterResourceLocation(Registry.BLOCK.getKey(block));
+                        data.biomeid[i] = parent.getOrRegisterResourceLocation(biomeRegistry.getKey(chunk.getBiomes().getNoiseBiome(x >> 2, data.heightmap[i] >> 2, z >> 2)));
 //                        data.biomeid[i] = data.getOrRegisterResourceLocation(biomeRegistry.getKey(level.getBiome(blockPos)));
                         data.blocklight[i] = (byte) light.getLightValue(blockPos.setY(data.heightmap[i] + 1));
                         break;
@@ -71,8 +76,8 @@ public class ChunkLoadStrategy extends AbstractChunkUpdateStrategy {
                 int z = i % 16;
                 data.heightmap[i] = chunk.getHeight(Heightmap.Types.MOTION_BLOCKING, x, z);
                 Block top = chunk.getBlockState(blockPos.set((pos.x << 4) + x, data.heightmap[i], (pos.z << 4) + z)).getBlock();
-                data.blockid[i] = data.getOrRegisterResourceLocation(Registry.BLOCK.getKey(top));
-                data.biomeid[i] = data.getOrRegisterResourceLocation(biomeRegistry.getKey(chunk.getBiomes().getNoiseBiome(x >> 2, data.heightmap[i] >> 2, z >> 2)));
+                data.blockid[i] = parent.getOrRegisterResourceLocation(Registry.BLOCK.getKey(top));
+                data.biomeid[i] = parent.getOrRegisterResourceLocation(biomeRegistry.getKey(chunk.getBiomes().getNoiseBiome(x >> 2, data.heightmap[i] >> 2, z >> 2)));
  //                data.biomeid[i] = data.getOrRegisterResourceLocation(biomeRegistry.getKey(level.getBiome(blockPos)));
                 data.blocklight[i] = (byte) light.getLightValue(blockPos.setY(data.heightmap[i] + 1));
 
@@ -81,16 +86,21 @@ public class ChunkLoadStrategy extends AbstractChunkUpdateStrategy {
                     while (b.equals(Blocks.WATER))
                         b = chunk.getBlockState(blockPos.setY(blockPos.getY() - 1)).getBlock();
                     data.oceanFloorHeightmap[i] = blockPos.getY();
-                    data.oceanFloorBlockid[i] = data.getOrRegisterResourceLocation(Registry.BLOCK.getKey(chunk.getBlockState(blockPos).getBlock()));
+                    data.oceanFloorBlockid[i] = parent.getOrRegisterResourceLocation(Registry.BLOCK.getKey(chunk.getBlockState(blockPos).getBlock()));
                 }
             }
         }
-        if (oldData != null) oldData.combineWithNewData(data);
-        else {
-            data.markDirty();
-            return data;
+
+        // update south heightmap
+        UpdateNorthHeightmapStrategy.UPDATE_EVENT.invoker().onUpdate(parent.south(), data.heightmap);
+        UpdateSouthHeightmapStrategy.UPDATE_EVENT.invoker().onUpdate(parent.north(), data.heightmap);
+
+        if (oldSurfaceData != null) {
+            oldSurfaceData.mergeFrom(data);
+            return oldSurfaceData;
         }
-        return oldData;
+        data.parent.markDirty();
+        return data;
     }
 
     public interface Load {

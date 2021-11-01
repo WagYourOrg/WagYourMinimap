@@ -17,7 +17,7 @@ import java.util.concurrent.ExecutionException;
 
 public abstract class AbstractMapRenderer {
     public static final Minecraft minecraft = Minecraft.getInstance();
-    private AbstractImageStrategy[] rendererLayers = new AbstractImageStrategy[] {new VanillaMapImageStrategy(), new BlockLightImageStrategy()};
+    private AbstractImageStrategy[] rendererLayers = new AbstractImageStrategy[] {new VanillaMapImageStrategy(), new BlockLightImageStrategy(false)};
 
     public static void drawTexSideways(PoseStack matrixStack, float x, float y, float width, float height, float startU, float startV, float endU, float endV) {
         Matrix4f matrix = matrixStack.last().pose();

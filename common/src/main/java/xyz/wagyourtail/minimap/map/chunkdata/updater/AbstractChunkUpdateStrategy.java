@@ -8,10 +8,11 @@ import xyz.wagyourtail.minimap.api.MinimapApi;
 import xyz.wagyourtail.minimap.api.MinimapEvents;
 import xyz.wagyourtail.minimap.map.chunkdata.ChunkData;
 import xyz.wagyourtail.minimap.map.chunkdata.ChunkLocation;
+import xyz.wagyourtail.minimap.map.chunkdata.parts.DataPart;
 
 import java.util.function.BiFunction;
 
-public abstract class AbstractChunkUpdateStrategy {
+public abstract class AbstractChunkUpdateStrategy<T extends DataPart<T>> {
     public AbstractChunkUpdateStrategy() {
         registerEventListener();
     }
@@ -22,14 +23,13 @@ public abstract class AbstractChunkUpdateStrategy {
         return level.getLightEngine().getLayerListener(LightLayer.BLOCK);
     }
 
-    protected void updateChunk(ChunkLocation location, BiFunction<ChunkLocation, ChunkData, ChunkData> newChunkDataCreator) {
+    public abstract Class<T> getType();
+
+    protected void updateChunk(ChunkLocation location, ChunkUpdateListener<T> newChunkDataCreator) {
         synchronized (location.level()) {
             ChunkData chunkData = location.level().getChunk(location);
-            ChunkData data = newChunkDataCreator.apply(location, chunkData);
-            MinimapEvents.CHUNK_UPDATED.invoker().onChunkUpdate(location, data, this.getClass());
-            if (chunkData != data) {
-                location.level().putChunk(location, data);
-            }
+            chunkData.computeData(getType(), (old) -> newChunkDataCreator.onChunkUpdate(location, chunkData, old));
+            MinimapEvents.CHUNK_UPDATED.invoker().onChunkUpdate(location, chunkData, this.getClass(), getType());
         }
     }
 
@@ -39,6 +39,10 @@ public abstract class AbstractChunkUpdateStrategy {
 
     protected ChunkLocation getChunkLocation(Level level, ChunkPos pos) {
         return ChunkLocation.locationForChunkPos(MinimapApi.getInstance().getMapLevel(level), pos);
+    }
+
+    public interface ChunkUpdateListener<T extends DataPart<T>> {
+        T onChunkUpdate(ChunkLocation location, ChunkData data, T oldData);
     }
 
 }

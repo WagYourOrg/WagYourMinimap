@@ -56,11 +56,7 @@ public class MapLevel extends CacheLoader<ChunkLocation, ChunkData> implements A
 
     @Override
     public ChunkData load(ChunkLocation key) throws Exception {
-        ChunkData chunk = MapServer.loadChunk(key);
-        if (chunk != null) {
-            return chunk;
-        }
-        throw new Exception("Chunk not found");
+        return MapServer.loadChunk(key);
     }
 
 }

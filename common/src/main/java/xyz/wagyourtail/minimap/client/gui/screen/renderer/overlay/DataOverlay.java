@@ -7,6 +7,7 @@ import xyz.wagyourtail.minimap.client.gui.screen.renderer.ScreenMapRenderer;
 import xyz.wagyourtail.minimap.map.MapLevel;
 import xyz.wagyourtail.minimap.map.chunkdata.ChunkData;
 import xyz.wagyourtail.minimap.map.chunkdata.ChunkLocation;
+import xyz.wagyourtail.minimap.map.chunkdata.parts.SurfaceDataPart;
 
 public class DataOverlay extends AbstractFullscreenOverlay {
     public DataOverlay(ScreenMapRenderer parent) {
@@ -23,12 +24,17 @@ public class DataOverlay extends AbstractFullscreenOverlay {
         int y = 0;
         String biome = "unknown";
         String block = "unknown";
+        byte light = 0;
         if (chunk != null) {
-            y = chunk.heightmap[ChunkData.blockPosToIndex(x, z)];
-            block = chunk.getResourceLocation(chunk.blockid[ChunkData.blockPosToIndex(x, z)]).toString();
-            biome = chunk.getResourceLocation(chunk.biomeid[ChunkData.blockPosToIndex(x, z)]).toString();
+            SurfaceDataPart surface = chunk.getData(SurfaceDataPart.class);
+            if (surface != null) {
+                y = surface.heightmap[SurfaceDataPart.blockPosToIndex(x, z)];
+                block = chunk.getResourceLocation(surface.blockid[SurfaceDataPart.blockPosToIndex(x, z)]).toString();
+                biome = chunk.getResourceLocation(surface.biomeid[SurfaceDataPart.blockPosToIndex(x, z)]).toString();
+                light = surface.blocklight[SurfaceDataPart.blockPosToIndex(x, z)];
+            }
         }
-        minecraft.font.draw(stack, String.format("%d, %d, %d  %s  %s", x, y, z, block, biome), 50, parent.height - 10, 0xFFFFFF);
+        minecraft.font.draw(stack, String.format("%d, %d, %d  %s/%s %d", x, y, z, biome, block, light), 50, parent.height - 10, 0xFFFFFF);
     }
 
 }

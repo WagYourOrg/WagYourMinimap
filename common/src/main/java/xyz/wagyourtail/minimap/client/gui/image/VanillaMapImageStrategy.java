@@ -1,5 +1,6 @@
 package xyz.wagyourtail.minimap.client.gui.image;
 
+import com.google.common.collect.Sets;
 import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
@@ -10,12 +11,15 @@ import net.minecraft.world.level.block.Blocks;
 import xyz.wagyourtail.minimap.client.gui.ThreadsafeDynamicTexture;
 import xyz.wagyourtail.minimap.map.chunkdata.ChunkData;
 import xyz.wagyourtail.minimap.map.chunkdata.ChunkLocation;
+import xyz.wagyourtail.minimap.map.chunkdata.parts.NorthHeightmap;
+import xyz.wagyourtail.minimap.map.chunkdata.parts.SouthHeightmap;
+import xyz.wagyourtail.minimap.map.chunkdata.parts.SurfaceDataPart;
 
 import java.awt.*;
 import java.util.Set;
 
 public class VanillaMapImageStrategy extends AbstractImageStrategy {
-    private final static Set<ResourceLocation> water = Set.of(
+    public final static Set<ResourceLocation> water = Sets.newHashSet(
         Registry.BLOCK.getKey(Blocks.WATER),
         Registry.BLOCK.getKey(Blocks.SEAGRASS),
         Registry.BLOCK.getKey(Blocks.TALL_SEAGRASS),
@@ -23,13 +27,13 @@ public class VanillaMapImageStrategy extends AbstractImageStrategy {
         Registry.BLOCK.getKey(Blocks.KELP)
     );
 
-    private final static Set<ResourceLocation> grass = Set.of(
+    public final static Set<ResourceLocation> grass = Sets.newHashSet(
         Registry.BLOCK.getKey(Blocks.GRASS_BLOCK),
         Registry.BLOCK.getKey(Blocks.GRASS),
         Registry.BLOCK.getKey(Blocks.TALL_GRASS)
     );
 
-    private final static Set<ResourceLocation> leaves = Set.of(
+    public final static Set<ResourceLocation> leaves = Sets.newHashSet(
         Registry.BLOCK.getKey(Blocks.ACACIA_LEAVES),
         Registry.BLOCK.getKey(Blocks.AZALEA_LEAVES),
         Registry.BLOCK.getKey(Blocks.BIRCH_LEAVES),
@@ -42,37 +46,44 @@ public class VanillaMapImageStrategy extends AbstractImageStrategy {
 
     @Override
     public ThreadsafeDynamicTexture load(ChunkLocation location, ChunkData data) {
+        SurfaceDataPart surface = data.getData(SurfaceDataPart.class);
+        if (surface == null) return null;
         NativeImage image = new NativeImage(16, 16, false);
-        int min = location.level().minHeight;
-        int max = location.level().maxHeight;
         assert minecraft.level != null;
         Registry<Biome> biomeRegistry = minecraft.level.registryAccess().registryOrThrow(Registry.BIOME_REGISTRY);
-        for (int i = 0; i < 256; ++i) {
+        int i;
+        NorthHeightmap northHeight = data.getData(NorthHeightmap.class);
+        int[] north = northHeight == null ? new int[16] : northHeight.heightmap;
+        SouthHeightmap southHeight = data.getData(SouthHeightmap.class);
+        int[] south = southHeight == null ? new int[16] : southHeight.heightmap;
+        for (i = 0; i < 256; ++i) {
             int x = (i >> 4) % 16;
             int z = i % 16;
-            Biome biome = biomeRegistry.get(data.getResourceLocation(data.biomeid[i]));
-            ResourceLocation currentBlock = data.getResourceLocation(data.blockid[i]);
+            Biome biome = biomeRegistry.get(data.getResourceLocation(surface.biomeid[i]));
+            ResourceLocation currentBlock = data.getResourceLocation(surface.blockid[i]);
             int color;
-            assert biome != null;
             if (water.contains(currentBlock)) {
+                if (biome == null) continue;
                 float waterRatio = Math.min(
                     // 0.7 - 1.0 depending on depth of water 1 - 10 blocks...
-                    .7f + .3f * (data.heightmap[i] - data.oceanFloorHeightmap[i]) / 10F,
+                    .7f + .3f * (surface.heightmap[i] - surface.oceanFloorHeightmap[i]) / 10F,
                     1.0F
                 );
                 color = colorCombine(
                     biome.getWaterColor(),
-                    getBlockColor(data.getResourceLocation(data.oceanFloorBlockid[i])),
+                    getBlockColor(data.getResourceLocation(surface.oceanFloorBlockid[i])),
                     waterRatio
                 );
             } else if (grass.contains(currentBlock)) {
+                if (biome == null) continue;
                 color = biome.getGrassColor(x, z);
             } else if (leaves.contains(currentBlock)) {
+                if (biome == null) continue;
                 color = biome.getFoliageColor();
             } else {
                 color = 0xFF000000 | getBlockColor(currentBlock);
             }
-            color = brightnessForHeight(color, data.heightmap[i] - min);
+            color = brightnessForHeight(color, surface.heightmap[i], z == 0 ? north[x] : surface.heightmap[i-1], z == 15 ? south[x] : surface.heightmap[i+1]);
             image.setPixelRGBA(x, z, colorFormatSwap(color));
         }
         return new ThreadsafeDynamicTexture(image);
@@ -94,11 +105,13 @@ public class VanillaMapImageStrategy extends AbstractImageStrategy {
         return red << 0x10 | green << 0x8 | blue;
     }
 
-    private int brightnessForHeight(int color, int height) {
+    private int brightnessForHeight(int color, int height, int above, int below) {
         float[] hsb = Color.RGBtoHSB((color & 0xFF0000) >> 0x10, (color & 0xFF00) >> 0x8, color & 0xFF, null);
         //brightness scaled by .75 - 1.0 based on height
 //        hsb[2] *= .75F + height * .25F;
-        if (height % 2 == 1) {
+        if (above > height) {
+            hsb[2] *= .8f;
+        } else if (!(below > height)) {
             hsb[2] *= .9f;
         }
         return color & 0xFF000000 | Color.HSBtoRGB(hsb[0], hsb[1], hsb[2]);

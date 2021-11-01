@@ -2,55 +2,96 @@ package xyz.wagyourtail.minimap.map.chunkdata;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import net.minecraft.core.BlockPos;
+import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import net.minecraft.resources.ResourceLocation;
 import xyz.wagyourtail.minimap.api.MinimapApi;
 import xyz.wagyourtail.minimap.map.MapServer;
 import xyz.wagyourtail.minimap.map.chunkdata.cache.AbstractCacher;
+import xyz.wagyourtail.minimap.map.chunkdata.parts.DataPart;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.lang.reflect.InvocationTargetException;
+import java.nio.BufferUnderflowException;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
+import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
-public class ChunkData implements AutoCloseable {
+public class ChunkData implements AutoCloseable{
+    private final Map<Class<? extends DataPart<?>>, DataPart<?>> data = new HashMap<>();
+    public final ChunkLocation location;
     private static final ResourceLocation air = new ResourceLocation("minecraft", "air");
     private final List<ResourceLocation> resources = new ArrayList<>();
-    public final ChunkLocation location;
-    public final int[] heightmap = new int[256];
-    public final byte[] blocklight = new byte[256];
-    public final int[] blockid = new int[256];
-    public final int[] biomeid = new int[256];
-    public final int[] oceanFloorHeightmap = new int[256];
-    public final int[] oceanFloorBlockid = new int[256];
-    private Map<String, Derivitive<?>> derrivitives = new HashMap<>();
-    Error firstClose = null;
+    private Map<String, Derivative<?>> derivatives = new HashMap<>();
     public long updateTime;
     public boolean changed = false;
 
+    /**
+     * empty data
+     */
     public ChunkData(ChunkLocation location) {
         this.location = location;
     }
 
-    public static int blockPosToIndex(int posX, int posZ) {
-        int x = posX % 16;
-        int z = posZ % 16;
-        if (x < 0) x += 16;
-        if (z < 0) z += 16;
-        return (x << 4) + z;
-    }
-
-    public static int blockPosToIndex(BlockPos pos) {
-        int x = pos.getX() % 16;
-        int z = pos.getZ() % 16;
-        if (x < 0) x += 16;
-        if (z < 0) z += 16;
-        return (x << 4) + z;
+    /**
+     * Data Specificaion:
+     * long: updateTime
+     * [
+     * int: string length
+     * string: classname
+     * int: data length
+     * byte[]: data
+     * ]
+     * @param buffer bytes to deserialize
+     */
+    public ChunkData(ChunkLocation location, ByteBuffer buffer, String resources) {
+        this.location = location;
+        try {
+            updateTime = buffer.getLong();
+            while (buffer.hasRemaining()) {
+                int strSize = buffer.getInt();
+                byte[] strBytes = new byte[strSize];
+                buffer.get(strBytes);
+                String className = new String(strBytes);
+                Class<? extends DataPart<?>> clazz;
+                DataPart<?> dp;
+                try {
+                    clazz = (Class<? extends DataPart<?>>) Class.forName(className);
+                    data.put(
+                        clazz,
+                        dp = clazz.getConstructor(ChunkData.class).newInstance(this)
+                    );
+                } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
+                    System.out.println("Failed to deserialize data part: " + className);
+                    e.printStackTrace();
+                    // discard unknown data
+                    buffer.get(new byte[buffer.getInt()]);
+                    continue;
+                }
+                int size = buffer.getInt();
+                if (dp.getBytes() != size) {
+                    try {
+                        throw new AssertionError("Invalid data size for " + this.getClass().getCanonicalName());
+                    } catch (AssertionError e) {
+                        e.printStackTrace();
+                        buffer.get(new byte[size]);
+                    }
+                } else {
+                    dp.deserialize(buffer);
+                }
+            }
+        } catch (BufferUnderflowException e) {
+            e.printStackTrace();
+            System.out.println("Buffer underflow, data is probably corrupted, " + location.getChunkX() + "," + location.getChunkZ());
+        }
+        for (String s : resources.split("\n")) {
+            this.resources.add(new ResourceLocation(s));
+        }
     }
 
     public synchronized int getOrRegisterResourceLocation(ResourceLocation id) {
-        if (id == null) return 0;
+        if (id == null || id.equals(air)) return 0;
         for (int j = 0; j < resources.size(); ++j) {
             if (id.equals(resources.get(j))) {
                 return j + 1;
@@ -61,24 +102,40 @@ public class ChunkData implements AutoCloseable {
     }
 
     public synchronized ResourceLocation getResourceLocation(int i) {
-        if (i < 1) return air;
+        if (i < 1 || i > resources.size()) return air;
         return resources.get(i - 1);
     }
 
-    public synchronized List<ResourceLocation> getResources() {
-        return ImmutableList.copyOf(resources);
+    public synchronized int highestResourceValue() {
+        return resources.size();
     }
 
-    public synchronized <T> T computeDerivitive(String key, Supplier<T> supplier) {
+    public synchronized String serializeResources() {
+        StringBuilder sb = new StringBuilder();
+        for (ResourceLocation rl : resources) {
+            sb.append(rl.toString()).append("\n");
+        }
+        return sb.toString();
+    }
+
+    public synchronized <T extends DataPart> T getData(Class<T> clazz) {
+        return (T) data.get(clazz);
+    }
+
+    public synchronized <T extends DataPart<?>> T computeData(Class<T> clazz, Function<T, T> computeFunc) {
+        return (T) data.compute(clazz, (k, v) -> computeFunc.apply((T) v));
+    }
+
+    public synchronized <T> T computeDerivative(String key, Supplier<T> supplier) {
         //chunk is closed???
-        if (derrivitives instanceof ImmutableMap) {
-            Derivitive<T> der = (Derivitive<T>) derrivitives.get(key);
+        if (derivatives instanceof ImmutableMap) {
+            Derivative<T> der = (Derivative<T>) derivatives.get(key);
             if (der != null) {
                 return der.contained;
             }
             return null;
         }
-        Derivitive<T> der = (Derivitive<T>) derrivitives.computeIfAbsent(key, (k) -> new Derivitive<>(false, supplier.get()));
+        Derivative<T> der = (Derivative<T>) derivatives.computeIfAbsent(key, (k) -> new Derivative<>(false, supplier.get()));
         if (der.old) {
             der.old = false;
             der.contained = supplier.get();
@@ -88,10 +145,8 @@ public class ChunkData implements AutoCloseable {
 
     @Override
     public synchronized void close() {
-        if (firstClose != null) return;
-        firstClose = new Error();
-        if (derrivitives instanceof ImmutableMap) return;
-        derrivitives.forEach((k, v) -> {
+        if (derivatives instanceof ImmutableMap) return;
+        derivatives.forEach((k, v) -> {
             if (v.contained instanceof AutoCloseable) {
                 try {
                     ((AutoCloseable) v.contained).close();
@@ -100,51 +155,17 @@ public class ChunkData implements AutoCloseable {
                 }
             }
         });
-        derrivitives = ImmutableMap.of();
+        derivatives = ImmutableMap.of();
     }
 
-    public synchronized void combineWithNewData(ChunkData newData) {
-        if (newData.updateTime > this.updateTime) {
-            this.updateTime = newData.updateTime;
-            this.changed = true;
-            boolean changed = false;
-            for (int i = 0; i < 256; ++i) {
-                int newHeight = newData.heightmap[i];
-                changed = changed || newHeight != this.heightmap[i];
-                this.heightmap[i] = newHeight;
-
-                byte newLight = newData.blocklight[i];
-                changed = changed || newLight != this.blocklight[i];
-                this.blocklight[i] = newLight;
-
-                int newBlockid = newData.blockid[i];
-                changed = changed || newBlockid != this.blockid[i];
-                this.blockid[i] = newBlockid;
-
-                int newBiomeId = newData.biomeid[i];
-                changed = changed || newBiomeId != this.biomeid[i];
-                this.biomeid[i] = newBiomeId;
-
-                int newOceanHeight = newData.oceanFloorHeightmap[i];
-                changed = changed || newOceanHeight != this.oceanFloorHeightmap[i];
-                this.oceanFloorHeightmap[i] = newOceanHeight;
-
-                int newOceanBlock = newData.oceanFloorBlockid[i];
-                changed = changed || newOceanBlock != this.oceanFloorBlockid[i];
-                this.oceanFloorBlockid[i] = newOceanBlock;
-            }
-            this.resources.clear();
-            this.resources.addAll(newData.resources);
-            if (changed) markDirty();
-        }
-    }
 
     public synchronized void markDirty() {
-        if (derrivitives == null) return;
-        derrivitives.values().forEach((v) -> v.old = true);
+        if (derivatives == null) return;
+        derivatives.values().forEach((v) -> v.old = true);
         changed = true;
         MapServer.addToSaveQueue(() -> {
             synchronized (this) {
+                refactorResourceLocations();
                 for (AbstractCacher cacher : MinimapApi.getInstance().getCachers()) {
                     cacher.saveChunk(location, this);
                 }
@@ -152,15 +173,77 @@ public class ChunkData implements AutoCloseable {
         });
     }
 
-    public static class Derivitive<T> {
-        public T contained;
-        public boolean old;
-
-        Derivitive(boolean old, T contained) {
-            this.old = old;
-            this.contained = contained;
+    public synchronized void refactorResourceLocations() {
+        Set<Integer> used = new HashSet<>(resources.size());
+        for (DataPart<?> value : data.values()) {
+            value.usedResourceLocations(used);
         }
-
+        List<ResourceLocation> oldResources = ImmutableList.copyOf(resources);
+        Map<Integer, Integer> transform = new Int2IntOpenHashMap();
+        try {
+            for (int i = resources.size(); i > 0; --i) {
+                if (!used.contains(i)) {
+                    resources.remove(i - 1);
+                }
+            }
+            transform.put(0, 0);
+            for (int i = 0, j = 0; i < resources.size(); ++i) {
+                ResourceLocation newR = resources.get(i);
+                while (!newR.equals(oldResources.get(j))) ++j;
+                transform.put(j + 1, i + 1);
+            }
+        } catch (IndexOutOfBoundsException e) {
+            e.printStackTrace();
+            // in case of error, undo the changes
+            resources.clear();
+            resources.addAll(oldResources);
+            return;
+        }
+        for (DataPart<?> value : data.values()) {
+            try {
+                value.remapResourceLocations(transform);
+            } catch (NullPointerException e) {
+                throw new RuntimeException("Error while remapping resource locations [" +
+                        oldResources.stream().map(ResourceLocation::toString).collect(Collectors.joining(", ")) +
+                    "] -> [" +
+                        resources.stream().map(ResourceLocation::toString).collect(Collectors.joining(", ")) + "" +
+                    "]", e);
+            }
+        }
     }
 
+    public synchronized ByteBuffer serialize() {
+        int size = Long.BYTES;
+        for (DataPart<?> dp : data.values()) {
+            size += dp.getClass().getCanonicalName().getBytes(StandardCharsets.UTF_8).length;
+            size += dp.getBytes();
+            size += Integer.BYTES * 2;
+        }
+        ByteBuffer buffer = ByteBuffer.allocate(size);
+        buffer.putLong(updateTime);
+        for (DataPart<?> dp : data.values()) {
+            byte[] strBytes = dp.getClass().getCanonicalName().getBytes(StandardCharsets.UTF_8);
+            buffer.putInt(strBytes.length);
+            buffer.put(strBytes);
+            buffer.putInt(dp.getBytes());
+            dp.serialize(buffer);
+        }
+        return buffer;
+    }
+
+    public ChunkLocation north() {
+        return ChunkLocation.locationForChunkPos(location.level(), location.getChunkX(), location.getChunkZ() - 1);
+    }
+
+    public ChunkLocation south()  {
+        return ChunkLocation.locationForChunkPos(location.level(), location.getChunkX(), location.getChunkZ() + 1);
+    }
+
+    public ChunkLocation west() {
+        return ChunkLocation.locationForChunkPos(location.level(), location.getChunkX() - 1, location.getChunkZ());
+    }
+
+    public ChunkLocation east() {
+        return ChunkLocation.locationForChunkPos(location.level(), location.getChunkX() + 1, location.getChunkZ());
+    }
 }

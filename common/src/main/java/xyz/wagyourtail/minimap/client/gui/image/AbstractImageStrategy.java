@@ -17,12 +17,16 @@ public abstract class AbstractImageStrategy {
     public synchronized ThreadsafeDynamicTexture getImage(ChunkLocation key) throws ExecutionException {
         ChunkData data = key.level().getChunk(key);
         if (data != null) {
-            return data.computeDerivitive(this.getClass().getCanonicalName(), () -> this.load(key, data));
+            return data.computeDerivative(getDerivitiveKey(), () -> this.load(key, data));
         }
         return null;
     }
 
     public abstract ThreadsafeDynamicTexture load(ChunkLocation location, ChunkData data);
+
+    public String getDerivitiveKey() {
+        return this.getClass().getCanonicalName();
+    }
 
     public boolean shouldRender() {
         return true;
