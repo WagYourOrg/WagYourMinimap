@@ -15,10 +15,6 @@ import xyz.wagyourtail.minimap.map.chunkdata.cache.InMemoryStillCacher;
 import xyz.wagyourtail.minimap.map.chunkdata.cache.ZipCacher;
 import xyz.wagyourtail.minimap.map.chunkdata.updater.BlockUpdateStrategy;
 import xyz.wagyourtail.minimap.map.chunkdata.updater.ChunkLoadStrategy;
-import xyz.wagyourtail.minimap.map.chunkdata.updater.UpdateNorthHeightmapStrategy;
-import xyz.wagyourtail.minimap.map.chunkdata.updater.UpdateSouthHeightmapStrategy;
-
-import java.lang.reflect.InvocationTargetException;
 
 public class WagYourMinimapClient extends WagYourMinimap {
     private static final KeyMapping key_openmap = new KeyMapping("key.wagyourminimap.openmap", InputConstants.KEY_M, "WagYourMinimap");

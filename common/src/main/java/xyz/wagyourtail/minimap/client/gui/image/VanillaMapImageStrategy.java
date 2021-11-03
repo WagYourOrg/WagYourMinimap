@@ -1,51 +1,41 @@
 package xyz.wagyourtail.minimap.client.gui.image;
 
-import com.google.common.collect.Sets;
 import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import xyz.wagyourtail.minimap.client.gui.ThreadsafeDynamicTexture;
+import net.minecraft.world.level.block.LeavesBlock;
 import xyz.wagyourtail.minimap.map.chunkdata.ChunkData;
 import xyz.wagyourtail.minimap.map.chunkdata.ChunkLocation;
-import xyz.wagyourtail.minimap.map.chunkdata.parts.NorthHeightmap;
-import xyz.wagyourtail.minimap.map.chunkdata.parts.SouthHeightmap;
 import xyz.wagyourtail.minimap.map.chunkdata.parts.SurfaceDataPart;
 
 import java.awt.*;
 import java.util.Set;
+import java.util.function.Predicate;
 
 public class VanillaMapImageStrategy extends AbstractImageStrategy {
-    public final static Set<ResourceLocation> water = Sets.newHashSet(
-        Registry.BLOCK.getKey(Blocks.WATER),
-        Registry.BLOCK.getKey(Blocks.SEAGRASS),
-        Registry.BLOCK.getKey(Blocks.TALL_SEAGRASS),
-        Registry.BLOCK.getKey(Blocks.KELP_PLANT),
-        Registry.BLOCK.getKey(Blocks.KELP)
-    );
+    public final static Predicate<Block> water = Set.of(
+        Blocks.WATER,
+        Blocks.SEAGRASS,
+        Blocks.TALL_SEAGRASS,
+        Blocks.KELP_PLANT,
+        Blocks.KELP
+    )::contains;
 
-    public final static Set<ResourceLocation> grass = Sets.newHashSet(
-        Registry.BLOCK.getKey(Blocks.GRASS_BLOCK),
-        Registry.BLOCK.getKey(Blocks.GRASS),
-        Registry.BLOCK.getKey(Blocks.TALL_GRASS)
-    );
+    public final static Predicate<Block> grass = Set.of(
+        Blocks.GRASS_BLOCK,
+        Blocks.GRASS,
+        Blocks.TALL_GRASS
+    )::contains;
 
-    public final static Set<ResourceLocation> leaves = Sets.newHashSet(
-        Registry.BLOCK.getKey(Blocks.ACACIA_LEAVES),
-        Registry.BLOCK.getKey(Blocks.AZALEA_LEAVES),
-        Registry.BLOCK.getKey(Blocks.BIRCH_LEAVES),
-        Registry.BLOCK.getKey(Blocks.DARK_OAK_LEAVES),
-        Registry.BLOCK.getKey(Blocks.FLOWERING_AZALEA_LEAVES),
-        Registry.BLOCK.getKey(Blocks.JUNGLE_LEAVES),
-        Registry.BLOCK.getKey(Blocks.OAK_LEAVES),
-        Registry.BLOCK.getKey(Blocks.SPRUCE_LEAVES)
-    );
+    public final static Predicate<Block> leaves = (block) -> block instanceof LeavesBlock;
 
     @Override
-    public ThreadsafeDynamicTexture load(ChunkLocation location, ChunkData data) {
+    public DynamicTexture load(ChunkLocation location, ChunkData data) {
         SurfaceDataPart surface = data.getData(SurfaceDataPart.class).orElse(null);
         if (surface == null) return null;
         NativeImage image = new NativeImage(16, 16, false);
@@ -58,9 +48,9 @@ public class VanillaMapImageStrategy extends AbstractImageStrategy {
             int x = (i >> 4) % 16;
             int z = i % 16;
             Biome biome = biomeRegistry.get(data.getResourceLocation(surface.biomeid[i]));
-            ResourceLocation currentBlock = data.getResourceLocation(surface.blockid[i]);
+            Block block = Registry.BLOCK.getOptional(data.getResourceLocation(surface.blockid[i])).orElse(Blocks.AIR);
             int color;
-            if (water.contains(currentBlock)) {
+            if (water.test(block)) {
                 if (biome == null) continue;
                 float waterRatio = Math.min(
                     // 0.7 - 1.0 depending on depth of water 1 - 10 blocks...
@@ -69,17 +59,17 @@ public class VanillaMapImageStrategy extends AbstractImageStrategy {
                 );
                 color = colorCombine(
                     biome.getWaterColor(),
-                    getBlockColor(data.getResourceLocation(surface.oceanFloorBlockid[i])),
+                    getBlockColor(block),
                     waterRatio
                 );
-            } else if (grass.contains(currentBlock)) {
+            } else if (grass.test(block)) {
                 if (biome == null) continue;
                 color = biome.getGrassColor(x, z);
-            } else if (leaves.contains(currentBlock)) {
+            } else if (leaves.test(block)) {
                 if (biome == null) continue;
                 color = biome.getFoliageColor();
             } else {
-                color = 0xFF000000 | getBlockColor(currentBlock);
+                color = 0xFF000000 | getBlockColor(block);
             }
             if (z == 0) {
                 color = brightnessForHeight(color, surface.heightmap[i], north[15 + 16 * x], surface.heightmap[i+1]);
@@ -90,11 +80,11 @@ public class VanillaMapImageStrategy extends AbstractImageStrategy {
             }
             image.setPixelRGBA(x, z, colorFormatSwap(color));
         }
-        return new ThreadsafeDynamicTexture(image);
+        return new DynamicTexture(image);
     }
 
-    public static int getBlockColor(ResourceLocation block) {
-        return Registry.BLOCK.getOptional(block).orElse(Blocks.AIR).defaultBlockState().getMapColor(Minecraft.getInstance().level, BlockPos.ZERO).col;
+    public static int getBlockColor(Block block) {
+        return block.defaultBlockState().getMapColor(Minecraft.getInstance().level, BlockPos.ZERO).col;
 
     }
 

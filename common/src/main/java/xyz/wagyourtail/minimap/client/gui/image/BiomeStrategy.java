@@ -1,17 +1,17 @@
 package xyz.wagyourtail.minimap.client.gui.image;
 
 import com.mojang.blaze3d.platform.NativeImage;
+import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.biome.Biome;
-import xyz.wagyourtail.minimap.client.gui.ThreadsafeDynamicTexture;
 import xyz.wagyourtail.minimap.map.chunkdata.ChunkData;
 import xyz.wagyourtail.minimap.map.chunkdata.ChunkLocation;
 import xyz.wagyourtail.minimap.map.chunkdata.parts.SurfaceDataPart;
 
 public class BiomeStrategy extends AbstractImageStrategy {
     @Override
-    public ThreadsafeDynamicTexture load(ChunkLocation location, ChunkData data) {
+    public DynamicTexture load(ChunkLocation location, ChunkData data) {
         SurfaceDataPart surface = data.getData(SurfaceDataPart.class).orElse(null);
         if (surface == null) return null;
         assert minecraft.level != null;
@@ -22,7 +22,7 @@ public class BiomeStrategy extends AbstractImageStrategy {
             int z = i % 16;
             image.setPixelRGBA(x, z, 0x7FFFFFFF & colorFormatSwap(colorForBiome(data.getResourceLocation(surface.biomeid[i]), biomeRegistry)));
         }
-        return new ThreadsafeDynamicTexture(image);
+        return new DynamicTexture(image);
     }
 
     private int colorForBiome(ResourceLocation biome, Registry<Biome> registry) {

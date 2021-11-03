@@ -1,7 +1,7 @@
 package xyz.wagyourtail.minimap.client.gui.image;
 
 import net.minecraft.client.Minecraft;
-import xyz.wagyourtail.minimap.client.gui.ThreadsafeDynamicTexture;
+import net.minecraft.client.renderer.texture.DynamicTexture;
 import xyz.wagyourtail.minimap.map.chunkdata.ChunkData;
 import xyz.wagyourtail.minimap.map.chunkdata.ChunkLocation;
 
@@ -22,7 +22,7 @@ public abstract class AbstractImageStrategy {
         return null;
     }
 
-    public abstract ThreadsafeDynamicTexture load(ChunkLocation location, ChunkData data);
+    public abstract DynamicTexture load(ChunkLocation location, ChunkData data);
 
     public String getDerivitiveKey() {
         return this.getClass().getCanonicalName();

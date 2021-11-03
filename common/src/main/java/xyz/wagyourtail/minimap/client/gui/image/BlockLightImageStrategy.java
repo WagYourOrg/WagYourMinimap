@@ -1,9 +1,8 @@
 package xyz.wagyourtail.minimap.client.gui.image;
 
 import com.mojang.blaze3d.platform.NativeImage;
+import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.dimension.DimensionType;
-import xyz.wagyourtail.minimap.client.gui.ThreadsafeDynamicTexture;
 import xyz.wagyourtail.minimap.map.chunkdata.ChunkData;
 import xyz.wagyourtail.minimap.map.chunkdata.ChunkLocation;
 import xyz.wagyourtail.minimap.map.chunkdata.parts.SurfaceDataPart;
@@ -22,7 +21,7 @@ public class BlockLightImageStrategy extends AbstractImageStrategy {
     }
 
     @Override
-    public ThreadsafeDynamicTexture load(ChunkLocation location, ChunkData key) {
+    public DynamicTexture load(ChunkLocation location, ChunkData key) {
         SurfaceDataPart surface = key.getData(SurfaceDataPart.class).orElse(null);
         if (surface == null) return null;
         NativeImage image = new NativeImage(16, 16, false);
@@ -32,7 +31,7 @@ public class BlockLightImageStrategy extends AbstractImageStrategy {
             image.setPixelRGBA(x, z, 0x7FFFFFFF & colorFormatSwap(colorForLightLevel(surface.blocklight[i])));
 
         }
-        return new ThreadsafeDynamicTexture(image);
+        return new DynamicTexture(image);
     }
 
     private int colorForLightLevel(byte lightLevel) {
