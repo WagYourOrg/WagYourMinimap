@@ -7,9 +7,6 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.dimension.DimensionType;
 import xyz.wagyourtail.minimap.api.MinimapApi;
-import xyz.wagyourtail.minimap.map.chunkdata.ChunkData;
-import xyz.wagyourtail.minimap.map.chunkdata.ChunkLocation;
-import xyz.wagyourtail.minimap.map.chunkdata.cache.AbstractCacher;
 import xyz.wagyourtail.minimap.waypoint.WaypointManager;
 
 import java.util.HashMap;
@@ -21,7 +18,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-public class MapServer implements AutoCloseable {
+public class MapServer {
     private static final ThreadPoolExecutor save_pool = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.NANOSECONDS, new LinkedBlockingQueue<>());
     private final Map<String, MapLevel> levels = new HashMap<>();
     private final Set<String> availableLevels;
@@ -82,19 +79,12 @@ public class MapServer implements AutoCloseable {
     }
 
     @Override
-    public synchronized void close() {
-        for (MapLevel value : levels.values()) {
-            value.close();
-        }
-        levels.clear();
-    }
-
-
-    @Override
     public String toString() {
         return "MapServer{" +
             "server_slug='" + server_slug + '\'' +
             '}';
     }
+
+    public static record MapLevel(MapServer parent, String level_slug, int minHeight, int maxHeight) {}
 
 }

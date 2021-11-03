@@ -11,6 +11,7 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import xyz.wagyourtail.minimap.WagYourMinimap;
+import xyz.wagyourtail.minimap.api.MinimapApi;
 import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
 import xyz.wagyourtail.minimap.api.client.MinimapClientEvents;
 import xyz.wagyourtail.minimap.api.config.MinimapClientConfig;
@@ -20,6 +21,10 @@ import xyz.wagyourtail.minimap.client.gui.screen.renderer.ScreenMapRenderer;
 import xyz.wagyourtail.minimap.client.gui.screen.settings.SettingsScreen;
 import xyz.wagyourtail.minimap.client.gui.screen.widget.InteractMenu;
 import xyz.wagyourtail.minimap.client.gui.screen.widget.MenuButton;
+import xyz.wagyourtail.minimap.map.MapServer;
+import xyz.wagyourtail.minimap.map.chunkdata.ChunkData;
+import xyz.wagyourtail.minimap.map.chunkdata.ChunkLocation;
+import xyz.wagyourtail.minimap.map.chunkdata.parts.SurfaceDataPart;
 
 import java.util.*;
 import java.util.List;
@@ -58,6 +63,31 @@ public class MapScreen extends Screen {
         if (!consumed && button == 1) {
             float x = (float) (renderer.topX + renderer.xDiam * mouseX / width);
             float z = (float) (renderer.topZ + renderer.zDiam * mouseY / height);
+
+
+            MapServer.MapLevel level = MinimapClientApi.getInstance().getMapLevel(minecraft.level);
+            if (level != null) {
+                ChunkData chk = ChunkLocation.locationForChunkPos(level, ((int) x) >> 4, ((int) z) >> 4).get();
+                SurfaceDataPart chunk = chk.getData(SurfaceDataPart.class).orElse(null);
+                SurfaceDataPart south = chk.south().get().getData(SurfaceDataPart.class).orElse(null);
+                SurfaceDataPart north = chk.north().get().getData(SurfaceDataPart.class).orElse(null);
+                if (chunk != null && south != null && north != null) {
+                    int[] above = new int[16];
+                    int[] top = new int[16];
+                    int[] bottom = new int[16];
+                    int[] below = new int[16];
+                    for (int i = 0; i < 16; i++) {
+                        above[i] = north.heightmap[SurfaceDataPart.blockPosToIndex(i, 15)];
+                        top[i] = chunk.heightmap[SurfaceDataPart.blockPosToIndex(i, 0)];
+                        bottom[i] = chunk.heightmap[SurfaceDataPart.blockPosToIndex(i, 15)];
+                        below[i] = south.heightmap[SurfaceDataPart.blockPosToIndex(i, 0)];
+                    }
+                    System.out.println(Arrays.toString(above));
+                    System.out.println(Arrays.toString(top));
+                    System.out.println(Arrays.toString(bottom));
+                    System.out.println(Arrays.toString(below));
+                }
+            }
 
             interact = new InteractMenu(this, x, z, mouseX, mouseY);
         }

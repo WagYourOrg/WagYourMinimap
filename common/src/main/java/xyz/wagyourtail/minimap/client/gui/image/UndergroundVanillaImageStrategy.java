@@ -24,7 +24,7 @@ public class UndergroundVanillaImageStrategy extends VanillaMapImageStrategy {
         int y = minecraft.player.getBlockY() - level.dimensionType().minY();
         y = y - y % resolution;
         lastY.set(y);
-        if (MapServer.getLevelName(level).equals(location.level().level_slug)) {
+        if (MapServer.getLevelName(level).equals(location.level().level_slug())) {
             ChunkAccess chunk = level.getChunk(location.getChunkX(), location.getChunkZ(), ChunkStatus.FULL, false);
             if (chunk != null) {
 

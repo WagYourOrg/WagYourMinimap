@@ -21,9 +21,7 @@ public class WaypointManager {
     public WaypointManager(MapServer server) {
         this.server = server;
 
-        for (AbstractCacher cacher : MinimapApi.getInstance().getCachers()) {
-            waypointList.addAll(cacher.loadWaypoints(server));
-        }
+        waypointList.addAll(MinimapApi.getInstance().cacheManager.loadWaypoints(server));
 //        //test waypoint
 //        if (waypointList.isEmpty()) {
 //            waypointList.add(new Waypoint(0, 0, 0, (byte) 255, (byte) 0, (byte) 0, "TEST", new String[] {}, new String[] {}));
@@ -88,10 +86,7 @@ public class WaypointManager {
     public void saveWaypoints() {
         MapServer.addToSaveQueue(() -> {
             synchronized (this) {
-                for (AbstractCacher cacher : MinimapApi.getInstance().getCachers()) {
-                    cacher.saveWaypoints(server, waypointList.stream().filter(Predicate.not(Waypoint::ephemeral)));
-                }
-
+                MinimapApi.getInstance().cacheManager.saveWaypoints(server, waypointList.stream().filter(Predicate.not(Waypoint::ephemeral)));
             }
         });
     }

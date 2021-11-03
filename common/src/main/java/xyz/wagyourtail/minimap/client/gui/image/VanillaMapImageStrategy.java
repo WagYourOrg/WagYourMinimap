@@ -46,16 +46,14 @@ public class VanillaMapImageStrategy extends AbstractImageStrategy {
 
     @Override
     public ThreadsafeDynamicTexture load(ChunkLocation location, ChunkData data) {
-        SurfaceDataPart surface = data.getData(SurfaceDataPart.class);
+        SurfaceDataPart surface = data.getData(SurfaceDataPart.class).orElse(null);
         if (surface == null) return null;
         NativeImage image = new NativeImage(16, 16, false);
         assert minecraft.level != null;
         Registry<Biome> biomeRegistry = minecraft.level.registryAccess().registryOrThrow(Registry.BIOME_REGISTRY);
+        int[] north = data.north().get().getData(SurfaceDataPart.class).map(e -> e.heightmap).orElseGet(() -> new int[256]);
+        int[] south = data.south().get().getData(SurfaceDataPart.class).map(e -> e.heightmap).orElseGet(() -> new int[256]);
         int i;
-        NorthHeightmap northHeight = data.getData(NorthHeightmap.class);
-        int[] north = northHeight == null ? new int[16] : northHeight.heightmap;
-        SouthHeightmap southHeight = data.getData(SouthHeightmap.class);
-        int[] south = southHeight == null ? new int[16] : southHeight.heightmap;
         for (i = 0; i < 256; ++i) {
             int x = (i >> 4) % 16;
             int z = i % 16;
@@ -83,7 +81,13 @@ public class VanillaMapImageStrategy extends AbstractImageStrategy {
             } else {
                 color = 0xFF000000 | getBlockColor(currentBlock);
             }
-            color = brightnessForHeight(color, surface.heightmap[i], z == 0 ? north[x] : surface.heightmap[i-1], z == 15 ? south[x] : surface.heightmap[i+1]);
+            if (z == 0) {
+                color = brightnessForHeight(color, surface.heightmap[i], north[15 + 16 * x], surface.heightmap[i+1]);
+            } else if (z == 15) {
+                color = brightnessForHeight(color, surface.heightmap[i], surface.heightmap[i-1], south[16 * x]);
+            } else {
+                color = brightnessForHeight(color, surface.heightmap[i], surface.heightmap[i-1], surface.heightmap[i+1]);
+            }
             image.setPixelRGBA(x, z, colorFormatSwap(color));
         }
         return new ThreadsafeDynamicTexture(image);
@@ -109,7 +113,7 @@ public class VanillaMapImageStrategy extends AbstractImageStrategy {
         float[] hsb = Color.RGBtoHSB((color & 0xFF0000) >> 0x10, (color & 0xFF00) >> 0x8, color & 0xFF, null);
         if (north > height) {
             hsb[2] *= .8f;
-        } else if (!(south > height)) {
+        } else if (south <= height) {
             hsb[2] *= .9f;
         }
         return color & 0xFF000000 | Color.HSBtoRGB(hsb[0], hsb[1], hsb[2]);

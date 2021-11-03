@@ -10,7 +10,7 @@ import xyz.wagyourtail.minimap.client.gui.ThreadsafeDynamicTexture;
 import xyz.wagyourtail.minimap.client.gui.image.AbstractImageStrategy;
 import xyz.wagyourtail.minimap.client.gui.image.BlockLightImageStrategy;
 import xyz.wagyourtail.minimap.client.gui.image.VanillaMapImageStrategy;
-import xyz.wagyourtail.minimap.map.MapLevel;
+import xyz.wagyourtail.minimap.map.MapServer;
 import xyz.wagyourtail.minimap.map.chunkdata.ChunkLocation;
 
 import java.util.concurrent.ExecutionException;
@@ -64,7 +64,7 @@ public abstract class AbstractMapRenderer {
     }
 
     protected ChunkLocation getChunk(int chunkX, int chunkZ) {
-        MapLevel level = MinimapClientApi.getInstance().getMapLevel(minecraft.level);
+        MapServer.MapLevel level = MinimapClientApi.getInstance().getMapLevel(minecraft.level);
         if (level == null) return null;
         return ChunkLocation.locationForChunkPos(level, chunkX, chunkZ);
     }

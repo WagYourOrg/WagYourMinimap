@@ -64,7 +64,6 @@ public class ChunkData {
                     );
                 } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
                     System.out.println("Failed to deserialize data part: " + className);
-                    e.printStackTrace();
                     // discard unknown data
                     buffer.get(new byte[buffer.getInt()]);
                     continue;
@@ -118,8 +117,8 @@ public class ChunkData {
         return sb.toString();
     }
 
-    public synchronized <T extends DataPart> T getData(Class<T> clazz) {
-        return (T) data.get(clazz);
+    public synchronized <T extends DataPart<T>> Optional<T> getData(Class<T> clazz) {
+        return Optional.ofNullable((T) data.get(clazz));
     }
 
     public synchronized <T extends DataPart<?>> T computeData(Class<T> clazz, Function<T, T> computeFunc) {
@@ -127,14 +126,6 @@ public class ChunkData {
     }
 
     public synchronized <T> T computeDerivative(String key, Supplier<T> supplier) {
-        //chunk is closed???
-        if (derivatives instanceof ImmutableMap) {
-            Derivative<T> der = (Derivative<T>) derivatives.get(key);
-            if (der != null) {
-                return der.contained;
-            }
-            return null;
-        }
         Derivative<T> der = (Derivative<T>) derivatives.computeIfAbsent(key, (k) -> new Derivative<>(false, supplier.get()));
         if (der.old) {
             der.old = false;
@@ -143,16 +134,21 @@ public class ChunkData {
         return der.contained;
     }
 
-    public synchronized void markDirty() {
+    public synchronized void invalidateDerivitives() {
         if (derivatives == null) return;
-        derivatives.values().forEach((v) -> v.old = true);
+        for (Derivative<?> der : derivatives.values()) {
+            der.old = true;
+        }
+    }
+
+    public synchronized void markDirty() {
         changed = true;
+        invalidateDerivitives();
         MapServer.addToSaveQueue(() -> {
             synchronized (this) {
                 refactorResourceLocations();
-                for (AbstractCacher cacher : MinimapApi.getInstance().getCachers()) {
-                    cacher.saveChunk(location, this);
-                }
+                MinimapApi.getInstance().cacheManager.saveChunk(location, this);
+                changed = false;
             }
         });
     }

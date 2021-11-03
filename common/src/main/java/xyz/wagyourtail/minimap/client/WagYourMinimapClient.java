@@ -11,6 +11,7 @@ import xyz.wagyourtail.minimap.api.MinimapApi;
 import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
 import xyz.wagyourtail.minimap.client.gui.InGameWaypointRenderer;
 import xyz.wagyourtail.minimap.map.MapServer;
+import xyz.wagyourtail.minimap.map.chunkdata.cache.InMemoryStillCacher;
 import xyz.wagyourtail.minimap.map.chunkdata.cache.ZipCacher;
 import xyz.wagyourtail.minimap.map.chunkdata.updater.BlockUpdateStrategy;
 import xyz.wagyourtail.minimap.map.chunkdata.updater.ChunkLoadStrategy;
@@ -27,15 +28,12 @@ public class WagYourMinimapClient extends WagYourMinimap {
         //client api getInstance first so we establish the instance as a ClientApi.
         MinimapClientApi.getInstance();
 
-        try {
-            MinimapApi.getInstance().addCacherAfter(ZipCacher.class, null);
-            MinimapApi.getInstance().registerChunkUpdateStrategy(ChunkLoadStrategy.class);
-            MinimapApi.getInstance().registerChunkUpdateStrategy(BlockUpdateStrategy.class);
-            MinimapApi.getInstance().registerChunkUpdateStrategy(UpdateNorthHeightmapStrategy.class);
-            MinimapApi.getInstance().registerChunkUpdateStrategy(UpdateSouthHeightmapStrategy.class);
-        } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
-            e.printStackTrace();
-        }
+        MinimapApi.getInstance().cacheManager.addCacherAfter(new ZipCacher(), null);
+        MinimapApi.getInstance().cacheManager.addCacherBefore(new InMemoryStillCacher(), ZipCacher.class);
+        MinimapApi.getInstance().registerChunkUpdateStrategy(ChunkLoadStrategy.class);
+        MinimapApi.getInstance().registerChunkUpdateStrategy(BlockUpdateStrategy.class);
+//        MinimapApi.getInstance().registerChunkUpdateStrategy(UpdateNorthHeightmapStrategy.class);
+//        MinimapApi.getInstance().registerChunkUpdateStrategy(UpdateSouthHeightmapStrategy.class);
 
         ClientGuiEvent.RENDER_HUD.register(MinimapClientApi.getInstance().inGameHud::render);
 
@@ -46,7 +44,6 @@ public class WagYourMinimapClient extends WagYourMinimap {
         });
         ClientPlayerEvent.CLIENT_PLAYER_QUIT.register((player) -> {
             LOGGER.info("exiting {}", MinimapClientApi.getInstance().getMapServer());
-            MinimapClientApi.getInstance().getMapServer().close();
             int i = 0;
             int j;
             while ((j = MinimapApi.getInstance().getSaving()) > 0) {

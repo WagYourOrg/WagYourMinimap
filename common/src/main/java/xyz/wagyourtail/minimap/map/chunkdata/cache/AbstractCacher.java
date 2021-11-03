@@ -9,6 +9,14 @@ import java.util.List;
 import java.util.stream.Stream;
 
 public abstract class AbstractCacher {
+    public final boolean saveOnLoad;
+    public final boolean countHitAsLoad;
+
+    public AbstractCacher(boolean saveOnLoad, boolean countHitAsLoad) {
+        this.saveOnLoad = saveOnLoad;
+        this.countHitAsLoad = countHitAsLoad;
+    }
+
     public abstract ChunkData loadChunk(ChunkLocation location);
 
     public abstract void saveChunk(ChunkLocation location, ChunkData data);

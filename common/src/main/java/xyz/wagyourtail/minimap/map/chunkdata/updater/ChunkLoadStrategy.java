@@ -31,7 +31,7 @@ public class ChunkLoadStrategy extends AbstractChunkUpdateStrategy<SurfaceDataPa
             ChunkPos pos = chunk.getPos();
             updateChunk(
                 getChunkLocation(level, pos),
-                (location, parent, oldData) -> loadFromChunk(location, chunk, level, parent, oldData)
+                (location, parent, oldData) -> loadFromChunk(chunk, level, parent, oldData)
             );
         });
     }
@@ -41,7 +41,7 @@ public class ChunkLoadStrategy extends AbstractChunkUpdateStrategy<SurfaceDataPa
         return SurfaceDataPart.class;
     }
 
-    public static SurfaceDataPart loadFromChunk(ChunkLocation location, ChunkAccess chunk, Level level, ChunkData parent, SurfaceDataPart oldSurfaceData) {
+    public static SurfaceDataPart loadFromChunk(ChunkAccess chunk, Level level, ChunkData parent, SurfaceDataPart oldSurfaceData) {
         SurfaceDataPart data = new SurfaceDataPart(parent);
         data.parent.updateTime = System.currentTimeMillis();
         ChunkPos pos = chunk.getPos();
@@ -92,8 +92,10 @@ public class ChunkLoadStrategy extends AbstractChunkUpdateStrategy<SurfaceDataPa
         }
 
         // update south heightmap
-        UpdateNorthHeightmapStrategy.UPDATE_EVENT.invoker().onUpdate(parent.south(), data.heightmap);
-        UpdateSouthHeightmapStrategy.UPDATE_EVENT.invoker().onUpdate(parent.north(), data.heightmap);
+//        UpdateNorthHeightmapStrategy.UPDATE_EVENT.invoker().onUpdate(parent.south(), data.heightmap);
+//        UpdateSouthHeightmapStrategy.UPDATE_EVENT.invoker().onUpdate(parent.north(), data.heightmap);
+        parent.north().get().invalidateDerivitives();
+        parent.south().get().invalidateDerivitives();
 
         if (oldSurfaceData != null) {
             oldSurfaceData.mergeFrom(data);

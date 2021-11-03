@@ -15,7 +15,7 @@ public abstract class AbstractImageStrategy {
     }
 
     public synchronized ThreadsafeDynamicTexture getImage(ChunkLocation key) throws ExecutionException {
-        ChunkData data = key.level().getChunk(key);
+        ChunkData data = key.get();
         if (data != null) {
             return data.computeDerivative(getDerivitiveKey(), () -> this.load(key, data));
         }

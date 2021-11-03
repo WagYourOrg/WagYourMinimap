@@ -29,6 +29,7 @@ public class ZipCacher extends AbstractCacher {
     private final LoadingCache<Path, FileSystem> zipCache;
 
     public ZipCacher() {
+        super(true, true);
         zipCache = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.SECONDS).
             removalListener(e -> {
                 try {
@@ -67,7 +68,7 @@ public class ZipCacher extends AbstractCacher {
     }
 
     private Path locationToPath(ChunkLocation location) {
-        return MinimapApi.getInstance().configFolder.resolve(location.level().parent.server_slug).resolve(location.level().level_slug).resolve(location.region().getString() + ".zip");
+        return MinimapApi.getInstance().configFolder.resolve(location.level().parent().server_slug).resolve(location.level().level_slug()).resolve(location.region().getString() + ".zip");
     }
 
     @Override

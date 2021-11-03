@@ -23,7 +23,7 @@ public class BlockLightImageStrategy extends AbstractImageStrategy {
 
     @Override
     public ThreadsafeDynamicTexture load(ChunkLocation location, ChunkData key) {
-        SurfaceDataPart surface = key.getData(SurfaceDataPart.class);
+        SurfaceDataPart surface = key.getData(SurfaceDataPart.class).orElse(null);
         if (surface == null) return null;
         NativeImage image = new NativeImage(16, 16, false);
         for (int i = 0; i < 256; ++i) {

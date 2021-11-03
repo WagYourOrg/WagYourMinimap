@@ -1,12 +1,13 @@
 package xyz.wagyourtail.minimap.map.chunkdata;
 
 import net.minecraft.world.level.ChunkPos;
-import xyz.wagyourtail.minimap.map.MapLevel;
+import xyz.wagyourtail.minimap.api.MinimapApi;
+import xyz.wagyourtail.minimap.map.MapServer;
 
-public record ChunkLocation(MapLevel level, RegionPos region, int index) {
+public record ChunkLocation(MapServer.MapLevel level, RegionPos region, int index) {
     public static final int REGION_SIZE = 32;
 
-    public static ChunkLocation locationForChunkPos(MapLevel level, ChunkPos pos) {
+    public static ChunkLocation locationForChunkPos(MapServer.MapLevel level, ChunkPos pos) {
         RegionPos rp = new RegionPos(pos.getRegionX(), pos.getRegionZ());
         return new ChunkLocation(level, rp, chunkPosToIndex(pos));
     }
@@ -19,7 +20,7 @@ public record ChunkLocation(MapLevel level, RegionPos region, int index) {
         return (px << 5) + pz;
     }
 
-    public static ChunkLocation locationForChunkPos(MapLevel level, int chunkX, int chunkZ) {
+    public static ChunkLocation locationForChunkPos(MapServer.MapLevel level, int chunkX, int chunkZ) {
         RegionPos rp = new RegionPos(chunkX >> 5, chunkZ >> 5);
         return new ChunkLocation(level, rp, chunkPosToIndex(chunkX, chunkZ));
     }
@@ -42,11 +43,14 @@ public record ChunkLocation(MapLevel level, RegionPos region, int index) {
         return (region.x << 5) + zCord;
     }
 
+    public ChunkData get() {
+        return MinimapApi.getInstance().cacheManager.loadChunk(this);
+    }
+
     public static record RegionPos(int x, int z) {
         public String getString() {
             return x + "," + z;
         }
-
     }
 
 }

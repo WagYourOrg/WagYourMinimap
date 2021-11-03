@@ -27,7 +27,7 @@ public abstract class AbstractChunkUpdateStrategy<T extends DataPart<T>> {
 
     protected void updateChunk(ChunkLocation location, ChunkUpdateListener<T> newChunkDataCreator) {
         synchronized (location.level()) {
-            ChunkData chunkData = location.level().getChunk(location);
+            ChunkData chunkData = location.get();
             chunkData.computeData(getType(), (old) -> newChunkDataCreator.onChunkUpdate(location, chunkData, old));
             MinimapEvents.CHUNK_UPDATED.invoker().onChunkUpdate(location, chunkData, this.getClass(), getType());
         }

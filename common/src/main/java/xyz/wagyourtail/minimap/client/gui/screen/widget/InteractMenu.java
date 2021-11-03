@@ -12,7 +12,6 @@ import xyz.wagyourtail.minimap.api.MinimapApi;
 import xyz.wagyourtail.minimap.api.client.MinimapClientEvents;
 import xyz.wagyourtail.minimap.client.gui.screen.MapScreen;
 import xyz.wagyourtail.minimap.client.gui.screen.WaypointEditScreen;
-import xyz.wagyourtail.minimap.map.MapLevel;
 import xyz.wagyourtail.minimap.map.MapServer;
 import xyz.wagyourtail.minimap.map.chunkdata.ChunkData;
 import xyz.wagyourtail.minimap.map.chunkdata.ChunkLocation;
@@ -48,12 +47,12 @@ public class InteractMenu extends GuiComponent implements Widget {
     }
 
     private void init() {
-        MapLevel level = MinimapApi.getInstance().getMapLevel(minecraft.level);
+        MapServer.MapLevel level = MinimapApi.getInstance().getMapLevel(minecraft.level);
         int y = 0;
         if (level != null) {
-            ChunkData chunk = level.getChunk(ChunkLocation.locationForChunkPos(level, (int)x >> 4, (int)z >> 4));
+            ChunkData chunk = ChunkLocation.locationForChunkPos(level, (int)x >> 4, (int)z >> 4).get();
             if (chunk != null) {
-                SurfaceDataPart surface = chunk.getData(SurfaceDataPart.class);
+                SurfaceDataPart surface = chunk.getData(SurfaceDataPart.class).orElse(null);
                 if (surface != null) {
                     y = surface.heightmap[SurfaceDataPart.blockPosToIndex((int)x, (int)z)];
                 }

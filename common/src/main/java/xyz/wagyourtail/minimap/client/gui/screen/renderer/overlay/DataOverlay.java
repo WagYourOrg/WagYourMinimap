@@ -4,7 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import xyz.wagyourtail.minimap.api.MinimapApi;
 import xyz.wagyourtail.minimap.client.gui.screen.renderer.AbstractFullscreenOverlay;
 import xyz.wagyourtail.minimap.client.gui.screen.renderer.ScreenMapRenderer;
-import xyz.wagyourtail.minimap.map.MapLevel;
+import xyz.wagyourtail.minimap.map.MapServer;
 import xyz.wagyourtail.minimap.map.chunkdata.ChunkData;
 import xyz.wagyourtail.minimap.map.chunkdata.ChunkLocation;
 import xyz.wagyourtail.minimap.map.chunkdata.parts.SurfaceDataPart;
@@ -19,14 +19,14 @@ public class DataOverlay extends AbstractFullscreenOverlay {
         int x = (int) (parent.topX + parent.xDiam * mouseX / parent.width);
         int z = (int) (parent.topZ + parent.zDiam * mouseY / parent.height);
 
-        MapLevel level = MinimapApi.getInstance().getMapLevel(minecraft.level);
-        ChunkData chunk = level.getChunk(ChunkLocation.locationForChunkPos(level, x >> 4, z >> 4));
+        MapServer.MapLevel level = MinimapApi.getInstance().getMapLevel(minecraft.level);
+        ChunkData chunk = ChunkLocation.locationForChunkPos(level, x >> 4, z >> 4).get();
         int y = 0;
         String biome = "unknown";
         String block = "unknown";
         byte light = 0;
         if (chunk != null) {
-            SurfaceDataPart surface = chunk.getData(SurfaceDataPart.class);
+            SurfaceDataPart surface = chunk.getData(SurfaceDataPart.class).orElse(null);
             if (surface != null) {
                 y = surface.heightmap[SurfaceDataPart.blockPosToIndex(x, z)];
                 block = chunk.getResourceLocation(surface.blockid[SurfaceDataPart.blockPosToIndex(x, z)]).toString();
