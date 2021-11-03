@@ -1,5 +1,7 @@
 package xyz.wagyourtail.minimap.api.config;
 
+import xyz.wagyourtail.config.field.Setting;
+import xyz.wagyourtail.config.field.SettingsContainer;
 import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
 import xyz.wagyourtail.minimap.api.config.fullscreenoverlays.AbstractFullscreenOverlayOptions;
 import xyz.wagyourtail.minimap.api.config.fullscreenoverlays.DataOverlayOptions;
@@ -11,8 +13,6 @@ import xyz.wagyourtail.minimap.api.config.layers.VanillaMapLayer;
 import xyz.wagyourtail.minimap.client.gui.image.AbstractImageStrategy;
 import xyz.wagyourtail.minimap.client.gui.image.BlockLightImageStrategy;
 import xyz.wagyourtail.minimap.client.gui.image.VanillaMapImageStrategy;
-import xyz.wagyourtail.config.field.Setting;
-import xyz.wagyourtail.config.field.SettingsContainer;
 import xyz.wagyourtail.minimap.client.gui.screen.renderer.AbstractFullscreenOverlay;
 import xyz.wagyourtail.minimap.client.gui.screen.renderer.overlay.DataOverlay;
 import xyz.wagyourtail.minimap.client.gui.screen.renderer.overlay.PlayerIconOverlay;

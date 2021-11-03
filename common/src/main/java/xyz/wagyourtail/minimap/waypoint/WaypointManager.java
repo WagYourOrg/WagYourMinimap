@@ -3,7 +3,6 @@ package xyz.wagyourtail.minimap.waypoint;
 import com.google.common.collect.ImmutableSet;
 import xyz.wagyourtail.minimap.api.MinimapApi;
 import xyz.wagyourtail.minimap.map.MapServer;
-import xyz.wagyourtail.minimap.map.chunkdata.cache.AbstractCacher;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;

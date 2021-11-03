@@ -14,7 +14,7 @@ public abstract class AbstractImageStrategy {
         return color & 0xFF00FF00 | (color & 0xFF) << 0x10 | color >> 0x10 & 0xFF;
     }
 
-    public synchronized ThreadsafeDynamicTexture getImage(ChunkLocation key) throws ExecutionException {
+    public synchronized DynamicTexture getImage(ChunkLocation key) throws ExecutionException {
         ChunkData data = key.get();
         if (data != null) {
             return data.computeDerivative(getDerivitiveKey(), () -> this.load(key, data));

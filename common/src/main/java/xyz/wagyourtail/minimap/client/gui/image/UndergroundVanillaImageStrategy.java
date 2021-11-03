@@ -2,9 +2,6 @@ package xyz.wagyourtail.minimap.client.gui.image;
 
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.chunk.ChunkAccess;
-import net.minecraft.world.level.chunk.ChunkStatus;
-import xyz.wagyourtail.minimap.map.MapServer;
 import xyz.wagyourtail.minimap.map.chunkdata.ChunkData;
 import xyz.wagyourtail.minimap.map.chunkdata.ChunkLocation;
 

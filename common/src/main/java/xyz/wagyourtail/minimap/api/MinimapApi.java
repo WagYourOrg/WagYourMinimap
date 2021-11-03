@@ -4,15 +4,16 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import dev.architectury.platform.Platform;
 import net.minecraft.world.level.Level;
+import xyz.wagyourtail.config.ConfigManager;
 import xyz.wagyourtail.minimap.api.config.MinimapConfig;
 import xyz.wagyourtail.minimap.map.MapServer;
 import xyz.wagyourtail.minimap.map.chunkdata.cache.CacheManager;
 import xyz.wagyourtail.minimap.map.chunkdata.updater.AbstractChunkUpdateStrategy;
-import xyz.wagyourtail.config.ConfigManager;
 
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class MinimapApi {

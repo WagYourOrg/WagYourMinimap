@@ -10,8 +10,6 @@ import xyz.wagyourtail.minimap.map.chunkdata.ChunkData;
 import xyz.wagyourtail.minimap.map.chunkdata.ChunkLocation;
 import xyz.wagyourtail.minimap.map.chunkdata.parts.DataPart;
 
-import java.util.function.BiFunction;
-
 public abstract class AbstractChunkUpdateStrategy<T extends DataPart<T>> {
     public AbstractChunkUpdateStrategy() {
         registerEventListener();

@@ -14,7 +14,6 @@ import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.lighting.LayerLightEventListener;
 import xyz.wagyourtail.minimap.map.chunkdata.ChunkData;
-import xyz.wagyourtail.minimap.map.chunkdata.ChunkLocation;
 import xyz.wagyourtail.minimap.map.chunkdata.parts.SurfaceDataPart;
 
 public class ChunkLoadStrategy extends AbstractChunkUpdateStrategy<SurfaceDataPart> {

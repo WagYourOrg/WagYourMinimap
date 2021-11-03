@@ -1,12 +1,10 @@
 package xyz.wagyourtail.minimap.map.chunkdata;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import net.minecraft.resources.ResourceLocation;
 import xyz.wagyourtail.minimap.api.MinimapApi;
 import xyz.wagyourtail.minimap.map.MapServer;
-import xyz.wagyourtail.minimap.map.chunkdata.cache.AbstractCacher;
 import xyz.wagyourtail.minimap.map.chunkdata.parts.DataPart;
 
 import java.lang.reflect.InvocationTargetException;

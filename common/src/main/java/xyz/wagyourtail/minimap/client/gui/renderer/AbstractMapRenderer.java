@@ -5,6 +5,7 @@ import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Matrix4f;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.texture.DynamicTexture;
 import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
 import xyz.wagyourtail.minimap.client.gui.image.AbstractImageStrategy;
 import xyz.wagyourtail.minimap.client.gui.image.BlockLightImageStrategy;
@@ -92,7 +93,7 @@ public abstract class AbstractMapRenderer {
 
     private static boolean bindChunkTex(ChunkLocation chunkData, AbstractImageStrategy renderer) {
         try {
-            ThreadsafeDynamicTexture image = renderer.getImage(chunkData);
+            DynamicTexture image = renderer.getImage(chunkData);
             if (image == null) return false;
             RenderSystem.setShaderTexture(0, image.getId());
             return true;
