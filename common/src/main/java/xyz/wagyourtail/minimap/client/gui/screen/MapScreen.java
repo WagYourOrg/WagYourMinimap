@@ -66,42 +66,6 @@ public class MapScreen extends Screen {
             float x = (float) (renderer.topX + renderer.xDiam * mouseX / width);
             float z = (float) (renderer.topZ + renderer.zDiam * mouseY / height);
 
-
-            MapServer.MapLevel level = MinimapClientApi.getInstance().getMapLevel(minecraft.level);
-            if (level != null) {
-                ChunkData chk = ChunkLocation.locationForChunkPos(level, ((int) x) >> 4, ((int) z) >> 4).get();
-                SurfaceDataPart chunk = chk.getData(SurfaceDataPart.class).orElse(null);
-                SurfaceDataPart south = chk.south().get().getData(SurfaceDataPart.class).orElse(null);
-                SurfaceDataPart north = chk.north().get().getData(SurfaceDataPart.class).orElse(null);
-                ChunkAccess c2 = minecraft.level.getChunk(chk.location.getChunkX(), chk.location.getChunkZ());
-                ChunkAccess cAbove = minecraft.level.getChunk(chk.location.getChunkX(), chk.location.getChunkZ() - 1);
-                ChunkAccess cBelow = minecraft.level.getChunk(chk.location.getChunkX(), chk.location.getChunkZ() + 1);
-                if (chunk != null && south != null && north != null) {
-                    int[] above = new int[48];
-                    int[] top = new int[48];
-                    int[] bottom = new int[48];
-                    int[] below = new int[48];
-                    for (int i = 0; i < 16; i++) {
-                        above[i] = north.heightmap[SurfaceDataPart.blockPosToIndex(i, 15)];
-                        top[i] = chunk.heightmap[SurfaceDataPart.blockPosToIndex(i, 0)];
-                        bottom[i] = chunk.heightmap[SurfaceDataPart.blockPosToIndex(i, 15)];
-                        below[i] = south.heightmap[SurfaceDataPart.blockPosToIndex(i, 0)];
-                        above[i+16] = cAbove.getHeight(Heightmap.Types.MOTION_BLOCKING, i, 15);
-                        top[i+16] = c2.getHeight(Heightmap.Types.MOTION_BLOCKING, i, 0);
-                        bottom[i+16] = c2.getHeight(Heightmap.Types.MOTION_BLOCKING, i, 15);
-                        below[i+16] = cBelow.getHeight(Heightmap.Types.MOTION_BLOCKING, i, 0);
-                        above[i+32] = cAbove.getHeight(Heightmap.Types.OCEAN_FLOOR, i, 15);
-                        top[i+32] = c2.getHeight(Heightmap.Types.OCEAN_FLOOR, i, 0);
-                        bottom[i+32] = c2.getHeight(Heightmap.Types.OCEAN_FLOOR, i, 15);
-                        below[i+32] = cBelow.getHeight(Heightmap.Types.OCEAN_FLOOR, i, 0);
-                    }
-                    System.out.println(Arrays.toString(above));
-                    System.out.println(Arrays.toString(top));
-                    System.out.println(Arrays.toString(bottom));
-                    System.out.println(Arrays.toString(below));
-                }
-            }
-
             interact = new InteractMenu(this, x, z, mouseX, mouseY);
         }
         return true;
