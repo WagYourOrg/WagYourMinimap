@@ -144,13 +144,13 @@ public class ChunkData {
     public synchronized void markDirty() {
         changed = true;
         invalidateDerivitives();
-        MapServer.addToSaveQueue(() -> {
-            synchronized (this) {
-                refactorResourceLocations();
-                MinimapApi.getInstance().cacheManager.saveChunk(location, this);
-                changed = false;
-            }
-        });
+        MapServer.addToSaveQueue(this::save);
+    }
+
+    public synchronized void save() {
+        refactorResourceLocations();
+        MinimapApi.getInstance().cacheManager.saveChunk(location, this);
+        changed = false;
     }
 
     public synchronized void refactorResourceLocations() {

@@ -40,7 +40,7 @@ public record ChunkLocation(MapServer.MapLevel level, RegionPos region, int inde
 
     public int getChunkZ() {
         int zCord = index % REGION_SIZE;
-        return (region.x << 5) + zCord;
+        return (region.z << 5) + zCord;
     }
 
     public ChunkData get() {

@@ -35,7 +35,7 @@ public class BlockUpdateStrategy extends AbstractChunkUpdateStrategy<SurfaceData
                     ChunkAccess chunk = level.getChunk(i, j, ChunkStatus.FULL, false);
                     if (chunk == null) continue;
                     //TODO: update lighting only function
-                    updateChunk(getChunkLocation(level, i, j), (location, parent, oldData) -> ChunkLoadStrategy.loadFromChunk(location, chunk, level, parent, oldData));
+                    updateChunk(getChunkLocation(level, i, j), (location, parent, oldData) -> ChunkLoadStrategy.loadFromChunk(chunk, level, parent, oldData));
                 }
             }
         }

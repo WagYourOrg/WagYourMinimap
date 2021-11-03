@@ -21,7 +21,7 @@ public class SurfaceDataPart extends DataPart<SurfaceDataPart> {
     }
 
     @Override
-    public void mergeFrom(SurfaceDataPart other) {
+    public synchronized void mergeFrom(SurfaceDataPart other) {
         synchronized (parent) {
             if (other.parent.updateTime >= this.parent.updateTime) {
                 this.parent.updateTime = other.parent.updateTime;
@@ -88,7 +88,7 @@ public class SurfaceDataPart extends DataPart<SurfaceDataPart> {
     }
 
     @Override
-    public void usedResourceLocations(Set<Integer> used) {
+    public synchronized void usedResourceLocations(Set<Integer> used) {
         for (int i = 0; i < 256; ++i) {
             used.add(this.blockid[i]);
             used.add(this.biomeid[i]);
@@ -97,7 +97,7 @@ public class SurfaceDataPart extends DataPart<SurfaceDataPart> {
     }
 
     @Override
-    public void remapResourceLocations(Map<Integer, Integer> map) {
+    public synchronized void remapResourceLocations(Map<Integer, Integer> map) {
         for (int i = 0; i < 256; ++i) {
             int blockid = this.blockid[i];
             int newBlockid = map.computeIfAbsent(blockid, (k) -> {
