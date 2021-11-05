@@ -27,6 +27,8 @@ public class WaypointListScreen extends Screen {
     @Override
     protected void init() {
         super.init();
+        buttons.clear();
+        waypointNotNullButtons.clear();
 
         waypointListWidget = new WaypointList(this, minecraft, width, height, 32, height - 64, 16);
         addWidget(waypointListWidget);
@@ -38,7 +40,7 @@ public class WaypointListScreen extends Screen {
             new Button(0, 0, 0, 20, new TranslatableComponent("gui.wagyourminimap.waypoints.reload"), (button) -> {
                 refreshEntries();
             }),
-            new Button(0, 0, 0, 20, new TranslatableComponent("gui.wagyourminimap.waypoints.close"), (button) -> {
+            new Button(0, 0, 0, 20, new TranslatableComponent("gui.wagyourminimap.close"), (button) -> {
                 onClose();
             })
         ));
@@ -65,7 +67,7 @@ public class WaypointListScreen extends Screen {
         MinimapClientEvents.WAYPOINT_LIST_MENU.invoker().onPopulate(this, buttons, waypointNotNullButtons);
 
         int waypointNotNullButtonsWidth = Math.min(100, width / waypointNotNullButtons.size());
-        int offset = width - (waypointNotNullButtonsWidth * waypointNotNullButtons.size()) / 2;
+        int offset = width / 2 - (waypointNotNullButtonsWidth * waypointNotNullButtons.size()) / 2;
 
         for (int i = 0; i < waypointNotNullButtons.size(); i++) {
             Button button = waypointNotNullButtons.get(i);
@@ -77,13 +79,12 @@ public class WaypointListScreen extends Screen {
         }
 
         int buttonsWidth = Math.min(100, width / buttons.size());
-        offset = width - (buttons.size() * buttonsWidth) / 2;
+        offset = width / 2 - (buttons.size() * buttonsWidth) / 2;
 
         for (int i = 0; i < buttons.size(); i++) {
             Button button = buttons.get(i);
             button.x = i * buttonsWidth + offset;
             button.y = height - 25;
-            button.active = false;
             button.setWidth(buttonsWidth - 5);
             addRenderableWidget(button);
         }

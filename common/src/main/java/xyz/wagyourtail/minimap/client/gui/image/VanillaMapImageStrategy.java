@@ -88,7 +88,7 @@ public class VanillaMapImageStrategy extends AbstractImageStrategy {
             }
             image.setPixelRGBA(x, z, 0xFF000000 | colorFormatSwap(color));
         }
-        return new DynamicTexture(image);
+        return new DynamicTextureWithWarning(image);
     }
 
     public static int getBlockColor(Block block) {

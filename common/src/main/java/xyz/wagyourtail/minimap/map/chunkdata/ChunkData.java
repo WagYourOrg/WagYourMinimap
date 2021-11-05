@@ -177,6 +177,7 @@ public class ChunkData {
     public void closeDerivatives() throws Exception {
         if (derivatives == null) return;
         for (Derivative<?> der : derivatives.values()) {
+            der.old = true;
             if (der.contained instanceof Closeable c) {
                 c.close();
             } else if (der.contained instanceof AutoCloseable ac) {
