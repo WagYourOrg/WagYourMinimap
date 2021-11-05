@@ -7,6 +7,8 @@ import xyz.wagyourtail.minimap.api.MinimapApi;
 import xyz.wagyourtail.minimap.map.MapServer;
 import xyz.wagyourtail.minimap.map.chunkdata.parts.DataPart;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
@@ -80,7 +82,7 @@ public class ChunkData {
             }
         } catch (BufferUnderflowException e) {
             e.printStackTrace();
-            System.out.println("Buffer underflow, data is probably corrupted, " + location.getChunkX() + "," + location.getChunkZ());
+            System.err.println("Buffer underflow, data is probably corrupted, " + location.getChunkX() + "," + location.getChunkZ() + "(" + location.getRegionSlug() + ":" + location.index() + ")");
         }
         for (String s : resources.split("\n")) {
             this.resources.add(new ResourceLocation(s));
@@ -135,6 +137,19 @@ public class ChunkData {
         }
         if (der.old) {
             der.old = false;
+            if (der.contained instanceof Closeable) {
+                try {
+                    ((Closeable) der.contained).close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else if (der.contained instanceof AutoCloseable) {
+                try {
+                    ((AutoCloseable) der.contained).close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
             der.contained = supplier.get();
         }
         return der.contained;
@@ -157,6 +172,17 @@ public class ChunkData {
         refactorResourceLocations();
         MinimapApi.getInstance().cacheManager.saveChunk(location, this);
         changed = false;
+    }
+
+    public void closeDerivatives() throws Exception {
+        if (derivatives == null) return;
+        for (Derivative<?> der : derivatives.values()) {
+            if (der.contained instanceof Closeable c) {
+                c.close();
+            } else if (der.contained instanceof AutoCloseable ac) {
+                ac.close();
+            }
+        }
     }
 
     public synchronized void refactorResourceLocations() {

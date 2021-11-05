@@ -8,6 +8,7 @@ import xyz.wagyourtail.minimap.map.chunkdata.ChunkData;
 import xyz.wagyourtail.minimap.map.chunkdata.ChunkLocation;
 import xyz.wagyourtail.minimap.waypoint.Waypoint;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -15,14 +16,20 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
-public class InMemoryStillCacher extends AbstractCacher {
+public class InMemoryCacher extends AbstractCacher {
     private final LoadingCache<ChunkLocation, ChunkData> chunkCache;
     public final Map<ChunkLocation, ChunkData> inMemoryStillCache = new WeakHashMap<>(1024);
 
 
-    public InMemoryStillCacher() {
+    public InMemoryCacher() {
         super(true, false);
-        chunkCache = CacheBuilder.newBuilder().expireAfterAccess(60, TimeUnit.SECONDS).build(new CacheLoader<>() {
+        chunkCache = CacheBuilder.newBuilder().expireAfterAccess(60, TimeUnit.SECONDS).removalListener((e) -> {
+            try {
+                ((ChunkData)e.getValue()).closeDerivatives();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }).build(new CacheLoader<>() {
             @Override
             public ChunkData load(ChunkLocation key) {
                 ChunkData data = inMemoryStillCache.get(key);

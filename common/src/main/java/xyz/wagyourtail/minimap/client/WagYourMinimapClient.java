@@ -11,7 +11,7 @@ import xyz.wagyourtail.minimap.api.MinimapApi;
 import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
 import xyz.wagyourtail.minimap.client.gui.InGameWaypointRenderer;
 import xyz.wagyourtail.minimap.map.MapServer;
-import xyz.wagyourtail.minimap.map.chunkdata.cache.InMemoryStillCacher;
+import xyz.wagyourtail.minimap.map.chunkdata.cache.InMemoryCacher;
 import xyz.wagyourtail.minimap.map.chunkdata.cache.ZipCacher;
 import xyz.wagyourtail.minimap.map.chunkdata.updater.BlockUpdateStrategy;
 import xyz.wagyourtail.minimap.map.chunkdata.updater.ChunkLoadStrategy;
@@ -25,7 +25,7 @@ public class WagYourMinimapClient extends WagYourMinimap {
         MinimapClientApi.getInstance();
 
         MinimapApi.getInstance().cacheManager.addCacherAfter(new ZipCacher(), null);
-        MinimapApi.getInstance().cacheManager.addCacherBefore(new InMemoryStillCacher(), ZipCacher.class);
+        MinimapApi.getInstance().cacheManager.addCacherBefore(new InMemoryCacher(), ZipCacher.class);
         MinimapApi.getInstance().registerChunkUpdateStrategy(ChunkLoadStrategy.class);
         MinimapApi.getInstance().registerChunkUpdateStrategy(BlockUpdateStrategy.class);
 
