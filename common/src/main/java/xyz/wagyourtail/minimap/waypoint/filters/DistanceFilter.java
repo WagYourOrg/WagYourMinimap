@@ -7,7 +7,7 @@ import xyz.wagyourtail.minimap.waypoint.Waypoint;
 
 import java.util.function.Predicate;
 
-public class DistanceFilter implements Predicate<Waypoint> {
+public class DistanceFilter extends WaypointFilter {
     protected static Minecraft minecraft = Minecraft.getInstance();
     private final int distance;
     public DistanceFilter(int distance) {

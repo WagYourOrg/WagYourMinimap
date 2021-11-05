@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableSet;
 import xyz.wagyourtail.minimap.api.MinimapApi;
 import xyz.wagyourtail.minimap.api.MinimapEvents;
 import xyz.wagyourtail.minimap.map.MapServer;
+import xyz.wagyourtail.minimap.waypoint.filters.WaypointFilter;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
@@ -11,7 +12,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class WaypointManager {
-    private static final Set<Predicate<Waypoint>> filters = new HashSet<>();
+    private static final Set<WaypointFilter> filters = new HashSet<>();
     private static Predicate<Waypoint> compiledFilter = (a) -> true;
     private final MapServer server;
     private final Set<Waypoint> waypointList = new LinkedHashSet<>();
@@ -27,7 +28,7 @@ public class WaypointManager {
     }
 
     @SafeVarargs
-    public static void addFilter(Class<? extends Predicate<Waypoint>> ...filter) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+    public static void addFilter(Class<? extends WaypointFilter> ...filter) {
         filters.addAll(Arrays.stream(filter).map(e -> {
             try {
                 return e.getConstructor().newInstance();
@@ -39,14 +40,13 @@ public class WaypointManager {
         compileFilter();
     }
 
-    @SafeVarargs
-    public static void addFilter(Predicate<Waypoint> ...filter) {
+    public static void addFilter(WaypointFilter ...filter) {
         filters.addAll(Arrays.asList(filter));
         compileFilter();
     }
 
     private static void compileFilter() {
-        Iterator<Predicate<Waypoint>> iterator = filters.iterator();
+        Iterator<WaypointFilter> iterator = filters.iterator();
         if (!iterator.hasNext()) {
             compiledFilter = (a) -> true;
             return;

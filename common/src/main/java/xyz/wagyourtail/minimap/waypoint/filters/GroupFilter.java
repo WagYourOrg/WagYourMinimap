@@ -7,7 +7,7 @@ import java.util.Arrays;
 import java.util.Set;
 import java.util.function.Predicate;
 
-public class GroupFilter implements Predicate<Waypoint> {
+public class GroupFilter extends WaypointFilter {
     private final Set<String> groups;
 
     public GroupFilter(Set<String> groups) {

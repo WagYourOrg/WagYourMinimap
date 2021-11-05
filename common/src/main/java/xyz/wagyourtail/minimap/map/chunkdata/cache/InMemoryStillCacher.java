@@ -11,6 +11,7 @@ import xyz.wagyourtail.minimap.waypoint.Waypoint;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
@@ -28,35 +29,39 @@ public class InMemoryStillCacher extends AbstractCacher {
                 if (data != null) {
                     return data;
                 }
-                inMemoryStillCache.put(key, data);
-                return data;
+                throw new RuntimeException("Chunk not found in cache");
             }
         });
     }
 
     @Override
     public ChunkData loadChunk(ChunkLocation location) {
+        try {
+            return chunkCache.get(location);
+        } catch (Exception ignored) {}
         return null;
     }
 
     @Override
     public void saveChunk(ChunkLocation location, ChunkData data) {
-
+        chunkCache.put(location, data);
+        inMemoryStillCache.put(location, data);
     }
 
     @Override
     public void saveWaypoints(MapServer server, Stream<Waypoint> waypointList) {
-
+        // leave empty unless we refactor and remove from waypoint manager or something...
     }
 
     @Override
     public List<Waypoint> loadWaypoints(MapServer server) {
+        // leave empty unless we refactor and remove from waypoint manager or something...
         return null;
     }
 
     @Override
     public void close() {
-
+        // so umm...
     }
 
 }

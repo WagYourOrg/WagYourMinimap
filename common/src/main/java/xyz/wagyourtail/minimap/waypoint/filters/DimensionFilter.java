@@ -8,7 +8,7 @@ import xyz.wagyourtail.minimap.waypoint.Waypoint;
 import java.util.Arrays;
 import java.util.function.Predicate;
 
-public class DimensionFilter implements Predicate<Waypoint> {
+public class DimensionFilter extends WaypointFilter {
     @Override
     public boolean test(Waypoint waypoint) {
         Level level = Minecraft.getInstance().level;

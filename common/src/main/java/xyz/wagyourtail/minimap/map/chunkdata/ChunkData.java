@@ -12,11 +12,15 @@ import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class ChunkData {
+    private static final ThreadPoolExecutor derivativeCalcPool = new ThreadPoolExecutor(4, 4, 0, TimeUnit.SECONDS, new LinkedBlockingQueue<>());
     private final Map<Class<? extends DataPart<?>>, DataPart<?>> data = new HashMap<>();
     public final ChunkLocation location;
     private static final ResourceLocation air = new ResourceLocation("minecraft", "air");
@@ -124,10 +128,12 @@ public class ChunkData {
     }
 
     public synchronized <T> T computeDerivative(String key, Supplier<T> supplier) {
-        Derivative<T> der = (Derivative<T>) derivatives.computeIfAbsent(key, (k) -> new Derivative<>(false, supplier.get()));
+        Derivative<T> der = (Derivative<T>) derivatives.computeIfAbsent(key, (k) -> new Derivative<>(true, null));
         if (der.old) {
-            der.old = false;
-            der.contained = supplier.get();
+            derivativeCalcPool.execute(() -> {
+                der.old = false;
+                der.contained = supplier.get();
+            });
         }
         return der.contained;
     }

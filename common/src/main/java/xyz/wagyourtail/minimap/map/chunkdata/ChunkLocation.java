@@ -4,12 +4,11 @@ import net.minecraft.world.level.ChunkPos;
 import xyz.wagyourtail.minimap.api.MinimapApi;
 import xyz.wagyourtail.minimap.map.MapServer;
 
-public record ChunkLocation(MapServer.MapLevel level, RegionPos region, int index) {
+public record ChunkLocation(MapServer.MapLevel level, int regionX, int regionZ, int index) {
     public static final int REGION_SIZE = 32;
 
     public static ChunkLocation locationForChunkPos(MapServer.MapLevel level, ChunkPos pos) {
-        RegionPos rp = new RegionPos(pos.getRegionX(), pos.getRegionZ());
-        return new ChunkLocation(level, rp, chunkPosToIndex(pos));
+        return new ChunkLocation(level, pos.getRegionX(), pos.getRegionZ(), chunkPosToIndex(pos));
     }
 
     public static int chunkPosToIndex(ChunkPos pos) {
@@ -21,8 +20,7 @@ public record ChunkLocation(MapServer.MapLevel level, RegionPos region, int inde
     }
 
     public static ChunkLocation locationForChunkPos(MapServer.MapLevel level, int chunkX, int chunkZ) {
-        RegionPos rp = new RegionPos(chunkX >> 5, chunkZ >> 5);
-        return new ChunkLocation(level, rp, chunkPosToIndex(chunkX, chunkZ));
+        return new ChunkLocation(level,chunkX >> 5, chunkZ >> 5, chunkPosToIndex(chunkX, chunkZ));
     }
 
     public static int chunkPosToIndex(int x, int z) {
@@ -35,22 +33,19 @@ public record ChunkLocation(MapServer.MapLevel level, RegionPos region, int inde
 
     public int getChunkX() {
         int xCord = index >> 5;
-        return (region.x << 5) + xCord;
+        return (regionX << 5) + xCord;
     }
 
     public int getChunkZ() {
         int zCord = index % REGION_SIZE;
-        return (region.z << 5) + zCord;
+        return (regionZ << 5) + zCord;
     }
 
     public ChunkData get() {
         return MinimapApi.getInstance().cacheManager.loadChunk(this);
     }
 
-    public static record RegionPos(int x, int z) {
-        public String getString() {
-            return x + "," + z;
-        }
+    public String getRegionSlug() {
+        return regionX + "," + regionZ;
     }
-
 }

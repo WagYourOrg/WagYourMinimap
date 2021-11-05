@@ -73,8 +73,8 @@ public class Waypoint {
 
     public BlockPos posForCoordScale(double coordScale) {
         return posForCoordScale.computeIfAbsent(coordScale, k -> {
-            double scale = coordScale / this.coordScale;
-            return new BlockPos(posX * scale, posY * scale, posZ * scale);
+            double scale = this.coordScale / coordScale;
+            return new BlockPos(posX * scale, posY, posZ * scale);
         });
     }
 

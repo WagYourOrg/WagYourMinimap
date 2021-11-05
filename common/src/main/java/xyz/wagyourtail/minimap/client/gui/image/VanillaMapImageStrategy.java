@@ -13,8 +13,9 @@ import xyz.wagyourtail.minimap.map.chunkdata.ChunkData;
 import xyz.wagyourtail.minimap.map.chunkdata.ChunkLocation;
 import xyz.wagyourtail.minimap.map.chunkdata.parts.SurfaceDataPart;
 
-import java.awt.*;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
 
 public class VanillaMapImageStrategy extends AbstractImageStrategy {
@@ -34,6 +35,10 @@ public class VanillaMapImageStrategy extends AbstractImageStrategy {
 
     public final static Predicate<Block> leaves = (block) -> block instanceof LeavesBlock;
 
+    private static final Map<Biome, Integer> grassCache = new ConcurrentHashMap<>();
+    private static final Map<Biome, Integer> foliageCache = new ConcurrentHashMap<>();
+    private static final Map<Biome, Integer> waterCache = new ConcurrentHashMap<>();
+
     @Override
     public DynamicTexture load(ChunkLocation location, ChunkData data) {
         SurfaceDataPart surface = data.getData(SurfaceDataPart.class).orElse(null);
@@ -51,34 +56,37 @@ public class VanillaMapImageStrategy extends AbstractImageStrategy {
             Block block = Registry.BLOCK.getOptional(data.getResourceLocation(surface.blockid[i])).orElse(Blocks.AIR);
             int color;
             if (water.test(block)) {
-                if (biome == null) continue;
+                int waterColor = biome == null ? getBlockColor(block) : waterCache.computeIfAbsent(biome, Biome::getWaterColor);
+                block = Registry.BLOCK.getOptional(data.getResourceLocation(surface.oceanFloorBlockid[i])).orElse(Blocks.WATER);
                 float waterRatio = Math.min(
                     // 0.7 - 1.0 depending on depth of water 1 - 10 blocks...
-                    .7f + .3f * (surface.heightmap[i] - surface.oceanFloorHeightmap[i]) / 10F,
+                    .7f + .3F * (surface.heightmap[i] - surface.oceanFloorHeightmap[i]) / 10F,
                     1.0F
                 );
                 color = colorCombine(
-                    biome.getWaterColor(),
+                    waterColor,
                     getBlockColor(block),
                     waterRatio
                 );
             } else if (grass.test(block)) {
-                if (biome == null) continue;
-                color = biome.getGrassColor(x, z);
+                if (biome == null) {
+                    color = getBlockColor(block);
+                } else {
+                    color = grassCache.computeIfAbsent(biome, b -> b.getGrassColor(0, 0));
+                }
             } else if (leaves.test(block)) {
-                if (biome == null) continue;
-                color = biome.getFoliageColor();
+                color = (biome == null ? getBlockColor(block) : foliageCache.computeIfAbsent(biome, Biome::getFoliageColor));
             } else {
-                color = 0xFF000000 | getBlockColor(block);
+                color = getBlockColor(block);
             }
             if (z == 0) {
-                color = brightnessForHeight(color, surface.heightmap[i], north[15 + 16 * x], surface.heightmap[i+1]);
+                color = brightnessForHeight2(color, surface.heightmap[i], north[15 + 16 * x], surface.heightmap[i+1]);
             } else if (z == 15) {
-                color = brightnessForHeight(color, surface.heightmap[i], surface.heightmap[i-1], south[16 * x]);
+                color = brightnessForHeight2(color, surface.heightmap[i], surface.heightmap[i-1], south[16 * x]);
             } else {
-                color = brightnessForHeight(color, surface.heightmap[i], surface.heightmap[i-1], surface.heightmap[i+1]);
+                color = brightnessForHeight2(color, surface.heightmap[i], surface.heightmap[i-1], surface.heightmap[i+1]);
             }
-            image.setPixelRGBA(x, z, colorFormatSwap(color));
+            image.setPixelRGBA(x, z, 0xFF000000 | colorFormatSwap(color));
         }
         return new DynamicTexture(image);
     }
@@ -99,14 +107,19 @@ public class VanillaMapImageStrategy extends AbstractImageStrategy {
         return red << 0x10 | green << 0x8 | blue;
     }
 
-    private int brightnessForHeight(int color, int height, int north, int south) {
-        float[] hsb = Color.RGBtoHSB((color & 0xFF0000) >> 0x10, (color & 0xFF00) >> 0x8, color & 0xFF, null);
+    private int brightnessForHeight2(int color, int height, int north, int south) {
+        int red = (color & 0xFF0000) >> 0x10;
+        int green = (color & 0xFF00) >> 0x8;
+        int blue = color & 0xFF;
         if (north > height) {
-            hsb[2] *= .8f;
+            red = (red * 4 / 5);
+            green = (green * 4 / 5);
+            blue = (blue * 4 / 5);
         } else if (south <= height) {
-            hsb[2] *= .9f;
+            red = (red * 9 / 10);
+            green = (green * 9 / 10);
+            blue = (blue * 9 / 10);
         }
-        return color & 0xFF000000 | Color.HSBtoRGB(hsb[0], hsb[1], hsb[2]);
+        return (color & 0xFF000000) | red << 0x10 | green << 0x8 | blue;
     }
-
 }
