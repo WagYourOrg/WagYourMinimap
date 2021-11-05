@@ -28,10 +28,14 @@ public class WagYourMinimapClient extends WagYourMinimap {
         MinimapApi.getInstance().cacheManager.addCacherBefore(new InMemoryStillCacher(), ZipCacher.class);
         MinimapApi.getInstance().registerChunkUpdateStrategy(ChunkLoadStrategy.class);
         MinimapApi.getInstance().registerChunkUpdateStrategy(BlockUpdateStrategy.class);
-//        MinimapApi.getInstance().registerChunkUpdateStrategy(UpdateNorthHeightmapStrategy.class);
-//        MinimapApi.getInstance().registerChunkUpdateStrategy(UpdateSouthHeightmapStrategy.class);
 
-        ClientGuiEvent.RENDER_HUD.register(MinimapClientApi.getInstance().inGameHud::render);
+        ClientGuiEvent.RENDER_HUD.register((matrix, delta) -> {
+            try {
+                MinimapClientApi.getInstance().inGameHud.render(matrix, delta);
+            } catch (Throwable t) {
+                t.printStackTrace();
+            }
+        });
 
         ClientTickEvent.CLIENT_POST.register((mc) -> {
             if (key_openmap.consumeClick()) {
@@ -53,7 +57,13 @@ public class WagYourMinimapClient extends WagYourMinimap {
 //                Thread.yield();
             }
         });
-        InGameWaypointRenderer.RENDER_LAST.register(MinimapClientApi.getInstance().waypointRenderer::onRender);
+        InGameWaypointRenderer.RENDER_LAST.register((stack, partial, finish) -> {
+            try {
+                MinimapClientApi.getInstance().waypointRenderer.onRender(stack, partial, finish);
+            } catch (Throwable t) {
+                t.printStackTrace();
+            }
+        });
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             MinimapApi.getInstance().close();

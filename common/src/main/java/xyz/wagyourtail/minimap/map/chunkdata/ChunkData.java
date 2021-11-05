@@ -12,15 +12,11 @@ import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class ChunkData {
-    private static final ThreadPoolExecutor derivativeCalcPool = new ThreadPoolExecutor(4, 4, 0, TimeUnit.SECONDS, new LinkedBlockingQueue<>());
     private final Map<Class<? extends DataPart<?>>, DataPart<?>> data = new HashMap<>();
     public final ChunkLocation location;
     private static final ResourceLocation air = new ResourceLocation("minecraft", "air");
@@ -91,7 +87,7 @@ public class ChunkData {
         }
     }
 
-    public synchronized int getOrRegisterResourceLocation(ResourceLocation id) {
+    public int getOrRegisterResourceLocation(ResourceLocation id) {
         if (id == null || id.equals(air)) return 0;
         for (int j = 0; j < resources.size(); ++j) {
             if (id.equals(resources.get(j))) {
@@ -102,16 +98,16 @@ public class ChunkData {
         return resources.size();
     }
 
-    public synchronized ResourceLocation getResourceLocation(int i) {
+    public ResourceLocation getResourceLocation(int i) {
         if (i < 1 || i > resources.size()) return air;
         return resources.get(i - 1);
     }
 
-    public synchronized int highestResourceValue() {
+    public int highestResourceValue() {
         return resources.size();
     }
 
-    public synchronized String serializeResources() {
+    public String serializeResources() {
         StringBuilder sb = new StringBuilder();
         for (ResourceLocation rl : resources) {
             sb.append(rl.toString()).append("\n");
@@ -119,45 +115,51 @@ public class ChunkData {
         return sb.toString();
     }
 
-    public synchronized <T extends DataPart<T>> Optional<T> getData(Class<T> clazz) {
+    public <T extends DataPart<T>> Optional<T> getData(Class<T> clazz) {
         return Optional.ofNullable((T) data.get(clazz));
     }
 
     public synchronized <T extends DataPart<?>> T computeData(Class<T> clazz, Function<T, T> computeFunc) {
-        return (T) data.compute(clazz, (k, v) -> computeFunc.apply((T) v));
+        try {
+            return (T) data.compute(clazz, (k, v) -> computeFunc.apply((T) v));
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
+        return (T) data.get(clazz);
     }
 
-    public synchronized <T> T computeDerivative(String key, Supplier<T> supplier) {
-        Derivative<T> der = (Derivative<T>) derivatives.computeIfAbsent(key, (k) -> new Derivative<>(true, null));
+    public <T> T computeDerivative(String key, Supplier<T> supplier) {
+        Derivative<T> der = (Derivative<T>) derivatives.get(key);
+        if (der == null) {
+            der = new Derivative<>(false, supplier.get());
+        }
         if (der.old) {
-            derivativeCalcPool.execute(() -> {
-                der.old = false;
-                der.contained = supplier.get();
-            });
+            der.old = false;
+            der.contained = supplier.get();
         }
         return der.contained;
     }
 
-    public synchronized void invalidateDerivitives() {
+    public void invalidateDerivitives() {
         if (derivatives == null) return;
         for (Derivative<?> der : derivatives.values()) {
             der.old = true;
         }
     }
 
-    public synchronized void markDirty() {
+    public void markDirty() {
         changed = true;
         invalidateDerivitives();
         MapServer.addToSaveQueue(this::save);
     }
 
-    public synchronized void save() {
+    public void save() {
         refactorResourceLocations();
         MinimapApi.getInstance().cacheManager.saveChunk(location, this);
         changed = false;
     }
 
-    public synchronized void refactorResourceLocations() {
+    public void refactorResourceLocations() {
         Set<Integer> used = new HashSet<>(resources.size());
         for (DataPart<?> value : data.values()) {
             value.usedResourceLocations(used);
@@ -187,16 +189,17 @@ public class ChunkData {
             try {
                 value.remapResourceLocations(transform);
             } catch (NullPointerException e) {
-                throw new RuntimeException("Error while remapping resource locations [" +
-                        oldResources.stream().map(ResourceLocation::toString).collect(Collectors.joining(", ")) +
+                throw new RuntimeException(
+                    "Error while remapping resource locations [" +
+                    oldResources.stream().map(ResourceLocation::toString).collect(Collectors.joining(", ")) +
                     "] -> [" +
-                        resources.stream().map(ResourceLocation::toString).collect(Collectors.joining(", ")) + "" +
-                    "]", e);
+                    resources.stream().map(ResourceLocation::toString).collect(Collectors.joining(", ")) +
+                   "]", e);
             }
         }
     }
 
-    public synchronized ByteBuffer serialize() {
+    public ByteBuffer serialize() {
         int size = Long.BYTES;
         for (DataPart<?> dp : data.values()) {
             size += dp.getClass().getCanonicalName().getBytes(StandardCharsets.UTF_8).length;

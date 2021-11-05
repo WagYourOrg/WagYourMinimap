@@ -22,7 +22,7 @@ public class InMemoryStillCacher extends AbstractCacher {
 
     public InMemoryStillCacher() {
         super(true, false);
-        chunkCache = CacheBuilder.newBuilder().expireAfterAccess(60000, TimeUnit.MILLISECONDS).build(new CacheLoader<>() {
+        chunkCache = CacheBuilder.newBuilder().expireAfterAccess(60, TimeUnit.SECONDS).build(new CacheLoader<>() {
             @Override
             public ChunkData load(ChunkLocation key) {
                 ChunkData data = inMemoryStillCache.get(key);
