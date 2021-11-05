@@ -6,6 +6,7 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.TranslatableComponent;
 import org.jetbrains.annotations.Nullable;
+import xyz.wagyourtail.minimap.api.MinimapApi;
 import xyz.wagyourtail.minimap.api.client.MinimapClientEvents;
 import xyz.wagyourtail.minimap.client.gui.screen.widget.WaypointList;
 
@@ -30,18 +31,36 @@ public class WaypointListScreen extends Screen {
         waypointListWidget = new WaypointList(this, minecraft, width, height, 32, height - 64, 16);
         addWidget(waypointListWidget);
 
-        buttons.add(new Button(0, 0, 0, 20, new TranslatableComponent("gui.wagyourminimap.waypoints.add"), (button) -> {
-            minecraft.setScreen(new WaypointEditScreen(this, null));
+        buttons.addAll(List.of(
+            new Button(0, 0, 0, 20, new TranslatableComponent("gui.wagyourminimap.waypoints.add"), (button) -> {
+                minecraft.setScreen(new WaypointEditScreen(this, null));
+            }),
+            new Button(0, 0, 0, 20, new TranslatableComponent("gui.wagyourminimap.waypoints.reload"), (button) -> {
+                refreshEntries();
+            }),
+            new Button(0, 0, 0, 20, new TranslatableComponent("gui.wagyourminimap.waypoints.close"), (button) -> {
+                onClose();
+            })
+        ));
 
-        }));
 
-        waypointNotNullButtons.add(new Button(0, 0, 0, 20, new TranslatableComponent("gui.wagyourminimap.waypoints.edit"), (button) -> {
-            WaypointList.WaypointListEntry selected = getSelected();
-            if (selected != null) {
-                assert minecraft != null;
-                minecraft.setScreen(new WaypointEditScreen(this, selected.point));
-            }
-        }));
+
+        waypointNotNullButtons.addAll(List.of(
+            new Button(0, 0, 0, 20, new TranslatableComponent("gui.wagyourminimap.waypoints.edit"), (button) -> {
+                WaypointList.WaypointListEntry selected = getSelected();
+                if (selected != null) {
+                    assert minecraft != null;
+                    minecraft.setScreen(new WaypointEditScreen(this, selected.point));
+                }
+            }),
+            new Button(0, 0, 0, 20, new TranslatableComponent("gui.wagyourminimap.waypoints.delete"), (button) -> {
+                WaypointList.WaypointListEntry selected = getSelected();
+                if (selected != null) {
+                    MinimapApi.getInstance().getMapServer().waypoints.removeWaypoint(selected.point);
+                    refreshEntries();
+                }
+            })
+        ));
 
         MinimapClientEvents.WAYPOINT_LIST_MENU.invoker().onPopulate(this, buttons, waypointNotNullButtons);
 

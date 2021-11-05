@@ -51,8 +51,11 @@ public class InMemoryCacher extends AbstractCacher {
 
     @Override
     public void saveChunk(ChunkLocation location, ChunkData data) {
-        chunkCache.put(location, data);
-        inMemoryStillCache.put(location, data);
+        ChunkData cd = inMemoryStillCache.get(location);
+        if (data != cd) {
+            chunkCache.put(location, data);
+            inMemoryStillCache.put(location, data);
+        }
     }
 
     @Override
