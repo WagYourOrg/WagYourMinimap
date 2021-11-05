@@ -16,7 +16,7 @@ public class GroupFilter implements Predicate<Waypoint> {
 
     @Override
     public boolean test(Waypoint waypoint) {
-        return Arrays.stream(waypoint.groups()).anyMatch(groups::contains);
+        return Arrays.stream(waypoint.groups).anyMatch(groups::contains);
     }
 
 }

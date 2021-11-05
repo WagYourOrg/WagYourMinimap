@@ -14,7 +14,7 @@ public class DimensionFilter implements Predicate<Waypoint> {
         Level level = Minecraft.getInstance().level;
         if (level == null) return false;
         String levelname = MapServer.getLevelName(level.dimension());
-        return Arrays.asList(waypoint.levels()).contains(levelname);
+        return Arrays.asList(waypoint.levels).contains(levelname);
     }
 
 }

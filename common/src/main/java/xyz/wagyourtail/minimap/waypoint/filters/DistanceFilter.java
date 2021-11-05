@@ -1,6 +1,7 @@
 package xyz.wagyourtail.minimap.waypoint.filters;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.Vec3;
 import xyz.wagyourtail.minimap.waypoint.Waypoint;
 
@@ -15,7 +16,8 @@ public class DistanceFilter implements Predicate<Waypoint> {
 
     @Override
     public boolean test(Waypoint waypoint) {
-        return new Vec3(waypoint.posX(), waypoint.posY(), waypoint.posZ()).distanceTo(minecraft.player.position()) < distance;
+        BlockPos pos = waypoint.posForCoordScale(minecraft.level.dimensionType().coordinateScale());
+        return new Vec3(pos.getX(), pos.getY(), pos.getZ()).distanceTo(minecraft.player.position()) < distance;
     }
 
 }

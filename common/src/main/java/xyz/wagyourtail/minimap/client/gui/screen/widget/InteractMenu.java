@@ -1,10 +1,12 @@
 package xyz.wagyourtail.minimap.client.gui.screen.widget;
 
+import com.google.gson.JsonObject;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.gui.components.Widget;
 import net.minecraft.client.resources.language.I18n;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
@@ -63,7 +65,7 @@ public class InteractMenu extends GuiComponent implements Widget {
         buttons.put(I18n.get("gui.wagyourminimap.general") + ": ", buttonsForPos(pos));
 
         for (Waypoint waypoint : waypoints) {
-            buttons.put(I18n.get("gui.wagyourminimap.waypoint") + ": " + waypoint.name(), buttonsForWaypoint(waypoint));
+            buttons.put(I18n.get("gui.wagyourminimap.waypoint") + ": " + waypoint.name, buttonsForWaypoint(waypoint));
         }
 
         MinimapClientEvents.FULLSCREEN_INTERACT_MENU.invoker().onPopulate(this);
@@ -100,14 +102,7 @@ public class InteractMenu extends GuiComponent implements Widget {
     private List<InteractMenuButton> buttonsForPos(Vec3 pos) {
         List<InteractMenuButton> buttons = new ArrayList<>();
         buttons.add(new InteractMenuButton(new TranslatableComponent("gui.wagyourminimap.create_waypoint"), (btn) -> {
-            int color = Color.HSBtoRGB((float)Math.random(), 1f, 1f);
-            String[] dims;
-            if (minecraft.level.dimension().equals(Level.OVERWORLD) || minecraft.level.dimension().equals(Level.NETHER)) {
-                dims = new String[]{MapServer.getLevelName(Level.OVERWORLD), MapServer.getLevelName(Level.NETHER)};
-            } else {
-                dims = new String[]{MapServer.getLevelName(minecraft.level)};
-            }
-            minecraft.setScreen(new WaypointEditScreen(parent, new Waypoint((int)Math.floor(pos.x), (int)Math.floor(pos.y) + 1, (int)Math.floor(pos.z), (byte)((color >> 16) & 255), (byte)((color >> 8) & 255), (byte)(color & 255), "", new String[] {"default"}, dims, false)));
+            minecraft.setScreen(WaypointEditScreen.createNewFromPos(parent, new BlockPos(pos).above()));
         }));
 
         buttons.add(new InteractMenuButton(new TranslatableComponent("gui.wagyourminimap.teleport_to"), (btn) -> {
@@ -123,7 +118,8 @@ public class InteractMenu extends GuiComponent implements Widget {
         }));
 
         buttons.add(new InteractMenuButton(new TranslatableComponent("gui.wagyourminimap.teleport_to"), (btn) -> {
-            parent.sendMessage(String.format("%s %d %d %d", teleport_command, point.posX(), point.posY(), point.posZ()));
+            BlockPos pos = point.posForCoordScale(minecraft.level.dimensionType().coordinateScale());
+            parent.sendMessage(String.format("%s %d %d %d", teleport_command, pos.getX(), pos.getY(), pos.getZ()));
         }));
 
         buttons.add(new InteractMenuButton(new TranslatableComponent("gui.wagyourminimap.delete_waypoint"), (btn) -> {
@@ -134,7 +130,11 @@ public class InteractMenu extends GuiComponent implements Widget {
 
     private List<Waypoint> waypointsNearPos(int x, int z) {
         float rad = 10f * 16f / parent.renderer.chunkWidth;
-        return MinimapApi.getInstance().getMapServer().waypoints.getVisibleWaypoints().stream().filter(e -> new Vec3(e.posX(), 0, e.posZ()).distanceTo(new Vec3(x, 0, z)) <= rad).collect(Collectors.toList());
+        double coordScale = minecraft.level.dimensionType().coordinateScale();
+        return MinimapApi.getInstance().getMapServer().waypoints.getVisibleWaypoints().stream().filter(e -> {
+            BlockPos pos = e.posForCoordScale(coordScale);
+            return new Vec3(pos.getX(), 0, pos.getZ()).distanceTo(new Vec3(x, 0, z)) <= rad;
+        }).collect(Collectors.toList());
     }
 
     public void remove() {

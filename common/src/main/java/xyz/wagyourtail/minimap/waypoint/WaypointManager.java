@@ -2,6 +2,7 @@ package xyz.wagyourtail.minimap.waypoint;
 
 import com.google.common.collect.ImmutableSet;
 import xyz.wagyourtail.minimap.api.MinimapApi;
+import xyz.wagyourtail.minimap.api.MinimapEvents;
 import xyz.wagyourtail.minimap.map.MapServer;
 
 import java.lang.reflect.InvocationTargetException;
@@ -14,8 +15,6 @@ public class WaypointManager {
     private static Predicate<Waypoint> compiledFilter = (a) -> true;
     private final MapServer server;
     private final Set<Waypoint> waypointList = new LinkedHashSet<>();
-    //if it starts lagging, I'll add computing in parallel...
-    private Set<Waypoint> visibleWaypoints = new HashSet<>();
 
     public WaypointManager(MapServer server) {
         this.server = server;
@@ -78,6 +77,7 @@ public class WaypointManager {
     }
 
     public synchronized void addWaypoint(Waypoint waypoint) {
+        MinimapEvents.WAYPOINT_ADDED.invoker().onWaypoint(waypoint);
         waypointList.add(waypoint);
         saveWaypoints();
     }
@@ -85,18 +85,19 @@ public class WaypointManager {
     public void saveWaypoints() {
         MapServer.addToSaveQueue(() -> {
             synchronized (this) {
-                MinimapApi.getInstance().cacheManager.saveWaypoints(server, waypointList.stream().filter(Predicate.not(Waypoint::ephemeral)));
+                MinimapApi.getInstance().cacheManager.saveWaypoints(server, waypointList.stream().filter((e) -> !e.ephemeral));
             }
         });
     }
 
     public synchronized void removeWaypoint(Waypoint waypoint) {
+        MinimapEvents.WAYPOINT_REMOVED.invoker().onWaypoint(waypoint);
         waypointList.remove(waypoint);
         saveWaypoints();
     }
 
     public Set<Waypoint> getVisibleWaypoints() {
-        return visibleWaypoints = waypointList.parallelStream().filter(compiledFilter).collect(Collectors.toSet());
+        return waypointList.parallelStream().filter(compiledFilter).collect(Collectors.toSet());
     }
 
 }

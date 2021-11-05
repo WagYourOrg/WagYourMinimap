@@ -10,8 +10,6 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.level.chunk.ChunkAccess;
-import net.minecraft.world.level.levelgen.Heightmap;
 import xyz.wagyourtail.minimap.WagYourMinimap;
 import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
 import xyz.wagyourtail.minimap.api.client.MinimapClientEvents;
@@ -22,10 +20,6 @@ import xyz.wagyourtail.minimap.client.gui.screen.renderer.ScreenMapRenderer;
 import xyz.wagyourtail.minimap.client.gui.screen.settings.SettingsScreen;
 import xyz.wagyourtail.minimap.client.gui.screen.widget.InteractMenu;
 import xyz.wagyourtail.minimap.client.gui.screen.widget.MenuButton;
-import xyz.wagyourtail.minimap.map.MapServer;
-import xyz.wagyourtail.minimap.map.chunkdata.ChunkData;
-import xyz.wagyourtail.minimap.map.chunkdata.ChunkLocation;
-import xyz.wagyourtail.minimap.map.chunkdata.parts.SurfaceDataPart;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -94,6 +88,7 @@ public class MapScreen extends Screen {
     public void render(PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
         renderBackground(poseStack);
 
+
         renderer.renderMinimap(poseStack, mouseX, mouseY);
 
         if (interact != null) {
@@ -131,7 +126,7 @@ public class MapScreen extends Screen {
 //        buttonList.add(new MenuButton(new TranslatableComponent("gui.wagyourminimap.test"), waypoint_tex, null));
 
         buttonList.add(new MenuButton(new TranslatableComponent("gui.wagyourminimap.waypoints"), waypoint_tex, (btn) -> {
-            minecraft.setScreen(new WaypointsScreen(this));
+            minecraft.setScreen(new WaypointListScreen(this));
         }));
 
         MinimapClientEvents.FULLSCREEN_MENU.invoker().onPopulate(buttonList);

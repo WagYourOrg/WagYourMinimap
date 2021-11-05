@@ -8,6 +8,7 @@ import dev.architectury.event.Event;
 import dev.architectury.event.EventFactory;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
 import xyz.wagyourtail.minimap.WagYourMinimap;
@@ -39,7 +40,8 @@ public class InGameWaypointRenderer {
     }
 
     public void renderWaypoint(PoseStack stack, Vec3 center, float xRot, float yRot, Waypoint waypoint) {
-        Vec3 offset = new Vec3(waypoint.posX() + .5f, waypoint.posY() + .5f, waypoint.posZ() + .5f).subtract(center);
+        BlockPos pos = waypoint.posForCoordScale(mc.level.dimensionType().coordinateScale());
+        Vec3 offset = new Vec3(pos.getX() + .5f, pos.getY() + .5f, pos.getZ() + .5f).subtract(center);
         Vec3 normalized_offset = offset.normalize().multiply(20, 20, 20);
         stack.translate(normalized_offset.x, normalized_offset.y, normalized_offset.z);
         stack.mulPose(Vector3f.YP.rotationDegrees(-yRot));
@@ -47,10 +49,10 @@ public class InGameWaypointRenderer {
         stack.mulPose(Vector3f.ZP.rotationDegrees(180));
         float scale = (float) Math.max(.0675, -offset.distanceTo(Vec3.ZERO) / 50f * .0625 + .125f);
         stack.scale(scale, scale, scale);
-        int abgr = 0xFF000000 | waypoint.colB() << 0x10 | waypoint.colG() << 0x8 | waypoint.colR() & 255;
+        int abgr = 0xFF000000 | waypoint.colB << 0x10 | waypoint.colG << 0x8 | waypoint.colR & 255;
         AbstractMapRenderer.drawTexCol(stack, -10, -10, 20, 20, 0, 0, 1, 1, abgr);
         if (isLookingAt(offset.normalize(), xRot, yRot)) {
-            drawText(stack, String.format("%s (%.2f m)", waypoint.name(), offset.distanceTo(Vec3.ZERO)));
+            drawText(stack, String.format("%s (%.2f m)", waypoint.name, offset.distanceTo(Vec3.ZERO)));
         }
     }
 

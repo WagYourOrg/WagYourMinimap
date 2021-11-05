@@ -3,6 +3,7 @@ package xyz.wagyourtail.minimap.client.gui.renderer.square.norot;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Vector3f;
+import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
@@ -37,7 +38,8 @@ public class SquareMapNoRotWaypointOverlay extends AbstractMapOverlayRenderer {
         Set<Waypoint> points = MinimapApi.getInstance().getMapServer().waypoints.getVisibleWaypoints();
         for (Waypoint point : points) {
             stack.pushPose();
-            Vec3 pointVec = new Vec3(point.posX(), point.posY(), point.posZ()).subtract(center);
+            BlockPos pos = point.posForCoordScale(minecraft.level.dimensionType().coordinateScale());
+            Vec3 pointVec = new Vec3(pos.getX(), pos.getY(), pos.getZ()).subtract(center);
             float scale = ((chunkRadius - 1) * 16f) / (float) Math.max(Math.abs(pointVec.x), Math.abs(pointVec.z));
             if (scale < 1) {
                 pointVec = pointVec.multiply(scale, scale, scale);
@@ -50,10 +52,10 @@ public class SquareMapNoRotWaypointOverlay extends AbstractMapOverlayRenderer {
             } else {
                 RenderSystem.setShaderTexture(0, waypoint_tex);
             }
-            int abgr = 0xFF000000 | point.colB() << 0x10 | point.colG() << 0x8 | point.colR() & 255;
+            int abgr = 0xFF000000 | point.colB << 0x10 | point.colG << 0x8 | point.colR & 255;
             AbstractMapRenderer.drawTexCol(stack, -10, -10, 20, 20, 1, 1, 0, 0, abgr);
             if (scale >= 1)
-                minecraft.font.draw(stack, point.name(), -minecraft.font.width(point.name()) / 2f, 10, 0xFFFFFF);
+                minecraft.font.draw(stack, point.name, -minecraft.font.width(point.name) / 2f, 10, 0xFFFFFF);
             stack.popPose();
         }
     }
