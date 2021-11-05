@@ -159,7 +159,7 @@ public class ChunkData {
         changed = false;
     }
 
-    public void refactorResourceLocations() {
+    public synchronized void refactorResourceLocations() {
         Set<Integer> used = new HashSet<>(resources.size());
         for (DataPart<?> value : data.values()) {
             value.usedResourceLocations(used);
