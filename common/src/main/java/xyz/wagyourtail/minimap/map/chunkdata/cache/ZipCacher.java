@@ -51,7 +51,9 @@ public class ZipCacher extends AbstractCacher {
     public synchronized FileSystem getRegionZip(ChunkLocation location) {
         try {
             return zipCache.get(locationToPath(location));
-        } catch (ExecutionException ignored) {}
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
         return null;
     }
 
