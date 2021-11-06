@@ -31,7 +31,7 @@ public class BlockLightImageStrategy extends AbstractImageStrategy {
             image.setPixelRGBA(x, z, 0x7FFFFFFF & colorFormatSwap(colorForLightLevel(surface.blocklight[i])));
 
         }
-        return new DynamicTextureWithWarning(image);
+        return new DynamicTexture(image);
     }
 
     private int colorForLightLevel(byte lightLevel) {

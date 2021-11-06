@@ -9,10 +9,10 @@ import java.util.List;
 import java.util.stream.Stream;
 
 public abstract class AbstractCacher {
-    public final boolean saveOnLoad;
+    public final SaveOnLoad saveOnLoad;
     public final boolean countHitAsLoad;
 
-    public AbstractCacher(boolean saveOnLoad, boolean countHitAsLoad) {
+    public AbstractCacher(SaveOnLoad saveOnLoad, boolean countHitAsLoad) {
         this.saveOnLoad = saveOnLoad;
         this.countHitAsLoad = countHitAsLoad;
     }
@@ -26,5 +26,12 @@ public abstract class AbstractCacher {
     public abstract List<Waypoint> loadWaypoints(MapServer server);
 
     public abstract void close();
+
+    public enum SaveOnLoad {
+        NEVER,
+        IF_ABOVE,
+        IF_BELOW,
+        ALWAYS
+    }
 
 }

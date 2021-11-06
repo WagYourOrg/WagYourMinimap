@@ -13,7 +13,7 @@ public class CacheManager extends AbstractCacher {
     protected List<AbstractCacher> cachers = new ArrayList<>();
 
     public CacheManager() {
-        super(false, false);
+        super(SaveOnLoad.NEVER, false);
     }
 
     public synchronized void addCacherAfter(AbstractCacher cacher, Class<?> previous) {
@@ -84,20 +84,33 @@ public class CacheManager extends AbstractCacher {
     public synchronized ChunkData loadChunk(ChunkLocation location) {
         ChunkData data = null;
         AbstractCacher hit = null;
-        for (AbstractCacher cacher : cachers) {
-            data = cacher.loadChunk(location);
+        int i;
+        for (i = 0; i < cachers.size(); ++i) {
+            data = cachers.get(i).loadChunk(location);
             if (data != null) {
-                hit = cacher;
+                hit = cachers.get(i);
                 break;
             }
         }
         if (data == null) {
             data = new ChunkData(location);
         }
-        if (hit != null && hit.countHitAsLoad) {
-            for (AbstractCacher cacher : cachers) {
-                if (cacher != hit && cacher.saveOnLoad) {
-                    cacher.saveChunk(location, data);
+        if (hit == null || hit.countHitAsLoad) {
+            for (int j = 0; j < cachers.size(); ++j) {
+                if (i != j) {
+                    AbstractCacher cacher = cachers.get(j);
+                    switch (cacher.saveOnLoad) {
+                        case ALWAYS:
+                            cacher.saveChunk(location, data);
+                            break;
+                        case IF_ABOVE:
+                            if (j < i) cacher.saveChunk(location, data);
+                            break;
+                        case IF_BELOW:
+                            if (j > i) cacher.saveChunk(location, data);
+                            break;
+                        default:
+                    }
                 }
             }
         }

@@ -22,10 +22,10 @@ public class InMemoryCacher extends AbstractCacher {
 
 
     public InMemoryCacher() {
-        super(true, false);
-        chunkCache = CacheBuilder.newBuilder().expireAfterAccess(60, TimeUnit.SECONDS).removalListener((e) -> {
+        super(SaveOnLoad.ALWAYS, false);
+        chunkCache = CacheBuilder.newBuilder().expireAfterAccess(60, TimeUnit.SECONDS).<ChunkLocation, ChunkData>removalListener((e) -> {
             try {
-                ((ChunkData)e.getValue()).closeDerivatives();
+                e.getValue().closeDerivatives();
             } catch (Exception ex) {
                 ex.printStackTrace();
             }

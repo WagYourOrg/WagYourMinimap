@@ -48,4 +48,10 @@ public record ChunkLocation(MapServer.MapLevel level, int regionX, int regionZ, 
     public String getRegionSlug() {
         return regionX + "," + regionZ;
     }
+
+    @Override
+    public String toString() {
+        return getRegionSlug() + ":" + index;
+    }
+
 }

@@ -7,8 +7,6 @@ import xyz.wagyourtail.minimap.api.MinimapApi;
 import xyz.wagyourtail.minimap.map.MapServer;
 import xyz.wagyourtail.minimap.map.chunkdata.parts.DataPart;
 
-import java.io.Closeable;
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
@@ -130,29 +128,18 @@ public class ChunkData {
         return (T) data.get(clazz);
     }
 
+    @SuppressWarnings("unchecked")
     public <T> T computeDerivative(String key, Supplier<T> supplier) {
-        Derivative<T> der = (Derivative<T>) derivatives.get(key);
-        if (der == null) {
-            der = new Derivative<>(false, supplier.get());
-        }
-        if (der.old) {
-            der.old = false;
-            if (der.contained instanceof Closeable) {
-                try {
-                    ((Closeable) der.contained).close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            } else if (der.contained instanceof AutoCloseable) {
-                try {
-                    ((AutoCloseable) der.contained).close();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+        return (T) derivatives.compute(key, (k, v) -> {
+            if (v == null) {
+                v = new Derivative<>(false, supplier.get());
             }
-            der.contained = supplier.get();
-        }
-        return der.contained;
+            if (v.old) {
+                v.old = false;
+                ((Derivative<T>) v).setContained(supplier.get());
+            }
+            return v;
+        }).getContained();
     }
 
     public void invalidateDerivitives() {
@@ -178,11 +165,7 @@ public class ChunkData {
         if (derivatives == null) return;
         for (Derivative<?> der : derivatives.values()) {
             der.old = true;
-            if (der.contained instanceof Closeable c) {
-                c.close();
-            } else if (der.contained instanceof AutoCloseable ac) {
-                ac.close();
-            }
+            der.setContained(null);
         }
     }
 
@@ -243,6 +226,16 @@ public class ChunkData {
             dp.serialize(buffer);
         }
         return buffer;
+    }
+
+    @Override
+    protected void finalize() throws Throwable {
+        for (Derivative<?> d : derivatives.values()) {
+            if (d.getContained() != null) {
+                System.out.println("Derivative not null, memory leak! " + location);
+                break;
+            }
+        }
     }
 
     public ChunkLocation north() {

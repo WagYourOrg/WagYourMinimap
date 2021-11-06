@@ -15,7 +15,7 @@ import java.util.stream.Stream;
 public class FromAnvilCacher extends AbstractCacher{
 
     public FromAnvilCacher() {
-        super(false, true);
+        super(SaveOnLoad.NEVER, true);
     }
 
     //TODO: implement
