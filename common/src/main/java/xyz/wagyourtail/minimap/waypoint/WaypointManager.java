@@ -104,6 +104,13 @@ public class WaypointManager {
         saveWaypoints();
     }
 
+    public synchronized void updateWaypoint(Waypoint old, Waypoint newWaypoint) {
+        MinimapEvents.WAYPOINT_UPDATED.invoker().onWaypoint(old, newWaypoint);
+        waypointList.remove(old);
+        waypointList.add(newWaypoint);
+        saveWaypoints();
+    }
+
     public Set<Waypoint> getVisibleWaypoints() {
         return waypointList.parallelStream().filter(compiledFilter).collect(Collectors.toSet());
     }

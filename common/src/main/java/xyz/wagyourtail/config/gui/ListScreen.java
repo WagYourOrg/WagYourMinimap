@@ -60,8 +60,8 @@ public class ListScreen<T> extends Screen implements EnabledSettingList.EntryCon
     @Override
     protected void init() {
         super.init();
-        this.addWidget(enabledEntries = new EnabledSettingList<>(minecraft, 400, this.height));
-        this.enabledEntries.setLeftPos(this.width / 2 - 4 - 400);
+        this.addWidget(enabledEntries = new EnabledSettingList<>(minecraft, width > 810 ? 400 : 200, this.height));
+        this.enabledEntries.setLeftPos(this.width / 2 - 4 - this.enabledEntries.getRowWidth());
         try {
             this.enabledEntries.children().addAll(Arrays.stream(setting.get()).map(e ->
                 new EnabledSettingList.EnabledSettingEntry<>(minecraft,
@@ -103,7 +103,7 @@ public class ListScreen<T> extends Screen implements EnabledSettingList.EntryCon
             } else {
                 Collection<Class<T>> options = (Collection<Class<T>>) setting.options();
                 if (options != null) {
-                    this.addWidget(availableEntries = new DisabledSettingList<>(minecraft, 400, this.height));
+                    this.addWidget(availableEntries = new DisabledSettingList<>(minecraft, width > 810 ? 400 : 200, this.height));
                     this.availableEntries.setLeftPos(this.width / 2 + 4);
                     this.availableEntries.children().addAll(options.stream().map(e ->
                         new DisabledSettingList.DisabledSettingEntry<>(minecraft,

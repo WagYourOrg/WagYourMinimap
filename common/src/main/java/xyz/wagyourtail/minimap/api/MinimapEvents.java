@@ -12,6 +12,7 @@ public class MinimapEvents {
     public static final Event<ChunkUpdated> CHUNK_UPDATED = EventFactory.createLoop();
     public static final Event<WaypointAdded> WAYPOINT_ADDED = EventFactory.createLoop();
     public static final Event<WaypointRemoved> WAYPOINT_REMOVED = EventFactory.createLoop();
+    public static final Event<WaypointUpdated> WAYPOINT_UPDATED = EventFactory.createLoop();
 
     public interface ChunkUpdated {
         void onChunkUpdate(ChunkLocation location, ChunkData chunkData, Class<? extends AbstractChunkUpdateStrategy> strategy, Class<? extends DataPart<?>> dataPart);
@@ -23,5 +24,9 @@ public class MinimapEvents {
 
     public interface WaypointRemoved {
         void onWaypoint(Waypoint waypoint);
+    }
+
+    public interface WaypointUpdated {
+        void onWaypoint(Waypoint old_waypoint, Waypoint new_waypoint);
     }
 }

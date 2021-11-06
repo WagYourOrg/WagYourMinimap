@@ -26,8 +26,8 @@ public class Waypoint {
     public final String[] groups;
     public final String[] levels;
     public final JsonObject extra;
-    public boolean enabled;
-    public boolean ephemeral;
+    public final boolean enabled;
+    public final boolean ephemeral;
 
 
     public Waypoint(double coordScale, int posX, int posY, int posZ, byte colR, byte colG, byte colB, String name, String[] groups,
@@ -72,6 +72,42 @@ public class Waypoint {
             getKeyOrDefault(waypoint, "enabled", JsonElement::getAsBoolean, true),
             false
         );
+    }
+
+    public Waypoint copy() {
+        return new Waypoint(coordScale, posX, posY, posZ, colR, colG, colB, name, groups, levels, extra, enabled, ephemeral);
+    }
+
+    public Waypoint copyWithChangePos(int posX, int posY, int posZ) {
+        return new Waypoint(coordScale, posX, posY, posZ, colR, colG, colB, name, groups, levels, extra, enabled, ephemeral);
+    }
+
+    public Waypoint copyWithChangeCol(byte colR, byte colG, byte colB) {
+        return new Waypoint(coordScale, posX, posY, posZ, colR, colG, colB, name, groups, levels, extra, enabled, ephemeral);
+    }
+
+    public Waypoint copyWithChangeName(String name) {
+        return new Waypoint(coordScale, posX, posY, posZ, colR, colG, colB, name, groups, levels, extra, enabled, ephemeral);
+    }
+
+    public Waypoint copyWithChangeGroups(String[] groups) {
+        return new Waypoint(coordScale, posX, posY, posZ, colR, colG, colB, name, groups, levels, extra, enabled, ephemeral);
+    }
+
+    public Waypoint copyWithChangeLevels(String[] levels) {
+        return new Waypoint(coordScale, posX, posY, posZ, colR, colG, colB, name, groups, levels, extra, enabled, ephemeral);
+    }
+
+    public Waypoint copyWithChangeExtra(JsonObject extra) {
+        return new Waypoint(coordScale, posX, posY, posZ, colR, colG, colB, name, groups, levels, extra, enabled, ephemeral);
+    }
+
+    public Waypoint copyWithChangeEnabled(boolean enabled) {
+        return new Waypoint(coordScale, posX, posY, posZ, colR, colG, colB, name, groups, levels, extra, enabled, ephemeral);
+    }
+
+    public Waypoint copyWithChangeEphemeral(boolean ephemeral) {
+        return new Waypoint(coordScale, posX, posY, posZ, colR, colG, colB, name, groups, levels, extra, enabled, ephemeral);
     }
 
     public BlockPos posForCoordScale(double coordScale) {
