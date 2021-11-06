@@ -228,16 +228,6 @@ public class ChunkData {
         return buffer;
     }
 
-    @Override
-    protected void finalize() throws Throwable {
-        for (Derivative<?> d : derivatives.values()) {
-            if (d.getContained() != null) {
-                System.out.println("Derivative not null, memory leak! " + location);
-                break;
-            }
-        }
-    }
-
     public ChunkLocation north() {
         return ChunkLocation.locationForChunkPos(location.level(), location.getChunkX(), location.getChunkZ() - 1);
     }
