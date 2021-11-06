@@ -16,6 +16,7 @@ import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import xyz.wagyourtail.config.field.SettingsContainer;
+import xyz.wagyourtail.config.gui.ListScreen;
 import xyz.wagyourtail.config.gui.SettingScreen;
 
 public class EnabledSettingList<T> extends ObjectSelectionList<EnabledSettingList.EnabledSettingEntry<T>> {
@@ -152,8 +153,9 @@ public class EnabledSettingList<T> extends ObjectSelectionList<EnabledSettingLis
                     return true;
                 }
             }
-            if (d > parent.getRowWidth() - 20 && d < parent.getRowWidth() && e >= 6d && e <= 26d && option.getClass().isAnnotationPresent(SettingsContainer.class)) {
+            if (d > parent.getRowWidth() - 40 && e > 6 && e < 26 && d < parent.getRowWidth() - 20 && option.getClass().isAnnotationPresent(SettingsContainer.class)) {
                 minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+                ((ListScreen<T>)parentScreen).applyValue();
                 minecraft.setScreen(new SettingScreen(new TranslatableComponent(option.getClass().getAnnotation(SettingsContainer.class).value()), (Screen) parentScreen, option));
                 return true;
             }

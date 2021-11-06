@@ -5,11 +5,15 @@ import xyz.wagyourtail.config.field.Setting;
 import xyz.wagyourtail.config.field.SettingsContainer;
 import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
 import xyz.wagyourtail.minimap.api.config.square.norot.SquareNoRotStyle;
+import xyz.wagyourtail.minimap.api.config.waypointfilter.*;
 import xyz.wagyourtail.minimap.client.gui.InGameHud;
 import xyz.wagyourtail.minimap.client.gui.renderer.AbstractMapRenderer;
 import xyz.wagyourtail.minimap.client.gui.renderer.square.norot.SquareMapNoRotRenderer;
+import xyz.wagyourtail.minimap.waypoint.WaypointManager;
+import xyz.wagyourtail.minimap.waypoint.filters.*;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -18,9 +22,15 @@ import java.util.Map;
 public class MinimapClientConfig {
 
     public static Map<Class<? extends AbstractMapRenderer>, Class<? extends AbstractMinimapStyle>> minimapStyleOptions = new HashMap<>();
+    public static Map<Class<? extends WaypointFilter>, Class<? extends AbstractWaypointFilterOptions>> waypointFilterOptions = new HashMap<>();
 
     static {
         minimapStyleOptions.put(SquareMapNoRotRenderer.class, SquareNoRotStyle.class);
+
+        waypointFilterOptions.put(EnabledFilter.class, EnabledFilterOptions.class);
+        waypointFilterOptions.put(DistanceFilter.class, DistanceFilterOptions.class);
+        waypointFilterOptions.put(DimensionFilter.class, DimensionFilterOptions.class);
+        waypointFilterOptions.put(GroupFilter.class, GroupFilterOptions.class);
     }
 
     public final FullscreenMapStyle fullscreenMapStyle = new FullscreenMapStyle();
@@ -34,12 +44,18 @@ public class MinimapClientConfig {
     public int chunkRadius = 5;
     @Setting(value = "gui.wagyourminimap.settings.minimap_style", options = "mapStyles", setter = "setMinimapStyle")
     public AbstractMinimapStyle<?> style;
+
+    @Setting(value = "gui.wagyourminimap.settings.waypoint_filters", options = "waypointFilters", setter = "setWaypointFilter")
+    public AbstractWaypointFilterOptions<?>[] waypointFilters;
+
     @Setting(value = "gui.wagyourminimap.settings.show_waypoints")
     public boolean showWaypoints = true;
 
     public MinimapClientConfig() {
         //default style
         setMinimapStyle(new SquareNoRotStyle());
+        setWaypointFilter(new AbstractWaypointFilterOptions[] {new DimensionFilterOptions(), new EnabledFilterOptions(), new DistanceFilterOptions()});
+
     }
 
     public void setMinimapStyle(AbstractMinimapStyle<?> style) {
@@ -51,8 +67,18 @@ public class MinimapClientConfig {
         }
     }
 
+    public void setWaypointFilter(AbstractWaypointFilterOptions<?>[] waypointFilters) {
+        this.waypointFilters = waypointFilters;
+        WaypointManager.clearFilters(false);
+        WaypointManager.addFilter(Arrays.stream(waypointFilters).map(AbstractWaypointFilterOptions::compileFilter).toArray(WaypointFilter[]::new));
+    }
+
     public Collection<Class<? extends AbstractMinimapStyle>> mapStyles() {
         return minimapStyleOptions.values();
+    }
+
+    public Collection<Class<? extends AbstractWaypointFilterOptions>> waypointFilters() {
+        return waypointFilterOptions.values();
     }
 
 }

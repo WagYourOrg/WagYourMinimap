@@ -26,11 +26,12 @@ public class Waypoint {
     public final String[] groups;
     public final String[] levels;
     public final JsonObject extra;
+    public boolean enabled;
     public boolean ephemeral;
 
 
     public Waypoint(double coordScale, int posX, int posY, int posZ, byte colR, byte colG, byte colB, String name, String[] groups,
-                    String[] levels, JsonObject extra, boolean ephemeral) {
+                    String[] levels, JsonObject extra, boolean enabled, boolean ephemeral) {
         this.coordScale = coordScale;
         this.posX = posX;
         this.posY = posY;
@@ -42,6 +43,7 @@ public class Waypoint {
         this.groups = groups;
         this.levels = levels;
         this.extra = extra;
+        this.enabled = enabled;
         this.ephemeral = ephemeral;
     }
 
@@ -67,6 +69,7 @@ public class Waypoint {
             waypoint.has("levels") ? gson.fromJson(waypoint.get("levels"), String[].class) : new String[]{MapServer.getLevelName(
                 Level.OVERWORLD), MapServer.getLevelName(Level.NETHER)},
             getKeyOrDefault(waypoint, "extra", JsonElement::getAsJsonObject, new JsonObject()),
+            getKeyOrDefault(waypoint, "enabled", JsonElement::getAsBoolean, true),
             false
         );
     }

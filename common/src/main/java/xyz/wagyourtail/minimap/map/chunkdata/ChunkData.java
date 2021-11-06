@@ -161,7 +161,7 @@ public class ChunkData {
         changed = false;
     }
 
-    public void closeDerivatives() throws Exception {
+    public void closeDerivatives() {
         if (derivatives == null) return;
         for (Derivative<?> der : derivatives.values()) {
             der.old = true;

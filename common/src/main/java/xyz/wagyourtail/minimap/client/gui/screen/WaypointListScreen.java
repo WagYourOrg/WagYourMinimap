@@ -61,6 +61,12 @@ public class WaypointListScreen extends Screen {
                     MinimapApi.getInstance().getMapServer().waypoints.removeWaypoint(selected.point);
                     refreshEntries();
                 }
+            }),
+            new Button(0, 0, 0, 20, new TranslatableComponent("gui.wagyourminimap.waypoints.visible_toggle"), (button) -> {
+                WaypointList.WaypointListEntry selected = getSelected();
+                if (selected != null) {
+                    selected.point.enabled = !selected.point.enabled;
+                }
             })
         ));
 

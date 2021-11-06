@@ -52,7 +52,7 @@ public class WaypointEditScreen extends Screen {
             dims = new String[]{MapServer.getLevelName(mc.level)};
         }
 
-        return new WaypointEditScreen(parent, new Waypoint(mc.level.dimensionType().coordinateScale(), pos.getX(), pos.getY(), pos.getZ(), (byte)((color >> 16) & 255), (byte)((color >> 8) & 255), (byte)(color & 255), "", new String[] {"default"}, dims, new JsonObject(), false));
+        return new WaypointEditScreen(parent, new Waypoint(mc.level.dimensionType().coordinateScale(), pos.getX(), pos.getY(), pos.getZ(), (byte)((color >> 16) & 255), (byte)((color >> 8) & 255), (byte)(color & 255), "", new String[] {"default"}, dims, new JsonObject(), true, false));
     }
 
     public WaypointEditScreen(Screen parent, Waypoint prev_point) {
@@ -94,7 +94,7 @@ public class WaypointEditScreen extends Screen {
             extra = new JsonObject();
         }
 
-        return new Waypoint(coordScale, posX, posY, posZ, (byte)((color >> 16) & 255), (byte)((color >> 8) & 255), (byte)(color & 255), name, groups, dims, extra, false);
+        return new Waypoint(coordScale, posX, posY, posZ, (byte)((color >> 16) & 255), (byte)((color >> 8) & 255), (byte)(color & 255), name, groups, dims, extra, true, false);
     }
 
     @Override

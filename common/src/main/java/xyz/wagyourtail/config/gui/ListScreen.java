@@ -1,6 +1,7 @@
 package xyz.wagyourtail.config.gui;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
@@ -9,6 +10,7 @@ import xyz.wagyourtail.config.field.SettingField;
 import xyz.wagyourtail.config.field.SettingsContainer;
 import xyz.wagyourtail.config.gui.widgets.DisabledSettingList;
 import xyz.wagyourtail.config.gui.widgets.EnabledSettingList;
+import xyz.wagyourtail.config.gui.widgets.NamedEditBox;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
@@ -32,7 +34,7 @@ public class ListScreen<T> extends Screen implements EnabledSettingList.EntryCon
     public void render(PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
         this.renderBackground(poseStack);
         this.enabledEntries.render(poseStack, mouseX, mouseY, partialTicks);
-        this.availableEntries.render(poseStack, mouseX, mouseY, partialTicks);
+        if (this.availableEntries != null) this.availableEntries.render(poseStack, mouseX, mouseY, partialTicks);
 
         drawCenteredString(poseStack, this.font, this.title, this.width / 2, 17, 0xFFFFFF);
 
@@ -42,13 +44,17 @@ public class ListScreen<T> extends Screen implements EnabledSettingList.EntryCon
 
     @Override
     public void onClose() {
+        applyValue();
+        minecraft.setScreen(parent);
+    }
+
+    public void applyValue() {
         T[] arr = enabledEntries.children().stream().map(e -> e.option).toArray((i) -> (T[]) Array.newInstance(setting.fieldType.componentType(), i));
         try {
             setting.set(arr);
         } catch (InvocationTargetException | IllegalAccessException e) {
             e.printStackTrace();
         }
-        minecraft.setScreen(parent);
     }
 
     @Override
@@ -76,7 +82,20 @@ public class ListScreen<T> extends Screen implements EnabledSettingList.EntryCon
             } else if (setting.fieldType.componentType().isPrimitive() || Number.class.isAssignableFrom(setting.fieldType.componentType())) {
                 throw new RuntimeException("NON Object List not yet implemented");
             } else if (setting.fieldType.componentType().equals(String.class)) {
-                throw new RuntimeException("NON Object List not yet implemented");
+                Collection<String> options = (Collection<String>) setting.options();
+                if (options != null) {
+                    throw new RuntimeException("STRING OPTIONS NOT YET IMPLEMENTED");
+                } else {
+                    NamedEditBox box = this.addRenderableWidget(new NamedEditBox(font, this.width / 2 + 4, this.height / 2 - 20, 200, 20, new TranslatableComponent("gui.wagyourconfig.addentry")));
+                    this.addRenderableWidget(new Button(this.width / 2 + 4, this.height / 2 + 4, 200, 20, new TranslatableComponent("gui.wagyourconfig.submit"), (b) -> {
+                        this.enabledEntries.children().add(new EnabledSettingList.EnabledSettingEntry(minecraft,
+                            this,
+                            enabledEntries,
+                            box.getValue(),
+                            new TextComponent(box.getValue())
+                        ));
+                    }));
+                }
             } else if (setting.fieldType.componentType().isEnum()) {
                 throw new RuntimeException("NON Object List not yet implemented");
             } else if (setting.fieldType.componentType().isArray()) {

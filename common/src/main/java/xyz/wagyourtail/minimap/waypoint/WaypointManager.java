@@ -4,6 +4,9 @@ import com.google.common.collect.ImmutableSet;
 import xyz.wagyourtail.minimap.api.MinimapApi;
 import xyz.wagyourtail.minimap.api.MinimapEvents;
 import xyz.wagyourtail.minimap.map.MapServer;
+import xyz.wagyourtail.minimap.waypoint.filters.DimensionFilter;
+import xyz.wagyourtail.minimap.waypoint.filters.DistanceFilter;
+import xyz.wagyourtail.minimap.waypoint.filters.EnabledFilter;
 import xyz.wagyourtail.minimap.waypoint.filters.WaypointFilter;
 
 import java.lang.reflect.InvocationTargetException;
@@ -12,8 +15,13 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class WaypointManager {
-    private static final Set<WaypointFilter> filters = new HashSet<>();
-    private static Predicate<Waypoint> compiledFilter = (a) -> true;
+    private static final Set<WaypointFilter> filters = new HashSet<>(Set.of(new EnabledFilter(), new DimensionFilter(), new DistanceFilter(1000)));
+    private static Predicate<Waypoint> compiledFilter;
+
+    static {
+        compileFilter();
+    }
+
     private final MapServer server;
     private final Set<Waypoint> waypointList = new LinkedHashSet<>();
 

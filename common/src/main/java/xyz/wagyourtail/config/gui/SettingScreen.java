@@ -128,7 +128,7 @@ public class SettingScreen extends Screen {
                     //number
                     if (settingField.fieldType.isPrimitive() || Number.class.isAssignableFrom(settingField.fieldType)) {
                         if (settingField.intRange != null) {
-                            element = new Slider(x, y, width, height, new TranslatableComponent(settingField.setting.value()), ((Number) settingField.get()).doubleValue(), settingField.intRange.from(), settingField.intRange.to(), settingField.intRange.stepVal() * (settingField.intRange.to() - settingField.intRange.from()), (val) -> {
+                            element = new Slider(x, y, width, height, new TranslatableComponent(settingField.setting.value()), ((Number) settingField.get()).doubleValue(), settingField.intRange.from(), settingField.intRange.to(), (settingField.intRange.to() - settingField.intRange.from()) / settingField.intRange.stepVal(), (val) -> {
                                 try {
                                     ((SettingField) settingField).set(val.intValue());
                                 } catch (InvocationTargetException | IllegalAccessException e) {
