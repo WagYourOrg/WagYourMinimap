@@ -1,10 +1,11 @@
 {
-  "required": true,
-  "package": "xyz.wagyourtail.minimap.fabric.mixins",
-  "compatibilityLevel": "JAVA_16",
-  "client": [
-  ],
-  "mixins": [
-    "events.MixinLevel"
+    "required": true,
+    "package": "xyz.wagyourtail.minimap.fabric.mixins",
+    "compatibilityLevel": "JAVA_16",
+    "client": [
+    ],
+    "mixins": [
+        "events.MixinLevel",
+        "events.MixinRenderTarget"
   ]
 }

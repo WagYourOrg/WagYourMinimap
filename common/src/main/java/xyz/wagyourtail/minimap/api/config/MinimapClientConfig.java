@@ -5,10 +5,12 @@ import xyz.wagyourtail.config.field.Setting;
 import xyz.wagyourtail.config.field.SettingsContainer;
 import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
 import xyz.wagyourtail.minimap.api.config.square.norot.SquareNoRotStyle;
+import xyz.wagyourtail.minimap.api.config.square.rot.SquareRotStyle;
 import xyz.wagyourtail.minimap.api.config.waypointfilter.*;
 import xyz.wagyourtail.minimap.client.gui.InGameHud;
 import xyz.wagyourtail.minimap.client.gui.renderer.AbstractMapRenderer;
 import xyz.wagyourtail.minimap.client.gui.renderer.square.norot.SquareMapNoRotRenderer;
+import xyz.wagyourtail.minimap.client.gui.renderer.square.rotate.SquareMapRotRenderer;
 import xyz.wagyourtail.minimap.waypoint.WaypointManager;
 import xyz.wagyourtail.minimap.waypoint.filters.*;
 
@@ -26,6 +28,7 @@ public class MinimapClientConfig {
 
     static {
         minimapStyleOptions.put(SquareMapNoRotRenderer.class, SquareNoRotStyle.class);
+        minimapStyleOptions.put(SquareMapRotRenderer.class, SquareRotStyle.class);
 
         waypointFilterOptions.put(EnabledFilter.class, EnabledFilterOptions.class);
         waypointFilterOptions.put(DistanceFilter.class, DistanceFilterOptions.class);

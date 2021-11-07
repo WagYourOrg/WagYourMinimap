@@ -79,7 +79,7 @@ public abstract class AbstractMapRenderer {
         if (chunk != null) {
             if (drawChunk(stack, chunk, x, y, scaledScaleX, scaledScaleZ, startX, startZ, endX, endZ)) return;
         }
-        drawEmptyChunk(stack, x, y, scaledScaleX, scaledScaleZ);
+        rect(stack, x, y, scaledScaleX, scaledScaleZ);
     }
 
     private boolean drawChunk(PoseStack matrixStack, ChunkLocation chunk, float x, float y, float width, float height, float startU, float startV, float endU, float endV) {
@@ -119,7 +119,7 @@ public abstract class AbstractMapRenderer {
         BufferUploader.end(builder);
     }
 
-    private void drawEmptyChunk(PoseStack matrixStack, float x, float y, float width, float height) {
+    public void rect(PoseStack matrixStack, float x, float y, float width, float height) {
         Matrix4f matrix = matrixStack.last().pose();
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.enableBlend();
@@ -142,7 +142,7 @@ public abstract class AbstractMapRenderer {
         if (chunk != null) {
             if (drawChunk(matrixStack, chunk, x, y, scale, scale, 0, 0, 1, 1)) return;
         }
-        drawEmptyChunk(matrixStack, x, y, scale, scale);
+        rect(matrixStack, x, y, scale, scale);
     }
 
 }

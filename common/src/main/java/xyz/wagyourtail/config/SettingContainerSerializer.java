@@ -5,6 +5,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import xyz.wagyourtail.config.field.Setting;
+import xyz.wagyourtail.config.field.SettingField;
 import xyz.wagyourtail.config.field.SettingsContainer;
 
 import java.lang.reflect.Array;
@@ -66,8 +67,11 @@ public class SettingContainerSerializer {
         for (Field field : fields) {
             try {
                 if (field.isAnnotationPresent(Setting.class)) {
-                    if (obj.has(field.getName()))
-                        field.set(settingsContainer, deserializeField(obj.get(field.getName()), field.getType()));
+                    if (obj.has(field.getName())) {
+                        new SettingField<>(settingsContainer, field, (Class<Object>)field.getType()).set(
+                            deserializeField(obj.get(field.getName()), field.getType())
+                        );
+                    }
                 } else if (Modifier.isFinal(field.getModifiers()) && field.getType().isAnnotationPresent(SettingsContainer.class)) {
                     if (obj.has(field.getName()))
                         deserialize(obj.get(field.getName()).getAsJsonObject(), field.get(settingsContainer));
@@ -103,21 +107,21 @@ public class SettingContainerSerializer {
         }
     }
 
-    private static <T extends Number> T castNumber(Class<T> number, Number gsonNumber) {
-        if (number.equals(byte.class) || number.equals(Byte.class)) {
-            return (T) (Byte) gsonNumber.byteValue();
-        } else if (number.equals(short.class) || number.equals(Short.class)) {
-            return (T) (Short) gsonNumber.shortValue();
-        } else if (number.equals(int.class) || number.equals(Integer.class)) {
-            return (T) (Integer) gsonNumber.intValue();
-        } else if (number.equals(long.class) || number.equals(Long.class)) {
-            return (T) (Long) gsonNumber.longValue();
-        } else if (number.equals(float.class) || number.equals(Float.class)) {
-            return (T) (Float) gsonNumber.floatValue();
-        } else if (number.equals(double.class) || number.equals(Double.class)) {
-            return (T) (Double) gsonNumber.doubleValue();
+    public static <T extends Number> T castNumber(Class<T> numberClass, Number number) {
+        if (numberClass.equals(byte.class) || numberClass.equals(Byte.class)) {
+            return (T) (Byte) number.byteValue();
+        } else if (numberClass.equals(short.class) || numberClass.equals(Short.class)) {
+            return (T) (Short) number.shortValue();
+        } else if (numberClass.equals(int.class) || numberClass.equals(Integer.class)) {
+            return (T) (Integer) number.intValue();
+        } else if (numberClass.equals(long.class) || numberClass.equals(Long.class)) {
+            return (T) (Long) number.longValue();
+        } else if (numberClass.equals(float.class) || numberClass.equals(Float.class)) {
+            return (T) (Float) number.floatValue();
+        } else if (numberClass.equals(double.class) || numberClass.equals(Double.class)) {
+            return (T) (Double) number.doubleValue();
         }
-        return null;
+        return (T) number;
     }
 
 }

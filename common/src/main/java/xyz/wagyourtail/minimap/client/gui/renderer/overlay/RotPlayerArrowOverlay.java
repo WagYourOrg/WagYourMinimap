@@ -12,10 +12,10 @@ import xyz.wagyourtail.minimap.api.config.MinimapClientConfig;
 import xyz.wagyourtail.minimap.client.gui.renderer.AbstractMapRenderer;
 import xyz.wagyourtail.minimap.client.gui.renderer.AbstractMinimapRenderer;
 
-public class RotPlayerArrow extends AbstractMapOverlayRenderer {
+public class RotPlayerArrowOverlay extends AbstractMapOverlayRenderer {
     private static final ResourceLocation player_icon_tex = new ResourceLocation(WagYourMinimap.MOD_ID, "textures/player_arrow.png");
 
-    public RotPlayerArrow(AbstractMinimapRenderer parent) {
+    public RotPlayerArrowOverlay(AbstractMinimapRenderer parent) {
         super(parent);
     }
 
