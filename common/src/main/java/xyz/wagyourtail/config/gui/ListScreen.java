@@ -16,13 +16,14 @@ import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 
-public class ListScreen<T> extends Screen implements EnabledSettingList.EntryController<T>, DisabledSettingList.EntryController<T> {
+public class ListScreen<T, U> extends Screen implements EnabledSettingList.EntryController<T>, DisabledSettingList.EntryController<U> {
     private final Screen parent;
     private final SettingField<T[]> setting;
     private EnabledSettingList<T> enabledEntries;
-    private DisabledSettingList<T> availableEntries;
+    private DisabledSettingList<U> availableEntries;
 
     protected ListScreen(Component component, Screen parent, SettingField<T[]> setting) {
         super(component);
@@ -88,6 +89,7 @@ public class ListScreen<T> extends Screen implements EnabledSettingList.EntryCon
                 } else {
                     NamedEditBox box = this.addRenderableWidget(new NamedEditBox(font, this.width / 2 + 4, this.height / 2 - 20, 200, 20, new TranslatableComponent("gui.wagyourconfig.addentry")));
                     this.addRenderableWidget(new Button(this.width / 2 + 4, this.height / 2 + 4, 200, 20, new TranslatableComponent("gui.wagyourconfig.submit"), (b) -> {
+                        if (!setting.setting.allowDuplicateOption() && this.enabledEntries.children().stream().anyMatch(e -> e.option.equals(box.getValue()))) return;
                         this.enabledEntries.children().add(new EnabledSettingList.EnabledSettingEntry(minecraft,
                             this,
                             enabledEntries,
@@ -105,11 +107,12 @@ public class ListScreen<T> extends Screen implements EnabledSettingList.EntryCon
                 if (options != null) {
                     this.addWidget(availableEntries = new DisabledSettingList<>(minecraft, width > 810 ? 400 : 200, this.height));
                     this.availableEntries.setLeftPos(this.width / 2 + 4);
-                    this.availableEntries.children().addAll(options.stream().map(e ->
+                    List<Class<T>> enabledEntries = this.enabledEntries.children().stream().map(e -> (Class<T>) e.option.getClass()).collect(Collectors.toList());
+                    this.availableEntries.children().addAll(options.stream().filter(e -> !enabledEntries.contains(e) || setting.setting.allowDuplicateOption()).map(e ->
                         new DisabledSettingList.DisabledSettingEntry<>(minecraft,
                             this,
                             availableEntries,
-                            e,
+                           (U)e,
                             new TranslatableComponent(e.getAnnotation(SettingsContainer.class).value()))
                     ).collect(Collectors.toList()));
                 } else {
@@ -148,19 +151,74 @@ public class ListScreen<T> extends Screen implements EnabledSettingList.EntryCon
     @Override
     public void unselect(EnabledSettingList.EnabledSettingEntry<T> option) {
         enabledEntries.children().remove(option);
+        if (!setting.setting.allowDuplicateOption()) {
+            try {
+                Collection<String> options = (Collection<String>) setting.options();
+                if (setting.fieldType.componentType().equals(char.class) || setting.fieldType.componentType().equals(Character.class)) {
+                    throw new RuntimeException("NON Object List not yet implemented");
+                } else if (setting.fieldType.componentType().isPrimitive() || Number.class.isAssignableFrom(setting.fieldType.componentType())) {
+                    throw new RuntimeException("NON Object List not yet implemented");
+                } else if (setting.fieldType.componentType().equals(String.class)) {
+                    if (options != null) {
+                        throw new RuntimeException("STRING OPTIONS NOT YET IMPLEMENTED");
+                    }
+                } else if (setting.fieldType.componentType().isEnum()) {
+                    throw new RuntimeException("NON Object List not yet implemented");
+                } else if (setting.fieldType.componentType().isArray()) {
+                    throw new RuntimeException("NON Object List not yet implemented");
+                } else {
+                    if (options != null) {
+                        availableEntries.children().add(new DisabledSettingList.DisabledSettingEntry<>(
+                            minecraft,
+                            this,
+                            availableEntries,
+                            (U) option.option.getClass(),
+                            new TranslatableComponent(((Class<T>) option.option.getClass()).getAnnotation(SettingsContainer.class).value())
+                        ));
+                    }
+                }
+            } catch (InvocationTargetException | IllegalAccessException | NoSuchMethodException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @Override
-    public void select(DisabledSettingList.DisabledSettingEntry<T> option) {
+    public void select(DisabledSettingList.DisabledSettingEntry<U> option) {
+        if (!setting.setting.allowDuplicateOption()) {
+            availableEntries.children().remove(option);
+        }
         try {
-            enabledEntries.children().add(new EnabledSettingList.EnabledSettingEntry<>(
-                minecraft,
-                this,
-                enabledEntries,
-                option.option.getConstructor().newInstance(),
-                new TranslatableComponent(option.option.getAnnotation(SettingsContainer.class).value())
-            ));
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+            if (setting.fieldType.componentType().equals(char.class) || setting.fieldType.componentType().equals(Character.class)) {
+                throw new RuntimeException("NON Object List not yet implemented");
+            } else if (setting.fieldType.componentType().isPrimitive() || Number.class.isAssignableFrom(setting.fieldType.componentType())) {
+                throw new RuntimeException("NON Object List not yet implemented");
+            } else if (setting.fieldType.componentType().equals(String.class)) {
+                Collection<String> options = (Collection<String>) setting.options();
+                if (options != null) {
+                    throw new RuntimeException("STRING OPTIONS NOT YET IMPLEMENTED");
+                } else {
+                    throw new RuntimeException("NON Object List not yet implemented");
+                }
+            } else if (setting.fieldType.componentType().isEnum()) {
+                throw new RuntimeException("NON Object List not yet implemented");
+            } else if (setting.fieldType.componentType().isArray()) {
+                throw new RuntimeException("NON Object List not yet implemented");
+            } else {
+                Collection<String> options = (Collection<String>) setting.options();
+                if (options != null) {
+                enabledEntries.children().add(new EnabledSettingList.EnabledSettingEntry<>(
+                    minecraft,
+                    this,
+                    enabledEntries,
+                    ((Class<T>) option.option).getConstructor().newInstance(),
+                    new TranslatableComponent(((Class<T>) option.option).getAnnotation(SettingsContainer.class).value())
+                ));
+                } else {
+                    throw new RuntimeException("NON Options Object List not yet implemented");
+                }
+            }
+        } catch (InvocationTargetException | IllegalAccessException | NoSuchMethodException | InstantiationException e) {
             e.printStackTrace();
         }
     }

@@ -54,9 +54,9 @@ public class DisabledSettingList<T> extends ObjectSelectionList<DisabledSettingL
         private final DisabledSettingList.EntryController<T> parentScreen;
         private final DisabledSettingList<T> parent;
         private final Component name;
-        public final Class<T> option;
+        public final T option;
 
-        public DisabledSettingEntry(Minecraft minecraft, DisabledSettingList.EntryController<T> parentScreen, DisabledSettingList<T> parent, Class<T> option, Component name) {
+        public DisabledSettingEntry(Minecraft minecraft, DisabledSettingList.EntryController<T> parentScreen, DisabledSettingList<T> parent, T option, Component name) {
             this.minecraft = minecraft;
             this.parentScreen = parentScreen;
             this.parent = parent;

@@ -34,4 +34,6 @@ public @interface Setting {
      */
     String enabled() default "";
 
+    boolean allowDuplicateOption() default false;
+
 }

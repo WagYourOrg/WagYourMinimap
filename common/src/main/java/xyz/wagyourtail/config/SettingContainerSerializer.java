@@ -12,6 +12,8 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SettingContainerSerializer {
 
@@ -95,11 +97,15 @@ public class SettingContainerSerializer {
         } else if (fieldClass.isArray()) {
             JsonArray arr = element.getAsJsonArray();
             Class<?> arrElementClass = fieldClass.componentType();
-            T array = (T) Array.newInstance(arrElementClass, arr.size());
+            List<Object> array = new ArrayList<>();
             for (int i = 0; i < arr.size(); ++i) {
-                Array.set(array, i, deserializeArrayField(arr.get(i), arrElementClass));
+                try {
+                    array.add(deserializeArrayField(arr.get(i), arrElementClass));
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                }
             }
-            field.set(array);
+            field.set((T) array.toArray((Object[]) Array.newInstance(arrElementClass, 0)));
         } else {
             JsonObject obj = element.getAsJsonObject();
             Class<?> objClass = Class.forName(obj.get("type").getAsString());
@@ -123,11 +129,13 @@ public class SettingContainerSerializer {
         } else if (fieldClass.isArray()) {
             JsonArray arr = element.getAsJsonArray();
             Class<?> arrElementClass = fieldClass.componentType();
-            T array = (T) Array.newInstance(arrElementClass, arr.size());
+            List<Object> array = new ArrayList<>();
             for (int i = 0; i < arr.size(); ++i) {
-                Array.set(array, i, deserializeArrayField(arr.get(i), arrElementClass));
+                try {
+                    array.add(deserializeArrayField(arr.get(i), arrElementClass));
+                } catch (ClassNotFoundException ignored) {}
             }
-            return array;
+            return (T) array.toArray((Object[]) Array.newInstance(arrElementClass, 0));
         } else {
             JsonObject obj = element.getAsJsonObject();
             T instance = (T) Class.forName(obj.get("type").getAsString()).getConstructor().newInstance();

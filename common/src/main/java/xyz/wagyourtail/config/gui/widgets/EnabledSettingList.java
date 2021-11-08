@@ -155,7 +155,7 @@ public class EnabledSettingList<T> extends ObjectSelectionList<EnabledSettingLis
             }
             if (d > parent.getRowWidth() - 40 && e > 6 && e < 26 && d < parent.getRowWidth() - 20 && option.getClass().isAnnotationPresent(SettingsContainer.class)) {
                 minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
-                ((ListScreen<T>)parentScreen).applyValue();
+                ((ListScreen<T, T>)parentScreen).applyValue();
                 minecraft.setScreen(new SettingScreen(new TranslatableComponent(option.getClass().getAnnotation(SettingsContainer.class).value()), (Screen) parentScreen, option));
                 return true;
             }
