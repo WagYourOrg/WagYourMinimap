@@ -5,9 +5,9 @@ import xyz.wagyourtail.minimap.api.config.AbstractOverlayOptions;
 import xyz.wagyourtail.minimap.api.config.NoRotArrowOverlayOptions;
 import xyz.wagyourtail.minimap.api.config.circle.AbstractCircleStyle;
 import xyz.wagyourtail.minimap.api.config.circle.CircleMapBorderOverlaySettings;
-import xyz.wagyourtail.minimap.client.gui.renderer.circle.norot.CircleMapNoRotRenderer;
-import xyz.wagyourtail.minimap.client.gui.renderer.circle.norot.CircleMapNoRotWaypointOverlay;
-import xyz.wagyourtail.minimap.client.gui.renderer.overlay.NoRotPlayerArrowOverlay;
+import xyz.wagyourtail.minimap.client.gui.hud.map.circle.norot.CircleMapNoRotRenderer;
+import xyz.wagyourtail.minimap.client.gui.hud.map.circle.norot.CircleMapNoRotWaypointOverlay;
+import xyz.wagyourtail.minimap.client.gui.hud.map.NoRotPlayerArrowOverlay;
 
 @SettingsContainer("gui.wagyourminimap.settings.circle_norot_style")
 public class CircleNoRotStyle extends AbstractCircleStyle<CircleMapNoRotRenderer> {

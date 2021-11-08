@@ -7,6 +7,6 @@
         "events.MixinRenderTarget"
     ],
     "mixins": [
-        "events.MixinLevel",
+        "events.MixinLevel"
     ]
 }

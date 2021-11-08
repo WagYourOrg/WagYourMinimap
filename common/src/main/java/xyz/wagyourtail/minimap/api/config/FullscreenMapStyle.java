@@ -7,31 +7,26 @@ import xyz.wagyourtail.minimap.api.config.fullscreenoverlays.*;
 import xyz.wagyourtail.minimap.api.config.layers.AbstractLayerOptions;
 import xyz.wagyourtail.minimap.api.config.layers.LightLayer;
 import xyz.wagyourtail.minimap.api.config.layers.VanillaMapLayer;
-import xyz.wagyourtail.minimap.client.gui.image.AbstractImageStrategy;
-import xyz.wagyourtail.minimap.client.gui.image.BlockLightImageStrategy;
-import xyz.wagyourtail.minimap.client.gui.image.VanillaMapImageStrategy;
-import xyz.wagyourtail.minimap.client.gui.screen.renderer.AbstractFullscreenOverlay;
-import xyz.wagyourtail.minimap.client.gui.screen.renderer.overlay.DataOverlay;
-import xyz.wagyourtail.minimap.client.gui.screen.renderer.overlay.PlayerIconOverlay;
-import xyz.wagyourtail.minimap.client.gui.screen.renderer.overlay.ScaleOverlay;
-import xyz.wagyourtail.minimap.client.gui.screen.renderer.overlay.WaypointOverlay;
+import xyz.wagyourtail.minimap.map.image.AbstractImageStrategy;
+import xyz.wagyourtail.minimap.map.image.BlockLightImageStrategy;
+import xyz.wagyourtail.minimap.map.image.VanillaMapImageStrategy;
+import xyz.wagyourtail.minimap.client.gui.screen.map.AbstractFullscreenOverlay;
+import xyz.wagyourtail.minimap.client.gui.screen.map.DataOverlay;
+import xyz.wagyourtail.minimap.client.gui.screen.map.PlayerIconOverlay;
+import xyz.wagyourtail.minimap.client.gui.screen.map.ScaleOverlay;
+import xyz.wagyourtail.minimap.client.gui.screen.map.WaypointOverlay;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @SettingsContainer("gui.wagyourminimap.settings.fullscreen_map")
 public class FullscreenMapStyle {
+    public Map<Class<? extends AbstractImageStrategy>, Class<? extends AbstractLayerOptions>> availableLayers = new ConcurrentHashMap<>();
 
-//    public Map<Class<? extends AbstractMapOverlayRenderer>, Class<? extends AbstractOverlayOptions>> availableOverlays = new HashMap<>();
-
-    public Map<Class<? extends AbstractImageStrategy>, Class<? extends AbstractLayerOptions>> availableLayers = new HashMap<>();
-
-    public Map<Class<? extends AbstractFullscreenOverlay>, Class<? extends AbstractFullscreenOverlayOptions>> availableOverlays = new HashMap<>();
-
-//    @Setting(value = "gui.wagyourminimap.settings.style.overlay", options = "overlayOptions")
-//    public AbstractOverlayOptions<?>[] overlays;
+    public Map<Class<? extends AbstractFullscreenOverlay>, Class<? extends AbstractFullscreenOverlayOptions>> availableOverlays = new ConcurrentHashMap<>();
 
     @Setting(value = "gui.wagyourminimap.settings.style.layers", options = "layerOptions", setter = "setLayers")
     public AbstractLayerOptions<?>[] layers;

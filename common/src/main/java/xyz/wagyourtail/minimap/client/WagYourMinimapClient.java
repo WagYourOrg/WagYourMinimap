@@ -9,13 +9,13 @@ import net.minecraft.client.KeyMapping;
 import xyz.wagyourtail.minimap.WagYourMinimap;
 import xyz.wagyourtail.minimap.api.MinimapApi;
 import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
-import xyz.wagyourtail.minimap.client.gui.InGameHud;
-import xyz.wagyourtail.minimap.client.gui.InGameWaypointRenderer;
+import xyz.wagyourtail.minimap.client.gui.hud.InGameHud;
+import xyz.wagyourtail.minimap.client.world.InGameWaypointRenderer;
 import xyz.wagyourtail.minimap.map.MapServer;
-import xyz.wagyourtail.minimap.map.chunkdata.cache.InMemoryCacher;
-import xyz.wagyourtail.minimap.map.chunkdata.cache.ZipCacher;
-import xyz.wagyourtail.minimap.map.chunkdata.updater.BlockUpdateStrategy;
-import xyz.wagyourtail.minimap.map.chunkdata.updater.ChunkLoadStrategy;
+import xyz.wagyourtail.minimap.chunkdata.cache.InMemoryCacher;
+import xyz.wagyourtail.minimap.chunkdata.cache.ZipCacher;
+import xyz.wagyourtail.minimap.chunkdata.updater.BlockUpdateStrategy;
+import xyz.wagyourtail.minimap.chunkdata.updater.ChunkLoadStrategy;
 
 public class WagYourMinimapClient extends WagYourMinimap {
     private static final KeyMapping key_openmap = new KeyMapping("key.wagyourminimap.openmap", InputConstants.KEY_M, "WagYourMinimap");

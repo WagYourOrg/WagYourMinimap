@@ -2,8 +2,8 @@ package xyz.wagyourtail.minimap.api.config.circle;
 
 import xyz.wagyourtail.config.field.SettingsContainer;
 import xyz.wagyourtail.minimap.api.config.AbstractOverlayOptions;
-import xyz.wagyourtail.minimap.client.gui.renderer.AbstractMinimapRenderer;
-import xyz.wagyourtail.minimap.client.gui.renderer.circle.CircleMapBorderOverlay;
+import xyz.wagyourtail.minimap.client.gui.hud.map.AbstractMinimapRenderer;
+import xyz.wagyourtail.minimap.client.gui.hud.map.circle.CircleMapBorderOverlay;
 
 
 @SettingsContainer("gui.wagyourminimap.settings.overlay.map_border")

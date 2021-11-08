@@ -5,10 +5,10 @@ import xyz.wagyourtail.minimap.api.config.AbstractOverlayOptions;
 import xyz.wagyourtail.minimap.api.config.RotArrowOverlayOptions;
 import xyz.wagyourtail.minimap.api.config.square.AbstractSquareStyle;
 import xyz.wagyourtail.minimap.api.config.square.SquareMapBorderOverlaySettings;
-import xyz.wagyourtail.minimap.client.gui.renderer.overlay.RotPlayerArrowOverlay;
-import xyz.wagyourtail.minimap.client.gui.renderer.square.rotate.SquareMapRotNorthIcon;
-import xyz.wagyourtail.minimap.client.gui.renderer.square.rotate.SquareMapRotRenderer;
-import xyz.wagyourtail.minimap.client.gui.renderer.square.rotate.SquareMapRotWaypointOverlay;
+import xyz.wagyourtail.minimap.client.gui.hud.map.RotPlayerArrowOverlay;
+import xyz.wagyourtail.minimap.client.gui.hud.map.square.rotate.SquareMapRotNorthIcon;
+import xyz.wagyourtail.minimap.client.gui.hud.map.square.rotate.SquareMapRotRenderer;
+import xyz.wagyourtail.minimap.client.gui.hud.map.square.rotate.SquareMapRotWaypointOverlay;
 
 @SettingsContainer("gui.wagyourminimap.settings.square_rot_style")
 public class SquareRotStyle extends AbstractSquareStyle<SquareMapRotRenderer> {

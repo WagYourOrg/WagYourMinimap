@@ -2,10 +2,10 @@ package xyz.wagyourtail.minimap.api;
 
 import dev.architectury.event.Event;
 import dev.architectury.event.EventFactory;
-import xyz.wagyourtail.minimap.map.chunkdata.ChunkData;
-import xyz.wagyourtail.minimap.map.chunkdata.ChunkLocation;
-import xyz.wagyourtail.minimap.map.chunkdata.parts.DataPart;
-import xyz.wagyourtail.minimap.map.chunkdata.updater.AbstractChunkUpdateStrategy;
+import xyz.wagyourtail.minimap.chunkdata.ChunkData;
+import xyz.wagyourtail.minimap.chunkdata.ChunkLocation;
+import xyz.wagyourtail.minimap.chunkdata.parts.DataPart;
+import xyz.wagyourtail.minimap.chunkdata.updater.AbstractChunkUpdateStrategy;
 import xyz.wagyourtail.minimap.waypoint.Waypoint;
 
 public class MinimapEvents {

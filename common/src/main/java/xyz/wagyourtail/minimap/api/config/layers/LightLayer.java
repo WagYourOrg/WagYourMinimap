@@ -2,7 +2,7 @@ package xyz.wagyourtail.minimap.api.config.layers;
 
 import xyz.wagyourtail.config.field.Setting;
 import xyz.wagyourtail.config.field.SettingsContainer;
-import xyz.wagyourtail.minimap.client.gui.image.BlockLightImageStrategy;
+import xyz.wagyourtail.minimap.map.image.BlockLightImageStrategy;
 
 @SettingsContainer("gui.wagyourminimap.setting.layers.light")
 public class LightLayer extends AbstractLayerOptions<BlockLightImageStrategy> {

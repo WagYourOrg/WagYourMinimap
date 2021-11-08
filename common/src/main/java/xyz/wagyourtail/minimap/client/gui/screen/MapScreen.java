@@ -16,11 +16,9 @@ import xyz.wagyourtail.minimap.api.client.MinimapClientEvents;
 import xyz.wagyourtail.minimap.api.config.MinimapClientConfig;
 import xyz.wagyourtail.minimap.api.config.fullscreenoverlays.AbstractFullscreenOverlayOptions;
 import xyz.wagyourtail.minimap.api.config.layers.AbstractLayerOptions;
-import xyz.wagyourtail.minimap.client.gui.image.AbstractImageStrategy;
-import xyz.wagyourtail.minimap.client.gui.renderer.overlay.AbstractMapOverlayRenderer;
-import xyz.wagyourtail.minimap.client.gui.screen.renderer.AbstractFullscreenOverlay;
-import xyz.wagyourtail.minimap.client.gui.screen.renderer.ScreenMapRenderer;
-import xyz.wagyourtail.minimap.client.gui.screen.settings.SettingsScreen;
+import xyz.wagyourtail.minimap.map.image.AbstractImageStrategy;
+import xyz.wagyourtail.minimap.client.gui.screen.map.AbstractFullscreenOverlay;
+import xyz.wagyourtail.minimap.client.gui.screen.map.ScreenMapRenderer;
 import xyz.wagyourtail.minimap.client.gui.screen.widget.InteractMenu;
 import xyz.wagyourtail.minimap.client.gui.screen.widget.MenuButton;
 

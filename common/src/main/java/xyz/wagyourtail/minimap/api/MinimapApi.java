@@ -7,8 +7,8 @@ import net.minecraft.world.level.Level;
 import xyz.wagyourtail.config.ConfigManager;
 import xyz.wagyourtail.minimap.api.config.MinimapConfig;
 import xyz.wagyourtail.minimap.map.MapServer;
-import xyz.wagyourtail.minimap.map.chunkdata.cache.CacheManager;
-import xyz.wagyourtail.minimap.map.chunkdata.updater.AbstractChunkUpdateStrategy;
+import xyz.wagyourtail.minimap.chunkdata.cache.CacheManager;
+import xyz.wagyourtail.minimap.chunkdata.updater.AbstractChunkUpdateStrategy;
 
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;

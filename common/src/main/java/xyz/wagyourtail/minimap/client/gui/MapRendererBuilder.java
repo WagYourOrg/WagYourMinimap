@@ -1,9 +1,8 @@
 package xyz.wagyourtail.minimap.client.gui;
 
-import xyz.wagyourtail.minimap.client.gui.image.AbstractImageStrategy;
-import xyz.wagyourtail.minimap.client.gui.renderer.AbstractMapRenderer;
-import xyz.wagyourtail.minimap.client.gui.renderer.AbstractMinimapRenderer;
-import xyz.wagyourtail.minimap.client.gui.renderer.overlay.AbstractMapOverlayRenderer;
+import xyz.wagyourtail.minimap.map.image.AbstractImageStrategy;
+import xyz.wagyourtail.minimap.client.gui.hud.map.AbstractMinimapRenderer;
+import xyz.wagyourtail.minimap.client.gui.hud.map.AbstractMapOverlayRenderer;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;

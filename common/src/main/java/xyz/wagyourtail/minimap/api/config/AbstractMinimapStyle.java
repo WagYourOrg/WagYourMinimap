@@ -1,30 +1,30 @@
 package xyz.wagyourtail.minimap.api.config;
 
 import xyz.wagyourtail.config.field.Setting;
-import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
 import xyz.wagyourtail.minimap.api.config.layers.AbstractLayerOptions;
 import xyz.wagyourtail.minimap.api.config.layers.LightLayer;
 import xyz.wagyourtail.minimap.api.config.layers.VanillaMapLayer;
-import xyz.wagyourtail.minimap.client.gui.InGameHud;
+import xyz.wagyourtail.minimap.client.gui.hud.InGameHud;
 import xyz.wagyourtail.minimap.client.gui.MapRendererBuilder;
-import xyz.wagyourtail.minimap.client.gui.image.AbstractImageStrategy;
-import xyz.wagyourtail.minimap.client.gui.image.BlockLightImageStrategy;
-import xyz.wagyourtail.minimap.client.gui.image.VanillaMapImageStrategy;
-import xyz.wagyourtail.minimap.client.gui.renderer.AbstractMinimapRenderer;
-import xyz.wagyourtail.minimap.client.gui.renderer.overlay.AbstractMapOverlayRenderer;
+import xyz.wagyourtail.minimap.map.image.AbstractImageStrategy;
+import xyz.wagyourtail.minimap.map.image.BlockLightImageStrategy;
+import xyz.wagyourtail.minimap.map.image.VanillaMapImageStrategy;
+import xyz.wagyourtail.minimap.client.gui.hud.map.AbstractMinimapRenderer;
+import xyz.wagyourtail.minimap.client.gui.hud.map.AbstractMapOverlayRenderer;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 @SuppressWarnings("rawtypes")
 public abstract class AbstractMinimapStyle<T extends AbstractMinimapRenderer> {
-    public Map<Class<? extends AbstractMapOverlayRenderer>, Class<? extends AbstractOverlayOptions>> availableOverlays = new HashMap<>();
+    public Map<Class<? extends AbstractMapOverlayRenderer>, Class<? extends AbstractOverlayOptions>> availableOverlays = new ConcurrentHashMap<>();
 
-    public Map<Class<? extends AbstractImageStrategy>, Class<? extends AbstractLayerOptions>> availableLayers = new HashMap<>();
+    public Map<Class<? extends AbstractImageStrategy>, Class<? extends AbstractLayerOptions>> availableLayers = new ConcurrentHashMap<>();
 
     @Setting(value = "gui.wagyourminimap.settings.style.overlay", options = "overlayOptions", setter = "setOverlays")
     public AbstractOverlayOptions<?>[] overlays;

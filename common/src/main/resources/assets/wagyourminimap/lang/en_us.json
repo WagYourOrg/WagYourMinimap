@@ -21,6 +21,7 @@
   "gui.wagyourminimap.settings.waypoint_beam": "Waypoint Beam",
   "gui.wagyourminimap.settings.chunk_radius": "Minimap Chunk Radius:",
   "gui.wagyourminimap.settings.style.overlay": "Overlay",
+  "gui.wagyourminimap.settings.overlay.scale": "Scale",
   "gui.wagyourminimap.settings.style.layers": "Layers",
   "gui.wagyourminimap.setting.layers.vanilla_map": "Vanilla Map",
   "gui.wagyourminimap.setting.layers.light": "Light",
