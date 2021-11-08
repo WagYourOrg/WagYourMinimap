@@ -14,8 +14,11 @@ import xyz.wagyourtail.minimap.WagYourMinimap;
 import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
 import xyz.wagyourtail.minimap.api.client.MinimapClientEvents;
 import xyz.wagyourtail.minimap.api.config.MinimapClientConfig;
+import xyz.wagyourtail.minimap.api.config.fullscreenoverlays.AbstractFullscreenOverlayOptions;
 import xyz.wagyourtail.minimap.api.config.layers.AbstractLayerOptions;
 import xyz.wagyourtail.minimap.client.gui.image.AbstractImageStrategy;
+import xyz.wagyourtail.minimap.client.gui.renderer.overlay.AbstractMapOverlayRenderer;
+import xyz.wagyourtail.minimap.client.gui.screen.renderer.AbstractFullscreenOverlay;
 import xyz.wagyourtail.minimap.client.gui.screen.renderer.ScreenMapRenderer;
 import xyz.wagyourtail.minimap.client.gui.screen.settings.SettingsScreen;
 import xyz.wagyourtail.minimap.client.gui.screen.widget.InteractMenu;
@@ -111,7 +114,7 @@ public class MapScreen extends Screen {
         super.init();
 
         renderer = new ScreenMapRenderer();
-//        renderer.setOverlays(Arrays.stream(MinimapClientApi.getInstance().getConfig().get(MinimapClientConfig.class).fullscreenMapStyle.overlays).map(e -> e.compileOverlay(renderer)).toArray(AbstractMapOverlayRenderer[]::new));
+        renderer.setOverlays(Arrays.stream(MinimapClientApi.getInstance().getConfig().get(MinimapClientConfig.class).fullscreenMapStyle.overlays).map(AbstractFullscreenOverlayOptions::compileOverlay).toArray(AbstractFullscreenOverlay[]::new));
         renderer.setRenderLayers(Arrays.stream(MinimapClientApi.getInstance().getConfig().get(MinimapClientConfig.class).fullscreenMapStyle.layers).map(AbstractLayerOptions::compileLayer).toArray(AbstractImageStrategy[]::new));
         renderer.computeDimensions(width, height);
         renderer.moveCenter(minecraft.player.position());

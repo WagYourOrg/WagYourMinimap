@@ -52,7 +52,7 @@ public class SquareMapNoRotWaypointOverlay extends AbstractMapOverlayRenderer {
             } else {
                 RenderSystem.setShaderTexture(0, waypoint_tex);
             }
-            int abgr = 0xFF000000 | point.colB << 0x10 | point.colG << 0x8 | point.colR & 255;
+            int abgr = 0xFF000000 | point.colB & 0xFF << 0x10 | point.colG & 0xFF << 0x8 | point.colR & 0xFF;
             AbstractMapRenderer.drawTexCol(stack, -10, -10, 20, 20, 1, 1, 0, 0, abgr);
             if (scale >= 1)
                 minecraft.font.draw(stack, point.name, -minecraft.font.width(point.name) / 2f, 10, 0xFFFFFF);

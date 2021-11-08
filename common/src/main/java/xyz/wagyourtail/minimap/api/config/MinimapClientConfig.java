@@ -51,7 +51,7 @@ public class MinimapClientConfig {
     @Setting(value = "gui.wagyourminimap.settings.map_location")
     public InGameHud.SnapSide snapSide = InGameHud.SnapSide.TOP_RIGHT;
 
-    @Setting(value = "gui.wagyourminimap.settings.chunk_radius")
+    @Setting(value = "gui.wagyourminimap.settings.chunk_radius", getter = "getChunkRadius", setter = "setChunkRadius")
     @IntRange(from = 1, to = 30)
     public int chunkRadius = 5;
     @Setting(value = "gui.wagyourminimap.settings.minimap_style", options = "mapStyles", setter = "setMinimapStyle")
@@ -94,6 +94,14 @@ public class MinimapClientConfig {
 
     public Collection<Class<? extends AbstractWaypointFilterOptions>> waypointFilters() {
         return waypointFilterOptions.values();
+    }
+
+    public int getChunkRadius() {
+        return chunkRadius - 1;
+    }
+
+    public void setChunkRadius(int chunkRadius) {
+        this.chunkRadius = chunkRadius + 1;
     }
 
 }

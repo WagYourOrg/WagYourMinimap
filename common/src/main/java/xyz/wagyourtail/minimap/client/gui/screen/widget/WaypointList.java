@@ -85,7 +85,7 @@ public class WaypointList extends ObjectSelectionList<WaypointList.WaypointListE
         public void render(PoseStack poseStack, int index, int top, int left, int width, int height, int mouseX, int mouseY, boolean isMouseOver, float partialTick) {
             RenderSystem.setShaderTexture(0, waypoint_tex);
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-            int abgr = 0xFF000000 | point.colB << 0x10 | point.colG << 0x8 | point.colR & 255;
+            int abgr = 0xFF000000 | point.colB & 0xFF << 0x10 | point.colG & 0xFF << 0x8 | point.colR & 0xFF;
             AbstractMapRenderer.drawTexCol(poseStack, left + 1, top + 1, height - 2, height - 2, 0, 0, 1, 1, abgr);
             mc.font.draw(poseStack, Language.getInstance().getVisualOrder(mc.font.substrByWidth(name, width - 100)), left + height + 3, top + 1, 0xFFFFFF);
             RenderSystem.disableBlend();

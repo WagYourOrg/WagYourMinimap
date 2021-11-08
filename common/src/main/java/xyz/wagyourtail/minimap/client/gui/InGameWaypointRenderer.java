@@ -39,41 +39,42 @@ public class InGameWaypointRenderer {
             Vec3 offset = new Vec3(pos.getX() + .5f, pos.getY() + .5f, pos.getZ() + .5f).subtract(center);
             Vec3 normalized_offset = offset.normalize().multiply(20, 20, 20);
             stack.translate(normalized_offset.x, normalized_offset.y, normalized_offset.z);
+            double distance = offset.distanceTo(Vec3.ZERO);
 
-            stack.pushPose();
-            renderWaypointIcon(stack, offset, xRot, yRot, visibleWaypoint);
-            stack.popPose();
-
-            if (showBeam) {
+            if (showBeam && distance < 256) {
                 stack.pushPose();
-                renderWaypointBeam(stack, center, xRot, yRot, visibleWaypoint);
+                renderWaypointBeam(stack, center, xRot, yRot, visibleWaypoint, distance);
                 stack.popPose();
             }
+
+            stack.pushPose();
+            renderWaypointIcon(stack, offset, xRot, yRot, visibleWaypoint, distance);
+            stack.popPose();
             stack.popPose();
         }
         RenderSystem.enableDepthTest();
         stack.popPose();
     }
 
-    public static void renderWaypointIcon(PoseStack stack, Vec3 offset, float xRot, float yRot, Waypoint waypoint) {
+    public static void renderWaypointIcon(PoseStack stack, Vec3 offset, float xRot, float yRot, Waypoint waypoint, double distance) {
         stack.mulPose(Vector3f.YP.rotationDegrees(-yRot));
         stack.mulPose(Vector3f.XP.rotationDegrees(xRot));
         stack.mulPose(Vector3f.ZP.rotationDegrees(180));
-        float scale = (float) Math.max(.0675, -offset.distanceTo(Vec3.ZERO) / 50f * .0625 + .125f);
+        float scale = (float) Math.max(.0675, -distance / 50f * .0625 + .125f);
         stack.scale(scale, scale, scale);
         RenderSystem.setShaderTexture(0, waypoint_tex);
-        int abgr = 0xFF000000 | waypoint.colB << 0x10 | waypoint.colG << 0x8 | waypoint.colR & 255;
+        int abgr = 0xFF000000 | waypoint.colB & 0xFF << 0x10 | waypoint.colG & 0xFF << 0x8 | waypoint.colR & 0xFF;
         AbstractMapRenderer.drawTexCol(stack, -10, -10, 20, 20, 0, 0, 1, 1, abgr);
         if (isLookingAt(offset.normalize(), xRot, yRot)) {
             drawText(stack, String.format("%s (%.2f m)", waypoint.name, offset.distanceTo(Vec3.ZERO)));
         }
     }
 
-    public static void renderWaypointBeam(PoseStack stack, Vec3 offset, float xRot, float yRot, Waypoint waypoint) {
+    public static void renderWaypointBeam(PoseStack stack, Vec3 offset, float xRot, float yRot, Waypoint waypoint, double distance) {
         stack.mulPose(Vector3f.YP.rotationDegrees(-yRot));
 //        stack.mulPose(Vector3f.XP.rotationDegrees(xRot));
         stack.mulPose(Vector3f.ZP.rotationDegrees(180));
-        float scale = (float) Math.max(.0675, -offset.distanceTo(Vec3.ZERO) / 50f * .0625 + .125f);
+        float scale = (float) Math.max(.0675, -distance / 50f * .0625 + .125f);
         stack.scale(scale, scale, scale);
         Matrix4f matrix = stack.last().pose();
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
