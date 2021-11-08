@@ -21,7 +21,7 @@ public class ChunkData {
     public final ChunkLocation location;
     private static final ResourceLocation air = new ResourceLocation("minecraft", "air");
     private final List<ResourceLocation> resources = new ArrayList<>();
-    private Map<String, Derivative<?>> derivatives = new HashMap<>();
+    private final Map<String, Derivative<?>> derivatives = new HashMap<>();
     public long updateTime;
     public boolean changed = false;
 
@@ -144,7 +144,6 @@ public class ChunkData {
     }
 
     public void invalidateDerivitives() {
-        if (derivatives == null) return;
         for (Derivative<?> der : derivatives.values()) {
             der.old = true;
         }
@@ -163,7 +162,6 @@ public class ChunkData {
     }
 
     public void closeDerivatives() {
-        if (derivatives == null) return;
         for (Derivative<?> der : derivatives.values()) {
             der.old = true;
             der.setContained(null);
