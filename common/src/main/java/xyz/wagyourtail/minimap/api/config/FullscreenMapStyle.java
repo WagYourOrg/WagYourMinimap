@@ -69,12 +69,18 @@ public class FullscreenMapStyle {
 
     public void setLayers(AbstractLayerOptions[] layers) {
         this.layers = layers;
-        MinimapClientApi.getInstance().screen.renderer.setRenderLayers(Arrays.stream(layers).map(AbstractLayerOptions::compileLayer).toArray(AbstractImageStrategy[]::new));
+        try {
+            MinimapClientApi.getInstance().screen.renderer.setRenderLayers(Arrays.stream(layers).map(
+                AbstractLayerOptions::compileLayer).toArray(AbstractImageStrategy[]::new));
+        } catch (NullPointerException ignored) {}
     }
 
     public void setOverlays(AbstractFullscreenOverlayOptions[] overlays) {
         this.overlays = overlays;
-        MinimapClientApi.getInstance().screen.renderer.setOverlays(Arrays.stream(overlays).map(AbstractFullscreenOverlayOptions::compileOverlay).toArray(AbstractFullscreenOverlay[]::new));
+        try {
+            MinimapClientApi.getInstance().screen.renderer.setOverlays(Arrays.stream(overlays).map(
+                AbstractFullscreenOverlayOptions::compileOverlay).toArray(AbstractFullscreenOverlay[]::new));
+        } catch (NullPointerException ignored) {}
     }
 
 }

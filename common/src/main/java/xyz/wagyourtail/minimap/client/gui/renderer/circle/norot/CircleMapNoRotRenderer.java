@@ -1,30 +1,24 @@
-package xyz.wagyourtail.minimap.client.gui.renderer.square.rotate;
+package xyz.wagyourtail.minimap.client.gui.renderer.circle.norot;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Matrix4f;
-import com.mojang.math.Vector3f;
-import com.mojang.math.Vector4f;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL11;
-import xyz.wagyourtail.minimap.WagYourMinimap;
 import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
 import xyz.wagyourtail.minimap.api.config.MinimapClientConfig;
 import xyz.wagyourtail.minimap.client.ModloaderSpecific;
 import xyz.wagyourtail.minimap.client.gui.renderer.AbstractMinimapRenderer;
+import xyz.wagyourtail.minimap.client.gui.renderer.circle.CircleMapBorderOverlay;
 import xyz.wagyourtail.minimap.client.gui.renderer.overlay.AbstractMapOverlayRenderer;
-import xyz.wagyourtail.minimap.client.gui.renderer.square.SquareMapBorderOverlay;
 
-public class SquareMapRotRenderer extends AbstractMinimapRenderer {
-    private static final float sqrt_2 = (float) Math.sqrt(2);
+public class CircleMapNoRotRenderer extends AbstractMinimapRenderer {
 
-    public SquareMapRotRenderer() {
-        overlays = new AbstractMapOverlayRenderer[] {new SquareMapBorderOverlay(this)};
+    public CircleMapNoRotRenderer() {
+        overlays = new AbstractMapOverlayRenderer[] {new CircleMapBorderOverlay(this)};
     }
 
     @Override
@@ -60,20 +54,12 @@ public class SquareMapRotRenderer extends AbstractMinimapRenderer {
         RenderSystem.stencilMask(0xFF);
         RenderSystem.clear(GL11.GL_STENCIL_BUFFER_BIT, false);
         RenderSystem.disableBlend();
-        rect(matrixStack, 0, 0, maxLength, maxLength);
+        circle(matrixStack, maxLength / 2, maxLength / 2,maxLength / 2, 50);
         RenderSystem.enableBlend();
         RenderSystem.colorMask(true, true, true, true);
         RenderSystem.depthMask(true);
         RenderSystem.stencilMask(0x00);
         RenderSystem.stencilFunc(GL11.GL_EQUAL, 1, 0xFF);
-
-        // rotate minimap
-        matrixStack.translate(maxLength / 2, maxLength / 2, 0);
-        matrixStack.mulPose(Vector3f.ZN.rotationDegrees(player_rot - 180));
-
-        // scale so rotate doesn't leave blank area
-        matrixStack.scale(sqrt_2, sqrt_2, 1);
-        matrixStack.translate(-maxLength / 2, -maxLength / 2, 0);
 
         int i = 0;
         int j = 0;
@@ -104,8 +90,32 @@ public class SquareMapRotRenderer extends AbstractMinimapRenderer {
         GL11.glDisable(GL11.GL_STENCIL_TEST);
     }
 
+    public void circle(PoseStack matrixStack, float x, float y, float radius, int segments) {
+        matrixStack.translate(x, y, 0);
+        Matrix4f matrix = matrixStack.last().pose();
+        RenderSystem.enableBlend();
+        RenderSystem.disableTexture();
+        RenderSystem.defaultBlendFunc();
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        BufferBuilder builder = Tesselator.getInstance().getBuilder();
+        builder.begin(VertexFormat.Mode.TRIANGLE_FAN, DefaultVertexFormat.POSITION_COLOR);
+        float dAngle = (float) (2 * Math.PI / segments);
+        builder.vertex(matrix, 0, 0, 0).color(0f,0f,0f,1f).endVertex();
+        builder.vertex(matrix, radius, 0, 0).color(0f,0f,0f,1f).endVertex();
+        float currentAngle = -dAngle;
+        for (int i = 1; i < segments; i++) {
+            builder.vertex(matrix, (float) Math.cos(currentAngle) * radius, (float) Math.sin(currentAngle) * radius, 0).color(0f,0f,0f,1f).endVertex();
+            currentAngle -= dAngle;
+        }
+        builder.vertex(matrix, radius, 0, 0).color(0f,0f,0f,1f).endVertex();
+        builder.end();
+        BufferUploader.end(builder);
+        matrixStack.translate(-x, -y, 0);
+    }
+
     @Override
     public void renderText(PoseStack matrixStack, float maxLength, boolean bottom, Component... textLines) {
+        matrixStack.translate(0, 10, 0);
         float lineOffset = 0;
         for (Component textLine : textLines) {
             int len = minecraft.font.width(textLine);
@@ -122,5 +132,4 @@ public class SquareMapRotRenderer extends AbstractMinimapRenderer {
             }
         }
     }
-
 }

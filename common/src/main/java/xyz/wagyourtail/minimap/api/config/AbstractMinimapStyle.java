@@ -5,6 +5,7 @@ import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
 import xyz.wagyourtail.minimap.api.config.layers.AbstractLayerOptions;
 import xyz.wagyourtail.minimap.api.config.layers.LightLayer;
 import xyz.wagyourtail.minimap.api.config.layers.VanillaMapLayer;
+import xyz.wagyourtail.minimap.client.gui.InGameHud;
 import xyz.wagyourtail.minimap.client.gui.MapRendererBuilder;
 import xyz.wagyourtail.minimap.client.gui.image.AbstractImageStrategy;
 import xyz.wagyourtail.minimap.client.gui.image.BlockLightImageStrategy;
@@ -50,13 +51,13 @@ public abstract class AbstractMinimapStyle<T extends AbstractMinimapRenderer> {
 
     public void setOverlays(AbstractOverlayOptions<?>[] overlays) {
         this.overlays = overlays;
-        AbstractMinimapRenderer renderer = MinimapClientApi.getInstance().inGameHud.getRenderer();
+        AbstractMinimapRenderer renderer = InGameHud.getRenderer();
         renderer.setOverlays(Arrays.stream(overlays).map(e -> e.compileOverlay(renderer)).toArray(AbstractMapOverlayRenderer[]::new));
     }
 
     public void setLayers(AbstractLayerOptions<?>[] layers) {
         this.layers = layers;
-        MinimapClientApi.getInstance().inGameHud.getRenderer().setRenderLayers(Arrays.stream(layers).map(AbstractLayerOptions::compileLayer).toArray(AbstractImageStrategy[]::new));
+        InGameHud.getRenderer().setRenderLayers(Arrays.stream(layers).map(AbstractLayerOptions::compileLayer).toArray(AbstractImageStrategy[]::new));
     }
 
     public T compileMapRenderer() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {

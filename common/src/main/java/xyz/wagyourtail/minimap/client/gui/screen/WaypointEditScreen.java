@@ -19,12 +19,11 @@ import xyz.wagyourtail.minimap.map.MapServer;
 import xyz.wagyourtail.minimap.waypoint.Waypoint;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
 import java.util.List;
-import java.util.Set;
 
 public class WaypointEditScreen extends Screen {
+    private static final Random random = new Random();
     private final static Gson gson = new Gson();
     private final Screen parent;
     private final Waypoint prev_point;
@@ -44,7 +43,7 @@ public class WaypointEditScreen extends Screen {
 
     public static WaypointEditScreen createNewFromPos(Screen parent, BlockPos pos) {
         Minecraft mc = Minecraft.getInstance();
-        int color = Color.HSBtoRGB((float)Math.random(), 1f, 1f);
+        int color = Color.HSBtoRGB(random.nextFloat(), 1f, 1f);
         String[] dims;
         if (mc.level.dimension().equals(Level.OVERWORLD) || mc.level.dimension().equals(Level.NETHER)) {
             dims = new String[]{MapServer.getLevelName(Level.OVERWORLD), MapServer.getLevelName(Level.NETHER)};

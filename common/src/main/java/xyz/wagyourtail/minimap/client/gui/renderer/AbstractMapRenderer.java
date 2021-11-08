@@ -121,7 +121,6 @@ public abstract class AbstractMapRenderer {
 
     public void rect(PoseStack matrixStack, float x, float y, float width, float height) {
         Matrix4f matrix = matrixStack.last().pose();
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.enableBlend();
         RenderSystem.disableTexture();
         RenderSystem.defaultBlendFunc();

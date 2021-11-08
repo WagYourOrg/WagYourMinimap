@@ -9,6 +9,7 @@ import net.minecraft.client.KeyMapping;
 import xyz.wagyourtail.minimap.WagYourMinimap;
 import xyz.wagyourtail.minimap.api.MinimapApi;
 import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
+import xyz.wagyourtail.minimap.client.gui.InGameHud;
 import xyz.wagyourtail.minimap.client.gui.InGameWaypointRenderer;
 import xyz.wagyourtail.minimap.map.MapServer;
 import xyz.wagyourtail.minimap.map.chunkdata.cache.InMemoryCacher;
@@ -31,7 +32,7 @@ public class WagYourMinimapClient extends WagYourMinimap {
 
         ClientGuiEvent.RENDER_HUD.register((matrix, delta) -> {
             try {
-                MinimapClientApi.getInstance().inGameHud.render(matrix, delta);
+                InGameHud.render(matrix, delta);
             } catch (Throwable t) {
                 t.printStackTrace();
             }
@@ -59,7 +60,7 @@ public class WagYourMinimapClient extends WagYourMinimap {
         });
         InGameWaypointRenderer.RENDER_LAST.register((stack, partial, finish) -> {
             try {
-                MinimapClientApi.getInstance().waypointRenderer.onRender(stack, partial, finish);
+                InGameWaypointRenderer.onRender(stack, partial, finish);
             } catch (Throwable t) {
                 t.printStackTrace();
             }

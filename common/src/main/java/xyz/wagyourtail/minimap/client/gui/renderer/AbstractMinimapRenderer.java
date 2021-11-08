@@ -30,8 +30,8 @@ public abstract class AbstractMinimapRenderer extends AbstractMapRenderer {
 
         boolean bottom = MinimapClientApi.getInstance().getConfig().get(MinimapClientConfig.class).snapSide.bottom;
 
-        float posX = MinimapClientApi.getInstance().getConfig().get(MinimapClientConfig.class).snapSide.right ? w - minimapSize - 5 : MinimapClientApi.getInstance().getConfig().get(MinimapClientConfig.class).snapSide.center ? w / 2f - minimapSize / 2f : 5;
-        float posZ = bottom ? h - minimapSize - minecraft.font.lineHeight - 10 : 5;
+        float posX = MinimapClientApi.getInstance().getConfig().get(MinimapClientConfig.class).snapSide.right ? w - minimapSize - 10 : MinimapClientApi.getInstance().getConfig().get(MinimapClientConfig.class).snapSide.center ? w / 2f - minimapSize / 2f : 10;
+        float posZ = bottom ? h - minimapSize - minecraft.font.lineHeight - 10 : 10;
         Vec3 player_pos = player.getPosition(tickDelta);
         float player_rot = player.getYRot();
 

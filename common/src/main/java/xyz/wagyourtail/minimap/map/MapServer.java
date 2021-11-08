@@ -75,7 +75,7 @@ public class MapServer {
     }
 
     public static String getLevelName(ResourceKey<Level> dimension) {
-        return dimension.location().toString().replace(":", "_");
+        return dimension.location().toString().replace(":", "/");
     }
 
     @Override

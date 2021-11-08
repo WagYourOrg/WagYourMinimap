@@ -67,8 +67,8 @@ public class ConfigManager {
                 }
             }
             try {
-                return SettingContainerSerializer.deserialize(rawConfig.get(configRegistry.get(configClass)).getAsJsonObject(), configClass);
-            } catch (ClassNotFoundException | InvocationTargetException | NoSuchMethodException | InstantiationException | IllegalAccessException e) {
+                return SettingContainerSerializer.deserialze(rawConfig.get(configRegistry.get(configClass)).getAsJsonObject(), configClass);
+            } catch (InvocationTargetException | NoSuchMethodException | InstantiationException | IllegalAccessException e) {
                 throw new RuntimeException(e);
             }
         }

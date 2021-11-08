@@ -12,9 +12,7 @@ import xyz.wagyourtail.minimap.client.gui.screen.MapScreen;
 
 public class MinimapClientApi extends MinimapApi {
     protected final Minecraft mc = Minecraft.getInstance();
-    public final InGameHud inGameHud = new InGameHud();
     public final MapScreen screen = new MapScreen();
-    public final InGameWaypointRenderer waypointRenderer = new InGameWaypointRenderer();
 
     protected MinimapClientApi() {
         super();

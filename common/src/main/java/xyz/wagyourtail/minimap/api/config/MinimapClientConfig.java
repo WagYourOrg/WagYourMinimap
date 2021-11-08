@@ -4,11 +4,15 @@ import xyz.wagyourtail.config.field.IntRange;
 import xyz.wagyourtail.config.field.Setting;
 import xyz.wagyourtail.config.field.SettingsContainer;
 import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
+import xyz.wagyourtail.minimap.api.config.circle.norot.CircleNoRotStyle;
+import xyz.wagyourtail.minimap.api.config.circle.rot.CircleRotStyle;
 import xyz.wagyourtail.minimap.api.config.square.norot.SquareNoRotStyle;
 import xyz.wagyourtail.minimap.api.config.square.rot.SquareRotStyle;
 import xyz.wagyourtail.minimap.api.config.waypointfilter.*;
 import xyz.wagyourtail.minimap.client.gui.InGameHud;
 import xyz.wagyourtail.minimap.client.gui.renderer.AbstractMapRenderer;
+import xyz.wagyourtail.minimap.client.gui.renderer.circle.norot.CircleMapNoRotRenderer;
+import xyz.wagyourtail.minimap.client.gui.renderer.circle.rot.CircleMapRotRenderer;
 import xyz.wagyourtail.minimap.client.gui.renderer.square.norot.SquareMapNoRotRenderer;
 import xyz.wagyourtail.minimap.client.gui.renderer.square.rotate.SquareMapRotRenderer;
 import xyz.wagyourtail.minimap.waypoint.WaypointManager;
@@ -29,6 +33,8 @@ public class MinimapClientConfig {
     static {
         minimapStyleOptions.put(SquareMapNoRotRenderer.class, SquareNoRotStyle.class);
         minimapStyleOptions.put(SquareMapRotRenderer.class, SquareRotStyle.class);
+        minimapStyleOptions.put(CircleMapNoRotRenderer.class, CircleNoRotStyle.class);
+        minimapStyleOptions.put(CircleMapRotRenderer.class, CircleRotStyle.class);
 
         waypointFilterOptions.put(EnabledFilter.class, EnabledFilterOptions.class);
         waypointFilterOptions.put(DistanceFilter.class, DistanceFilterOptions.class);
@@ -37,11 +43,14 @@ public class MinimapClientConfig {
     }
 
     public final FullscreenMapStyle fullscreenMapStyle = new FullscreenMapStyle();
+
     @Setting(value = "gui.wagyourminimap.settings.minimap_scale")
     @IntRange(from = 0, to = 100)
     public int minimapScale = 30;
+
     @Setting(value = "gui.wagyourminimap.settings.map_location")
     public InGameHud.SnapSide snapSide = InGameHud.SnapSide.TOP_RIGHT;
+
     @Setting(value = "gui.wagyourminimap.settings.chunk_radius")
     @IntRange(from = 1, to = 30)
     public int chunkRadius = 5;
@@ -54,6 +63,9 @@ public class MinimapClientConfig {
     @Setting(value = "gui.wagyourminimap.settings.show_waypoints")
     public boolean showWaypoints = true;
 
+    @Setting(value = "gui.wagyourminimap.settings.waypoint_beam")
+    public boolean showWaypointBeam = true;
+
     public MinimapClientConfig() {
         //default style
         setMinimapStyle(new SquareNoRotStyle());
@@ -64,7 +76,7 @@ public class MinimapClientConfig {
     public void setMinimapStyle(AbstractMinimapStyle<?> style) {
         this.style = style;
         try {
-            MinimapClientApi.getInstance().inGameHud.setRenderer(style.compileMapRenderer());
+            InGameHud.setRenderer(style.compileMapRenderer());
         } catch (InvocationTargetException | NoSuchMethodException | InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
         }

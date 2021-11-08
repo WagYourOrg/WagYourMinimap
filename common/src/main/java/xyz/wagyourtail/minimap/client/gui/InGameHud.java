@@ -7,17 +7,17 @@ import xyz.wagyourtail.minimap.client.gui.renderer.AbstractMinimapRenderer;
 
 public class InGameHud {
     protected final Minecraft client = Minecraft.getInstance();
-    protected AbstractMinimapRenderer renderer;
+    protected static AbstractMinimapRenderer renderer;
 
-    public AbstractMinimapRenderer getRenderer() {
+    public static AbstractMinimapRenderer getRenderer() {
         return renderer;
     }
 
-    public void setRenderer(AbstractMinimapRenderer renderer) {
-        this.renderer = renderer;
+    public static void setRenderer(AbstractMinimapRenderer renderer) {
+        InGameHud.renderer = renderer;
     }
 
-    public void render(@NotNull PoseStack matrixStack, float tickDelta) {
+    public static void render(@NotNull PoseStack matrixStack, float tickDelta) {
         renderer.render(matrixStack, tickDelta);
     }
 

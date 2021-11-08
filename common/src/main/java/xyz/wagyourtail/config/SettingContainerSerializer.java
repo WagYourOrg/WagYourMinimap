@@ -56,25 +56,23 @@ public class SettingContainerSerializer {
         }
     }
 
-    public static <T> T deserialize(JsonObject obj, Class<T> settingClass) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, ClassNotFoundException {
-        T settingContainer = settingClass.getConstructor().newInstance();
-        deserialize(obj, settingContainer);
-        return settingContainer;
+    public static <T> T deserialze(JsonObject obj, Class<T> settingsContainer) throws IllegalAccessException, InstantiationException, InvocationTargetException, NoSuchMethodException {
+        T settings = settingsContainer.getConstructor().newInstance();
+        deserializeInternal(obj, settings);
+        return settings;
     }
 
-    private static <T> void deserialize(JsonObject obj, T settingsContainer) {
+    private static <T> void deserializeInternal(JsonObject obj, T settingsContainer) {
         Field[] fields = settingsContainer.getClass().getFields();
         for (Field field : fields) {
             try {
                 if (field.isAnnotationPresent(Setting.class)) {
                     if (obj.has(field.getName())) {
-                        new SettingField<>(settingsContainer, field, (Class<Object>)field.getType()).set(
-                            deserializeField(obj.get(field.getName()), field.getType())
-                        );
+                        deserializeField(obj.get(field.getName()), new SettingField<>(settingsContainer, field, (Class<Object>)field.getType()));
                     }
                 } else if (Modifier.isFinal(field.getModifiers()) && field.getType().isAnnotationPresent(SettingsContainer.class)) {
                     if (obj.has(field.getName()))
-                        deserialize(obj.get(field.getName()).getAsJsonObject(), field.get(settingsContainer));
+                        deserializeInternal(obj.get(field.getName()).getAsJsonObject(), field.get(settingsContainer));
                 }
             } catch (Throwable t) {
                 t.printStackTrace();
@@ -82,7 +80,36 @@ public class SettingContainerSerializer {
         }
     }
 
-    private static <T> T deserializeField(JsonElement element, Class<T> fieldClass) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+    private static <T> void deserializeField(JsonElement element, SettingField<T> field) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        Class<T> fieldClass = field.fieldType;
+        if (fieldClass.equals(char.class) || fieldClass.equals(Character.class)) {
+            field.set((T) (Character) element.getAsCharacter());
+        } else if (fieldClass.equals(boolean.class) || fieldClass.equals(Boolean.class)) {
+            field.set((T) (Boolean) element.getAsBoolean());
+        } else if (fieldClass.equals(String.class)) {
+            field.set((T) element.getAsString());
+        } else if (fieldClass.isPrimitive() || Number.class.isAssignableFrom(fieldClass)) {
+            field.set((T) castNumber((Class<Number>) fieldClass, element.getAsNumber()));
+        } else if (fieldClass.isEnum()) {
+            field.set((T) Enum.valueOf((Class<Enum>) fieldClass, element.getAsString()));
+        } else if (fieldClass.isArray()) {
+            JsonArray arr = element.getAsJsonArray();
+            Class<?> arrElementClass = fieldClass.componentType();
+            T array = (T) Array.newInstance(arrElementClass, arr.size());
+            for (int i = 0; i < arr.size(); ++i) {
+                Array.set(array, i, deserializeArrayField(arr.get(i), arrElementClass));
+            }
+            field.set(array);
+        } else {
+            JsonObject obj = element.getAsJsonObject();
+            Class<?> objClass = Class.forName(obj.get("type").getAsString());
+            T objContainer = (T) objClass.getConstructor().newInstance();
+            field.set(objContainer);
+            deserializeInternal(obj.getAsJsonObject("value"), objContainer);
+        }
+    }
+
+    private static <T> T deserializeArrayField(JsonElement element, Class<T> fieldClass) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         if (fieldClass.equals(char.class) || fieldClass.equals(Character.class)) {
             return (T) (Character) element.getAsCharacter();
         } else if (fieldClass.equals(boolean.class) || fieldClass.equals(Boolean.class)) {
@@ -98,12 +125,14 @@ public class SettingContainerSerializer {
             Class<?> arrElementClass = fieldClass.componentType();
             T array = (T) Array.newInstance(arrElementClass, arr.size());
             for (int i = 0; i < arr.size(); ++i) {
-                Array.set(array, i, deserializeField(arr.get(i), arrElementClass));
+                Array.set(array, i, deserializeArrayField(arr.get(i), arrElementClass));
             }
             return array;
         } else {
             JsonObject obj = element.getAsJsonObject();
-            return (T) deserialize(obj.get("value").getAsJsonObject(), Class.forName(obj.get("type").getAsString()));
+            T instance = (T) Class.forName(obj.get("type").getAsString()).getConstructor().newInstance();
+            deserializeInternal(obj.getAsJsonObject("value"), instance);
+            return instance;
         }
     }
 
