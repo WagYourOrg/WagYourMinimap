@@ -9,7 +9,9 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.ChunkStatus;
+import xyz.wagyourtail.minimap.api.MinimapApi;
 import xyz.wagyourtail.minimap.chunkdata.parts.SurfaceDataPart;
+import xyz.wagyourtail.minimap.map.MapServer;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -20,7 +22,7 @@ public class BlockUpdateStrategy extends AbstractChunkUpdateStrategy<SurfaceData
     private final LoadingCache<BlockUpdateData, Runnable> updateCache = CacheBuilder.newBuilder().expireAfterWrite(5000, TimeUnit.MILLISECONDS).removalListener((a) -> ((Runnable) a.getValue()).run()).build(new CacheLoader<>() {
         @Override
         public Runnable load(BlockUpdateData key) {
-            return () -> updateNeighborLighting(key.level, key.chunkX, key.chunkZ);
+            return () -> updateNeighborLighting(key.level, key.mclevel, key.chunkX, key.chunkZ);
         }
     });
 
@@ -28,14 +30,14 @@ public class BlockUpdateStrategy extends AbstractChunkUpdateStrategy<SurfaceData
         super();
     }
 
-    public void updateNeighborLighting(Level level, int chunkX, int chunkZ) {
+    public void updateNeighborLighting(MapServer.MapLevel level, Level mclevel, int chunkX, int chunkZ) {
         for (int i = chunkX - 1; i < chunkX + 2; ++i) {
             for (int j = chunkZ - 1; j < chunkZ + 2; ++j) {
-                if (level.hasChunk(i, j)) {
-                    ChunkAccess chunk = level.getChunk(i, j, ChunkStatus.FULL, false);
+                if (mclevel.hasChunk(i, j)) {
+                    ChunkAccess chunk = mclevel.getChunk(i, j, ChunkStatus.FULL, false);
                     if (chunk == null) continue;
                     //TODO: update lighting only function
-                    updateChunk(getChunkLocation(level, i, j), (location, parent, oldData) -> ChunkLoadStrategy.loadFromChunk(chunk, level, parent, oldData));
+                    updateChunk(getChunkLocation(level, i, j), (location, parent, oldData) -> ChunkLoadStrategy.loadFromChunk(chunk, level, mclevel, parent, oldData));
                 }
             }
         }
@@ -44,10 +46,11 @@ public class BlockUpdateStrategy extends AbstractChunkUpdateStrategy<SurfaceData
     @Override
     protected void registerEventListener() {
         BLOCK_UPDATE_EVENT.register((pos, level) -> {
+            if (level != mc.level) return;
             int chunkX = pos.getX() >> 4;
             int chunkZ = pos.getZ() >> 4;
             try {
-                updateCache.get(new BlockUpdateData(level, chunkX, chunkZ));
+                updateCache.get(new BlockUpdateData(MinimapApi.getInstance().getMapServer().getCurrentLevel(), level, chunkX, chunkZ));
             } catch (ExecutionException e) {
                 e.printStackTrace();
             }
@@ -64,7 +67,7 @@ public class BlockUpdateStrategy extends AbstractChunkUpdateStrategy<SurfaceData
 
     }
 
-    private record BlockUpdateData(Level level, int chunkX, int chunkZ) {
+    private record BlockUpdateData(MapServer.MapLevel level, Level mclevel, int chunkX, int chunkZ) {
     }
 
 }

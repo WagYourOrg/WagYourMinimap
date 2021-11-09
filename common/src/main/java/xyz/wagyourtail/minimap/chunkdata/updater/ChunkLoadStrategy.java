@@ -13,8 +13,10 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.lighting.LayerLightEventListener;
+import xyz.wagyourtail.minimap.api.MinimapApi;
 import xyz.wagyourtail.minimap.chunkdata.ChunkData;
 import xyz.wagyourtail.minimap.chunkdata.parts.SurfaceDataPart;
+import xyz.wagyourtail.minimap.map.MapServer;
 
 public class ChunkLoadStrategy extends AbstractChunkUpdateStrategy<SurfaceDataPart> {
 
@@ -27,10 +29,12 @@ public class ChunkLoadStrategy extends AbstractChunkUpdateStrategy<SurfaceDataPa
     @Override
     protected void registerEventListener() {
         LOAD.register((chunk, level) -> {
+            if (level != mc.level) return;
+            MapServer.MapLevel mapLevel = MinimapApi.getInstance().getMapServer().getCurrentLevel();
             ChunkPos pos = chunk.getPos();
             updateChunk(
-                getChunkLocation(level, pos),
-                (location, parent, oldData) -> loadFromChunk(chunk, level, parent, oldData)
+                getChunkLocation(mapLevel, pos),
+                (location, parent, oldData) -> loadFromChunk(chunk, mapLevel, level, parent, oldData)
             );
         });
     }
@@ -40,22 +44,22 @@ public class ChunkLoadStrategy extends AbstractChunkUpdateStrategy<SurfaceDataPa
         return SurfaceDataPart.class;
     }
 
-    public static SurfaceDataPart loadFromChunk(ChunkAccess chunk, Level level, ChunkData parent, SurfaceDataPart oldSurfaceData) {
+    public static SurfaceDataPart loadFromChunk(ChunkAccess chunk, MapServer.MapLevel level, Level mclevel, ChunkData parent, SurfaceDataPart oldSurfaceData) {
         SurfaceDataPart data = new SurfaceDataPart(parent);
         data.parent.updateTime = System.currentTimeMillis();
         ChunkPos pos = chunk.getPos();
         //TODO: replace with chunk section stuff to not use a MutableBlockPos at all (see baritone), maybe not possible since we need light levels too
         BlockPos.MutableBlockPos blockPos = new BlockPos.MutableBlockPos();
-        Registry<Biome> biomeRegistry = level.registryAccess().registryOrThrow(Registry.BIOME_REGISTRY);
-        LayerLightEventListener light = getBlockLightLayer(level);
-        if (level.dimensionType().hasCeiling()) {
-            int ceiling = level.dimensionType().logicalHeight() - 1;
+        Registry<Biome> biomeRegistry = mclevel.registryAccess().registryOrThrow(Registry.BIOME_REGISTRY);
+        LayerLightEventListener light = getBlockLightLayer(mclevel);
+        if (mclevel.dimensionType().hasCeiling()) {
+            int ceiling = mclevel.dimensionType().logicalHeight() - 1;
             for (int i = 0; i < 256; ++i) {
                 int x = (i >> 4) % 16;
                 int z = i % 16;
                 blockPos.set((pos.x << 4) + x, 0, (pos.z << 4) + z);
                 boolean air = false;
-                for (int j = ceiling; j > level.getMinBuildHeight(); --j) {
+                for (int j = ceiling; j > mclevel.getMinBuildHeight(); --j) {
                     Block block = chunk.getBlockState(blockPos.setY(j)).getBlock();
                     if (block instanceof AirBlock) {
                         air = true;

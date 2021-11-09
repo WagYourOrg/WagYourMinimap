@@ -17,7 +17,7 @@ public class DataOverlay extends AbstractFullscreenOverlay {
         int x = (int) (parent.topX + parent.xDiam * mouseX / parent.width);
         int z = (int) (parent.topZ + parent.zDiam * mouseY / parent.height);
 
-        MapServer.MapLevel level = MinimapApi.getInstance().getMapLevel(minecraft.level);
+        MapServer.MapLevel level = MinimapApi.getInstance().getMapServer().getCurrentLevel();
         ChunkData chunk = ChunkLocation.locationForChunkPos(level, x >> 4, z >> 4).get();
         int y = 0;
         String biome = "unknown";

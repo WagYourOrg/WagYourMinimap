@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import xyz.wagyourtail.minimap.WagYourMinimap;
 import xyz.wagyourtail.minimap.api.MinimapApi;
 import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
-import xyz.wagyourtail.minimap.api.config.MinimapClientConfig;
+import xyz.wagyourtail.minimap.api.client.config.MinimapClientConfig;
 import xyz.wagyourtail.minimap.client.gui.AbstractMapRenderer;
 import xyz.wagyourtail.minimap.client.gui.hud.map.AbstractMapOverlayRenderer;
 import xyz.wagyourtail.minimap.client.gui.hud.map.AbstractMinimapRenderer;

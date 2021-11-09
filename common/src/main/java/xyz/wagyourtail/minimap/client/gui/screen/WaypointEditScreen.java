@@ -37,7 +37,7 @@ public class WaypointEditScreen extends Screen {
     protected EditBox groups;
     protected EditBox dims;
     protected EditBox extra;
-    protected Set<String> realDims = MinimapApi.getInstance().getMapServer().getAvailableLevels();
+    protected Set<String> realDims = MinimapApi.getInstance().getMapServer().currentLevelNameSupplier.availableLevels;
     protected List<Component> sideText;
     protected boolean canceled = false;
 
@@ -46,9 +46,9 @@ public class WaypointEditScreen extends Screen {
         int color = Color.HSBtoRGB(random.nextFloat(), 1f, 1f);
         String[] dims;
         if (mc.level.dimension().equals(Level.OVERWORLD) || mc.level.dimension().equals(Level.NETHER)) {
-            dims = new String[]{MapServer.getLevelName(Level.OVERWORLD), MapServer.getLevelName(Level.NETHER)};
+            dims = new String[]{"minecraft/overworld", "minecraft/the_nether"};
         } else {
-            dims = new String[]{MapServer.getLevelName(mc.level)};
+            dims = new String[]{MinimapApi.getInstance().getMapServer().getCurrentLevel().level_slug()};
         }
 
         return new WaypointEditScreen(parent, new Waypoint(mc.level.dimensionType().coordinateScale(), pos.getX(), pos.getY(), pos.getZ(), (byte) (color >> 16 & 0xFF), (byte) (color >> 8 & 0xFF), (byte) (color & 0xFF), "", new String[] {"default"}, dims, new JsonObject(), true, false));

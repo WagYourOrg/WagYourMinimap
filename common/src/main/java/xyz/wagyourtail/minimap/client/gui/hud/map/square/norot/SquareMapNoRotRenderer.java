@@ -6,7 +6,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
-import xyz.wagyourtail.minimap.api.config.MinimapClientConfig;
+import xyz.wagyourtail.minimap.api.client.config.MinimapClientConfig;
 import xyz.wagyourtail.minimap.client.gui.hud.map.AbstractMapOverlayRenderer;
 import xyz.wagyourtail.minimap.client.gui.hud.map.square.SquareMapBorderOverlay;
 import xyz.wagyourtail.minimap.client.gui.hud.map.AbstractMinimapRenderer;

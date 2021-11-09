@@ -10,7 +10,7 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL11;
 import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
-import xyz.wagyourtail.minimap.api.config.MinimapClientConfig;
+import xyz.wagyourtail.minimap.api.client.config.MinimapClientConfig;
 import xyz.wagyourtail.minimap.ModLoaderSpecific;
 import xyz.wagyourtail.minimap.client.gui.hud.map.AbstractMinimapRenderer;
 import xyz.wagyourtail.minimap.client.gui.hud.map.circle.CircleMapBorderOverlay;

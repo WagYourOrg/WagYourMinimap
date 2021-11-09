@@ -56,10 +56,6 @@ public abstract class MinimapApi {
         return config;
     }
 
-    public synchronized MapServer.MapLevel getMapLevel(Level current) {
-        return getMapServer().getLevel(current);
-    }
-
     public synchronized MapServer getMapServer() {
         if (currentServer == null || !getServerName().equals(currentServer.server_slug)) {
             currentServer = new MapServer(getServerName());

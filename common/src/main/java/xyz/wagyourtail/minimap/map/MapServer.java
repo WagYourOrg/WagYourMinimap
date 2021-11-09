@@ -16,24 +16,19 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class MapServer {
+    private static final Minecraft mc = Minecraft.getInstance();
     private static final ThreadPoolExecutor save_pool = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.NANOSECONDS, new LinkedBlockingQueue<>());
     private final Map<String, MapLevel> levels = new HashMap<>();
-    private final Set<String> availableLevels;
     public final String server_slug;
     public final WaypointManager waypoints;
+    public LevelSupplier currentLevelNameSupplier = new VanillaLevelSupplier();
 
     public MapServer(String server_slug) {
         this.server_slug = server_slug;
-        ClientPacketListener packetListener = Minecraft.getInstance().getConnection();
-        if (packetListener != null) {
-            this.availableLevels = ImmutableSet.copyOf(packetListener.levels().stream().map(MapServer::getLevelName).collect(
-                Collectors.toSet()));
-        } else {
-            this.availableLevels = ImmutableSet.of();
-        }
         this.waypoints = new WaypointManager(this);
     }
 
@@ -54,28 +49,13 @@ public class MapServer {
         lock.acquire();
     }
 
-    public synchronized MapLevel getLevel(Level level) {
-        //TODO: test and figure out how to deal with on multiverse/waterfall servers
-        String level_slug = getLevelName(level);
-        return levels.computeIfAbsent(level_slug, (slug) -> new MapLevel(this, level_slug, level.getMinBuildHeight(), level.getMaxBuildHeight()));
+    public MapLevel getCurrentLevel() {
+        assert mc.level != null;
+        return getLevelFor(currentLevelNameSupplier.get(), mc.level.dimensionType());
     }
 
-    public synchronized MapLevel getLevel(ResourceKey<Level> dimension, DimensionType dimType) {
-        //TODO: test and figure out how to deal with on multiverse/waterfall servers
-        String level_slug = getLevelName(dimension);
-        return levels.computeIfAbsent(level_slug, (slug) -> new MapLevel(this, level_slug, dimType.minY(), dimType.minY() + dimType.height()));
-    }
-
-    public Set<String> getAvailableLevels() {
-        return availableLevels;
-    }
-
-    public static String getLevelName(Level level) {
-        return getLevelName(level.dimension());
-    }
-
-    public static String getLevelName(ResourceKey<Level> dimension) {
-        return dimension.location().toString().replace(":", "/");
+    public synchronized MapLevel getLevelFor(String name,  DimensionType dimType) {
+        return levels.computeIfAbsent(name, (slug) -> new MapLevel(this, slug, dimType.minY(), dimType.minY() + dimType.height()));
     }
 
     @Override

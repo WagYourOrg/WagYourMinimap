@@ -13,9 +13,9 @@ import net.minecraft.resources.ResourceLocation;
 import xyz.wagyourtail.minimap.WagYourMinimap;
 import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
 import xyz.wagyourtail.minimap.api.client.MinimapClientEvents;
-import xyz.wagyourtail.minimap.api.config.MinimapClientConfig;
-import xyz.wagyourtail.minimap.api.config.fullscreenoverlays.AbstractFullscreenOverlayOptions;
-import xyz.wagyourtail.minimap.api.config.layers.AbstractLayerOptions;
+import xyz.wagyourtail.minimap.api.client.config.MinimapClientConfig;
+import xyz.wagyourtail.minimap.api.client.config.fullscreenoverlays.AbstractFullscreenOverlayOptions;
+import xyz.wagyourtail.minimap.api.client.config.layers.AbstractLayerOptions;
 import xyz.wagyourtail.minimap.map.image.AbstractImageStrategy;
 import xyz.wagyourtail.minimap.client.gui.screen.map.AbstractFullscreenOverlay;
 import xyz.wagyourtail.minimap.client.gui.screen.map.ScreenMapRenderer;
@@ -122,9 +122,6 @@ public class MapScreen extends Screen {
         buttonList.add(new MenuButton(new TranslatableComponent("gui.wagyourminimap.settings"), settings_tex, (btn) -> {
             minecraft.setScreen(new SettingsScreen(this));
         }));
-
-//        buttonList.add(new MenuButton(new TranslatableComponent("gui.wagyourminimap.test"), waypoint_tex, null));
-//        buttonList.add(new MenuButton(new TranslatableComponent("gui.wagyourminimap.test"), waypoint_tex, null));
 
         buttonList.add(new MenuButton(new TranslatableComponent("gui.wagyourminimap.waypoints"), waypoint_tex, (btn) -> {
             minecraft.setScreen(new WaypointListScreen(this));

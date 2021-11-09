@@ -66,8 +66,7 @@ public class Waypoint {
             getKeyOrDefault(waypoint, "colB", JsonElement::getAsByte, (byte) 0),
             getKeyOrDefault(waypoint, "name", JsonElement::getAsString, ""),
             waypoint.has("groups") ? gson.fromJson(waypoint.get("groups"), String[].class) : new String[0],
-            waypoint.has("levels") ? gson.fromJson(waypoint.get("levels"), String[].class) : new String[]{MapServer.getLevelName(
-                Level.OVERWORLD), MapServer.getLevelName(Level.NETHER)},
+            waypoint.has("levels") ? gson.fromJson(waypoint.get("levels"), String[].class) : new String[]{"minecraft/overworld", "minecraft/the_nether"},
             getKeyOrDefault(waypoint, "extra", JsonElement::getAsJsonObject, new JsonObject()),
             getKeyOrDefault(waypoint, "enabled", JsonElement::getAsBoolean, true),
             false

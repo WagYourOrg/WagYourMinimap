@@ -46,7 +46,7 @@ public class InteractMenu extends GuiComponent implements Widget {
     }
 
     private void init() {
-        MapServer.MapLevel level = MinimapApi.getInstance().getMapLevel(minecraft.level);
+        MapServer.MapLevel level = MinimapApi.getInstance().getMapServer().getCurrentLevel();
         int y = 0;
         if (level != null) {
             ChunkData chunk = ChunkLocation.locationForChunkPos(level, (int)x >> 4, (int)z >> 4).get();

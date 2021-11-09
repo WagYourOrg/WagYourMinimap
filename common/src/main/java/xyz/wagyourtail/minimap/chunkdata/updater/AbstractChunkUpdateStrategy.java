@@ -1,5 +1,6 @@
 package xyz.wagyourtail.minimap.chunkdata.updater;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
@@ -9,8 +10,11 @@ import xyz.wagyourtail.minimap.api.MinimapEvents;
 import xyz.wagyourtail.minimap.chunkdata.ChunkData;
 import xyz.wagyourtail.minimap.chunkdata.parts.DataPart;
 import xyz.wagyourtail.minimap.chunkdata.ChunkLocation;
+import xyz.wagyourtail.minimap.map.MapServer;
 
 public abstract class AbstractChunkUpdateStrategy<T extends DataPart<T>> {
+    protected static final Minecraft mc = Minecraft.getInstance();
+
     public AbstractChunkUpdateStrategy() {
         registerEventListener();
     }
@@ -31,12 +35,12 @@ public abstract class AbstractChunkUpdateStrategy<T extends DataPart<T>> {
         }
     }
 
-    protected ChunkLocation getChunkLocation(Level level, int chunkX, int chunkZ) {
-        return ChunkLocation.locationForChunkPos(MinimapApi.getInstance().getMapLevel(level), chunkX, chunkZ);
+    protected ChunkLocation getChunkLocation(MapServer.MapLevel level, int chunkX, int chunkZ) {
+        return ChunkLocation.locationForChunkPos(level, chunkX, chunkZ);
     }
 
-    protected ChunkLocation getChunkLocation(Level level, ChunkPos pos) {
-        return ChunkLocation.locationForChunkPos(MinimapApi.getInstance().getMapLevel(level), pos);
+    protected ChunkLocation getChunkLocation(MapServer.MapLevel level, ChunkPos pos) {
+        return ChunkLocation.locationForChunkPos(level, pos);
     }
 
     public interface ChunkUpdateListener<T extends DataPart<T>> {
