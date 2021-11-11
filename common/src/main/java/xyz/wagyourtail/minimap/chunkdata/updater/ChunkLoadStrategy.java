@@ -10,6 +10,7 @@ import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.AirBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.lighting.LayerLightEventListener;
@@ -60,13 +61,13 @@ public class ChunkLoadStrategy extends AbstractChunkUpdateStrategy<SurfaceDataPa
                 blockPos.set((pos.x << 4) + x, 0, (pos.z << 4) + z);
                 boolean air = false;
                 for (int j = ceiling; j > mclevel.getMinBuildHeight(); --j) {
-                    Block block = chunk.getBlockState(blockPos.setY(j)).getBlock();
-                    if (block instanceof AirBlock) {
+                    BlockState block = chunk.getBlockState(blockPos.setY(j));
+                    if (block.getBlock() instanceof AirBlock) {
                         air = true;
                     } else if (air) {
                         data.heightmap[i] = j;
-                        data.blockid[i] = parent.getOrRegisterResourceLocation(Registry.BLOCK.getKey(block));
-                        data.biomeid[i] = parent.getOrRegisterResourceLocation(biomeRegistry.getKey(chunk.getBiomes().getNoiseBiome(x >> 2, data.heightmap[i] >> 2, z >> 2)));
+                        data.blockid[i] = parent.getOrRegisterBlockState(block);
+                        data.biomeid[i] = parent.getOrRegisterBiome(biomeRegistry.getKey(chunk.getBiomes().getNoiseBiome(x >> 2, data.heightmap[i] >> 2, z >> 2)));
 //                        data.biomeid[i] = data.getOrRegisterResourceLocation(biomeRegistry.getKey(level.getBiome(blockPos)));
                         data.blocklight[i] = (byte) light.getLightValue(blockPos.setY(data.heightmap[i] + 1));
                         break;
@@ -78,18 +79,18 @@ public class ChunkLoadStrategy extends AbstractChunkUpdateStrategy<SurfaceDataPa
                 int x = (i >> 4) % 16;
                 int z = i % 16;
                 data.heightmap[i] = chunk.getHeight(Heightmap.Types.MOTION_BLOCKING, x, z);
-                Block top = chunk.getBlockState(blockPos.set((pos.x << 4) + x, data.heightmap[i], (pos.z << 4) + z)).getBlock();
-                data.blockid[i] = parent.getOrRegisterResourceLocation(Registry.BLOCK.getKey(top));
-                data.biomeid[i] = parent.getOrRegisterResourceLocation(biomeRegistry.getKey(chunk.getBiomes().getNoiseBiome(x >> 2, data.heightmap[i] >> 2, z >> 2)));
+                BlockState top = chunk.getBlockState(blockPos.set((pos.x << 4) + x, data.heightmap[i], (pos.z << 4) + z));
+                data.blockid[i] = parent.getOrRegisterBlockState(top);
+                data.biomeid[i] = parent.getOrRegisterBiome(biomeRegistry.getKey(chunk.getBiomes().getNoiseBiome(x >> 2, data.heightmap[i] >> 2, z >> 2)));
  //                data.biomeid[i] = data.getOrRegisterResourceLocation(biomeRegistry.getKey(level.getBiome(blockPos)));
                 data.blocklight[i] = (byte) light.getLightValue(blockPos.setY(data.heightmap[i] + 1));
 
-                if (top.equals(Blocks.WATER)) {
-                    Block b = top;
-                    while (b.equals(Blocks.WATER))
-                        b = chunk.getBlockState(blockPos.setY(blockPos.getY() - 1)).getBlock();
+                if (top.getBlock().equals(Blocks.WATER)) {
+                    BlockState b = top;
+                    while (b.getBlock().equals(Blocks.WATER))
+                        b = chunk.getBlockState(blockPos.setY(blockPos.getY() - 1));
                     data.oceanFloorHeightmap[i] = blockPos.getY();
-                    data.oceanFloorBlockid[i] = parent.getOrRegisterResourceLocation(Registry.BLOCK.getKey(chunk.getBlockState(blockPos).getBlock()));
+                    data.oceanFloorBlockid[i] = parent.getOrRegisterBlockState(chunk.getBlockState(blockPos));
                 }
             }
         }

@@ -26,7 +26,11 @@ public abstract class DataPart<T extends DataPart<?>> {
 
     public abstract int getBytes();
 
-    public abstract void usedResourceLocations(Set<Integer> used);
+    public abstract void usedBlockStates(Set<Integer> used);
 
-    public abstract void remapResourceLocations(Map<Integer, Integer> map);
+    public abstract void remapBlockStates(Map<Integer, Integer> map);
+
+    public abstract void usedBiomes(Set<Integer> used);
+
+    public abstract void remapBiomes(Map<Integer, Integer> map);
 }

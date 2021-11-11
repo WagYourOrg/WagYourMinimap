@@ -36,7 +36,7 @@ public class SurfaceDataPart extends DataPart<SurfaceDataPart> {
                 changed = changed || newLight != this.blocklight[i];
                 this.blocklight[i] = newLight;
 
-                int newBlockid = idmap.computeIfAbsent(other.blockid[i], k -> parent.getOrRegisterResourceLocation(other.parent.getResourceLocation(k)));
+                int newBlockid = idmap.computeIfAbsent(other.blockid[i], k -> parent.getOrRegisterBlockState(other.parent.getBlockState(k)));
                 changed = changed || newBlockid != this.blockid[i];
                 this.blockid[i] = newBlockid;
 
@@ -86,22 +86,39 @@ public class SurfaceDataPart extends DataPart<SurfaceDataPart> {
     }
 
     @Override
-    public synchronized void usedResourceLocations(Set<Integer> used) {
+    public void usedBlockStates(Set<Integer> used) {
         for (int i = 0; i < 256; ++i) {
             used.add(this.blockid[i]);
-            used.add(this.biomeid[i]);
             used.add(this.oceanFloorBlockid[i]);
         }
     }
 
     @Override
-    public synchronized void remapResourceLocations(Map<Integer, Integer> map) {
+    public synchronized void remapBlockStates(Map<Integer, Integer> map) {
         for (int i = 0; i < 256; ++i) {
             int blockid = this.blockid[i];
             int newBlockid = map.computeIfAbsent(blockid, (k) -> {
                 throw new NullPointerException("No mapping for blockid " + k);
             });
             this.blockid[i] = newBlockid;
+        }
+    }
+
+    @Override
+    public void remapBiomes(Map<Integer, Integer> map) {
+        for (int i = 0; i < 256; ++i) {
+            int biomeid = this.biomeid[i];
+            int newBiomeid = map.computeIfAbsent(biomeid, (k) -> {
+                throw new NullPointerException("No mapping for biomeid " + k);
+            });
+            this.biomeid[i] = newBiomeid;
+        }
+    }
+
+    @Override
+    public void usedBiomes(Set<Integer> used) {
+        for (int i = 0; i < 256; ++i) {
+            used.add(this.biomeid[i]);
         }
     }
 

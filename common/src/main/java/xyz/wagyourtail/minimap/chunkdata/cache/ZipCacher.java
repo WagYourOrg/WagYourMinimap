@@ -12,6 +12,7 @@ import xyz.wagyourtail.minimap.waypoint.Waypoint;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
@@ -62,9 +63,10 @@ public class ZipCacher extends AbstractCacher {
         FileSystem zipfs = getRegionZip(location);
         if (zipfs == null) return null;
         Path dataPath = zipfs.getPath(location.index() + ".data");
-        Path resourcesPath = zipfs.getPath(location.index() + ".resources");
-        if (Files.exists(dataPath) && Files.exists(resourcesPath)) {
-            return loadFromDisk(location, dataPath, resourcesPath);
+        Path blocksPath = zipfs.getPath(location.index() + ".blocks");
+        Path biomesPath = zipfs.getPath(location.index() + ".biomes");
+        if (Files.exists(dataPath) && Files.exists(blocksPath) && Files.exists(biomesPath)) {
+            return loadFromDisk(location, dataPath, blocksPath, biomesPath);
         }
         return null;
     }
@@ -79,14 +81,17 @@ public class ZipCacher extends AbstractCacher {
         FileSystem zipfs = getRegionZip(location);
         if (zipfs == null) throw new NullPointerException("Zip file system is null");
         Path dataPath = zipfs.getPath(location.index() + ".data");
-        Path resourcesPath = zipfs.getPath(location.index() + ".resources");
-        writeToZip(dataPath, resourcesPath, data);
+        Path blocksPath = zipfs.getPath(location.index() + ".blocks");
+        Path biomesPath = zipfs.getPath(location.index() + ".biomes");
+        writeToZip(dataPath, blocksPath, biomesPath, data);
     }
 
-    private synchronized void writeToZip(Path dataPath, Path resourcesPath, ChunkData chunk) {
+    private synchronized void writeToZip(Path dataPath, Path blocksPath, Path biomesPath, ChunkData chunk) {
         try {
-            String resources = chunk.serializeResources();
-            Files.writeString(resourcesPath, resources);
+            String blocks = chunk.serializeBlocks();
+            Files.writeString(blocksPath, blocks);
+            String biomes = chunk.serializeBiomes();
+            Files.writeString(biomesPath, biomes);
             ByteBuffer data = chunk.serialize();
             Files.write(dataPath, data.array());
         } catch (IOException ex) {
@@ -128,7 +133,7 @@ public class ZipCacher extends AbstractCacher {
         zipCache.cleanUp();
     }
 
-    private ChunkData loadFromDisk(ChunkLocation location, Path dataPath, Path resourcesPath) {
+    private ChunkData loadFromDisk(ChunkLocation location, Path dataPath, Path blocksPath, Path biomesPath) {
         ByteBuffer data;
         try (InputStream stream = Files.newInputStream(dataPath)) {
              data = ByteBuffer.wrap(stream.readAllBytes());
@@ -136,8 +141,14 @@ public class ZipCacher extends AbstractCacher {
         } catch (IOException e) {
             throw new RuntimeException("Chunk data error", e);
         }
-        try (InputStream stream = Files.newInputStream(resourcesPath)) {
-            return new ChunkData(location, data, new String(stream.readAllBytes()));
+        String blocks;
+        try (InputStream stream = Files.newInputStream(blocksPath)) {
+            blocks = new String(stream.readAllBytes(), StandardCharsets.UTF_8);
+        } catch (IOException ex) {
+            throw new RuntimeException("Chunk resources error", ex);
+        }
+        try (InputStream stream = Files.newInputStream(biomesPath)) {
+            return new ChunkData(location, data, blocks, new String(stream.readAllBytes(), StandardCharsets.UTF_8));
         } catch (IOException ex) {
             throw new RuntimeException("Chunk resources error", ex);
         }
