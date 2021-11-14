@@ -4,13 +4,13 @@ import xyz.wagyourtail.config.field.Setting;
 import xyz.wagyourtail.minimap.api.client.config.layers.AbstractLayerOptions;
 import xyz.wagyourtail.minimap.api.client.config.layers.LightLayer;
 import xyz.wagyourtail.minimap.api.client.config.layers.VanillaMapLayer;
-import xyz.wagyourtail.minimap.client.gui.hud.InGameHud;
 import xyz.wagyourtail.minimap.client.gui.MapRendererBuilder;
+import xyz.wagyourtail.minimap.client.gui.hud.InGameHud;
+import xyz.wagyourtail.minimap.client.gui.hud.map.AbstractMapOverlayRenderer;
+import xyz.wagyourtail.minimap.client.gui.hud.map.AbstractMinimapRenderer;
 import xyz.wagyourtail.minimap.map.image.AbstractImageStrategy;
 import xyz.wagyourtail.minimap.map.image.BlockLightImageStrategy;
 import xyz.wagyourtail.minimap.map.image.VanillaMapImageStrategy;
-import xyz.wagyourtail.minimap.client.gui.hud.map.AbstractMinimapRenderer;
-import xyz.wagyourtail.minimap.client.gui.hud.map.AbstractMapOverlayRenderer;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
@@ -51,12 +51,16 @@ public abstract class AbstractMinimapStyle<T extends AbstractMinimapRenderer> {
     public void setOverlays(AbstractOverlayOptions<?>[] overlays) {
         this.overlays = overlays;
         AbstractMinimapRenderer renderer = InGameHud.getRenderer();
-        renderer.setOverlays(Arrays.stream(overlays).map(e -> e.compileOverlay(renderer)).toArray(AbstractMapOverlayRenderer[]::new));
+        renderer.setOverlays(Arrays.stream(overlays)
+            .map(e -> e.compileOverlay(renderer))
+            .toArray(AbstractMapOverlayRenderer[]::new));
     }
 
     public void setLayers(AbstractLayerOptions<?>[] layers) {
         this.layers = layers;
-        InGameHud.getRenderer().setRenderLayers(Arrays.stream(layers).map(AbstractLayerOptions::compileLayer).toArray(AbstractImageStrategy[]::new));
+        InGameHud.getRenderer().setRenderLayers(Arrays.stream(layers)
+            .map(AbstractLayerOptions::compileLayer)
+            .toArray(AbstractImageStrategy[]::new));
     }
 
     public T compileMapRenderer() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {

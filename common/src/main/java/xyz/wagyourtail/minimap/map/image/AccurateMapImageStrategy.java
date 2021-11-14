@@ -14,30 +14,33 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class AccurateMapImageStrategy extends VanillaMapImageStrategy {
 
+    private static final Random random = new Random();
     protected Map<BlockState, Integer> blockColorCache = new ConcurrentHashMap<>();
-    private static Random random = new Random();
+
+    @Override
+    public int getWaterColor(BlockState block, BlockPos pos, @Nullable Biome biome) {
+        return super.getWaterColor(block, pos, biome);
+    }
 
     @Override
     public int getBlockColor(BlockState block, BlockPos pos) {
         return blockColorCache.computeIfAbsent(block, (b) -> {
             BlockState state = b;
             random.setSeed(pos.asLong());
-            List<BakedQuad> quads = minecraft.getBlockRenderer().getBlockModel(state).getQuads(state, Direction.UP, random);
+            List<BakedQuad> quads = minecraft.getBlockRenderer().getBlockModel(state).getQuads(state,
+                Direction.UP,
+                random
+            );
             if (quads.isEmpty()) {
                 return super.getBlockColor(b, pos);
             } else {
                 //TODO: figure the rest of this shit out
                 for (BakedQuad quad : quads) {
-//                    quad.getSprite()
+                    //                    quad.getSprite()
                 }
             }
             return 0;
         });
-    }
-
-    @Override
-    public int getGrassColor(BlockState block, BlockPos pos, @Nullable Biome biome) {
-        return super.getGrassColor(block, pos, biome);
     }
 
     @Override
@@ -46,7 +49,8 @@ public class AccurateMapImageStrategy extends VanillaMapImageStrategy {
     }
 
     @Override
-    public int getWaterColor(BlockState block, BlockPos pos, @Nullable Biome biome) {
-        return super.getWaterColor(block, pos, biome);
+    public int getGrassColor(BlockState block, BlockPos pos, @Nullable Biome biome) {
+        return super.getGrassColor(block, pos, biome);
     }
+
 }

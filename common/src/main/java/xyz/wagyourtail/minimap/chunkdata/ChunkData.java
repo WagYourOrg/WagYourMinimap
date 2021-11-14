@@ -23,16 +23,17 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+@SuppressWarnings("unchecked")
 public class ChunkData {
     private static final ResourceLocation plains = new ResourceLocation("minecraft", "plains");
     private static final JsonParser parser = new JsonParser();
     private static final Gson gson = new Gson();
 
     private final Map<Class<? extends DataPart<?>>, DataPart<?>> data = new HashMap<>();
-    public final ChunkLocation location;
     private final List<BlockState> blocks = new ArrayList<>();
     private final List<ResourceLocation> biomes = new ArrayList<>();
     private final Map<String, Derivative<?>> derivatives = new HashMap<>();
+    public final ChunkLocation location;
     public long updateTime;
     public boolean changed = false;
 
@@ -44,7 +45,7 @@ public class ChunkData {
     }
 
     /**
-     * Data Specificaion:
+     * Data Specification:
      * long: updateTime
      * [
      * int: string length
@@ -52,6 +53,7 @@ public class ChunkData {
      * int: data length
      * byte[]: data
      * ]
+     *
      * @param buffer bytes to deserialize
      */
     public ChunkData(ChunkLocation location, ByteBuffer buffer, String blocks, String biomes) {
@@ -66,12 +68,14 @@ public class ChunkData {
                 Class<? extends DataPart<?>> clazz;
                 DataPart<?> dp;
                 try {
-                    Map<String, String> classRemapper = Map.of("xyz.wagyourtail.minimap.map.chunkdata.parts.SurfaceDataPart", "xyz.wagyourtail.minimap.chunkdata.parts.SurfaceDataPart");
-                    clazz = (Class<? extends DataPart<?>>) Class.forName(classRemapper.getOrDefault(className, className));
-                    data.put(
-                        clazz,
-                        dp = clazz.getConstructor(ChunkData.class).newInstance(this)
+                    Map<String, String> classRemapper = Map.of(
+                        "xyz.wagyourtail.minimap.map.chunkdata.parts.SurfaceDataPart",
+                        "xyz.wagyourtail.minimap.chunkdata.parts.SurfaceDataPart"
                     );
+                    clazz = (Class<? extends DataPart<?>>) Class.forName(classRemapper.getOrDefault(className,
+                        className
+                    ));
+                    data.put(clazz, dp = clazz.getConstructor(ChunkData.class).newInstance(this));
                 } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
                     System.out.println("Failed to deserialize data part: " + className);
                     // discard unknown data
@@ -92,14 +96,16 @@ public class ChunkData {
             }
         } catch (BufferUnderflowException e) {
             e.printStackTrace();
-            System.err.println("Buffer underflow, data is probably corrupted, " + location.getChunkX() + "," + location.getChunkZ() + "(" + location.getRegionSlug() + ":" + location.index() + ")");
+            System.err.println(
+                "Buffer underflow, data is probably corrupted, " + location.getChunkX() + "," + location.getChunkZ() +
+                    "(" + location.getRegionSlug() + ":" + location.index() + ")");
         }
         for (String s : blocks.split("\n")) {
             try {
-                this.blocks.add(BlockState.CODEC.decode(
-                    JsonOps.INSTANCE,
-                    parser.parse(s)
-                ).result().orElseGet(() -> new Pair<>(Blocks.AIR.defaultBlockState(), null)).getFirst());
+                this.blocks.add(BlockState.CODEC.decode(JsonOps.INSTANCE, parser.parse(s))
+                    .result()
+                    .orElseGet(() -> new Pair<>(Blocks.AIR.defaultBlockState(), null))
+                    .getFirst());
             } catch (JsonParseException e) {
                 System.out.println("Failed to deserialize block: " + s);
                 e.printStackTrace();
@@ -111,7 +117,9 @@ public class ChunkData {
     }
 
     public int getOrRegisterBlockState(BlockState state) {
-        if (state == null) return 0;
+        if (state == null) {
+            return 0;
+        }
         for (int j = 0; j < blocks.size(); ++j) {
             if (state.equals(blocks.get(j))) {
                 return j + 1;
@@ -122,7 +130,9 @@ public class ChunkData {
     }
 
     public BlockState getBlockState(int i) {
-        if (i < 1 || i > blocks.size()) return Blocks.AIR.defaultBlockState();
+        if (i < 1 || i > blocks.size()) {
+            return Blocks.AIR.defaultBlockState();
+        }
         return blocks.get(i - 1);
     }
 
@@ -137,7 +147,9 @@ public class ChunkData {
     }
 
     public ResourceLocation getBiome(int i) {
-        if (i < 1 || i > biomes.size()) return plains;
+        if (i < 1 || i > biomes.size()) {
+            return plains;
+        }
         return biomes.get(i - 1);
     }
 
@@ -148,7 +160,8 @@ public class ChunkData {
     public String serializeBlocks() {
         StringBuilder sb = new StringBuilder();
         for (BlockState state : blocks) {
-            sb.append(gson.toJson(BlockState.CODEC.encodeStart(JsonOps.INSTANCE, state).result().orElseThrow())).append("\n");
+            sb.append(gson.toJson(BlockState.CODEC.encodeStart(JsonOps.INSTANCE, state).result().orElseThrow())).append(
+                "\n");
         }
         return sb.toString();
     }
@@ -174,7 +187,6 @@ public class ChunkData {
         return (T) data.get(clazz);
     }
 
-    @SuppressWarnings("unchecked")
     public <T> T computeDerivative(String key, Supplier<T> supplier) {
         return (T) derivatives.compute(key, (k, v) -> {
             if (v == null) {
@@ -188,16 +200,16 @@ public class ChunkData {
         }).getContained();
     }
 
-    public void invalidateDerivitives() {
-        for (Derivative<?> der : derivatives.values()) {
-            der.old = true;
-        }
-    }
-
     public void markDirty() {
         changed = true;
         invalidateDerivitives();
         MapServer.addToSaveQueue(this::save);
+    }
+
+    public void invalidateDerivitives() {
+        for (Derivative<?> der : derivatives.values()) {
+            der.old = true;
+        }
     }
 
     public void save() {
@@ -205,13 +217,6 @@ public class ChunkData {
         refactorBiomes();
         MinimapApi.getInstance().cacheManager.saveChunk(location, this);
         changed = false;
-    }
-
-    public void closeDerivatives() {
-        for (Derivative<?> der : derivatives.values()) {
-            der.old = true;
-            der.setContained(null);
-        }
     }
 
     public synchronized void refactorBlockStates() {
@@ -230,7 +235,9 @@ public class ChunkData {
             transform.put(0, 0);
             for (int i = 0, j = 0; i < blocks.size(); ++i) {
                 BlockState newR = blocks.get(i);
-                while (!newR.equals(oldBlocks.get(j))) ++j;
+                while (!newR.equals(oldBlocks.get(j))) {
+                    ++j;
+                }
                 transform.put(j + 1, i + 1);
             }
         } catch (IndexOutOfBoundsException e) {
@@ -244,12 +251,9 @@ public class ChunkData {
             try {
                 value.remapBlockStates(transform);
             } catch (NullPointerException e) {
-                throw new RuntimeException(
-                    "Error while remapping block states [" +
-                    oldBlocks.stream().map(BlockState::toString).collect(Collectors.joining(", ")) +
-                    "] -> [" +
-                    blocks.stream().map(BlockState::toString).collect(Collectors.joining(", ")) +
-                    "]", e);
+                throw new RuntimeException("Error while remapping block states [" +
+                    oldBlocks.stream().map(BlockState::toString).collect(Collectors.joining(", ")) + "] -> [" +
+                    blocks.stream().map(BlockState::toString).collect(Collectors.joining(", ")) + "]", e);
             }
         }
     }
@@ -270,7 +274,9 @@ public class ChunkData {
             transform.put(0, 0);
             for (int i = 0, j = 0; i < biomes.size(); ++i) {
                 ResourceLocation newR = biomes.get(i);
-                while (!newR.equals(oldBiomes.get(j))) ++j;
+                while (!newR.equals(oldBiomes.get(j))) {
+                    ++j;
+                }
                 transform.put(j + 1, i + 1);
             }
         } catch (IndexOutOfBoundsException e) {
@@ -283,31 +289,39 @@ public class ChunkData {
             try {
                 value.remapBiomes(transform);
             } catch (NullPointerException e) {
-                throw new RuntimeException(
-                    "Error while remapping biomes [" +
-                    oldBiomes.stream().map(ResourceLocation::toString).collect(Collectors.joining(", ")) +
-                    "] -> [" +
-                    biomes.stream().map(ResourceLocation::toString).collect(Collectors.joining(", ")) +
-                    "]", e);
+                throw new RuntimeException("Error while remapping biomes [" +
+                    oldBiomes.stream().map(ResourceLocation::toString).collect(Collectors.joining(", ")) + "] -> [" +
+                    biomes.stream().map(ResourceLocation::toString).collect(Collectors.joining(", ")) + "]", e);
             }
+        }
+    }
+
+    public void closeDerivatives() {
+        for (Derivative<?> der : derivatives.values()) {
+            der.old = true;
+            der.setContained(null);
         }
     }
 
     public ByteBuffer serialize() {
         int size = Long.BYTES;
         for (DataPart<?> dp : data.values()) {
-            size += dp.getClass().getCanonicalName().getBytes(StandardCharsets.UTF_8).length;
-            size += dp.getBytes();
-            size += Integer.BYTES * 2;
+            if (dp.getBytes() > 0) {
+                size += dp.getClass().getCanonicalName().getBytes(StandardCharsets.UTF_8).length;
+                size += dp.getBytes();
+                size += Integer.BYTES * 2;
+            }
         }
         ByteBuffer buffer = ByteBuffer.allocate(size);
         buffer.putLong(updateTime);
         for (DataPart<?> dp : data.values()) {
-            byte[] strBytes = dp.getClass().getCanonicalName().getBytes(StandardCharsets.UTF_8);
-            buffer.putInt(strBytes.length);
-            buffer.put(strBytes);
-            buffer.putInt(dp.getBytes());
-            dp.serialize(buffer);
+            if (dp.getBytes() > 0) {
+                byte[] strBytes = dp.getClass().getCanonicalName().getBytes(StandardCharsets.UTF_8);
+                buffer.putInt(strBytes.length);
+                buffer.put(strBytes);
+                buffer.putInt(dp.getBytes());
+                dp.serialize(buffer);
+            }
         }
         return buffer;
     }
@@ -316,7 +330,7 @@ public class ChunkData {
         return ChunkLocation.locationForChunkPos(location.level(), location.getChunkX(), location.getChunkZ() - 1);
     }
 
-    public ChunkLocation south()  {
+    public ChunkLocation south() {
         return ChunkLocation.locationForChunkPos(location.level(), location.getChunkX(), location.getChunkZ() + 1);
     }
 
@@ -327,4 +341,5 @@ public class ChunkData {
     public ChunkLocation east() {
         return ChunkLocation.locationForChunkPos(location.level(), location.getChunkX() + 1, location.getChunkZ());
     }
+
 }

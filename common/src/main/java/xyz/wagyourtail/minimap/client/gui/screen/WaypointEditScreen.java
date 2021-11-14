@@ -15,12 +15,11 @@ import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.level.Level;
 import xyz.wagyourtail.config.gui.widgets.NamedEditBox;
 import xyz.wagyourtail.minimap.api.MinimapApi;
-import xyz.wagyourtail.minimap.map.MapServer;
 import xyz.wagyourtail.minimap.waypoint.Waypoint;
 
 import java.awt.*;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 
 public class WaypointEditScreen extends Screen {
     private static final Random random = new Random();
@@ -41,23 +40,36 @@ public class WaypointEditScreen extends Screen {
     protected List<Component> sideText;
     protected boolean canceled = false;
 
+    public WaypointEditScreen(Screen parent, Waypoint prev_point) {
+        super(new TranslatableComponent("gui.wagyourminimap.waypoint_edit"));
+        this.parent = parent;
+        this.prev_point = prev_point;
+    }
+
     public static WaypointEditScreen createNewFromPos(Screen parent, BlockPos pos) {
         Minecraft mc = Minecraft.getInstance();
         int color = Color.HSBtoRGB(random.nextFloat(), 1f, 1f);
         String[] dims;
         if (mc.level.dimension().equals(Level.OVERWORLD) || mc.level.dimension().equals(Level.NETHER)) {
-            dims = new String[]{"minecraft/overworld", "minecraft/the_nether"};
+            dims = new String[] {"minecraft/overworld", "minecraft/the_nether"};
         } else {
-            dims = new String[]{MinimapApi.getInstance().getMapServer().getCurrentLevel().level_slug()};
+            dims = new String[] {MinimapApi.getInstance().getMapServer().getCurrentLevel().level_slug()};
         }
 
-        return new WaypointEditScreen(parent, new Waypoint(mc.level.dimensionType().coordinateScale(), pos.getX(), pos.getY(), pos.getZ(), (byte) (color >> 16 & 0xFF), (byte) (color >> 8 & 0xFF), (byte) (color & 0xFF), "", new String[] {"default"}, dims, new JsonObject(), true, false));
-    }
-
-    public WaypointEditScreen(Screen parent, Waypoint prev_point) {
-        super(new TranslatableComponent("gui.wagyourminimap.waypoint_edit"));
-        this.parent = parent;
-        this.prev_point = prev_point;
+        return new WaypointEditScreen(parent, new Waypoint(mc.level.dimensionType().coordinateScale(),
+            pos.getX(),
+            pos.getY(),
+            pos.getZ(),
+            (byte) (color >> 16 & 0xFF),
+            (byte) (color >> 8 & 0xFF),
+            (byte) (color & 0xFF),
+            "",
+            new String[] {"default"},
+            dims,
+            new JsonObject(),
+            true,
+            false
+        ));
     }
 
     @Override
@@ -72,6 +84,15 @@ public class WaypointEditScreen extends Screen {
         super.render(poseStack, mouseX, mouseY, partialTicks);
     }
 
+    @Override
+    public void onClose() {
+        if (!canceled) {
+            MinimapApi.getInstance().getMapServer().waypoints.removeWaypoint(prev_point);
+            MinimapApi.getInstance().getMapServer().waypoints.addWaypoint(compileWaypoint());
+        }
+        minecraft.setScreen(parent);
+    }
+
     public Waypoint compileWaypoint() {
         String name = this.name.getValue();
 
@@ -84,7 +105,8 @@ public class WaypointEditScreen extends Screen {
         int color = Integer.parseInt(this.color.getValue(), 16);
 
         String[] groups = Arrays.stream(this.groups.getValue().split(",")).map(String::trim).toArray(String[]::new);
-        String[] dims = Arrays.stream(this.dims.getValue().split(",")).map(e -> e.trim().replace(":", "_")).filter(realDims::contains).toArray(String[]::new);
+        String[] dims = Arrays.stream(this.dims.getValue().split(",")).map(e -> e.trim().replace(":", "_")).filter(
+            realDims::contains).toArray(String[]::new);
 
         JsonObject extra;
         try {
@@ -93,26 +115,42 @@ public class WaypointEditScreen extends Screen {
             extra = new JsonObject();
         }
 
-        return new Waypoint(coordScale, posX, posY, posZ, (byte)(color >> 16 & 255), (byte)(color >> 8 & 255), (byte)(color & 255), name, groups, dims, extra, true, false);
-    }
-
-    @Override
-    public void onClose() {
-        if (!canceled) {
-            MinimapApi.getInstance().getMapServer().waypoints.removeWaypoint(prev_point);
-            MinimapApi.getInstance().getMapServer().waypoints.addWaypoint(compileWaypoint());
-        }
-        minecraft.setScreen(parent);
+        return new Waypoint(coordScale,
+            posX,
+            posY,
+            posZ,
+            (byte) (color >> 16 & 255),
+            (byte) (color >> 8 & 255),
+            (byte) (color & 255),
+            name,
+            groups,
+            dims,
+            extra,
+            true,
+            false
+        );
     }
 
     @Override
     protected void init() {
         super.init();
         int h = Math.max(height / 2 - 100, 30);
-        name = addRenderableWidget(new NamedEditBox(font, width / 2 - 200, h, 400, 20, new TranslatableComponent("gui.wagyourminimap.name")));
+        name = addRenderableWidget(new NamedEditBox(font,
+            width / 2 - 200,
+            h,
+            400,
+            20,
+            new TranslatableComponent("gui.wagyourminimap.name")
+        ));
         name.setValue(prev_point.name);
 
-        coordScale = addRenderableWidget(new NamedEditBox(font, width / 2 - 200, h + 25, 60, 20, new TranslatableComponent("gui.wagyourminimap.coord_scale")));
+        coordScale = addRenderableWidget(new NamedEditBox(font,
+            width / 2 - 200,
+            h + 25,
+            60,
+            20,
+            new TranslatableComponent("gui.wagyourminimap.coord_scale")
+        ));
         coordScale.setFilter(s -> s.matches("-?\\d*.\\d*"));
         coordScale.setValue(Double.toString(prev_point.coordScale));
 
@@ -128,33 +166,71 @@ public class WaypointEditScreen extends Screen {
         posZ.setFilter(s -> s.matches("-?\\d*"));
         posZ.setValue(Integer.toString(prev_point.posZ));
 
-        color = addRenderableWidget(new NamedEditBox(font, width / 2 + 64, h + 25, 136, 20, new TranslatableComponent("gui.wagyourminimap.color")));
+        color = addRenderableWidget(new NamedEditBox(font,
+            width / 2 + 64,
+            h + 25,
+            136,
+            20,
+            new TranslatableComponent("gui.wagyourminimap.color")
+        ));
         color.setFilter((s) -> s.matches("[\\da-fA-F]{0,6}"));
-        color.setValue(zeroPad(Integer.toHexString(prev_point.colR & 255)) + zeroPad(Integer.toHexString(prev_point.colG & 255)) + zeroPad(Integer.toHexString(prev_point.colB & 255)));
+        color.setValue(
+            zeroPad(Integer.toHexString(prev_point.colR & 255)) + zeroPad(Integer.toHexString(prev_point.colG & 255)) +
+                zeroPad(Integer.toHexString(prev_point.colB & 255)));
 
         int gradientHeight = Math.max(Math.min(100, height - h - 155), 0);
         //TODO: finish and use ColorButton (gradient color picker)
 
-        groups = addRenderableWidget(new NamedEditBox(font, width / 2 - 200, h + gradientHeight + 50, 400, 20, new TranslatableComponent("gui.wagyourminimap.groups")));
+        groups = addRenderableWidget(new NamedEditBox(font,
+            width / 2 - 200,
+            h + gradientHeight + 50,
+            400,
+            20,
+            new TranslatableComponent("gui.wagyourminimap.groups")
+        ));
         groups.setMaxLength(Integer.MAX_VALUE);
         groups.setValue(String.join(", ", prev_point.groups));
 
-        dims = addRenderableWidget(new NamedEditBox(font, width / 2 - 200, h + gradientHeight + 75, 400, 20, new TranslatableComponent("gui.wagyourminimap.levels")));
+        dims = addRenderableWidget(new NamedEditBox(font,
+            width / 2 - 200,
+            h + gradientHeight + 75,
+            400,
+            20,
+            new TranslatableComponent("gui.wagyourminimap.levels")
+        ));
         dims.setMaxLength(Integer.MAX_VALUE);
         dims.setValue(String.join(", ", prev_point.levels));
 
-        extra = addRenderableWidget(new NamedEditBox(font, width / 2 - 200, h + gradientHeight + 100, 400, 20, new TranslatableComponent("gui.wagyourminimap.extra")));
+        extra = addRenderableWidget(new NamedEditBox(font,
+            width / 2 - 200,
+            h + gradientHeight + 100,
+            400,
+            20,
+            new TranslatableComponent("gui.wagyourminimap.extra")
+        ));
         extra.setMaxLength(Integer.MAX_VALUE);
         extra.setValue(gson.toJson(prev_point.extra));
 
-        addRenderableWidget(new Button(width / 2 - 100, h + gradientHeight + 125, 95, 20, new TranslatableComponent("gui.wagyourminimap.cancel"), (btn) -> {
-            canceled = true;
-            this.onClose();
-        }));
+        addRenderableWidget(new Button(width / 2 - 100,
+            h + gradientHeight + 125,
+            95,
+            20,
+            new TranslatableComponent("gui.wagyourminimap.cancel"),
+            (btn) -> {
+                canceled = true;
+                this.onClose();
+            }
+        ));
 
-        addRenderableWidget(new Button(width / 2 + 5, h + gradientHeight + 125, 95, 20, new TranslatableComponent("gui.wagyourminimap.save"), (btn) -> {
-            this.onClose();
-        }));
+        addRenderableWidget(new Button(width / 2 + 5,
+            h + gradientHeight + 125,
+            95,
+            20,
+            new TranslatableComponent("gui.wagyourminimap.save"),
+            (btn) -> {
+                this.onClose();
+            }
+        ));
 
         sideText = new ArrayList<>();
         if (width > 600) {

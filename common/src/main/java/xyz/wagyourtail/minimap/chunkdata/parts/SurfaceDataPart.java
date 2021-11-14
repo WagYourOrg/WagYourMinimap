@@ -20,6 +20,30 @@ public class SurfaceDataPart extends DataPart<SurfaceDataPart> {
         super(parent);
     }
 
+    public static int blockPosToIndex(int posX, int posZ) {
+        int x = posX % 16;
+        int z = posZ % 16;
+        if (x < 0) {
+            x += 16;
+        }
+        if (z < 0) {
+            z += 16;
+        }
+        return (x << 4) + z;
+    }
+
+    public static int blockPosToIndex(BlockPos pos) {
+        int x = pos.getX() % 16;
+        int z = pos.getZ() % 16;
+        if (x < 0) {
+            x += 16;
+        }
+        if (z < 0) {
+            z += 16;
+        }
+        return (x << 4) + z;
+    }
+
     @Override
     public void mergeFrom(SurfaceDataPart other) {
         if (other.parent.updateTime >= this.parent.updateTime) {
@@ -36,7 +60,9 @@ public class SurfaceDataPart extends DataPart<SurfaceDataPart> {
                 changed = changed || newLight != this.blocklight[i];
                 this.blocklight[i] = newLight;
 
-                int newBlockid = idmap.computeIfAbsent(other.blockid[i], k -> parent.getOrRegisterBlockState(other.parent.getBlockState(k)));
+                int newBlockid = idmap.computeIfAbsent(other.blockid[i],
+                    k -> parent.getOrRegisterBlockState(other.parent.getBlockState(k))
+                );
                 changed = changed || newBlockid != this.blockid[i];
                 this.blockid[i] = newBlockid;
 
@@ -52,7 +78,9 @@ public class SurfaceDataPart extends DataPart<SurfaceDataPart> {
                 changed = changed || newOceanBlock != this.oceanFloorBlockid[i];
                 this.oceanFloorBlockid[i] = newOceanBlock;
             }
-            if (changed) parent.markDirty();
+            if (changed) {
+                parent.markDirty();
+            }
         }
     }
 
@@ -105,6 +133,13 @@ public class SurfaceDataPart extends DataPart<SurfaceDataPart> {
     }
 
     @Override
+    public void usedBiomes(Set<Integer> used) {
+        for (int i = 0; i < 256; ++i) {
+            used.add(this.biomeid[i]);
+        }
+    }
+
+    @Override
     public void remapBiomes(Map<Integer, Integer> map) {
         for (int i = 0; i < 256; ++i) {
             int biomeid = this.biomeid[i];
@@ -113,29 +148,6 @@ public class SurfaceDataPart extends DataPart<SurfaceDataPart> {
             });
             this.biomeid[i] = newBiomeid;
         }
-    }
-
-    @Override
-    public void usedBiomes(Set<Integer> used) {
-        for (int i = 0; i < 256; ++i) {
-            used.add(this.biomeid[i]);
-        }
-    }
-
-    public static int blockPosToIndex(int posX, int posZ) {
-        int x = posX % 16;
-        int z = posZ % 16;
-        if (x < 0) x += 16;
-        if (z < 0) z += 16;
-        return (x << 4) + z;
-    }
-
-    public static int blockPosToIndex(BlockPos pos) {
-        int x = pos.getX() % 16;
-        int z = pos.getZ() % 16;
-        if (x < 0) x += 16;
-        if (z < 0) z += 16;
-        return (x << 4) + z;
     }
 
 }

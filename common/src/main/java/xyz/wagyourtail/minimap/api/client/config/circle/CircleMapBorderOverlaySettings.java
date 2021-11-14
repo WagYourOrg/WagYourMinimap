@@ -12,4 +12,5 @@ public class CircleMapBorderOverlaySettings extends AbstractOverlayOptions<Circl
     public CircleMapBorderOverlay compileOverlay(AbstractMinimapRenderer mapRenderer) {
         return new CircleMapBorderOverlay(mapRenderer);
     }
+
 }

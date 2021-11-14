@@ -11,4 +11,5 @@ public class ModLoaderSpecific {
     public static void checkEnableStencil() {
         throw new AssertionError();
     }
+
 }

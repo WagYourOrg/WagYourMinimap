@@ -10,7 +10,7 @@ import java.util.Set;
 public class GroupFilterOptions extends AbstractWaypointFilterOptions<GroupFilter> {
 
     @Setting(value = "gui.wagyourminimap.settings.groupfilter.groups")
-    public String[] groups = new String[]{ "default" };
+    public String[] groups = new String[] {"default"};
 
     @Override
     public GroupFilter compileFilter() {

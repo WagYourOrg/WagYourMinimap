@@ -16,36 +16,21 @@ public class CacheManager extends AbstractCacher {
         super(SaveOnLoad.NEVER, false);
     }
 
-    public synchronized void addCacherAfter(AbstractCacher cacher, Class<?> previous) {
-        cacherEntries.add(new CacherEntry(cacher, null, previous));
-        rebuildCacherList();
-    }
-
-    public synchronized void addCacherBefore(AbstractCacher cacher, Class<?> next) {
-        cacherEntries.add(new CacherEntry(cacher, next, null));
-        rebuildCacherList();
-    }
-
     public synchronized void addCacherAfter(AbstractCacher cacher, Class<?> fallback, String... previous) {
         for (String s : previous) {
             try {
                 Class<?> clazz = Class.forName(s);
                 addCacherAfter(cacher, clazz);
                 return;
-            } catch (ClassNotFoundException ignored) {}
+            } catch (ClassNotFoundException ignored) {
+            }
         }
         addCacherAfter(cacher, fallback);
     }
 
-    public synchronized void addCacherBefore(AbstractCacher cacher, Class<?> fallback, String... next) {
-        for (String s : next) {
-            try {
-                Class<?> clazz = Class.forName(s);
-                addCacherBefore(cacher, clazz);
-                return;
-            } catch (ClassNotFoundException ignored) {}
-        }
-        addCacherBefore(cacher, fallback);
+    public synchronized void addCacherAfter(AbstractCacher cacher, Class<?> previous) {
+        cacherEntries.add(new CacherEntry(cacher, null, previous));
+        rebuildCacherList();
     }
 
     private void rebuildCacherList() {
@@ -74,10 +59,29 @@ public class CacheManager extends AbstractCacher {
                     }
                 }
             }
-            if (removeThisLoop.isEmpty()) throw new RuntimeException("circular class before/after dependency in cachers!");
+            if (removeThisLoop.isEmpty()) {
+                throw new RuntimeException("circular class before/after dependency in cachers!");
+            }
             remainingEntries.removeAll(removeThisLoop);
             removeThisLoop.clear();
         }
+    }
+
+    public synchronized void addCacherBefore(AbstractCacher cacher, Class<?> fallback, String... next) {
+        for (String s : next) {
+            try {
+                Class<?> clazz = Class.forName(s);
+                addCacherBefore(cacher, clazz);
+                return;
+            } catch (ClassNotFoundException ignored) {
+            }
+        }
+        addCacherBefore(cacher, fallback);
+    }
+
+    public synchronized void addCacherBefore(AbstractCacher cacher, Class<?> next) {
+        cacherEntries.add(new CacherEntry(cacher, next, null));
+        rebuildCacherList();
     }
 
     @Override
@@ -104,10 +108,14 @@ public class CacheManager extends AbstractCacher {
                             cacher.saveChunk(location, data);
                             break;
                         case IF_ABOVE:
-                            if (j < i) cacher.saveChunk(location, data);
+                            if (j < i) {
+                                cacher.saveChunk(location, data);
+                            }
                             break;
                         case IF_BELOW:
-                            if (j > i) cacher.saveChunk(location, data);
+                            if (j > i) {
+                                cacher.saveChunk(location, data);
+                            }
                             break;
                         default:
                     }
@@ -153,8 +161,12 @@ public class CacheManager extends AbstractCacher {
     public static record CacherEntry(AbstractCacher cache, Class<?> before, Class<?> after) {
         @Override
         public boolean equals(Object o) {
-            if (this == o) return true;
-            if (!(o instanceof CacherEntry)) return false;
+            if (this == o) {
+                return true;
+            }
+            if (!(o instanceof CacherEntry)) {
+                return false;
+            }
             CacherEntry that = (CacherEntry) o;
             return Objects.equals(cache, that.cache);
         }
@@ -165,4 +177,5 @@ public class CacheManager extends AbstractCacher {
         }
 
     }
+
 }

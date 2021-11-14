@@ -33,8 +33,15 @@ public class DisabledSettingList<T> extends ObjectSelectionList<DisabledSettingL
 
     @Override
     protected void renderHeader(PoseStack poseStack, int x, int y, Tesselator tessellator) {
-        Component component = (new TextComponent("")).append(this.title).withStyle(ChatFormatting.UNDERLINE, ChatFormatting.BOLD);
-        this.minecraft.font.draw(poseStack, component, (float) (x + this.width / 2 - this.minecraft.font.width(component) / 2), (float) Math.min(this.y0 + 3, y), 0xFFFFFF);
+        Component component = (new TextComponent("")).append(this.title).withStyle(ChatFormatting.UNDERLINE,
+            ChatFormatting.BOLD
+        );
+        this.minecraft.font.draw(poseStack,
+            component,
+            (float) (x + this.width / 2 - this.minecraft.font.width(component) / 2),
+            (float) Math.min(this.y0 + 3, y),
+            0xFFFFFF
+        );
     }
 
     @Override
@@ -48,7 +55,8 @@ public class DisabledSettingList<T> extends ObjectSelectionList<DisabledSettingL
     }
 
     public static class DisabledSettingEntry<T> extends ObjectSelectionList.Entry<DisabledSettingEntry<T>> {
-        private static final ResourceLocation ICON_OVERLAY_LOCATION = new ResourceLocation("textures/gui/resource_packs.png");
+        private static final ResourceLocation ICON_OVERLAY_LOCATION = new ResourceLocation(
+            "textures/gui/resource_packs.png");
 
         private final Minecraft minecraft;
         private final DisabledSettingList.EntryController<T> parentScreen;

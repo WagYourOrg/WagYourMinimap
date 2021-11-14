@@ -19,7 +19,9 @@ import java.util.concurrent.TimeUnit;
 public class BlockUpdateStrategy extends AbstractChunkUpdateStrategy<SurfaceDataPart> {
     public static final Event<BlockUpdate> BLOCK_UPDATE_EVENT = EventFactory.createLoop();
 
-    private final LoadingCache<BlockUpdateData, Runnable> updateCache = CacheBuilder.newBuilder().expireAfterWrite(5000, TimeUnit.MILLISECONDS).removalListener((a) -> ((Runnable) a.getValue()).run()).build(new CacheLoader<>() {
+    private final LoadingCache<BlockUpdateData, Runnable> updateCache = CacheBuilder.newBuilder().expireAfterWrite(5000,
+        TimeUnit.MILLISECONDS
+    ).removalListener((a) -> ((Runnable) a.getValue()).run()).build(new CacheLoader<>() {
         @Override
         public Runnable load(BlockUpdateData key) {
             return () -> updateNeighborLighting(key.level, key.mclevel, key.chunkX, key.chunkZ);
@@ -35,9 +37,18 @@ public class BlockUpdateStrategy extends AbstractChunkUpdateStrategy<SurfaceData
             for (int j = chunkZ - 1; j < chunkZ + 2; ++j) {
                 if (mclevel.hasChunk(i, j)) {
                     ChunkAccess chunk = mclevel.getChunk(i, j, ChunkStatus.FULL, false);
-                    if (chunk == null) continue;
+                    if (chunk == null) {
+                        continue;
+                    }
                     //TODO: update lighting only function
-                    updateChunk(getChunkLocation(level, i, j), (location, parent, oldData) -> ChunkLoadStrategy.loadFromChunk(chunk, level, mclevel, parent, oldData));
+                    updateChunk(getChunkLocation(level, i, j),
+                        (location, parent, oldData) -> ChunkLoadStrategy.loadFromChunk(chunk,
+                            level,
+                            mclevel,
+                            parent,
+                            oldData
+                        )
+                    );
                 }
             }
         }
@@ -46,11 +57,17 @@ public class BlockUpdateStrategy extends AbstractChunkUpdateStrategy<SurfaceData
     @Override
     protected void registerEventListener() {
         BLOCK_UPDATE_EVENT.register((pos, level) -> {
-            if (level != mc.level) return;
+            if (level != mc.level) {
+                return;
+            }
             int chunkX = pos.getX() >> 4;
             int chunkZ = pos.getZ() >> 4;
             try {
-                updateCache.get(new BlockUpdateData(MinimapApi.getInstance().getMapServer().getCurrentLevel(), level, chunkX, chunkZ));
+                updateCache.get(new BlockUpdateData(MinimapApi.getInstance().getMapServer().getCurrentLevel(),
+                    level,
+                    chunkX,
+                    chunkZ
+                ));
             } catch (ExecutionException e) {
                 e.printStackTrace();
             }

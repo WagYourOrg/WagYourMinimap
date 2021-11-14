@@ -11,10 +11,10 @@ import java.util.function.Consumer;
 
 public class InteractMenuButton extends AbstractButton {
 
-    protected final Consumer<InteractMenuButton> onPress;
     public static final int btnHeight = 10;
     public static int color = 0xFF5B6EE1;
     public static int hoverColor = 0xFF306082;
+    protected final Consumer<InteractMenuButton> onPress;
 
     public InteractMenuButton(Component component, Consumer<InteractMenuButton> onPress) {
         super(0, 0, 100, btnHeight, component);
@@ -35,9 +35,23 @@ public class InteractMenuButton extends AbstractButton {
     @Override
     public void renderButton(PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
         Minecraft minecraft = Minecraft.getInstance();
-        fill(poseStack, this.x, this.y, this.x + this.width, this.y + this.height, this.isHovered() ? hoverColor : color);
+        fill(
+            poseStack,
+            this.x,
+            this.y,
+            this.x + this.width,
+            this.y + this.height,
+            this.isHovered() ? hoverColor : color
+        );
         int j = this.active ? 16777215 : 10526880;
-        drawCenteredString(poseStack, minecraft.font, this.getMessage(), this.x + this.width / 2, this.y + (this.height - 8) / 2, j | Mth.ceil(this.alpha * 255.0F) << 24);
+        drawCenteredString(
+            poseStack,
+            minecraft.font,
+            this.getMessage(),
+            this.x + this.width / 2,
+            this.y + (this.height - 8) / 2,
+            j | Mth.ceil(this.alpha * 255.0F) << 24
+        );
     }
 
 }

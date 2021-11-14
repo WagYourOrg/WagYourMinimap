@@ -17,7 +17,11 @@ public class SquareNoRotStyle extends AbstractSquareStyle<SquareMapNoRotRenderer
         availableOverlays.put(SquareMapNoRotWaypointOverlay.class, SquareMapNoRotWaypointOverlaySettings.class);
 
         //default overlays
-        overlays = new AbstractOverlayOptions[] {new SquareMapBorderOverlaySettings(), new NoRotArrowOverlayOptions(), new SquareMapNoRotWaypointOverlaySettings()};
+        overlays = new AbstractOverlayOptions[] {
+            new SquareMapBorderOverlaySettings(),
+            new NoRotArrowOverlayOptions(),
+            new SquareMapNoRotWaypointOverlaySettings()
+        };
     }
 
     @Override

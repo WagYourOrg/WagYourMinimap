@@ -24,7 +24,8 @@ public class Slider extends AbstractSliderButton {
 
     @Override
     protected void updateMessage() {
-        this.setMessage(title.copy().append(" " + new DecimalFormat().format(Math.floor((1 - value) * steps) * (max - min) / steps + min)));
+        this.setMessage(title.copy()
+            .append(" " + new DecimalFormat().format(Math.floor((1 - value) * steps) * (max - min) / steps + min)));
     }
 
     @Override

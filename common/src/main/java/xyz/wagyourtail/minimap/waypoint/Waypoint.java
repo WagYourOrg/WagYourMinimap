@@ -5,16 +5,15 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.Level;
-import xyz.wagyourtail.minimap.map.MapServer;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 public class Waypoint {
+    private static final Gson gson = new Gson();
+    private final Map<Double, BlockPos> posForCoordScale = new HashMap<>();
     public final double coordScale;
     public final int posX;
     public final int posY;
@@ -29,9 +28,9 @@ public class Waypoint {
     public final boolean enabled;
     public final boolean ephemeral;
 
-
-    public Waypoint(double coordScale, int posX, int posY, int posZ, byte colR, byte colG, byte colB, String name, String[] groups,
-                    String[] levels, JsonObject extra, boolean enabled, boolean ephemeral) {
+    public Waypoint(
+        double coordScale, int posX, int posY, int posZ, byte colR, byte colG, byte colB, String name, String[] groups, String[] levels, JsonObject extra, boolean enabled, boolean ephemeral
+    ) {
         this.coordScale = coordScale;
         this.posX = posX;
         this.posY = posY;
@@ -47,17 +46,9 @@ public class Waypoint {
         this.ephemeral = ephemeral;
     }
 
-    private static final Gson gson = new Gson();
-    private final Map<Double, BlockPos> posForCoordScale = new HashMap<>();
-
-    public static <T> T getKeyOrDefault(JsonObject element, String name, Function<JsonElement, T> key, T def) {
-        return element.has(name) ? key.apply(element.get(name)) : def;
-    }
-
     public static Waypoint deserialize(String inp) {
         JsonObject waypoint = new JsonParser().parse(inp).getAsJsonObject();
-        return new Waypoint(
-            getKeyOrDefault(waypoint, "coordScale", JsonElement::getAsDouble, 1.0),
+        return new Waypoint(getKeyOrDefault(waypoint, "coordScale", JsonElement::getAsDouble, 1.0),
             getKeyOrDefault(waypoint, "posX", JsonElement::getAsInt, 0),
             getKeyOrDefault(waypoint, "posY", JsonElement::getAsInt, 0),
             getKeyOrDefault(waypoint, "posZ", JsonElement::getAsInt, 0),
@@ -66,47 +57,170 @@ public class Waypoint {
             getKeyOrDefault(waypoint, "colB", JsonElement::getAsByte, (byte) 0),
             getKeyOrDefault(waypoint, "name", JsonElement::getAsString, ""),
             waypoint.has("groups") ? gson.fromJson(waypoint.get("groups"), String[].class) : new String[0],
-            waypoint.has("levels") ? gson.fromJson(waypoint.get("levels"), String[].class) : new String[]{"minecraft/overworld", "minecraft/the_nether"},
+            waypoint.has("levels") ?
+                gson.fromJson(waypoint.get("levels"), String[].class) :
+                new String[] {"minecraft/overworld", "minecraft/the_nether"},
             getKeyOrDefault(waypoint, "extra", JsonElement::getAsJsonObject, new JsonObject()),
             getKeyOrDefault(waypoint, "enabled", JsonElement::getAsBoolean, true),
             false
         );
     }
 
+    public static <T> T getKeyOrDefault(JsonObject element, String name, Function<JsonElement, T> key, T def) {
+        return element.has(name) ? key.apply(element.get(name)) : def;
+    }
+
     public Waypoint copy() {
-        return new Waypoint(coordScale, posX, posY, posZ, colR, colG, colB, name, groups, levels, extra, enabled, ephemeral);
+        return new Waypoint(coordScale,
+            posX,
+            posY,
+            posZ,
+            colR,
+            colG,
+            colB,
+            name,
+            groups,
+            levels,
+            extra,
+            enabled,
+            ephemeral
+        );
     }
 
     public Waypoint copyWithChangePos(int posX, int posY, int posZ) {
-        return new Waypoint(coordScale, posX, posY, posZ, colR, colG, colB, name, groups, levels, extra, enabled, ephemeral);
+        return new Waypoint(coordScale,
+            posX,
+            posY,
+            posZ,
+            colR,
+            colG,
+            colB,
+            name,
+            groups,
+            levels,
+            extra,
+            enabled,
+            ephemeral
+        );
     }
 
     public Waypoint copyWithChangeCol(byte colR, byte colG, byte colB) {
-        return new Waypoint(coordScale, posX, posY, posZ, colR, colG, colB, name, groups, levels, extra, enabled, ephemeral);
+        return new Waypoint(coordScale,
+            posX,
+            posY,
+            posZ,
+            colR,
+            colG,
+            colB,
+            name,
+            groups,
+            levels,
+            extra,
+            enabled,
+            ephemeral
+        );
     }
 
     public Waypoint copyWithChangeName(String name) {
-        return new Waypoint(coordScale, posX, posY, posZ, colR, colG, colB, name, groups, levels, extra, enabled, ephemeral);
+        return new Waypoint(coordScale,
+            posX,
+            posY,
+            posZ,
+            colR,
+            colG,
+            colB,
+            name,
+            groups,
+            levels,
+            extra,
+            enabled,
+            ephemeral
+        );
     }
 
     public Waypoint copyWithChangeGroups(String[] groups) {
-        return new Waypoint(coordScale, posX, posY, posZ, colR, colG, colB, name, groups, levels, extra, enabled, ephemeral);
+        return new Waypoint(coordScale,
+            posX,
+            posY,
+            posZ,
+            colR,
+            colG,
+            colB,
+            name,
+            groups,
+            levels,
+            extra,
+            enabled,
+            ephemeral
+        );
     }
 
     public Waypoint copyWithChangeLevels(String[] levels) {
-        return new Waypoint(coordScale, posX, posY, posZ, colR, colG, colB, name, groups, levels, extra, enabled, ephemeral);
+        return new Waypoint(coordScale,
+            posX,
+            posY,
+            posZ,
+            colR,
+            colG,
+            colB,
+            name,
+            groups,
+            levels,
+            extra,
+            enabled,
+            ephemeral
+        );
     }
 
     public Waypoint copyWithChangeExtra(JsonObject extra) {
-        return new Waypoint(coordScale, posX, posY, posZ, colR, colG, colB, name, groups, levels, extra, enabled, ephemeral);
+        return new Waypoint(coordScale,
+            posX,
+            posY,
+            posZ,
+            colR,
+            colG,
+            colB,
+            name,
+            groups,
+            levels,
+            extra,
+            enabled,
+            ephemeral
+        );
     }
 
     public Waypoint copyWithChangeEnabled(boolean enabled) {
-        return new Waypoint(coordScale, posX, posY, posZ, colR, colG, colB, name, groups, levels, extra, enabled, ephemeral);
+        return new Waypoint(coordScale,
+            posX,
+            posY,
+            posZ,
+            colR,
+            colG,
+            colB,
+            name,
+            groups,
+            levels,
+            extra,
+            enabled,
+            ephemeral
+        );
     }
 
     public Waypoint copyWithChangeEphemeral(boolean ephemeral) {
-        return new Waypoint(coordScale, posX, posY, posZ, colR, colG, colB, name, groups, levels, extra, enabled, ephemeral);
+        return new Waypoint(coordScale,
+            posX,
+            posY,
+            posZ,
+            colR,
+            colG,
+            colB,
+            name,
+            groups,
+            levels,
+            extra,
+            enabled,
+            ephemeral
+        );
     }
 
     public BlockPos posForCoordScale(double coordScale) {
@@ -121,15 +235,19 @@ public class Waypoint {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Waypoint waypoint)) return false;
-        return posX == waypoint.posX && posY == waypoint.posY && posZ == waypoint.posZ;
+    public int hashCode() {
+        return Objects.hash(posX, posY, posZ);
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(posX, posY, posZ);
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Waypoint waypoint)) {
+            return false;
+        }
+        return posX == waypoint.posX && posY == waypoint.posY && posZ == waypoint.posZ;
     }
 
 }

@@ -21,6 +21,10 @@ public class VanillaLevelSupplier extends LevelSupplier {
             listener.levels().stream().map(VanillaLevelSupplier::getLevelName).collect(Collectors.toSet())));
     }
 
+    public static String getLevelName(ResourceKey<Level> dimension) {
+        return dimension.location().toString().replace(":", "/");
+    }
+
     @Override
     public String get() {
         assert mc.level != null;
@@ -29,10 +33,6 @@ public class VanillaLevelSupplier extends LevelSupplier {
 
     public static String getLevelName(Level level) {
         return getLevelName(level.dimension());
-    }
-
-    public static String getLevelName(ResourceKey<Level> dimension) {
-        return dimension.location().toString().replace(":", "/");
     }
 
 }

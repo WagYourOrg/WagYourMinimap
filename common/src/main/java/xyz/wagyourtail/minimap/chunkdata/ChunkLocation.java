@@ -14,20 +14,28 @@ public record ChunkLocation(MapServer.MapLevel level, int regionX, int regionZ, 
     public static int chunkPosToIndex(ChunkPos pos) {
         int px = pos.x % REGION_SIZE;
         int pz = pos.z % REGION_SIZE;
-        if (px < 0) px += REGION_SIZE;
-        if (pz < 0) pz += REGION_SIZE;
+        if (px < 0) {
+            px += REGION_SIZE;
+        }
+        if (pz < 0) {
+            pz += REGION_SIZE;
+        }
         return (px << 5) + pz;
     }
 
     public static ChunkLocation locationForChunkPos(MapServer.MapLevel level, int chunkX, int chunkZ) {
-        return new ChunkLocation(level,chunkX >> 5, chunkZ >> 5, chunkPosToIndex(chunkX, chunkZ));
+        return new ChunkLocation(level, chunkX >> 5, chunkZ >> 5, chunkPosToIndex(chunkX, chunkZ));
     }
 
     public static int chunkPosToIndex(int x, int z) {
         int px = x % REGION_SIZE;
         int pz = z % REGION_SIZE;
-        if (px < 0) px += REGION_SIZE;
-        if (pz < 0) pz += REGION_SIZE;
+        if (px < 0) {
+            px += REGION_SIZE;
+        }
+        if (pz < 0) {
+            pz += REGION_SIZE;
+        }
         return (px << 5) + pz;
     }
 
@@ -45,13 +53,13 @@ public record ChunkLocation(MapServer.MapLevel level, int regionX, int regionZ, 
         return MinimapApi.getInstance().cacheManager.loadChunk(this);
     }
 
-    public String getRegionSlug() {
-        return regionX + "," + regionZ;
-    }
-
     @Override
     public String toString() {
         return getRegionSlug() + ":" + index;
+    }
+
+    public String getRegionSlug() {
+        return regionX + "," + regionZ;
     }
 
 }

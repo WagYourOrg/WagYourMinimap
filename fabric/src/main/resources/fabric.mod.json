@@ -1,36 +1,36 @@
 {
-  "schemaVersion": 1,
-  "id": "wagyourminimap",
-  "version": "${version}",
-  "name": "WagYourMinimap",
-  "description": "Minimap mod coded from scratch to not be ass.",
-  "authors": [
-    "Wagyourtail"
-  ],
-  "contact": {
-    "homepage": "https://wagyourtail.xyz/",
-    "sources": "https://github.com/wagyourtail/WagYourMinimap"
-  },
-  "license": "MPL-2.0",
-  "icon": "assets/examplemod/icon.png",
-  "environment": "*",
-  "entrypoints": {
-    "client": [
-      "xyz.wagyourtail.minimap.fabric.WagYourMinimapFabric"
+    "schemaVersion": 1,
+    "id": "wagyourminimap",
+    "version": "${version}",
+    "name": "WagYourMinimap",
+    "description": "Minimap mod coded from scratch to not be ass.",
+    "authors": [
+        "Wagyourtail"
     ],
-    "modmenu": [
-      "xyz.wagyourtail.minimap.fabric.ModMenuConfig"
-    ]
-  },
-  "mixins": [
-    "wagyourminimapfabric.mixins.json"
-  ],
-  "depends": {
-    "fabricloader": ">=0.7.4",
-    "fabric": "*",
-    "minecraft": ">=1.16.4",
-    "architectury": ">=2.3.0"
-  },
-  "suggests": {
-  }
+    "contact": {
+        "homepage": "https://wagyourtail.xyz/",
+        "sources": "https://github.com/wagyourtail/WagYourMinimap"
+    },
+    "license": "MPL-2.0",
+    "icon": "assets/examplemod/icon.png",
+    "environment": "*",
+    "entrypoints": {
+        "client": [
+            "xyz.wagyourtail.minimap.fabric.WagYourMinimapFabric"
+        ],
+        "modmenu": [
+            "xyz.wagyourtail.minimap.fabric.ModMenuConfig"
+        ]
+    },
+    "mixins": [
+        "wagyourminimapfabric.mixins.json"
+    ],
+    "depends": {
+        "fabricloader": ">=0.7.4",
+        "fabric": "*",
+        "minecraft": ">=1.16.4",
+        "architectury": ">=2.3.0"
+    },
+    "suggests": {
+    }
 }

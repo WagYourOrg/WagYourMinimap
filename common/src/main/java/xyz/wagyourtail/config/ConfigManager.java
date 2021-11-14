@@ -55,9 +55,12 @@ public class ConfigManager {
      */
     private <T> T loadConfig(Class<T> configClass) {
         synchronized (configRegistry) {
-            if (!configRegistry.containsKey(configClass))
+            if (!configRegistry.containsKey(configClass)) {
                 throw new NullPointerException("Unknown Config!");
-            if (rawConfig == null) reloadConfigFromDisk();
+            }
+            if (rawConfig == null) {
+                reloadConfigFromDisk();
+            }
             if (!rawConfig.has(configRegistry.get(configClass))) {
                 try {
                     dirty = true;
@@ -67,7 +70,8 @@ public class ConfigManager {
                 }
             }
             try {
-                return SettingContainerSerializer.deserialze(rawConfig.get(configRegistry.get(configClass)).getAsJsonObject(), configClass);
+                return SettingContainerSerializer.deserialze(rawConfig.get(configRegistry.get(configClass))
+                    .getAsJsonObject(), configClass);
             } catch (InvocationTargetException | NoSuchMethodException | InstantiationException | IllegalAccessException e) {
                 throw new RuntimeException(e);
             }
@@ -97,7 +101,10 @@ public class ConfigManager {
             synchronized (configRegistry) {
                 try {
                     for (Map.Entry<Class<?>, Object> config : config.entrySet()) {
-                        rawConfig.add(configRegistry.get(config.getKey()), SettingContainerSerializer.serialize(config.getValue()));
+                        rawConfig.add(
+                            configRegistry.get(config.getKey()),
+                            SettingContainerSerializer.serialize(config.getValue())
+                        );
                     }
                     Files.writeString(configPath, gson.toJson(rawConfig));
                 } catch (IOException | IllegalAccessException e) {

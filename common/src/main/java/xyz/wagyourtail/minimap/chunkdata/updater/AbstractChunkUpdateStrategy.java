@@ -5,11 +5,10 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.lighting.LayerLightEventListener;
-import xyz.wagyourtail.minimap.api.MinimapApi;
 import xyz.wagyourtail.minimap.api.MinimapEvents;
 import xyz.wagyourtail.minimap.chunkdata.ChunkData;
-import xyz.wagyourtail.minimap.chunkdata.parts.DataPart;
 import xyz.wagyourtail.minimap.chunkdata.ChunkLocation;
+import xyz.wagyourtail.minimap.chunkdata.parts.DataPart;
 import xyz.wagyourtail.minimap.map.MapServer;
 
 public abstract class AbstractChunkUpdateStrategy<T extends DataPart<T>> {
@@ -25,8 +24,6 @@ public abstract class AbstractChunkUpdateStrategy<T extends DataPart<T>> {
         return level.getLightEngine().getLayerListener(LightLayer.BLOCK);
     }
 
-    public abstract Class<T> getType();
-
     protected void updateChunk(ChunkLocation location, ChunkUpdateListener<T> newChunkDataCreator) {
         synchronized (location.level()) {
             ChunkData chunkData = location.get();
@@ -34,6 +31,8 @@ public abstract class AbstractChunkUpdateStrategy<T extends DataPart<T>> {
             MinimapEvents.CHUNK_UPDATED.invoker().onChunkUpdate(location, chunkData, this.getClass(), getType());
         }
     }
+
+    public abstract Class<T> getType();
 
     protected ChunkLocation getChunkLocation(MapServer.MapLevel level, int chunkX, int chunkZ) {
         return ChunkLocation.locationForChunkPos(level, chunkX, chunkZ);
@@ -45,6 +44,7 @@ public abstract class AbstractChunkUpdateStrategy<T extends DataPart<T>> {
 
     public interface ChunkUpdateListener<T extends DataPart<T>> {
         T onChunkUpdate(ChunkLocation location, ChunkData data, T oldData);
+
     }
 
 }

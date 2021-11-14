@@ -16,13 +16,17 @@ public class MinimapClientEvents {
 
     public interface FullscreenInteractMenu {
         void onPopulate(InteractMenu menu);
+
     }
 
     public interface FullscreenMenu {
         void onPopulate(List<MenuButton> buttons);
+
     }
 
     public interface WaypointListMenu {
         void onPopulate(WaypointListScreen screen, List<Button> buttons, List<Button> waypointNotNullButtons);
+
     }
+
 }

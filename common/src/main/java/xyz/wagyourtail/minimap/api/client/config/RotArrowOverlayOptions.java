@@ -5,9 +5,10 @@ import xyz.wagyourtail.minimap.client.gui.hud.map.AbstractMinimapRenderer;
 import xyz.wagyourtail.minimap.client.gui.hud.map.RotPlayerArrowOverlay;
 
 @SettingsContainer("gui.wagyourminimap.settings.player_arrow")
-public class RotArrowOverlayOptions  extends AbstractOverlayOptions<RotPlayerArrowOverlay> {
+public class RotArrowOverlayOptions extends AbstractOverlayOptions<RotPlayerArrowOverlay> {
     @Override
     public RotPlayerArrowOverlay compileOverlay(AbstractMinimapRenderer mapRenderer) {
         return new RotPlayerArrowOverlay(mapRenderer);
     }
+
 }

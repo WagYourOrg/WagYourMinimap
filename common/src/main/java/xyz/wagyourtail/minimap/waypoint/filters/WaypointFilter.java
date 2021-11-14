@@ -7,13 +7,13 @@ import java.util.function.Predicate;
 public abstract class WaypointFilter implements Predicate<Waypoint> {
 
     @Override
-    public boolean equals(Object obj) {
-        return this.getClass().equals(obj.getClass());
+    public int hashCode() {
+        return this.getClass().hashCode();
     }
 
     @Override
-    public int hashCode() {
-        return this.getClass().hashCode();
+    public boolean equals(Object obj) {
+        return this.getClass().equals(obj.getClass());
     }
 
 }

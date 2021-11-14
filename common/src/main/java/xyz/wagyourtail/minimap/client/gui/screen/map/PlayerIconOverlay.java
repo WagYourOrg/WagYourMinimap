@@ -4,8 +4,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.world.phys.Vec3;
-import xyz.wagyourtail.minimap.client.gui.screen.map.AbstractFullscreenOverlay;
-import xyz.wagyourtail.minimap.client.gui.screen.map.ScreenMapRenderer;
 
 public class PlayerIconOverlay extends AbstractFullscreenOverlay {
     public PlayerIconOverlay(ScreenMapRenderer parent) {

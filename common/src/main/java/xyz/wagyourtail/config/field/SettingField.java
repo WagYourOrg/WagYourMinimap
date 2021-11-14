@@ -25,31 +25,39 @@ public class SettingField<T> {
         setting = field.getAnnotation(Setting.class);
         intRange = field.getAnnotation(IntRange.class);
         doubleRange = field.getAnnotation(DoubleRange.class);
-        if (!setting.enabled().equals(""))
+        if (!setting.enabled().equals("")) {
             enabled = parent.getClass().getMethod(setting.enabled());
-        else
+        } else {
             enabled = null;
-        if (!setting.getter().equals(""))
+        }
+        if (!setting.getter().equals("")) {
             getter = parent.getClass().getMethod(setting.getter());
-        else
+        } else {
             getter = null;
-        if (!setting.setter().equals(""))
+        }
+        if (!setting.setter().equals("")) {
             setter = parent.getClass().getMethod(setting.setter(), fieldType);
-        else
+        } else {
             setter = null;
-        if (!setting.options().equals(""))
+        }
+        if (!setting.options().equals("")) {
             options = parent.getClass().getMethod(setting.options());
-        else
+        } else {
             options = null;
+        }
     }
 
     public boolean enabled() throws InvocationTargetException, IllegalAccessException {
-        if (enabled != null) return (boolean) enabled.invoke(parent);
+        if (enabled != null) {
+            return (boolean) enabled.invoke(parent);
+        }
         return true;
     }
 
     public T get() throws InvocationTargetException, IllegalAccessException {
-        if (getter != null) return (T) getter.invoke(parent);
+        if (getter != null) {
+            return (T) getter.invoke(parent);
+        }
         return (T) field.get(parent);
     }
 
@@ -62,8 +70,12 @@ public class SettingField<T> {
     }
 
     public Collection<?> options() throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        if (options != null) return (Collection<?>) options.invoke(parent);
-        if (fieldType.isEnum()) return Arrays.asList((Object[]) fieldType.getDeclaredMethod("values").invoke(null));
+        if (options != null) {
+            return (Collection<?>) options.invoke(parent);
+        }
+        if (fieldType.isEnum()) {
+            return Arrays.asList((Object[]) fieldType.getDeclaredMethod("values").invoke(null));
+        }
         return null;
     }
 

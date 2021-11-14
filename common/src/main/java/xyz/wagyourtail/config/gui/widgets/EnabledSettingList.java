@@ -36,8 +36,15 @@ public class EnabledSettingList<T> extends ObjectSelectionList<EnabledSettingLis
 
     @Override
     protected void renderHeader(PoseStack poseStack, int x, int y, Tesselator tessellator) {
-        Component component = (new TextComponent("")).append(this.title).withStyle(ChatFormatting.UNDERLINE, ChatFormatting.BOLD);
-        this.minecraft.font.draw(poseStack, component, (float) (x + this.width / 2 - this.minecraft.font.width(component) / 2), (float) Math.min(this.y0 + 3, y), 0xFFFFFF);
+        Component component = (new TextComponent("")).append(this.title).withStyle(ChatFormatting.UNDERLINE,
+            ChatFormatting.BOLD
+        );
+        this.minecraft.font.draw(poseStack,
+            component,
+            (float) (x + this.width / 2 - this.minecraft.font.width(component) / 2),
+            (float) Math.min(this.y0 + 3, y),
+            0xFFFFFF
+        );
     }
 
     @Override
@@ -59,7 +66,8 @@ public class EnabledSettingList<T> extends ObjectSelectionList<EnabledSettingLis
     }
 
     public static class EnabledSettingEntry<T> extends ObjectSelectionList.Entry<EnabledSettingEntry<T>> {
-        private static final ResourceLocation ICON_OVERLAY_LOCATION = new ResourceLocation("textures/gui/resource_packs.png");
+        private static final ResourceLocation ICON_OVERLAY_LOCATION = new ResourceLocation(
+            "textures/gui/resource_packs.png");
         private static final ResourceLocation WIDGETS_LOCATION = new ResourceLocation("textures/gui/widgets.png");
         private final Minecraft minecraft;
         private final EntryController<T> parentScreen;
@@ -110,7 +118,12 @@ public class EnabledSettingList<T> extends ObjectSelectionList<EnabledSettingLis
                 }
             }
 
-            minecraft.font.draw(matrixStack, minecraft.font.split(name, width - 36 - 45).get(0), left + 36, top, 0xFFFFFF);
+            minecraft.font.draw(matrixStack,
+                minecraft.font.split(name, width - 36 - 45).get(0),
+                left + 36,
+                top,
+                0xFFFFFF
+            );
 
             if (option.getClass().isAnnotationPresent(SettingsContainer.class)) {
                 RenderSystem.setShader(GameRenderer::getPositionTexShader);
@@ -153,10 +166,16 @@ public class EnabledSettingList<T> extends ObjectSelectionList<EnabledSettingLis
                     return true;
                 }
             }
-            if (d > parent.getRowWidth() - 40 && e > 6 && e < 26 && d < parent.getRowWidth() - 20 && option.getClass().isAnnotationPresent(SettingsContainer.class)) {
+            if (d > parent.getRowWidth() - 40 && e > 6 && e < 26 && d < parent.getRowWidth() - 20 &&
+                option.getClass().isAnnotationPresent(SettingsContainer.class)) {
                 minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
-                ((ListScreen<T, T>)parentScreen).applyValue();
-                minecraft.setScreen(new SettingScreen(new TranslatableComponent(option.getClass().getAnnotation(SettingsContainer.class).value()), (Screen) parentScreen, option));
+                ((ListScreen<T, T>) parentScreen).applyValue();
+                minecraft.setScreen(new SettingScreen(new TranslatableComponent(option.getClass()
+                    .getAnnotation(SettingsContainer.class)
+                    .value()),
+                    (Screen) parentScreen,
+                    option
+                ));
                 return true;
             }
             return false;

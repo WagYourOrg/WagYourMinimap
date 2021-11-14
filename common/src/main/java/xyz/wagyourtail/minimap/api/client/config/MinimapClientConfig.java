@@ -8,8 +8,8 @@ import xyz.wagyourtail.minimap.api.client.config.circle.rot.CircleRotStyle;
 import xyz.wagyourtail.minimap.api.client.config.square.norot.SquareNoRotStyle;
 import xyz.wagyourtail.minimap.api.client.config.square.rot.SquareRotStyle;
 import xyz.wagyourtail.minimap.api.client.config.waypointfilter.*;
-import xyz.wagyourtail.minimap.client.gui.hud.InGameHud;
 import xyz.wagyourtail.minimap.client.gui.AbstractMapRenderer;
+import xyz.wagyourtail.minimap.client.gui.hud.InGameHud;
 import xyz.wagyourtail.minimap.client.gui.hud.map.circle.norot.CircleMapNoRotRenderer;
 import xyz.wagyourtail.minimap.client.gui.hud.map.circle.rotate.CircleMapRotRenderer;
 import xyz.wagyourtail.minimap.client.gui.hud.map.square.norot.SquareMapNoRotRenderer;
@@ -56,7 +56,9 @@ public class MinimapClientConfig {
     @Setting(value = "gui.wagyourminimap.settings.minimap_style", options = "mapStyles", setter = "setMinimapStyle")
     public AbstractMinimapStyle<?> style;
 
-    @Setting(value = "gui.wagyourminimap.settings.waypoint_filters", options = "waypointFilters", setter = "setWaypointFilter")
+    @Setting(value = "gui.wagyourminimap.settings.waypoint_filters",
+        options = "waypointFilters",
+        setter = "setWaypointFilter")
     public AbstractWaypointFilterOptions<?>[] waypointFilters;
 
     @Setting(value = "gui.wagyourminimap.settings.show_waypoints")
@@ -68,7 +70,9 @@ public class MinimapClientConfig {
     public MinimapClientConfig() {
         //default style
         setMinimapStyle(new SquareNoRotStyle());
-        setWaypointFilter(new AbstractWaypointFilterOptions[] {new DimensionFilterOptions(), new EnabledFilterOptions(), new DistanceFilterOptions()});
+        setWaypointFilter(new AbstractWaypointFilterOptions[] {
+            new DimensionFilterOptions(), new EnabledFilterOptions(), new DistanceFilterOptions()
+        });
 
     }
 
@@ -84,7 +88,9 @@ public class MinimapClientConfig {
     public void setWaypointFilter(AbstractWaypointFilterOptions<?>[] waypointFilters) {
         this.waypointFilters = waypointFilters;
         WaypointManager.clearFilters(false);
-        WaypointManager.addFilter(Arrays.stream(waypointFilters).map(AbstractWaypointFilterOptions::compileFilter).toArray(WaypointFilter[]::new));
+        WaypointManager.addFilter(Arrays.stream(waypointFilters)
+            .map(AbstractWaypointFilterOptions::compileFilter)
+            .toArray(WaypointFilter[]::new));
     }
 
     public Collection<Class<? extends AbstractMinimapStyle>> mapStyles() {

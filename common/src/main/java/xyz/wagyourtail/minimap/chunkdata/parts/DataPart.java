@@ -33,4 +33,5 @@ public abstract class DataPart<T extends DataPart<?>> {
     public abstract void usedBiomes(Set<Integer> used);
 
     public abstract void remapBiomes(Map<Integer, Integer> map);
+
 }

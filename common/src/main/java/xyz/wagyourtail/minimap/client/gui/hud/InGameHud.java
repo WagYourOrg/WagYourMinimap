@@ -6,8 +6,8 @@ import org.jetbrains.annotations.NotNull;
 import xyz.wagyourtail.minimap.client.gui.hud.map.AbstractMinimapRenderer;
 
 public class InGameHud {
-    protected final Minecraft client = Minecraft.getInstance();
     protected static AbstractMinimapRenderer renderer;
+    protected final Minecraft client = Minecraft.getInstance();
 
     public static AbstractMinimapRenderer getRenderer() {
         return renderer;
@@ -22,8 +22,10 @@ public class InGameHud {
     }
 
     public enum SnapSide {
-        TOP_LEFT(false, false, false), TOP_CENTER(false, true, false), TOP_RIGHT(true, false, false),
-        BOTTOM_LEFT(false, false, true), BOTTOM_RIGHT(true, false, true);
+        TOP_LEFT(false, false, false), TOP_CENTER(false, true, false), TOP_RIGHT(true, false, false), BOTTOM_LEFT(false,
+            false,
+            true
+        ), BOTTOM_RIGHT(true, false, true);
 
         public final boolean right, center, bottom;
 

@@ -4,9 +4,9 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import xyz.wagyourtail.minimap.api.MinimapApi;
-import xyz.wagyourtail.minimap.map.MapServer;
 import xyz.wagyourtail.minimap.chunkdata.ChunkData;
 import xyz.wagyourtail.minimap.chunkdata.ChunkLocation;
+import xyz.wagyourtail.minimap.map.MapServer;
 import xyz.wagyourtail.minimap.waypoint.Waypoint;
 
 import java.io.IOException;
@@ -31,22 +31,36 @@ public class ZipCacher extends AbstractCacher {
 
     public ZipCacher() {
         super(SaveOnLoad.IF_ABOVE, true);
-        zipCache = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.SECONDS).
-            removalListener(e -> {
-                try {
-                    ((FileSystem) e.getValue()).close();
-                } catch (IOException ex) {
-                    ex.printStackTrace();
+        zipCache = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.SECONDS).removalListener(e -> {
+            try {
+                ((FileSystem) e.getValue()).close();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }).build(new CacheLoader<>() {
+            @Override
+            public FileSystem load(Path key) throws Exception {
+                if (Files.notExists(key.getParent())) {
+                    Files.createDirectories(key.getParent());
                 }
-            }).build(
-                new CacheLoader<>() {
-                    @Override
-                    public FileSystem load(Path key) throws Exception {
-                        if (Files.notExists(key.getParent())) Files.createDirectories(key.getParent());
-                        return FileSystems.newFileSystem(key, Map.of("create", true));
-                    }
-                }
-            );
+                return FileSystems.newFileSystem(key, Map.of("create", true));
+            }
+        });
+    }
+
+    @Override
+    public synchronized ChunkData loadChunk(ChunkLocation location) {
+        FileSystem zipfs = getRegionZip(location);
+        if (zipfs == null) {
+            return null;
+        }
+        Path dataPath = zipfs.getPath(location.index() + ".data");
+        Path blocksPath = zipfs.getPath(location.index() + ".blocks");
+        Path biomesPath = zipfs.getPath(location.index() + ".biomes");
+        if (Files.exists(dataPath) && Files.exists(blocksPath) && Files.exists(biomesPath)) {
+            return loadFromDisk(location, dataPath, blocksPath, biomesPath);
+        }
+        return null;
     }
 
     public synchronized FileSystem getRegionZip(ChunkLocation location) {
@@ -58,28 +72,21 @@ public class ZipCacher extends AbstractCacher {
         return null;
     }
 
-    @Override
-    public synchronized ChunkData loadChunk(ChunkLocation location) {
-        FileSystem zipfs = getRegionZip(location);
-        if (zipfs == null) return null;
-        Path dataPath = zipfs.getPath(location.index() + ".data");
-        Path blocksPath = zipfs.getPath(location.index() + ".blocks");
-        Path biomesPath = zipfs.getPath(location.index() + ".biomes");
-        if (Files.exists(dataPath) && Files.exists(blocksPath) && Files.exists(biomesPath)) {
-            return loadFromDisk(location, dataPath, blocksPath, biomesPath);
-        }
-        return null;
-    }
-
     private Path locationToPath(ChunkLocation location) {
-        return MinimapApi.getInstance().configFolder.resolve(location.level().parent().server_slug).resolve(location.level().level_slug()).resolve(location.getRegionSlug() + ".zip");
+        return MinimapApi.getInstance().configFolder.resolve(location.level().parent().server_slug)
+            .resolve(location.level().level_slug())
+            .resolve(location.getRegionSlug() + ".zip");
     }
 
     @Override
     public synchronized void saveChunk(ChunkLocation location, ChunkData data) {
-        if (!data.changed) return;
+        if (!data.changed) {
+            return;
+        }
         FileSystem zipfs = getRegionZip(location);
-        if (zipfs == null) throw new NullPointerException("Zip file system is null");
+        if (zipfs == null) {
+            throw new NullPointerException("Zip file system is null");
+        }
         Path dataPath = zipfs.getPath(location.index() + ".data");
         Path blocksPath = zipfs.getPath(location.index() + ".blocks");
         Path biomesPath = zipfs.getPath(location.index() + ".biomes");
@@ -136,7 +143,7 @@ public class ZipCacher extends AbstractCacher {
     private ChunkData loadFromDisk(ChunkLocation location, Path dataPath, Path blocksPath, Path biomesPath) {
         ByteBuffer data;
         try (InputStream stream = Files.newInputStream(dataPath)) {
-             data = ByteBuffer.wrap(stream.readAllBytes());
+            data = ByteBuffer.wrap(stream.readAllBytes());
             data.rewind();
         } catch (IOException e) {
             throw new RuntimeException("Chunk data error", e);

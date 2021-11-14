@@ -18,7 +18,9 @@ public class MinimapClientApi extends MinimapApi {
     }
 
     public static MinimapClientApi getInstance() {
-        if (INSTANCE == null) new MinimapClientApi();
+        if (INSTANCE == null) {
+            new MinimapClientApi();
+        }
         return (MinimapClientApi) INSTANCE;
     }
 

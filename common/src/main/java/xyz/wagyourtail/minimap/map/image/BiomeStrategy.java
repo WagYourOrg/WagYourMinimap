@@ -13,14 +13,19 @@ public class BiomeStrategy extends AbstractImageStrategy {
     @Override
     public DynamicTexture load(ChunkLocation location, ChunkData data) {
         SurfaceDataPart surface = data.getData(SurfaceDataPart.class).orElse(null);
-        if (surface == null) return null;
+        if (surface == null) {
+            return null;
+        }
         assert minecraft.level != null;
         Registry<Biome> biomeRegistry = minecraft.level.registryAccess().registryOrThrow(Registry.BIOME_REGISTRY);
         NativeImage image = new NativeImage(16, 16, false);
         for (int i = 0; i < 256; ++i) {
             int x = (i >> 4) % 16;
             int z = i % 16;
-            image.setPixelRGBA(x, z, 0x7FFFFFFF & colorFormatSwap(colorForBiome(data.getBiome(surface.biomeid[i]), biomeRegistry)));
+            image.setPixelRGBA(x,
+                z,
+                0x7FFFFFFF & colorFormatSwap(colorForBiome(data.getBiome(surface.biomeid[i]), biomeRegistry))
+            );
         }
         return new DynamicTexture(image);
     }

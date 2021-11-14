@@ -9,16 +9,19 @@ import net.minecraft.client.KeyMapping;
 import xyz.wagyourtail.minimap.WagYourMinimap;
 import xyz.wagyourtail.minimap.api.MinimapApi;
 import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
-import xyz.wagyourtail.minimap.client.gui.hud.InGameHud;
-import xyz.wagyourtail.minimap.client.world.InGameWaypointRenderer;
-import xyz.wagyourtail.minimap.map.MapServer;
 import xyz.wagyourtail.minimap.chunkdata.cache.InMemoryCacher;
 import xyz.wagyourtail.minimap.chunkdata.cache.ZipCacher;
 import xyz.wagyourtail.minimap.chunkdata.updater.BlockUpdateStrategy;
 import xyz.wagyourtail.minimap.chunkdata.updater.ChunkLoadStrategy;
+import xyz.wagyourtail.minimap.client.gui.hud.InGameHud;
+import xyz.wagyourtail.minimap.client.world.InGameWaypointRenderer;
+import xyz.wagyourtail.minimap.map.MapServer;
 
 public class WagYourMinimapClient extends WagYourMinimap {
-    private static final KeyMapping key_openmap = new KeyMapping("key.wagyourminimap.openmap", InputConstants.KEY_M, "WagYourMinimap");
+    private static final KeyMapping key_openmap = new KeyMapping("key.wagyourminimap.openmap",
+        InputConstants.KEY_M,
+        "WagYourMinimap"
+    );
 
     public static void init() {
         KeyMappingRegistry.register(key_openmap);
@@ -48,14 +51,16 @@ public class WagYourMinimapClient extends WagYourMinimap {
             int i = 0;
             int j;
             while ((j = MinimapApi.getInstance().getSaving()) > 0) {
-                if (i != j) LOGGER.info("Minimap Saving Chunks, (Remaining: {})", j);
+                if (i != j) {
+                    LOGGER.info("Minimap Saving Chunks, (Remaining: {})", j);
+                }
                 i = j;
                 try {
                     Thread.sleep(1);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-//                Thread.yield();
+                //                Thread.yield();
             }
         });
         InGameWaypointRenderer.RENDER_LAST.register((stack, partial, finish) -> {

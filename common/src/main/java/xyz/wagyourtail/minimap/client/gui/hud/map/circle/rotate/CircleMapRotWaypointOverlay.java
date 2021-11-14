@@ -20,8 +20,12 @@ import java.util.Set;
 
 public class CircleMapRotWaypointOverlay extends AbstractMapOverlayRenderer {
 
-    private static final ResourceLocation waypoint_tex = new ResourceLocation(WagYourMinimap.MOD_ID, "textures/waypoint.png");
-    private static final ResourceLocation waypoint_arrow_tex = new ResourceLocation(WagYourMinimap.MOD_ID, "textures/waypoint_arrow.png");
+    private static final ResourceLocation waypoint_tex = new ResourceLocation(WagYourMinimap.MOD_ID,
+        "textures/waypoint.png"
+    );
+    private static final ResourceLocation waypoint_arrow_tex = new ResourceLocation(WagYourMinimap.MOD_ID,
+        "textures/waypoint_arrow.png"
+    );
 
 
     public CircleMapRotWaypointOverlay(AbstractMinimapRenderer parent) {
@@ -39,12 +43,16 @@ public class CircleMapRotWaypointOverlay extends AbstractMapOverlayRenderer {
         for (Waypoint point : points) {
             stack.pushPose();
             BlockPos pos = point.posForCoordScale(minecraft.level.dimensionType().coordinateScale());
-            Vec3 pointVec = new Vec3(pos.getX(), pos.getY(), pos.getZ()).subtract(center).yRot((float) Math.toRadians(player_rot - 180));
+            Vec3 pointVec = new Vec3(pos.getX(), pos.getY(), pos.getZ()).subtract(center).yRot((float) Math.toRadians(
+                player_rot - 180));
             float scale = ((chunkRadius - 1) * 16f) / (float) pointVec.horizontalDistance();
             if (scale < 1) {
                 pointVec = pointVec.multiply(scale, scale, scale);
             }
-            stack.translate(maxLength / 2 + pointVec.x * chunkScale / 16f, maxLength / 2 + pointVec.z * chunkScale / 16f, 0);
+            stack.translate(maxLength / 2 + pointVec.x * chunkScale / 16f,
+                maxLength / 2 + pointVec.z * chunkScale / 16f,
+                0
+            );
             stack.scale(.0025f * maxLength, .0025f * maxLength, 1);
             if (scale < 1) {
                 stack.mulPose(Vector3f.ZN.rotation((float) Math.atan2(pointVec.x, pointVec.z)));
@@ -54,8 +62,9 @@ public class CircleMapRotWaypointOverlay extends AbstractMapOverlayRenderer {
             }
             int abgr = 0xFF000000 | point.colB & 0xFF << 0x10 | point.colG & 0xFF << 0x8 | point.colR & 0xFF;
             AbstractMapRenderer.drawTexCol(stack, -10, -10, 20, 20, 1, 1, 0, 0, abgr);
-            if (scale >= 1)
+            if (scale >= 1) {
                 minecraft.font.draw(stack, point.name, -minecraft.font.width(point.name) / 2f, 10, 0xFFFFFF);
+            }
             stack.popPose();
         }
     }

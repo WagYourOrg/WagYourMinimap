@@ -20,7 +20,12 @@ public class SquareRotStyle extends AbstractSquareStyle<SquareMapRotRenderer> {
         availableOverlays.put(SquareMapRotNorthIcon.class, SquareMapRotNorthOverlaySettings.class);
 
         //default overlays
-        overlays = new AbstractOverlayOptions[] {new SquareMapBorderOverlaySettings(), new RotArrowOverlayOptions(), new SquareMapRotNorthOverlaySettings(), new SquareMapRotWaypointOverlaySettings()};
+        overlays = new AbstractOverlayOptions[] {
+            new SquareMapBorderOverlaySettings(),
+            new RotArrowOverlayOptions(),
+            new SquareMapRotNorthOverlaySettings(),
+            new SquareMapRotWaypointOverlaySettings()
+        };
     }
 
     @Override

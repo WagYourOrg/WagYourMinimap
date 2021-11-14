@@ -20,7 +20,9 @@ import xyz.wagyourtail.minimap.waypoint.Waypoint;
 
 public class InGameWaypointRenderer {
     private static final Minecraft mc = Minecraft.getInstance();
-    private static final ResourceLocation waypoint_tex = new ResourceLocation(WagYourMinimap.MOD_ID, "textures/waypoint.png");
+    private static final ResourceLocation waypoint_tex = new ResourceLocation(WagYourMinimap.MOD_ID,
+        "textures/waypoint.png"
+    );
     public static final Event<RenderLastEvent> RENDER_LAST = EventFactory.createLoop();
 
 
@@ -70,9 +72,29 @@ public class InGameWaypointRenderer {
         }
     }
 
+    private static boolean isLookingAt(Vec3 normal, float xRot, float yRot) {
+        return normal.distanceTo(Vec3.directionFromRotation(xRot, yRot)) < .1;
+    }
+
+    public static void drawText(PoseStack stack, String text) {
+        MultiBufferSource.BufferSource buffer = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
+        mc.font.drawInBatch(text,
+            -mc.font.width(text) / 2f,
+            20,
+            -1,
+            false,
+            stack.last().pose(),
+            buffer,
+            true,
+            0x20000000,
+            0xF000F0
+        );
+        buffer.endBatch();
+    }
+
     public static void renderWaypointBeam(PoseStack stack, Vec3 offset, float xRot, float yRot, Waypoint waypoint, double distance) {
         stack.mulPose(Vector3f.YP.rotationDegrees(-yRot));
-//        stack.mulPose(Vector3f.XP.rotationDegrees(xRot));
+        //        stack.mulPose(Vector3f.XP.rotationDegrees(xRot));
         stack.mulPose(Vector3f.ZP.rotationDegrees(180));
         float scale = (float) Math.max(.0675, -distance / 50f * .0625 + .125f);
         stack.scale(scale, scale, scale);
@@ -83,7 +105,7 @@ public class InGameWaypointRenderer {
         BufferBuilder builder = Tesselator.getInstance().getBuilder();
         builder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
         float r = (waypoint.colR & 0xFF) / 255f;
-        float g =  (waypoint.colG & 0xFF) / 255f;
+        float g = (waypoint.colG & 0xFF) / 255f;
         float b = (waypoint.colB & 0xFF) / 255f;
         builder.vertex(matrix, 0, 2048, 0).color(r, g, b, 0.75f).endVertex();
         builder.vertex(matrix, 0, -2048, 0).color(r, g, b, 0.75f).endVertex();
@@ -95,16 +117,6 @@ public class InGameWaypointRenderer {
         builder.vertex(matrix, 0, -2048, 0).color(r, g, b, 0.75f).endVertex();
         builder.end();
         BufferUploader.end(builder);
-    }
-
-    private static boolean isLookingAt(Vec3 normal, float xRot, float yRot) {
-        return normal.distanceTo(Vec3.directionFromRotation(xRot, yRot)) < .1;
-    }
-
-    public static void drawText(PoseStack stack, String text) {
-        MultiBufferSource.BufferSource buffer = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
-        mc.font.drawInBatch(text, -mc.font.width(text) / 2f, 20, -1, false, stack.last().pose(), buffer, true, 0x20000000, 0xF000F0);
-        buffer.endBatch();
     }
 
     public interface RenderLastEvent {

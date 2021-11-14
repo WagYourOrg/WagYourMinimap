@@ -16,21 +16,29 @@ import xyz.wagyourtail.minimap.api.client.MinimapClientEvents;
 import xyz.wagyourtail.minimap.api.client.config.MinimapClientConfig;
 import xyz.wagyourtail.minimap.api.client.config.fullscreenoverlays.AbstractFullscreenOverlayOptions;
 import xyz.wagyourtail.minimap.api.client.config.layers.AbstractLayerOptions;
-import xyz.wagyourtail.minimap.map.image.AbstractImageStrategy;
 import xyz.wagyourtail.minimap.client.gui.screen.map.AbstractFullscreenOverlay;
 import xyz.wagyourtail.minimap.client.gui.screen.map.ScreenMapRenderer;
 import xyz.wagyourtail.minimap.client.gui.screen.widget.InteractMenu;
 import xyz.wagyourtail.minimap.client.gui.screen.widget.MenuButton;
+import xyz.wagyourtail.minimap.map.image.AbstractImageStrategy;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class MapScreen extends Screen {
-    private static final ResourceLocation settings_tex = new ResourceLocation(WagYourMinimap.MOD_ID, "textures/gui/setting_icon.png");
-    private static final ResourceLocation waypoint_tex = new ResourceLocation(WagYourMinimap.MOD_ID, "textures/gui/waypoint_icon.png");
-    private static final ResourceLocation menu_end_tex = new ResourceLocation(WagYourMinimap.MOD_ID, "textures/gui/menu_end.png");
-    private static final ResourceLocation menu_tex = new ResourceLocation(WagYourMinimap.MOD_ID, "textures/gui/menu.png");
+    private static final ResourceLocation settings_tex = new ResourceLocation(WagYourMinimap.MOD_ID,
+        "textures/gui/setting_icon.png"
+    );
+    private static final ResourceLocation waypoint_tex = new ResourceLocation(WagYourMinimap.MOD_ID,
+        "textures/gui/waypoint_icon.png"
+    );
+    private static final ResourceLocation menu_end_tex = new ResourceLocation(WagYourMinimap.MOD_ID,
+        "textures/gui/menu_end.png"
+    );
+    private static final ResourceLocation menu_tex = new ResourceLocation(WagYourMinimap.MOD_ID,
+        "textures/gui/menu.png"
+    );
 
     private int menuHeight;
     public ScreenMapRenderer renderer;
@@ -38,16 +46,6 @@ public class MapScreen extends Screen {
 
     public MapScreen() {
         super(new TranslatableComponent("gui.wagyourminimap.title"));
-    }
-
-    @Override
-    public <T extends GuiEventListener & Widget & NarratableEntry> T addRenderableWidget(T widget) {
-        return super.addRenderableWidget(widget);
-    }
-
-    @Override
-    public void removeWidget(GuiEventListener guiEventListener) {
-        super.removeWidget(guiEventListener);
     }
 
     @Override
@@ -69,9 +67,14 @@ public class MapScreen extends Screen {
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
         boolean consumed = super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
-        if (button == 1) return true;
+        if (button == 1) {
+            return true;
+        }
         if (!consumed) {
-            renderer.moveCenter(renderer.center.subtract((dragX / renderer.chunkWidth) * 16, 0, (dragY / renderer.chunkWidth) * 16));
+            renderer.moveCenter(renderer.center.subtract((dragX / renderer.chunkWidth) * 16,
+                0,
+                (dragY / renderer.chunkWidth) * 16
+            ));
         }
         return true;
     }
@@ -108,12 +111,30 @@ public class MapScreen extends Screen {
     }
 
     @Override
+    public <T extends GuiEventListener & Widget & NarratableEntry> T addRenderableWidget(T widget) {
+        return super.addRenderableWidget(widget);
+    }
+
+    @Override
+    public void removeWidget(GuiEventListener guiEventListener) {
+        super.removeWidget(guiEventListener);
+    }
+
+    @Override
     protected void init() {
         super.init();
 
         renderer = new ScreenMapRenderer();
-        renderer.setOverlays(Arrays.stream(MinimapClientApi.getInstance().getConfig().get(MinimapClientConfig.class).fullscreenMapStyle.overlays).map(AbstractFullscreenOverlayOptions::compileOverlay).toArray(AbstractFullscreenOverlay[]::new));
-        renderer.setRenderLayers(Arrays.stream(MinimapClientApi.getInstance().getConfig().get(MinimapClientConfig.class).fullscreenMapStyle.layers).map(AbstractLayerOptions::compileLayer).toArray(AbstractImageStrategy[]::new));
+        renderer.setOverlays(Arrays.stream(MinimapClientApi.getInstance()
+                .getConfig()
+                .get(MinimapClientConfig.class).fullscreenMapStyle.overlays)
+            .map(AbstractFullscreenOverlayOptions::compileOverlay)
+            .toArray(AbstractFullscreenOverlay[]::new));
+        renderer.setRenderLayers(Arrays.stream(MinimapClientApi.getInstance()
+                .getConfig()
+                .get(MinimapClientConfig.class).fullscreenMapStyle.layers)
+            .map(AbstractLayerOptions::compileLayer)
+            .toArray(AbstractImageStrategy[]::new));
         renderer.computeDimensions(width, height);
         renderer.moveCenter(minecraft.player.position());
 
@@ -123,9 +144,12 @@ public class MapScreen extends Screen {
             minecraft.setScreen(new SettingsScreen(this));
         }));
 
-        buttonList.add(new MenuButton(new TranslatableComponent("gui.wagyourminimap.waypoints"), waypoint_tex, (btn) -> {
-            minecraft.setScreen(new WaypointListScreen(this));
-        }));
+        buttonList.add(new MenuButton(new TranslatableComponent("gui.wagyourminimap.waypoints"),
+            waypoint_tex,
+            (btn) -> {
+                minecraft.setScreen(new WaypointListScreen(this));
+            }
+        ));
 
         MinimapClientEvents.FULLSCREEN_MENU.invoker().onPopulate(buttonList);
 

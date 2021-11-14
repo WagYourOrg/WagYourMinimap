@@ -6,7 +6,9 @@ import xyz.wagyourtail.minimap.client.gui.AbstractMapRenderer;
 
 public class ScreenMapRenderer extends AbstractMapRenderer {
 
-    public AbstractFullscreenOverlay[] overlays = new AbstractFullscreenOverlay[] {new PlayerIconOverlay(this), new WaypointOverlay(this), new DataOverlay(this)};
+    public AbstractFullscreenOverlay[] overlays = new AbstractFullscreenOverlay[] {
+        new PlayerIconOverlay(this), new WaypointOverlay(this), new DataOverlay(this)
+    };
 
     public int blockRadius = 30 * 16;
     public int width, height, xDiam, zDiam;
@@ -45,8 +47,12 @@ public class ScreenMapRenderer extends AbstractMapRenderer {
 
         blockX = topX % 16;
         blockZ = topZ % 16;
-        if (blockX < 0) blockX += 16;
-        if (blockZ < 0) blockZ += 16;
+        if (blockX < 0) {
+            blockX += 16;
+        }
+        if (blockZ < 0) {
+            blockZ += 16;
+        }
 
         endBlockX = (this.blockX + xDiam) % 16;
         endBlockZ = (this.blockZ + zDiam) % 16;
@@ -67,23 +73,91 @@ public class ScreenMapRenderer extends AbstractMapRenderer {
 
         drawPartialChunk(matrixStack, getChunk(chunkX, chunkZ), 0, 0, chunkWidth, blockX, blockZ, 16, 16);
         for (int j = 1; j < chunkZDiam; ++j) {
-            drawPartialChunk(matrixStack, getChunk(chunkX, chunkZ + j), 0, j * chunkWidth - offsetZ, chunkWidth, blockX, 0, 16, 16);
+            drawPartialChunk(matrixStack,
+                getChunk(chunkX, chunkZ + j),
+                0,
+                j * chunkWidth - offsetZ,
+                chunkWidth,
+                blockX,
+                0,
+                16,
+                16
+            );
         }
-        drawPartialChunk(matrixStack, getChunk(chunkX, chunkZ + chunkZDiam), 0, chunkZDiam * chunkWidth - offsetZ, chunkWidth, blockX, 0, 16, endBlockZ);
+        drawPartialChunk(matrixStack,
+            getChunk(chunkX, chunkZ + chunkZDiam),
+            0,
+            chunkZDiam * chunkWidth - offsetZ,
+            chunkWidth,
+            blockX,
+            0,
+            16,
+            endBlockZ
+        );
 
         for (int i = 1; i < chunkXDiam; ++i) {
-            drawPartialChunk(matrixStack, getChunk(chunkX + i, chunkZ), i * chunkWidth - offsetX, 0, chunkWidth, 0, blockZ, 16, 16);
+            drawPartialChunk(matrixStack,
+                getChunk(chunkX + i, chunkZ),
+                i * chunkWidth - offsetX,
+                0,
+                chunkWidth,
+                0,
+                blockZ,
+                16,
+                16
+            );
             for (int j = 1; j < chunkZDiam; ++j) {
-                drawChunk(matrixStack, getChunk(chunkX + i, chunkZ + j), i * chunkWidth - offsetX, j * chunkWidth - offsetZ, chunkWidth);
+                drawChunk(matrixStack,
+                    getChunk(chunkX + i, chunkZ + j),
+                    i * chunkWidth - offsetX,
+                    j * chunkWidth - offsetZ,
+                    chunkWidth
+                );
             }
-            drawPartialChunk(matrixStack, getChunk(chunkX + i, chunkZ + chunkZDiam), i * chunkWidth - offsetX, chunkZDiam * chunkWidth - offsetZ, chunkWidth, 0, 0, 16, endBlockZ);
+            drawPartialChunk(matrixStack,
+                getChunk(chunkX + i, chunkZ + chunkZDiam),
+                i * chunkWidth - offsetX,
+                chunkZDiam * chunkWidth - offsetZ,
+                chunkWidth,
+                0,
+                0,
+                16,
+                endBlockZ
+            );
         }
 
-        drawPartialChunk(matrixStack, getChunk(chunkX + chunkXDiam, chunkZ), chunkXDiam * chunkWidth - offsetX, 0, chunkWidth, 0, blockZ, endBlockX, 16);
+        drawPartialChunk(matrixStack,
+            getChunk(chunkX + chunkXDiam, chunkZ),
+            chunkXDiam * chunkWidth - offsetX,
+            0,
+            chunkWidth,
+            0,
+            blockZ,
+            endBlockX,
+            16
+        );
         for (int j = 1; j < chunkZDiam; ++j) {
-            drawPartialChunk(matrixStack, getChunk(chunkX + chunkXDiam, chunkZ + j), chunkXDiam * chunkWidth - offsetX, j * chunkWidth - offsetZ, chunkWidth, 0, 0, endBlockX, 16);
+            drawPartialChunk(matrixStack,
+                getChunk(chunkX + chunkXDiam, chunkZ + j),
+                chunkXDiam * chunkWidth - offsetX,
+                j * chunkWidth - offsetZ,
+                chunkWidth,
+                0,
+                0,
+                endBlockX,
+                16
+            );
         }
-        drawPartialChunk(matrixStack, getChunk(chunkX + chunkXDiam, chunkZ + chunkZDiam), chunkXDiam * chunkWidth - offsetX, chunkZDiam * chunkWidth - offsetZ, chunkWidth, 0, 0, endBlockX, endBlockZ);
+        drawPartialChunk(matrixStack,
+            getChunk(chunkX + chunkXDiam, chunkZ + chunkZDiam),
+            chunkXDiam * chunkWidth - offsetX,
+            chunkZDiam * chunkWidth - offsetZ,
+            chunkWidth,
+            0,
+            0,
+            endBlockX,
+            endBlockZ
+        );
 
         for (AbstractFullscreenOverlay overlay : overlays) {
             overlay.renderOverlay(matrixStack, mouseX, mouseY);
@@ -94,4 +168,5 @@ public class ScreenMapRenderer extends AbstractMapRenderer {
     public void setOverlays(AbstractFullscreenOverlay... overlays) {
         this.overlays = overlays;
     }
+
 }

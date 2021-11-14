@@ -21,15 +21,6 @@ public class ColorButton extends AbstractWidget {
         this.colorSelected = colorSelected;
     }
 
-    public void onPress(double xCord, double yCord) {
-
-    }
-
-    @Override
-    public void onClick(double mouseX, double mouseY) {
-        this.onPress(mouseX - this.x, mouseY - this.y);
-    }
-
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         return false;
@@ -48,6 +39,15 @@ public class ColorButton extends AbstractWidget {
         tesselator.end();
         RenderSystem.disableBlend();
         RenderSystem.enableTexture();
+    }
+
+    @Override
+    public void onClick(double mouseX, double mouseY) {
+        this.onPress(mouseX - this.x, mouseY - this.y);
+    }
+
+    public void onPress(double xCord, double yCord) {
+
     }
 
     @Override

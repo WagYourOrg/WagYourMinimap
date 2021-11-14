@@ -26,7 +26,8 @@ public class SettingContainerSerializer {
             if (field.isAnnotationPresent(Setting.class)) {
                 serializedSettings.add(field.getName(), serializeSettingsField(field.get(settingContainer)));
                 //pure subsettings class
-            } else if (Modifier.isFinal(field.getModifiers()) && field.getType().isAnnotationPresent(SettingsContainer.class)) {
+            } else if (Modifier.isFinal(field.getModifiers()) &&
+                field.getType().isAnnotationPresent(SettingsContainer.class)) {
                 serializedSettings.add(field.getName(), serialize(field.get(settingContainer)));
             }
         }
@@ -70,11 +71,16 @@ public class SettingContainerSerializer {
             try {
                 if (field.isAnnotationPresent(Setting.class)) {
                     if (obj.has(field.getName())) {
-                        deserializeField(obj.get(field.getName()), new SettingField<>(settingsContainer, field, (Class<Object>)field.getType()));
+                        deserializeField(
+                            obj.get(field.getName()),
+                            new SettingField<>(settingsContainer, field, (Class<Object>) field.getType())
+                        );
                     }
-                } else if (Modifier.isFinal(field.getModifiers()) && field.getType().isAnnotationPresent(SettingsContainer.class)) {
-                    if (obj.has(field.getName()))
+                } else if (Modifier.isFinal(field.getModifiers()) && field.getType().isAnnotationPresent(
+                    SettingsContainer.class)) {
+                    if (obj.has(field.getName())) {
                         deserializeInternal(obj.get(field.getName()).getAsJsonObject(), field.get(settingsContainer));
+                    }
                 }
             } catch (Throwable t) {
                 t.printStackTrace();
@@ -133,7 +139,8 @@ public class SettingContainerSerializer {
             for (int i = 0; i < arr.size(); ++i) {
                 try {
                     array.add(deserializeArrayField(arr.get(i), arrElementClass));
-                } catch (ClassNotFoundException ignored) {}
+                } catch (ClassNotFoundException ignored) {
+                }
             }
             return (T) array.toArray((Object[]) Array.newInstance(arrElementClass, 0));
         } else {

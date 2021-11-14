@@ -3,12 +3,11 @@ package xyz.wagyourtail.minimap.api;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import dev.architectury.platform.Platform;
-import net.minecraft.world.level.Level;
 import xyz.wagyourtail.config.ConfigManager;
 import xyz.wagyourtail.minimap.api.config.MinimapConfig;
-import xyz.wagyourtail.minimap.map.MapServer;
 import xyz.wagyourtail.minimap.chunkdata.cache.CacheManager;
 import xyz.wagyourtail.minimap.chunkdata.updater.AbstractChunkUpdateStrategy;
+import xyz.wagyourtail.minimap.map.MapServer;
 
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
@@ -18,11 +17,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class MinimapApi {
     public static final AtomicInteger saving = new AtomicInteger(0);
-    public final CacheManager cacheManager = new CacheManager();
     protected static MinimapApi INSTANCE;
-
     protected final Map<Class<? extends AbstractChunkUpdateStrategy>, AbstractChunkUpdateStrategy> chunkUpdateStrategies = new HashMap<>();
-
+    public final CacheManager cacheManager = new CacheManager();
     public final Path configFolder = Platform.getConfigFolder().resolve("WagYourMinimap");
     public final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
@@ -70,4 +67,5 @@ public abstract class MinimapApi {
     public void close() {
         cacheManager.close();
     }
+
 }

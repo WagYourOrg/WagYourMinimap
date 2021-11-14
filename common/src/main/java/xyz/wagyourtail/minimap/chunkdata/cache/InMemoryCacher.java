@@ -21,29 +21,33 @@ public class InMemoryCacher extends AbstractCacher {
 
     public InMemoryCacher() {
         super(SaveOnLoad.ALWAYS, false);
-        chunkCache = CacheBuilder.newBuilder().expireAfterAccess(60, TimeUnit.SECONDS).<ChunkLocation, ChunkData>removalListener((e) -> {
-            try {
-                e.getValue().closeDerivatives();
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        }).build(new CacheLoader<>() {
-            @Override
-            public ChunkData load(ChunkLocation key) {
-                ChunkData data = inMemoryStillCache.get(key);
-                if (data != null) {
-                    return data;
+        chunkCache = CacheBuilder.newBuilder()
+            .expireAfterAccess(60, TimeUnit.SECONDS)
+            .<ChunkLocation, ChunkData>removalListener((e) -> {
+                try {
+                    e.getValue().closeDerivatives();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
                 }
-                throw new RuntimeException("Chunk not found in cache");
-            }
-        });
+            })
+            .build(new CacheLoader<>() {
+                @Override
+                public ChunkData load(ChunkLocation key) {
+                    ChunkData data = inMemoryStillCache.get(key);
+                    if (data != null) {
+                        return data;
+                    }
+                    throw new RuntimeException("Chunk not found in cache");
+                }
+            });
     }
 
     @Override
     public ChunkData loadChunk(ChunkLocation location) {
         try {
             return chunkCache.get(location);
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
         return null;
     }
 

@@ -11,4 +11,5 @@ public class CircleMapNoRotWaypointOverlaySettings extends AbstractOverlayOption
     public CircleMapNoRotWaypointOverlay compileOverlay(AbstractMinimapRenderer mapRenderer) {
         return new CircleMapNoRotWaypointOverlay(mapRenderer);
     }
+
 }

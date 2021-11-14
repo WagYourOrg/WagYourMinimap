@@ -5,7 +5,6 @@ import xyz.wagyourtail.minimap.waypoint.Waypoint;
 
 import java.util.Arrays;
 import java.util.Set;
-import java.util.function.Predicate;
 
 public class GroupFilter extends WaypointFilter {
     private final Set<String> groups;

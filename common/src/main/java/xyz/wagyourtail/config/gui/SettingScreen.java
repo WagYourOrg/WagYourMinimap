@@ -38,7 +38,10 @@ public class SettingScreen extends Screen {
         super(title);
         this.parent = parent;
         this.settingContainer = container;
-        settings = Arrays.stream(settingContainer.getClass().getFields()).filter(e -> e.isAnnotationPresent(Setting.class) || (Modifier.isFinal(e.getModifiers()) && e.getType().isAnnotationPresent(SettingsContainer.class))).toArray(Field[]::new);
+        settings = Arrays.stream(settingContainer.getClass().getFields()).filter(e ->
+            e.isAnnotationPresent(Setting.class) || (
+                Modifier.isFinal(e.getModifiers()) && e.getType().isAnnotationPresent(SettingsContainer.class)
+            )).toArray(Field[]::new);
     }
 
     @Override
@@ -58,13 +61,25 @@ public class SettingScreen extends Screen {
         super.init();
         AtomicInteger currentPage = new AtomicInteger();
 
-        backButton = addRenderableWidget(new Button(this.width / 2 - 210, this.height - 30, 100, 20, new TranslatableComponent("gui.wagyourconfig.back"), (btn) -> {
-            drawPage(currentPage.decrementAndGet());
-        }));
+        backButton = addRenderableWidget(new Button(this.width / 2 - 210,
+            this.height - 30,
+            100,
+            20,
+            new TranslatableComponent("gui.wagyourconfig.back"),
+            (btn) -> {
+                drawPage(currentPage.decrementAndGet());
+            }
+        ));
 
-        forwardButton = addRenderableWidget(new Button(this.width / 2 - 105, this.height - 30, 100, 20, new TranslatableComponent("gui.wagyourconfig.forward"), (btn) -> {
-            drawPage(currentPage.incrementAndGet());
-        }));
+        forwardButton = addRenderableWidget(new Button(this.width / 2 - 105,
+            this.height - 30,
+            100,
+            20,
+            new TranslatableComponent("gui.wagyourconfig.forward"),
+            (btn) -> {
+                drawPage(currentPage.incrementAndGet());
+            }
+        ));
 
         drawPage(0);
     }
@@ -79,14 +94,25 @@ public class SettingScreen extends Screen {
         int start = Mth.clamp(page, 0, pages) * buttonsPerPage;
         for (int i = start; i < start + buttonsPerPage && i < settings.length; ++i) {
             int finalI = i;
-            if (i % 2 == 0)
-                for (AbstractWidget abstractWidget : compileSetting(this.width / 2 - 210, 50 + (i / 2) * 30, 205, 20, settings[i])) {
+            if (i % 2 == 0) {
+                for (AbstractWidget abstractWidget : compileSetting(this.width / 2 - 210,
+                    50 + (i / 2) * 30,
+                    205,
+                    20,
+                    settings[i]
+                )) {
                     pageButtons.add(addRenderableWidget(abstractWidget));
                 }
-            else
-                for (AbstractWidget abstractWidget : compileSetting(this.width / 2 + 5, 50 + (i / 2) * 30, 205, 20, settings[i])) {
+            } else {
+                for (AbstractWidget abstractWidget : compileSetting(this.width / 2 + 5,
+                    50 + (i / 2) * 30,
+                    205,
+                    20,
+                    settings[i]
+                )) {
                     pageButtons.add(addRenderableWidget(abstractWidget));
                 }
+            }
         }
         backButton.active = page != 0;
         forwardButton.active = page < pages;
@@ -94,16 +120,26 @@ public class SettingScreen extends Screen {
 
     public AbstractWidget[] compileSetting(int x, int y, int width, int height, Field setting) {
         // pure subsetting
-        if (Modifier.isFinal(setting.getModifiers()) && setting.getType().isAnnotationPresent(SettingsContainer.class))
+        if (Modifier.isFinal(setting.getModifiers()) &&
+            setting.getType().isAnnotationPresent(SettingsContainer.class)) {
             return new AbstractWidget[] {
-                new Button(x, y, width, height, new TranslatableComponent(setting.getType().getAnnotation(SettingsContainer.class).value()), (btn) -> {
-                    try {
-                        minecraft.setScreen(new SettingScreen(new TranslatableComponent(setting.getType().getAnnotation(SettingsContainer.class).value()), this, setting.get(settingContainer)));
-                    } catch (IllegalAccessException e) {
-                        e.printStackTrace();
+                new Button(x,
+                    y,
+                    width,
+                    height,
+                    new TranslatableComponent(setting.getType().getAnnotation(SettingsContainer.class).value()),
+                    (btn) -> {
+                        try {
+                            minecraft.setScreen(new SettingScreen(new TranslatableComponent(setting.getType()
+                                .getAnnotation(SettingsContainer.class)
+                                .value()), this, setting.get(settingContainer)));
+                        } catch (IllegalAccessException e) {
+                            e.printStackTrace();
+                        }
                     }
-                })
+                )
             };
+        }
         try {
             AbstractWidget element;
             AbstractWidget settingButton = null;
@@ -111,13 +147,21 @@ public class SettingScreen extends Screen {
 
             //boolean
             if (settingField.fieldType.equals(boolean.class) || settingField.fieldType.equals(Boolean.class)) {
-                element = new Checkbox(x, y, width, height, new TranslatableComponent(settingField.setting.value()), (boolean) settingField.get(), true, (bl) -> {
-                    try {
-                        ((SettingField) settingField).set(bl);
-                    } catch (InvocationTargetException | IllegalAccessException e) {
-                        e.printStackTrace();
+                element = new Checkbox(x,
+                    y,
+                    width,
+                    height,
+                    new TranslatableComponent(settingField.setting.value()),
+                    (boolean) settingField.get(),
+                    true,
+                    (bl) -> {
+                        try {
+                            ((SettingField) settingField).set(bl);
+                        } catch (InvocationTargetException | IllegalAccessException e) {
+                            e.printStackTrace();
+                        }
                     }
-                });
+                );
             } else
 
                 //char
@@ -128,51 +172,80 @@ public class SettingScreen extends Screen {
                     //number
                     if (settingField.fieldType.isPrimitive() || Number.class.isAssignableFrom(settingField.fieldType)) {
                         if (settingField.intRange != null) {
-                            element = new Slider(x, y, width, height, new TranslatableComponent(settingField.setting.value()), ((Number) settingField.get()).doubleValue(), settingField.intRange.from(), settingField.intRange.to(), (settingField.intRange.to() - settingField.intRange.from()) / settingField.intRange.stepVal(), (val) -> {
-                                try {
-                                    ((SettingField) settingField).set(val.intValue());
-                                } catch (InvocationTargetException | IllegalAccessException e) {
-                                    e.printStackTrace();
+                            element = new Slider(x,
+                                y,
+                                width,
+                                height,
+                                new TranslatableComponent(settingField.setting.value()),
+                                ((Number) settingField.get()).doubleValue(),
+                                settingField.intRange.from(),
+                                settingField.intRange.to(),
+                                (settingField.intRange.to() - settingField.intRange.from()) /
+                                    settingField.intRange.stepVal(),
+                                (val) -> {
+                                    try {
+                                        ((SettingField) settingField).set(val.intValue());
+                                    } catch (InvocationTargetException | IllegalAccessException e) {
+                                        e.printStackTrace();
+                                    }
                                 }
-                            });
+                            );
                         } else if (settingField.doubleRange != null) {
-                            element = new Slider(x, y, width, height, new TranslatableComponent(settingField.setting.value()), ((Number) settingField.get()).doubleValue(), settingField.doubleRange.from(), settingField.doubleRange.to(), settingField.doubleRange.steps(), (val) -> {
-                                try {
-                                    ((SettingField) settingField).set(val);
-                                } catch (InvocationTargetException | IllegalAccessException e) {
-                                    e.printStackTrace();
+                            element = new Slider(x,
+                                y,
+                                width,
+                                height,
+                                new TranslatableComponent(settingField.setting.value()),
+                                ((Number) settingField.get()).doubleValue(),
+                                settingField.doubleRange.from(),
+                                settingField.doubleRange.to(),
+                                settingField.doubleRange.steps(),
+                                (val) -> {
+                                    try {
+                                        ((SettingField) settingField).set(val);
+                                    } catch (InvocationTargetException | IllegalAccessException e) {
+                                        e.printStackTrace();
+                                    }
                                 }
-                            });
+                            );
                         } else {
-                            element = new NamedEditBox(font, x, y, width, height, new TranslatableComponent(settingField.setting.value()));
+                            element = new NamedEditBox(font,
+                                x,
+                                y,
+                                width,
+                                height,
+                                new TranslatableComponent(settingField.setting.value())
+                            );
                             ((EditBox) element).setResponder((val) -> {
-                                if (settingField.fieldType.equals(int.class) || settingField.fieldType.equals(Integer.class)) {
+                                if (settingField.fieldType.equals(int.class) ||
+                                    settingField.fieldType.equals(Integer.class)) {
                                     try {
                                         ((SettingField) settingField).set(val.equals("") ? 0 : Integer.valueOf(val));
                                     } catch (InvocationTargetException | IllegalAccessException e) {
                                         e.printStackTrace();
                                     }
-                                } else if (settingField.fieldType.equals(double.class) || settingField.fieldType.equals(Double.class)) {
+                                } else if (settingField.fieldType.equals(double.class) || settingField.fieldType.equals(
+                                    Double.class)) {
                                     try {
                                         ((SettingField) settingField).set(val.equals("") ? 0D : Double.valueOf(val));
                                     } catch (InvocationTargetException | IllegalAccessException e) {
                                         e.printStackTrace();
                                     }
                                 } else {
-                                    throw new RuntimeException("Number type " + settingField.fieldType + " not implemented");
+                                    throw new RuntimeException(
+                                        "Number type " + settingField.fieldType + " not implemented");
                                 }
                             });
-                            if (settingField.fieldType.equals(int.class) || settingField.fieldType.equals(Integer.class)) {
-                                ((EditBox) element).setFilter((str) ->
-                                    str.matches("-?\\d*")
-                                );
-                            } else if (settingField.fieldType.equals(double.class) || settingField.fieldType.equals(Double.class)) {
+                            if (settingField.fieldType.equals(int.class) ||
+                                settingField.fieldType.equals(Integer.class)) {
+                                ((EditBox) element).setFilter((str) -> str.matches("-?\\d*"));
+                            } else if (settingField.fieldType.equals(double.class) || settingField.fieldType.equals(
+                                Double.class)) {
 
-                                ((EditBox) element).setFilter((str) ->
-                                    str.matches("-?\\d*.?\\d*")
-                                );
+                                ((EditBox) element).setFilter((str) -> str.matches("-?\\d*.?\\d*"));
                             } else {
-                                throw new RuntimeException("Number type " + settingField.fieldType + " not implemented");
+                                throw new RuntimeException(
+                                    "Number type " + settingField.fieldType + " not implemented");
                             }
                         }
                     } else
@@ -182,16 +255,29 @@ public class SettingScreen extends Screen {
                             if (settingField.options() != null) {
                                 MutableComponent title = new TranslatableComponent(settingField.setting.value());
                                 List<String> settings = (List<String>) settingField.options().stream().toList();
-                                element = new Button(x, y, width, height, title.copy().append(" " + settingField.get()), (btn) -> {
-                                    try {
-                                        ((SettingField) settingField).set(settings.get((settings.indexOf(settingField.get()) + 1) % settings.size()));
-                                        btn.setMessage(title.copy().append(" " + settingField.get()));
-                                    } catch (InvocationTargetException | IllegalAccessException e) {
-                                        e.printStackTrace();
+                                element = new Button(x,
+                                    y,
+                                    width,
+                                    height,
+                                    title.copy().append(" " + settingField.get()),
+                                    (btn) -> {
+                                        try {
+                                            ((SettingField) settingField).set(settings.get(
+                                                (settings.indexOf(settingField.get()) + 1) % settings.size()));
+                                            btn.setMessage(title.copy().append(" " + settingField.get()));
+                                        } catch (InvocationTargetException | IllegalAccessException e) {
+                                            e.printStackTrace();
+                                        }
                                     }
-                                });
+                                );
                             } else {
-                                element = new NamedEditBox(font, x, y, width, height, new TranslatableComponent(settingField.setting.value()));
+                                element = new NamedEditBox(font,
+                                    x,
+                                    y,
+                                    width,
+                                    height,
+                                    new TranslatableComponent(settingField.setting.value())
+                                );
                                 ((EditBox) element).setResponder((val) -> {
                                     try {
                                         ((SettingField) settingField).set(val);
@@ -206,43 +292,86 @@ public class SettingScreen extends Screen {
                             if (settingField.fieldType.isEnum()) {
                                 MutableComponent title = new TranslatableComponent(settingField.setting.value());
                                 List<?> settings = settingField.options().stream().toList();
-                                element = new Button(x, y, width, height, title.copy().append(" " + settingField.get()), (btn) -> {
-                                    try {
-                                        ((SettingField) settingField).set(settings.get((settings.indexOf(settingField.get()) + 1) % settings.size()));
-                                        btn.setMessage(title.copy().append(" " + settingField.get()));
-                                    } catch (InvocationTargetException | IllegalAccessException e) {
-                                        e.printStackTrace();
+                                element = new Button(x,
+                                    y,
+                                    width,
+                                    height,
+                                    title.copy().append(" " + settingField.get()),
+                                    (btn) -> {
+                                        try {
+                                            ((SettingField) settingField).set(settings.get(
+                                                (settings.indexOf(settingField.get()) + 1) % settings.size()));
+                                            btn.setMessage(title.copy().append(" " + settingField.get()));
+                                        } catch (InvocationTargetException | IllegalAccessException e) {
+                                            e.printStackTrace();
+                                        }
                                     }
-                                });
+                                );
                             } else
 
                                 //array
                                 if (settingField.fieldType.isArray()) {
-                                    element = new Button(x, y, width, height, new TranslatableComponent(settingField.setting.value()), (btn) -> {
-                                        minecraft.setScreen(new ListScreen<>(new TranslatableComponent(settingField.setting.value()), this, (SettingField<Object[]>) settingField));
-                                    });
+                                    element = new Button(x,
+                                        y,
+                                        width,
+                                        height,
+                                        new TranslatableComponent(settingField.setting.value()),
+                                        (btn) -> {
+                                            minecraft.setScreen(new ListScreen<>(new TranslatableComponent(settingField.setting.value()),
+                                                this,
+                                                (SettingField<Object[]>) settingField
+                                            ));
+                                        }
+                                    );
                                 } else
 
                                 //object
                                 {
                                     MutableComponent title = new TranslatableComponent(settingField.setting.value());
                                     List<Class<?>> settings = (List<Class<?>>) settingField.options().stream().toList();
-                                    element = new Button(x, y, width - height - 5, height, title.copy().append(" ").append(new TranslatableComponent(settingField.get().getClass().getAnnotation(SettingsContainer.class).value())), (btn) -> {
-                                        try {
-                                            ((SettingField) settingField).set(settings.get((settings.indexOf(settingField.get().getClass()) + 1) % settings.size()).getConstructor().newInstance());
-                                            btn.setMessage(title.copy().append(" ").append(new TranslatableComponent(settingField.get().getClass().getAnnotation(SettingsContainer.class).value())));
-                                        } catch (InvocationTargetException | IllegalAccessException | NoSuchMethodException | InstantiationException e) {
-                                            e.printStackTrace();
+                                    element = new Button(x,
+                                        y,
+                                        width - height - 5,
+                                        height,
+                                        title.copy()
+                                            .append(" ")
+                                            .append(new TranslatableComponent(settingField.get()
+                                                .getClass()
+                                                .getAnnotation(SettingsContainer.class)
+                                                .value())),
+                                        (btn) -> {
+                                            try {
+                                                ((SettingField) settingField).set(settings.get((
+                                                    settings.indexOf(settingField.get().getClass()) + 1
+                                                ) % settings.size()).getConstructor().newInstance());
+                                                btn.setMessage(title.copy()
+                                                    .append(" ")
+                                                    .append(new TranslatableComponent(settingField.get()
+                                                        .getClass()
+                                                        .getAnnotation(SettingsContainer.class)
+                                                        .value())));
+                                            } catch (InvocationTargetException | IllegalAccessException | NoSuchMethodException | InstantiationException e) {
+                                                e.printStackTrace();
+                                            }
                                         }
-                                    });
-                                    settingButton = new Button(x + width - height, y, height, height, new TextComponent("⚙"), (btn) -> {
-                                        try {
-                                            Object settingVal = settingField.get();
-                                            minecraft.setScreen(new SettingScreen(new TranslatableComponent(settingVal.getClass().getAnnotation(SettingsContainer.class).value()), this, settingVal));
-                                        } catch (InvocationTargetException | IllegalAccessException e) {
-                                            e.printStackTrace();
+                                    );
+                                    settingButton = new Button(x + width - height,
+                                        y,
+                                        height,
+                                        height,
+                                        new TextComponent("⚙"),
+                                        (btn) -> {
+                                            try {
+                                                Object settingVal = settingField.get();
+                                                minecraft.setScreen(new SettingScreen(new TranslatableComponent(
+                                                    settingVal.getClass()
+                                                        .getAnnotation(SettingsContainer.class)
+                                                        .value()), this, settingVal));
+                                            } catch (InvocationTargetException | IllegalAccessException e) {
+                                                e.printStackTrace();
+                                            }
                                         }
-                                    });
+                                    );
                                 }
 
             if (!settingField.setting.enabled().equals("")) {

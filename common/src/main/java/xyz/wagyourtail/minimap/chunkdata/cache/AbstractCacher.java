@@ -1,8 +1,8 @@
 package xyz.wagyourtail.minimap.chunkdata.cache;
 
-import xyz.wagyourtail.minimap.map.MapServer;
 import xyz.wagyourtail.minimap.chunkdata.ChunkData;
 import xyz.wagyourtail.minimap.chunkdata.ChunkLocation;
+import xyz.wagyourtail.minimap.map.MapServer;
 import xyz.wagyourtail.minimap.waypoint.Waypoint;
 
 import java.util.List;
@@ -28,10 +28,7 @@ public abstract class AbstractCacher {
     public abstract void close();
 
     public enum SaveOnLoad {
-        NEVER,
-        IF_ABOVE,
-        IF_BELOW,
-        ALWAYS
+        NEVER, IF_ABOVE, IF_BELOW, ALWAYS
     }
 
 }

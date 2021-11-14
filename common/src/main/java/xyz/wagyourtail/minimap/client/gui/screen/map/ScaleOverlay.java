@@ -5,8 +5,6 @@ import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Matrix4f;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.renderer.GameRenderer;
-import xyz.wagyourtail.minimap.client.gui.screen.map.AbstractFullscreenOverlay;
-import xyz.wagyourtail.minimap.client.gui.screen.map.ScreenMapRenderer;
 
 public class ScaleOverlay extends AbstractFullscreenOverlay {
     public ScaleOverlay(ScreenMapRenderer parent) {
@@ -20,7 +18,7 @@ public class ScaleOverlay extends AbstractFullscreenOverlay {
         float width = endX - parent.topX;
 
         float max_width = width / 3;
-        int chunks = (int)(max_width / 16);
+        int chunks = (int) (max_width / 16);
         int blocks;
         if (chunks == 0) {
             blocks = (int) Math.floor(max_width);
@@ -35,7 +33,13 @@ public class ScaleOverlay extends AbstractFullscreenOverlay {
         fill(stack, 0, 8, 2, 0, 0xFFFFFFFF);
         fill(stack, length - 2, 8, length, 0, 0xFFFFFFFF);
 
-        GuiComponent.drawCenteredString(stack, minecraft.font, String.format("%d blocks", blocks), (int)length / 2, -3, 0xFFFFFFFF);
+        GuiComponent.drawCenteredString(stack,
+            minecraft.font,
+            String.format("%d blocks", blocks),
+            (int) length / 2,
+            -3,
+            0xFFFFFFFF
+        );
 
         stack.popPose();
     }
@@ -56,10 +60,10 @@ public class ScaleOverlay extends AbstractFullscreenOverlay {
             maxY = i;
         }
 
-        float f = (float)(color >> 24 & 255) / 255.0F;
-        float g = (float)(color >> 16 & 255) / 255.0F;
-        float h = (float)(color >> 8 & 255) / 255.0F;
-        float j = (float)(color & 255) / 255.0F;
+        float f = (float) (color >> 24 & 255) / 255.0F;
+        float g = (float) (color >> 16 & 255) / 255.0F;
+        float h = (float) (color >> 8 & 255) / 255.0F;
+        float j = (float) (color & 255) / 255.0F;
         BufferBuilder bufferBuilder = Tesselator.getInstance().getBuilder();
         RenderSystem.enableBlend();
         RenderSystem.disableTexture();
@@ -75,4 +79,5 @@ public class ScaleOverlay extends AbstractFullscreenOverlay {
         RenderSystem.enableTexture();
         RenderSystem.disableBlend();
     }
+
 }

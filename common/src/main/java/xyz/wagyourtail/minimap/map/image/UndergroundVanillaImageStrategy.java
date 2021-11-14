@@ -17,19 +17,21 @@ public class UndergroundVanillaImageStrategy extends VanillaMapImageStrategy {
     @Override
     public DynamicTexture load(ChunkLocation location, ChunkData data) {
         Level level = minecraft.level;
-        if (level == null || minecraft.player == null) return null;
+        if (level == null || minecraft.player == null) {
+            return null;
+        }
         int y = minecraft.player.getBlockY() - level.dimensionType().minY();
         y = y - y % resolution;
         lastY.set(y);
         //TODO: make this work
-//        if (MapServer.getLevelName(level).equals(location.level().level_slug())) {
-//            ChunkAccess chunk = level.getChunk(location.getChunkX(), location.getChunkZ(), ChunkStatus.FULL, false);
-//            if (chunk != null) {
-//
-//
-//
-//            }
-//        }
+        //        if (MapServer.getLevelName(level).equals(location.level().level_slug())) {
+        //            ChunkAccess chunk = level.getChunk(location.getChunkX(), location.getChunkZ(), ChunkStatus.FULL, false);
+        //            if (chunk != null) {
+        //
+        //
+        //
+        //            }
+        //        }
         return null;
     }
 

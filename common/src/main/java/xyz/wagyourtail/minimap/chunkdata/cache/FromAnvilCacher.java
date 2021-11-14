@@ -1,8 +1,8 @@
 package xyz.wagyourtail.minimap.chunkdata.cache;
 
 import xyz.wagyourtail.minimap.chunkdata.ChunkData;
-import xyz.wagyourtail.minimap.map.MapServer;
 import xyz.wagyourtail.minimap.chunkdata.ChunkLocation;
+import xyz.wagyourtail.minimap.map.MapServer;
 import xyz.wagyourtail.minimap.waypoint.Waypoint;
 
 import java.util.List;
@@ -12,7 +12,7 @@ import java.util.stream.Stream;
  * load chunk data from world save data directly in single player as a "backup" to zipcache.
  * this can be slower as it's a fallback... it therefore is necessary to cache the available chunks from each region...
  */
-public class FromAnvilCacher extends AbstractCacher{
+public class FromAnvilCacher extends AbstractCacher {
 
     public FromAnvilCacher() {
         super(SaveOnLoad.NEVER, true);

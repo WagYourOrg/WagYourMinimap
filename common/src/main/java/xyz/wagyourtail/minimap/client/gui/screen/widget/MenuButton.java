@@ -14,8 +14,12 @@ import xyz.wagyourtail.minimap.WagYourMinimap;
 import java.util.function.Consumer;
 
 public class MenuButton extends AbstractButton {
-    private static final ResourceLocation button_base = new ResourceLocation(WagYourMinimap.MOD_ID, "textures/gui/button_base.png");
-    private static final ResourceLocation button_base_active = new ResourceLocation(WagYourMinimap.MOD_ID, "textures/gui/button_base_active.png");
+    private static final ResourceLocation button_base = new ResourceLocation(WagYourMinimap.MOD_ID,
+        "textures/gui/button_base.png"
+    );
+    private static final ResourceLocation button_base_active = new ResourceLocation(WagYourMinimap.MOD_ID,
+        "textures/gui/button_base_active.png"
+    );
 
     private final ResourceLocation tex;
 
@@ -47,7 +51,13 @@ public class MenuButton extends AbstractButton {
     @Override
     public void renderToolTip(PoseStack poseStack, int mouseX, int mouseY) {
         Font font = Minecraft.getInstance().font;
-        fill(poseStack, mouseX + 8, mouseY - 2, mouseX + font.width(getMessage()) + 12, mouseY + font.lineHeight + 2, 0x7F000000);
+        fill(poseStack,
+            mouseX + 8,
+            mouseY - 2,
+            mouseX + font.width(getMessage()) + 12,
+            mouseY + font.lineHeight + 2,
+            0x7F000000
+        );
         font.draw(poseStack, getMessage(), mouseX + 10, mouseY, 0xFFFFFF);
     }
 

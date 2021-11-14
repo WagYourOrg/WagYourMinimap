@@ -15,7 +15,10 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class WaypointManager {
-    private static final Set<WaypointFilter> filters = new HashSet<>(Set.of(new EnabledFilter(), new DimensionFilter(), new DistanceFilter(1000)));
+    private static final Set<WaypointFilter> filters = new HashSet<>(Set.of(new EnabledFilter(),
+        new DimensionFilter(),
+        new DistanceFilter(1000)
+    ));
     private static Predicate<Waypoint> compiledFilter;
 
     static {
@@ -29,14 +32,14 @@ public class WaypointManager {
         this.server = server;
 
         waypointList.addAll(MinimapApi.getInstance().cacheManager.loadWaypoints(server));
-//        //test waypoint
-//        if (waypointList.isEmpty()) {
-//            waypointList.add(new Waypoint(0, 0, 0, (byte) 255, (byte) 0, (byte) 0, "TEST", new String[] {}, new String[] {}));
-//        }
+        //        //test waypoint
+        //        if (waypointList.isEmpty()) {
+        //            waypointList.add(new Waypoint(0, 0, 0, (byte) 255, (byte) 0, (byte) 0, "TEST", new String[] {}, new String[] {}));
+        //        }
     }
 
     @SafeVarargs
-    public static void addFilter(Class<? extends WaypointFilter> ...filter) {
+    public static void addFilter(Class<? extends WaypointFilter>... filter) {
         filters.addAll(Arrays.stream(filter).map(e -> {
             try {
                 return e.getConstructor().newInstance();
@@ -48,11 +51,6 @@ public class WaypointManager {
         compileFilter();
     }
 
-    public static void addFilter(WaypointFilter ...filter) {
-        filters.addAll(Arrays.asList(filter));
-        compileFilter();
-    }
-
     private static void compileFilter() {
         Iterator<WaypointFilter> iterator = filters.iterator();
         if (!iterator.hasNext()) {
@@ -60,8 +58,15 @@ public class WaypointManager {
             return;
         }
         Predicate<Waypoint> workingFilter = iterator.next();
-        while (iterator.hasNext()) workingFilter = workingFilter.and(iterator.next());
+        while (iterator.hasNext()) {
+            workingFilter = workingFilter.and(iterator.next());
+        }
         compiledFilter = workingFilter;
+    }
+
+    public static void addFilter(WaypointFilter... filter) {
+        filters.addAll(Arrays.asList(filter));
+        compileFilter();
     }
 
     public static void removeFilter(Class<? extends Predicate<Waypoint>> filter) {
@@ -76,7 +81,9 @@ public class WaypointManager {
 
     public static void clearFilters(boolean compileChange) {
         filters.clear();
-        if (compileChange) compileFilter();
+        if (compileChange) {
+            compileFilter();
+        }
     }
 
 
@@ -93,7 +100,9 @@ public class WaypointManager {
     public void saveWaypoints() {
         MapServer.addToSaveQueue(() -> {
             synchronized (this) {
-                MinimapApi.getInstance().cacheManager.saveWaypoints(server, waypointList.stream().filter((e) -> !e.ephemeral));
+                MinimapApi.getInstance().cacheManager.saveWaypoints(server,
+                    waypointList.stream().filter((e) -> !e.ephemeral)
+                );
             }
         });
     }

@@ -16,17 +16,22 @@ public class MinimapEvents {
 
     public interface ChunkUpdated {
         void onChunkUpdate(ChunkLocation location, ChunkData chunkData, Class<? extends AbstractChunkUpdateStrategy> strategy, Class<? extends DataPart<?>> dataPart);
+
     }
 
     public interface WaypointAdded {
         void onWaypoint(Waypoint waypoint);
+
     }
 
     public interface WaypointRemoved {
         void onWaypoint(Waypoint waypoint);
+
     }
 
     public interface WaypointUpdated {
         void onWaypoint(Waypoint old_waypoint, Waypoint new_waypoint);
+
     }
+
 }

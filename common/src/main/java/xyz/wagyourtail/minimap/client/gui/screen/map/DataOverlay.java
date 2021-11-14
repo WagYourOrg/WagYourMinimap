@@ -3,10 +3,10 @@ package xyz.wagyourtail.minimap.client.gui.screen.map;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.core.Registry;
 import xyz.wagyourtail.minimap.api.MinimapApi;
-import xyz.wagyourtail.minimap.map.MapServer;
 import xyz.wagyourtail.minimap.chunkdata.ChunkData;
 import xyz.wagyourtail.minimap.chunkdata.ChunkLocation;
 import xyz.wagyourtail.minimap.chunkdata.parts.SurfaceDataPart;
+import xyz.wagyourtail.minimap.map.MapServer;
 
 public class DataOverlay extends AbstractFullscreenOverlay {
     public DataOverlay(ScreenMapRenderer parent) {
@@ -28,13 +28,20 @@ public class DataOverlay extends AbstractFullscreenOverlay {
             SurfaceDataPart surface = chunk.getData(SurfaceDataPart.class).orElse(null);
             if (surface != null) {
                 y = surface.heightmap[SurfaceDataPart.blockPosToIndex(x, z)];
-                block = Registry.BLOCK.getKey(chunk.getBlockState(surface.blockid[SurfaceDataPart.blockPosToIndex(x, z)]).getBlock()).toString();
+                block = Registry.BLOCK.getKey(chunk.getBlockState(surface.blockid[SurfaceDataPart.blockPosToIndex(x,
+                    z
+                )]).getBlock()).toString();
                 biome = chunk.getBiome(surface.biomeid[SurfaceDataPart.blockPosToIndex(x, z)]).toString();
                 light = surface.blocklight[SurfaceDataPart.blockPosToIndex(x, z)];
             }
         }
         minecraft.font.draw(stack, level.parent().server_slug, 50, 4, 0xFFFFFF);
-        minecraft.font.draw(stack, String.format("%d, %d, %d  %s/%s %d", x, y, z, biome, block, light), 50, parent.height - 10, 0xFFFFFF);
+        minecraft.font.draw(stack,
+            String.format("%d, %d, %d  %s/%s %d", x, y, z, biome, block, light),
+            50,
+            parent.height - 10,
+            0xFFFFFF
+        );
     }
 
 }

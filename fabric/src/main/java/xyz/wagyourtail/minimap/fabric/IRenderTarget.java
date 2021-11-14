@@ -5,4 +5,5 @@ public interface IRenderTarget {
     boolean isStencilEnabled();
 
     void enableStencil();
+
 }

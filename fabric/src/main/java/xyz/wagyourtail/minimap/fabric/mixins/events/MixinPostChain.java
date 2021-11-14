@@ -14,12 +14,18 @@ import xyz.wagyourtail.minimap.fabric.IRenderTarget;
 @Mixin(PostChain.class)
 public class MixinPostChain {
 
-    @Shadow @Final private RenderTarget screenTarget;
+    @Shadow
+    @Final
+    private RenderTarget screenTarget;
 
-    @Inject(method = "addTempTarget", at = @At(value = "INVOKE", target = "Ljava/util/Map;put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;"), locals = LocalCapture.CAPTURE_FAILHARD)
+    @Inject(method = "addTempTarget",
+        at = @At(value = "INVOKE",
+            target = "Ljava/util/Map;put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;"),
+        locals = LocalCapture.CAPTURE_FAILHARD)
     public void onAddTempTarget(String name, int width, int height, CallbackInfo ci, RenderTarget target) {
         if (((IRenderTarget) this.screenTarget).isStencilEnabled()) {
             ((IRenderTarget) target).enableStencil();
         }
     }
+
 }

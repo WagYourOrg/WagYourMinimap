@@ -13,11 +13,11 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fmlclient.ConfigGuiHandler;
 import xyz.wagyourtail.minimap.WagYourMinimap;
-import xyz.wagyourtail.minimap.client.WagYourMinimapClient;
-import xyz.wagyourtail.minimap.client.world.InGameWaypointRenderer;
-import xyz.wagyourtail.minimap.client.gui.screen.SettingsScreen;
 import xyz.wagyourtail.minimap.chunkdata.updater.BlockUpdateStrategy;
 import xyz.wagyourtail.minimap.chunkdata.updater.ChunkLoadStrategy;
+import xyz.wagyourtail.minimap.client.WagYourMinimapClient;
+import xyz.wagyourtail.minimap.client.gui.screen.SettingsScreen;
+import xyz.wagyourtail.minimap.client.world.InGameWaypointRenderer;
 
 @Mod(WagYourMinimap.MOD_ID)
 public class WagYourMinimapForge {
@@ -29,7 +29,9 @@ public class WagYourMinimapForge {
 
     public void onClientInit(FMLClientSetupEvent setup) {
         WagYourMinimapClient.init();
-        ModLoadingContext.get().registerExtensionPoint(ConfigGuiHandler.ConfigGuiFactory.class, () -> new ConfigGuiHandler.ConfigGuiFactory((mc, parent) -> new SettingsScreen(parent)));
+        ModLoadingContext.get().registerExtensionPoint(ConfigGuiHandler.ConfigGuiFactory.class,
+            () -> new ConfigGuiHandler.ConfigGuiFactory((mc, parent) -> new SettingsScreen(parent))
+        );
     }
 
     @SubscribeEvent
@@ -44,6 +46,10 @@ public class WagYourMinimapForge {
 
     @SubscribeEvent
     public void onRenderLast(RenderWorldLastEvent renderEvent) {
-        InGameWaypointRenderer.RENDER_LAST.invoker().onRenderLast(renderEvent.getMatrixStack(), renderEvent.getPartialTicks(), renderEvent.getFinishTimeNano());
+        InGameWaypointRenderer.RENDER_LAST.invoker().onRenderLast(renderEvent.getMatrixStack(),
+            renderEvent.getPartialTicks(),
+            renderEvent.getFinishTimeNano()
+        );
     }
+
 }

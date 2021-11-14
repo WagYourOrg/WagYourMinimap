@@ -7,14 +7,10 @@ import xyz.wagyourtail.minimap.api.client.config.fullscreenoverlays.*;
 import xyz.wagyourtail.minimap.api.client.config.layers.AbstractLayerOptions;
 import xyz.wagyourtail.minimap.api.client.config.layers.LightLayer;
 import xyz.wagyourtail.minimap.api.client.config.layers.VanillaMapLayer;
+import xyz.wagyourtail.minimap.client.gui.screen.map.*;
 import xyz.wagyourtail.minimap.map.image.AbstractImageStrategy;
 import xyz.wagyourtail.minimap.map.image.BlockLightImageStrategy;
 import xyz.wagyourtail.minimap.map.image.VanillaMapImageStrategy;
-import xyz.wagyourtail.minimap.client.gui.screen.map.AbstractFullscreenOverlay;
-import xyz.wagyourtail.minimap.client.gui.screen.map.DataOverlay;
-import xyz.wagyourtail.minimap.client.gui.screen.map.PlayerIconOverlay;
-import xyz.wagyourtail.minimap.client.gui.screen.map.ScaleOverlay;
-import xyz.wagyourtail.minimap.client.gui.screen.map.WaypointOverlay;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -42,15 +38,17 @@ public class FullscreenMapStyle {
         availableOverlays.put(WaypointOverlay.class, WaypointOverlayOptions.class);
         availableOverlays.put(ScaleOverlay.class, ScaleOverlayOptions.class);
 
-//        overlays = new AbstractOverlayOptions[] {};
+        //        overlays = new AbstractOverlayOptions[] {};
         layers = new AbstractLayerOptions[] {new VanillaMapLayer(), new LightLayer()};
 
-        overlays = new AbstractFullscreenOverlayOptions[] {new DataOverlayOptions(), new PlayerIconOptions(), new WaypointOverlayOptions()};
+        overlays = new AbstractFullscreenOverlayOptions[] {
+            new DataOverlayOptions(), new PlayerIconOptions(), new WaypointOverlayOptions()
+        };
     }
 
-//    public Collection<Class<? extends AbstractOverlayOptions>> overlayOptions() {
-//        return availableOverlays.values();
-//    }
+    //    public Collection<Class<? extends AbstractOverlayOptions>> overlayOptions() {
+    //        return availableOverlays.values();
+    //    }
 
     public Collection<Class<? extends AbstractLayerOptions>> layerOptions() {
         return availableLayers.values();
@@ -63,17 +61,21 @@ public class FullscreenMapStyle {
     public void setLayers(AbstractLayerOptions[] layers) {
         this.layers = layers;
         try {
-            MinimapClientApi.getInstance().screen.renderer.setRenderLayers(Arrays.stream(layers).map(
-                AbstractLayerOptions::compileLayer).toArray(AbstractImageStrategy[]::new));
-        } catch (NullPointerException ignored) {}
+            MinimapClientApi.getInstance().screen.renderer.setRenderLayers(Arrays.stream(layers)
+                .map(AbstractLayerOptions::compileLayer)
+                .toArray(AbstractImageStrategy[]::new));
+        } catch (NullPointerException ignored) {
+        }
     }
 
     public void setOverlays(AbstractFullscreenOverlayOptions[] overlays) {
         this.overlays = overlays;
         try {
-            MinimapClientApi.getInstance().screen.renderer.setOverlays(Arrays.stream(overlays).map(
-                AbstractFullscreenOverlayOptions::compileOverlay).toArray(AbstractFullscreenOverlay[]::new));
-        } catch (NullPointerException ignored) {}
+            MinimapClientApi.getInstance().screen.renderer.setOverlays(Arrays.stream(overlays)
+                .map(AbstractFullscreenOverlayOptions::compileOverlay)
+                .toArray(AbstractFullscreenOverlay[]::new));
+        } catch (NullPointerException ignored) {
+        }
     }
 
 }

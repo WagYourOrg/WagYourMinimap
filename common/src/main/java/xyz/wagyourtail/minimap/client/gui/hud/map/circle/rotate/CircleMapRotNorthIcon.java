@@ -9,11 +9,13 @@ import xyz.wagyourtail.minimap.WagYourMinimap;
 import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
 import xyz.wagyourtail.minimap.api.client.config.MinimapClientConfig;
 import xyz.wagyourtail.minimap.client.gui.AbstractMapRenderer;
-import xyz.wagyourtail.minimap.client.gui.hud.map.AbstractMinimapRenderer;
 import xyz.wagyourtail.minimap.client.gui.hud.map.AbstractMapOverlayRenderer;
+import xyz.wagyourtail.minimap.client.gui.hud.map.AbstractMinimapRenderer;
 
 public class CircleMapRotNorthIcon extends AbstractMapOverlayRenderer {
-    private static final ResourceLocation north_tex = new ResourceLocation(WagYourMinimap.MOD_ID, "textures/north_icon.png");
+    private static final ResourceLocation north_tex = new ResourceLocation(WagYourMinimap.MOD_ID,
+        "textures/north_icon.png"
+    );
 
     public CircleMapRotNorthIcon(AbstractMinimapRenderer parent) {
         super(parent);
@@ -26,7 +28,7 @@ public class CircleMapRotNorthIcon extends AbstractMapOverlayRenderer {
         int chunkDiam = chunkRadius * 2 - 1;
         float chunkScale = maxLength / ((float) chunkDiam - 1);
 
-        Vec3 pointVec = new Vec3(0,0,maxLength / 2f).yRot((float) Math.toRadians(player_rot));
+        Vec3 pointVec = new Vec3(0, 0, maxLength / 2f).yRot((float) Math.toRadians(player_rot));
         stack.translate(maxLength / 2 + pointVec.x, maxLength / 2 + pointVec.z, 0);
         stack.scale(.005f * maxLength, .005f * maxLength, 1);
         RenderSystem.setShaderTexture(0, north_tex);

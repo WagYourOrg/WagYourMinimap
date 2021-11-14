@@ -11,4 +11,5 @@ public class SquareMapRotWaypointOverlaySettings extends AbstractOverlayOptions<
     public SquareMapRotWaypointOverlay compileOverlay(AbstractMinimapRenderer mapRenderer) {
         return new SquareMapRotWaypointOverlay(mapRenderer);
     }
+
 }

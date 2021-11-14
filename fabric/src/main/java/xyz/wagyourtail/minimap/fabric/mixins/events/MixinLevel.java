@@ -12,8 +12,10 @@ import xyz.wagyourtail.minimap.chunkdata.updater.BlockUpdateStrategy;
 @Mixin(Level.class)
 public class MixinLevel {
 
-    @Inject(method = "setBlock(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;II)Z", at = @At("RETURN"))
+    @Inject(method = "setBlock(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;II)Z",
+        at = @At("RETURN"))
     public void onSetBlock(BlockPos pos, BlockState state, int flags, int recursionLeft, CallbackInfoReturnable<Boolean> cir) {
         BlockUpdateStrategy.BLOCK_UPDATE_EVENT.invoker().onBlockUpdate(pos, (Level) (Object) this);
     }
+
 }

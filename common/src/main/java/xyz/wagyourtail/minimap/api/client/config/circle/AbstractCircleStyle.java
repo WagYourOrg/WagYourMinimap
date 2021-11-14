@@ -11,4 +11,5 @@ public abstract class AbstractCircleStyle<T extends AbstractMinimapRenderer> ext
         super();
         availableOverlays.put(CircleMapBorderOverlay.class, SquareMapBorderOverlaySettings.class);
     }
+
 }

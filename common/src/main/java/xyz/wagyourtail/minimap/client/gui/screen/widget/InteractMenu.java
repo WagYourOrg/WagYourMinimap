@@ -10,12 +10,12 @@ import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.phys.Vec3;
 import xyz.wagyourtail.minimap.api.MinimapApi;
 import xyz.wagyourtail.minimap.api.client.MinimapClientEvents;
-import xyz.wagyourtail.minimap.client.gui.screen.MapScreen;
-import xyz.wagyourtail.minimap.client.gui.screen.WaypointEditScreen;
-import xyz.wagyourtail.minimap.map.MapServer;
 import xyz.wagyourtail.minimap.chunkdata.ChunkData;
 import xyz.wagyourtail.minimap.chunkdata.ChunkLocation;
 import xyz.wagyourtail.minimap.chunkdata.parts.SurfaceDataPart;
+import xyz.wagyourtail.minimap.client.gui.screen.MapScreen;
+import xyz.wagyourtail.minimap.client.gui.screen.WaypointEditScreen;
+import xyz.wagyourtail.minimap.map.MapServer;
 import xyz.wagyourtail.minimap.waypoint.Waypoint;
 
 import java.util.ArrayList;
@@ -25,9 +25,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class InteractMenu extends GuiComponent implements Widget {
+    protected static final Minecraft minecraft = Minecraft.getInstance();
     public static int backround_color = 0xFF3F3F74;
     public static String teleport_command = "/tp";
-    protected static final Minecraft minecraft = Minecraft.getInstance();
     public final MapScreen parent;
     public final float x, z;
     public final double topX, topY;
@@ -41,7 +41,7 @@ public class InteractMenu extends GuiComponent implements Widget {
         this.z = z;
         this.topX = mouseX;
         this.topY = mouseY;
-        this.waypoints = waypointsNearPos((int)x, (int)z);
+        this.waypoints = waypointsNearPos((int) x, (int) z);
         this.init();
     }
 
@@ -49,11 +49,11 @@ public class InteractMenu extends GuiComponent implements Widget {
         MapServer.MapLevel level = MinimapApi.getInstance().getMapServer().getCurrentLevel();
         int y = 0;
         if (level != null) {
-            ChunkData chunk = ChunkLocation.locationForChunkPos(level, (int)x >> 4, (int)z >> 4).get();
+            ChunkData chunk = ChunkLocation.locationForChunkPos(level, (int) x >> 4, (int) z >> 4).get();
             if (chunk != null) {
                 SurfaceDataPart surface = chunk.getData(SurfaceDataPart.class).orElse(null);
                 if (surface != null) {
-                    y = surface.heightmap[SurfaceDataPart.blockPosToIndex((int)x, (int)z)];
+                    y = surface.heightmap[SurfaceDataPart.blockPosToIndex((int) x, (int) z)];
                 }
             }
         }
@@ -67,7 +67,7 @@ public class InteractMenu extends GuiComponent implements Widget {
 
         MinimapClientEvents.FULLSCREEN_INTERACT_MENU.invoker().onPopulate(this);
 
-        int leftX = (int)topX;
+        int leftX = (int) topX;
         int currentTopY = (int) topY;
 
         for (Map.Entry<String, List<InteractMenuButton>> group : buttons.entrySet()) {
@@ -79,20 +79,6 @@ public class InteractMenu extends GuiComponent implements Widget {
                 parent.addRenderableWidget(btn);
                 currentTopY += InteractMenuButton.btnHeight;
             }
-        }
-    }
-
-    @Override
-    public void render(PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
-        fill(poseStack, (int)topX - 2, (int)topY - 2, (int)topX + 102, (int)topY + totalBtns * InteractMenuButton.btnHeight + buttons.size() * 6 + 2, backround_color);
-        int currentY = (int)topY;
-        for (Map.Entry<String, List<InteractMenuButton>> group : buttons.entrySet()) {
-            poseStack.pushPose();
-            poseStack.translate(topX + 50, currentY, 0);
-            poseStack.scale(.6f, .6f, 1);
-            drawCenteredString(poseStack, minecraft.font, group.getKey(), 0, 0, 0x639BFF);
-            poseStack.popPose();
-            currentY += 6 + group.getValue().size() * InteractMenuButton.btnHeight;
         }
     }
 
@@ -134,9 +120,31 @@ public class InteractMenu extends GuiComponent implements Widget {
         }).collect(Collectors.toList());
     }
 
+    @Override
+    public void render(PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
+        fill(
+            poseStack,
+            (int) topX - 2,
+            (int) topY - 2,
+            (int) topX + 102,
+            (int) topY + totalBtns * InteractMenuButton.btnHeight + buttons.size() * 6 + 2,
+            backround_color
+        );
+        int currentY = (int) topY;
+        for (Map.Entry<String, List<InteractMenuButton>> group : buttons.entrySet()) {
+            poseStack.pushPose();
+            poseStack.translate(topX + 50, currentY, 0);
+            poseStack.scale(.6f, .6f, 1);
+            drawCenteredString(poseStack, minecraft.font, group.getKey(), 0, 0, 0x639BFF);
+            poseStack.popPose();
+            currentY += 6 + group.getValue().size() * InteractMenuButton.btnHeight;
+        }
+    }
+
     public void remove() {
         for (List<InteractMenuButton> value : buttons.values()) {
             value.forEach(parent::removeWidget);
         }
     }
+
 }

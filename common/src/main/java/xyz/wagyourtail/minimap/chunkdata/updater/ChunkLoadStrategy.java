@@ -8,7 +8,6 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.AirBlock;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkAccess;
@@ -30,11 +29,12 @@ public class ChunkLoadStrategy extends AbstractChunkUpdateStrategy<SurfaceDataPa
     @Override
     protected void registerEventListener() {
         LOAD.register((chunk, level) -> {
-            if (level != mc.level) return;
+            if (level != mc.level) {
+                return;
+            }
             MapServer.MapLevel mapLevel = MinimapApi.getInstance().getMapServer().getCurrentLevel();
             ChunkPos pos = chunk.getPos();
-            updateChunk(
-                getChunkLocation(mapLevel, pos),
+            updateChunk(getChunkLocation(mapLevel, pos),
                 (location, parent, oldData) -> loadFromChunk(chunk, mapLevel, level, parent, oldData)
             );
         });
@@ -67,8 +67,9 @@ public class ChunkLoadStrategy extends AbstractChunkUpdateStrategy<SurfaceDataPa
                     } else if (air) {
                         data.heightmap[i] = j;
                         data.blockid[i] = parent.getOrRegisterBlockState(block);
-                        data.biomeid[i] = parent.getOrRegisterBiome(biomeRegistry.getKey(chunk.getBiomes().getNoiseBiome(x >> 2, data.heightmap[i] >> 2, z >> 2)));
-//                        data.biomeid[i] = data.getOrRegisterResourceLocation(biomeRegistry.getKey(level.getBiome(blockPos)));
+                        data.biomeid[i] = parent.getOrRegisterBiome(biomeRegistry.getKey(chunk.getBiomes()
+                            .getNoiseBiome(x >> 2, data.heightmap[i] >> 2, z >> 2)));
+                        //                        data.biomeid[i] = data.getOrRegisterResourceLocation(biomeRegistry.getKey(level.getBiome(blockPos)));
                         data.blocklight[i] = (byte) light.getLightValue(blockPos.setY(data.heightmap[i] + 1));
                         break;
                     }
@@ -79,16 +80,21 @@ public class ChunkLoadStrategy extends AbstractChunkUpdateStrategy<SurfaceDataPa
                 int x = (i >> 4) % 16;
                 int z = i % 16;
                 data.heightmap[i] = chunk.getHeight(Heightmap.Types.MOTION_BLOCKING, x, z);
-                BlockState top = chunk.getBlockState(blockPos.set((pos.x << 4) + x, data.heightmap[i], (pos.z << 4) + z));
+                BlockState top = chunk.getBlockState(blockPos.set((pos.x << 4) + x,
+                    data.heightmap[i],
+                    (pos.z << 4) + z
+                ));
                 data.blockid[i] = parent.getOrRegisterBlockState(top);
-                data.biomeid[i] = parent.getOrRegisterBiome(biomeRegistry.getKey(chunk.getBiomes().getNoiseBiome(x >> 2, data.heightmap[i] >> 2, z >> 2)));
- //                data.biomeid[i] = data.getOrRegisterResourceLocation(biomeRegistry.getKey(level.getBiome(blockPos)));
+                data.biomeid[i] = parent.getOrRegisterBiome(biomeRegistry.getKey(chunk.getBiomes()
+                    .getNoiseBiome(x >> 2, data.heightmap[i] >> 2, z >> 2)));
+                //                data.biomeid[i] = data.getOrRegisterResourceLocation(biomeRegistry.getKey(level.getBiome(blockPos)));
                 data.blocklight[i] = (byte) light.getLightValue(blockPos.setY(data.heightmap[i] + 1));
 
                 if (top.getBlock().equals(Blocks.WATER)) {
                     BlockState b = top;
-                    while (b.getBlock().equals(Blocks.WATER))
+                    while (b.getBlock().equals(Blocks.WATER)) {
                         b = chunk.getBlockState(blockPos.setY(blockPos.getY() - 1));
+                    }
                     data.oceanFloorHeightmap[i] = blockPos.getY();
                     data.oceanFloorBlockid[i] = parent.getOrRegisterBlockState(chunk.getBlockState(blockPos));
                 }
@@ -96,8 +102,8 @@ public class ChunkLoadStrategy extends AbstractChunkUpdateStrategy<SurfaceDataPa
         }
 
         // update south heightmap
-//        UpdateNorthHeightmapStrategy.UPDATE_EVENT.invoker().onUpdate(parent.south(), data.heightmap);
-//        UpdateSouthHeightmapStrategy.UPDATE_EVENT.invoker().onUpdate(parent.north(), data.heightmap);
+        //        UpdateNorthHeightmapStrategy.UPDATE_EVENT.invoker().onUpdate(parent.south(), data.heightmap);
+        //        UpdateSouthHeightmapStrategy.UPDATE_EVENT.invoker().onUpdate(parent.north(), data.heightmap);
         parent.north().get().invalidateDerivitives();
         parent.south().get().invalidateDerivitives();
 

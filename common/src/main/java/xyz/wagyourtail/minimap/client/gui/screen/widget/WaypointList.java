@@ -36,18 +36,20 @@ public class WaypointList extends ObjectSelectionList<WaypointList.WaypointListE
         }
     }
 
-    public void setSelected(@Nullable WaypointListEntry entry) {
-        super.setSelected(entry);
-        this.screen.onSelectedChange();
-    }
-
     @Override
     public int getRowWidth() {
         return 400;
     }
 
+    public void setSelected(@Nullable WaypointListEntry entry) {
+        super.setSelected(entry);
+        this.screen.onSelectedChange();
+    }
+
     public static class WaypointListEntry extends ObjectSelectionList.Entry<WaypointListEntry> {
-        private static final ResourceLocation waypoint_tex = new ResourceLocation(WagYourMinimap.MOD_ID, "textures/waypoint.png");
+        private static final ResourceLocation waypoint_tex = new ResourceLocation(WagYourMinimap.MOD_ID,
+            "textures/waypoint.png"
+        );
 
         private final Minecraft mc;
         private final WaypointListScreen screen;
@@ -60,7 +62,11 @@ public class WaypointList extends ObjectSelectionList<WaypointList.WaypointListE
             this.screen = screen;
             this.point = point;
             this.mc = Minecraft.getInstance();
-            this.name = new TextComponent(point.name).withStyle(point.enabled ? new ChatFormatting[] {ChatFormatting.WHITE} :  new ChatFormatting[] {ChatFormatting.GRAY, ChatFormatting.ITALIC});
+            this.name = new TextComponent(point.name).withStyle(point.enabled ?
+                new ChatFormatting[] {ChatFormatting.WHITE} :
+                new ChatFormatting[] {
+                    ChatFormatting.GRAY, ChatFormatting.ITALIC
+                });
         }
 
         @Override
@@ -78,7 +84,11 @@ public class WaypointList extends ObjectSelectionList<WaypointList.WaypointListE
             Waypoint new_point = point.copyWithChangeEnabled(!point.enabled);
             MinimapApi.getInstance().getMapServer().waypoints.updateWaypoint(point, new_point);
             this.point = new_point;
-            this.name = new TextComponent(point.name).withStyle(point.enabled ? new ChatFormatting[] {ChatFormatting.WHITE} :  new ChatFormatting[] {ChatFormatting.GRAY, ChatFormatting.ITALIC});
+            this.name = new TextComponent(point.name).withStyle(point.enabled ?
+                new ChatFormatting[] {ChatFormatting.WHITE} :
+                new ChatFormatting[] {
+                    ChatFormatting.GRAY, ChatFormatting.ITALIC
+                });
         }
 
         @Override
@@ -87,8 +97,15 @@ public class WaypointList extends ObjectSelectionList<WaypointList.WaypointListE
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
             int abgr = 0xFF000000 | point.colB & 0xFF << 0x10 | point.colG & 0xFF << 0x8 | point.colR & 0xFF;
             AbstractMapRenderer.drawTexCol(poseStack, left + 1, top + 1, height - 2, height - 2, 0, 0, 1, 1, abgr);
-            mc.font.draw(poseStack, Language.getInstance().getVisualOrder(mc.font.substrByWidth(name, width - 100)), left + height + 3, top + 1, 0xFFFFFF);
+            mc.font.draw(poseStack,
+                Language.getInstance().getVisualOrder(mc.font.substrByWidth(name, width - 100)),
+                left + height + 3,
+                top + 1,
+                0xFFFFFF
+            );
             RenderSystem.disableBlend();
         }
+
     }
+
 }

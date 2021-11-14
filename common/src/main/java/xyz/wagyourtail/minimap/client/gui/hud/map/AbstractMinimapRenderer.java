@@ -18,19 +18,26 @@ public abstract class AbstractMinimapRenderer extends AbstractMapRenderer {
     }
 
     public void render(PoseStack matrixStack, float tickDelta) {
-        if (minecraft.options.renderDebug) return;
+        if (minecraft.options.renderDebug) {
+            return;
+        }
         matrixStack.pushPose();
         int w = minecraft.getWindow().getGuiScaledWidth();
         int h = minecraft.getWindow().getGuiScaledHeight();
 
-        float minimapSize = Math.min(w, h) * MinimapClientApi.getInstance().getConfig().get(MinimapClientConfig.class).minimapScale / 100f;
+        float minimapSize = Math.min(w, h) *
+            MinimapClientApi.getInstance().getConfig().get(MinimapClientConfig.class).minimapScale / 100f;
 
         LocalPlayer player = minecraft.player;
         assert player != null;
 
         boolean bottom = MinimapClientApi.getInstance().getConfig().get(MinimapClientConfig.class).snapSide.bottom;
 
-        float posX = MinimapClientApi.getInstance().getConfig().get(MinimapClientConfig.class).snapSide.right ? w - minimapSize - 10 : MinimapClientApi.getInstance().getConfig().get(MinimapClientConfig.class).snapSide.center ? w / 2f - minimapSize / 2f : 10;
+        float posX = MinimapClientApi.getInstance().getConfig().get(MinimapClientConfig.class).snapSide.right ?
+            w - minimapSize - 10 :
+            MinimapClientApi.getInstance().getConfig().get(MinimapClientConfig.class).snapSide.center ?
+                w / 2f - minimapSize / 2f :
+                10;
         float posZ = bottom ? h - minimapSize - minecraft.font.lineHeight - 10 : 10;
         Vec3 player_pos = player.getPosition(tickDelta);
         float player_rot = player.getYRot();
@@ -55,7 +62,12 @@ public abstract class AbstractMinimapRenderer extends AbstractMapRenderer {
         if (!bottom) {
             matrixStack.translate(0, minimapSize + 5, 0);
         }
-        renderText(matrixStack, minimapSize, bottom, new TextComponent(String.format("%.2f %.2f %.2f", player_pos.x, player_pos.y, player_pos.z)));
+        renderText(
+            matrixStack,
+            minimapSize,
+            bottom,
+            new TextComponent(String.format("%.2f %.2f %.2f", player_pos.x, player_pos.y, player_pos.z))
+        );
         matrixStack.popPose();
     }
 

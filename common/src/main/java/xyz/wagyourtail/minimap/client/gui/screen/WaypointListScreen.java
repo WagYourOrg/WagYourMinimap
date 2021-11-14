@@ -1,7 +1,6 @@
 package xyz.wagyourtail.minimap.client.gui.screen;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
@@ -17,13 +16,29 @@ import java.util.List;
 
 public class WaypointListScreen extends Screen {
     private final Screen parent;
-    private WaypointList waypointListWidget;
     private final List<Button> buttons = new ArrayList<>();
     private final List<Button> waypointNotNullButtons = new ArrayList<>();
+    private WaypointList waypointListWidget;
 
     protected WaypointListScreen(Screen parent) {
         super(new TranslatableComponent("gui.wagyourminimap.waypoints"));
         this.parent = parent;
+    }
+
+    @Override
+    public void render(PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
+        renderBackground(poseStack);
+
+        this.waypointListWidget.render(poseStack, mouseX, mouseY, partialTicks);
+
+        drawCenteredString(poseStack, font, title, width / 2, 8, 0xFFFFFF);
+
+        super.render(poseStack, mouseX, mouseY, partialTicks);
+    }
+
+    @Override
+    public void onClose() {
+        minecraft.setScreen(parent);
     }
 
     @Override
@@ -35,29 +50,37 @@ public class WaypointListScreen extends Screen {
         waypointListWidget = new WaypointList(this, minecraft, width, height, 32, height - 64, 16);
         addWidget(waypointListWidget);
 
-        buttons.addAll(List.of(
-            new Button(0, 0, 0, 20, new TranslatableComponent("gui.wagyourminimap.waypoints.add"), (button) -> {
+        buttons.addAll(List.of(new Button(0,
+            0,
+            0,
+            20,
+            new TranslatableComponent("gui.wagyourminimap.waypoints.add"),
+            (button) -> {
                 assert minecraft.player != null;
-                minecraft.setScreen(WaypointEditScreen.createNewFromPos(this, new BlockPos(minecraft.player.getPosition(0)).above()));
-            }),
-            new Button(0, 0, 0, 20, new TranslatableComponent("gui.wagyourminimap.waypoints.reload"), (button) -> {
-                refreshEntries();
-            }),
-            new Button(0, 0, 0, 20, new TranslatableComponent("gui.wagyourminimap.close"), (button) -> {
-                onClose();
-            })
-        ));
+                minecraft.setScreen(WaypointEditScreen.createNewFromPos(this,
+                    new BlockPos(minecraft.player.getPosition(0)).above()
+                ));
+            }
+        ), new Button(0, 0, 0, 20, new TranslatableComponent("gui.wagyourminimap.waypoints.reload"), (button) -> {
+            refreshEntries();
+        }), new Button(0, 0, 0, 20, new TranslatableComponent("gui.wagyourminimap.close"), (button) -> {
+            onClose();
+        })));
 
 
-
-        waypointNotNullButtons.addAll(List.of(
-            new Button(0, 0, 0, 20, new TranslatableComponent("gui.wagyourminimap.waypoints.edit"), (button) -> {
-                WaypointList.WaypointListEntry selected = getSelected();
-                if (selected != null) {
-                    assert minecraft != null;
-                    minecraft.setScreen(new WaypointEditScreen(this, selected.point));
+        waypointNotNullButtons.addAll(List.of(new Button(0,
+                0,
+                0,
+                20,
+                new TranslatableComponent("gui.wagyourminimap.waypoints.edit"),
+                (button) -> {
+                    WaypointList.WaypointListEntry selected = getSelected();
+                    if (selected != null) {
+                        assert minecraft != null;
+                        minecraft.setScreen(new WaypointEditScreen(this, selected.point));
+                    }
                 }
-            }),
+            ),
             new Button(0, 0, 0, 20, new TranslatableComponent("gui.wagyourminimap.waypoints.delete"), (button) -> {
                 WaypointList.WaypointListEntry selected = getSelected();
                 if (selected != null) {
@@ -76,7 +99,12 @@ public class WaypointListScreen extends Screen {
                 if (selected != null) {
                     assert minecraft != null;
                     BlockPos pos = selected.point.posForCoordScale(minecraft.level.dimensionType().coordinateScale());
-                    this.sendMessage(String.format("%s %d %d %d", InteractMenu.teleport_command, pos.getX(), pos.getY(), pos.getZ()));
+                    this.sendMessage(String.format("%s %d %d %d",
+                        InteractMenu.teleport_command,
+                        pos.getX(),
+                        pos.getY(),
+                        pos.getZ()
+                    ));
                 }
             })
         ));
@@ -108,18 +136,13 @@ public class WaypointListScreen extends Screen {
 
     }
 
-    public void setSelected(@Nullable WaypointList.WaypointListEntry entry) {
-        this.waypointListWidget.setSelected(entry);
-        this.onSelectedChange();
-    }
-
     public WaypointList.WaypointListEntry getSelected() {
         return this.waypointListWidget.getSelected();
     }
 
-    public void refreshEntries() {
-        this.waypointListWidget.refreshEntries();
-        setSelected(null);
+    public void setSelected(@Nullable WaypointList.WaypointListEntry entry) {
+        this.waypointListWidget.setSelected(entry);
+        this.onSelectedChange();
     }
 
     public void onSelectedChange() {
@@ -135,20 +158,9 @@ public class WaypointListScreen extends Screen {
         }
     }
 
-    @Override
-    public void render(PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
-        renderBackground(poseStack);
-
-        this.waypointListWidget.render(poseStack, mouseX, mouseY, partialTicks);
-
-        drawCenteredString(poseStack, font, title, width / 2, 8, 0xFFFFFF);
-
-        super.render(poseStack, mouseX, mouseY, partialTicks);
-    }
-
-    @Override
-    public void onClose() {
-        minecraft.setScreen(parent);
+    public void refreshEntries() {
+        this.waypointListWidget.refreshEntries();
+        setSelected(null);
     }
 
 }

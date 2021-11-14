@@ -12,7 +12,10 @@ import xyz.wagyourtail.minimap.client.gui.hud.map.AbstractMapOverlayRenderer;
 import xyz.wagyourtail.minimap.client.gui.hud.map.AbstractMinimapRenderer;
 
 public class CircleMapBorderOverlay extends AbstractMapOverlayRenderer {
-    private static final ResourceLocation border = new ResourceLocation(WagYourMinimap.MOD_ID, "textures/circle_border.png");
+    private static final ResourceLocation border = new ResourceLocation(WagYourMinimap.MOD_ID,
+        "textures/circle_border.png"
+    );
+
     public CircleMapBorderOverlay(AbstractMinimapRenderer parent) {
         super(parent);
     }
@@ -36,7 +39,11 @@ public class CircleMapBorderOverlay extends AbstractMapOverlayRenderer {
         float dU = 1f / u_loop_at;
         float current_u = dU;
         for (int i = 1; i < segments; i++) {
-            builder.vertex(matrix, maxLength * (float) Math.cos(current_angle), maxLength * (float) Math.sin(current_angle), 0).uv(current_u, 0).endVertex();
+            builder.vertex(matrix,
+                maxLength * (float) Math.cos(current_angle),
+                maxLength * (float) Math.sin(current_angle),
+                0
+            ).uv(current_u, 0).endVertex();
             current_angle -= dAngle;
             if (i % u_loop_at == 0) {
                 dU = -dU;

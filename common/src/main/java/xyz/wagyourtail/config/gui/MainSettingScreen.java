@@ -48,13 +48,25 @@ public class MainSettingScreen extends Screen {
         super.init();
         AtomicInteger currentPage = new AtomicInteger();
 
-        backButton = addRenderableWidget(new Button(this.width / 2 - 210, this.height - 30, 100, 20, new TranslatableComponent("gui.wagyourconfig.back"), (btn) -> {
-            drawPage(currentPage.decrementAndGet());
-        }));
+        backButton = addRenderableWidget(new Button(this.width / 2 - 210,
+            this.height - 30,
+            100,
+            20,
+            new TranslatableComponent("gui.wagyourconfig.back"),
+            (btn) -> {
+                drawPage(currentPage.decrementAndGet());
+            }
+        ));
 
-        forwardButton = addRenderableWidget(new Button(this.width / 2 - 105, this.height - 30, 100, 20, new TranslatableComponent("gui.wagyourconfig.forward"), (btn) -> {
-            drawPage(currentPage.incrementAndGet());
-        }));
+        forwardButton = addRenderableWidget(new Button(this.width / 2 - 105,
+            this.height - 30,
+            100,
+            20,
+            new TranslatableComponent("gui.wagyourconfig.forward"),
+            (btn) -> {
+                drawPage(currentPage.incrementAndGet());
+            }
+        ));
 
         drawPage(0);
     }
@@ -68,15 +80,31 @@ public class MainSettingScreen extends Screen {
         int start = Mth.clamp(page, 0, pages) * buttonsPerPage;
         for (int i = start; i < start + buttonsPerPage && i < configs.length; ++i) {
             int finalI = i;
-            MutableComponent title = new TranslatableComponent(config.get(configs[i]).getClass().getAnnotation(SettingsContainer.class).value());
-            if (i % 2 == 0)
-                pageButtons.add(addRenderableWidget(new Button(this.width / 2 - 210, 50 + (i / 2) * 30, 205, 20, title, (btn) -> {
-                    minecraft.setScreen(new SettingScreen(title, this, config.get(configs[finalI])));
-                })));
-            else
-                pageButtons.add(addRenderableWidget(new Button(this.width / 2 + 5, 50 + (i / 2) * 30, 205, 20, title, (btn) -> {
-                    minecraft.setScreen(new SettingScreen(title, this, config.get(configs[finalI])));
-                })));
+            MutableComponent title = new TranslatableComponent(config.get(configs[i])
+                .getClass()
+                .getAnnotation(SettingsContainer.class)
+                .value());
+            if (i % 2 == 0) {
+                pageButtons.add(addRenderableWidget(new Button(this.width / 2 - 210,
+                    50 + (i / 2) * 30,
+                    205,
+                    20,
+                    title,
+                    (btn) -> {
+                        minecraft.setScreen(new SettingScreen(title, this, config.get(configs[finalI])));
+                    }
+                )));
+            } else {
+                pageButtons.add(addRenderableWidget(new Button(this.width / 2 + 5,
+                    50 + (i / 2) * 30,
+                    205,
+                    20,
+                    title,
+                    (btn) -> {
+                        minecraft.setScreen(new SettingScreen(title, this, config.get(configs[finalI])));
+                    }
+                )));
+            }
         }
         backButton.active = page != 0;
         forwardButton.active = page < pages;

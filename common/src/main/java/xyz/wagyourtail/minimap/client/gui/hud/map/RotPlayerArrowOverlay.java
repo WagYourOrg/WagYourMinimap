@@ -12,7 +12,9 @@ import xyz.wagyourtail.minimap.api.client.config.MinimapClientConfig;
 import xyz.wagyourtail.minimap.client.gui.AbstractMapRenderer;
 
 public class RotPlayerArrowOverlay extends AbstractMapOverlayRenderer {
-    private static final ResourceLocation player_icon_tex = new ResourceLocation(WagYourMinimap.MOD_ID, "textures/player_arrow.png");
+    private static final ResourceLocation player_icon_tex = new ResourceLocation(WagYourMinimap.MOD_ID,
+        "textures/player_arrow.png"
+    );
 
     public RotPlayerArrowOverlay(AbstractMinimapRenderer parent) {
         super(parent);
@@ -32,7 +34,7 @@ public class RotPlayerArrowOverlay extends AbstractMapOverlayRenderer {
 
         stack.translate(maxLength / 2 + offset.x * chunkScale / 16f, maxLength / 2 + offset.z * chunkScale / 16f, 0);
         stack.mulPose(Vector3f.ZP.rotationDegrees(player_rot));
-//        stack.mulPose(Vector3f.ZP.rotationDegrees(player_rot));
+        //        stack.mulPose(Vector3f.ZP.rotationDegrees(player_rot));
 
         RenderSystem.setShaderTexture(0, player_icon_tex);
         float texSize = Math.max(maxLength / 20, 8);
