@@ -89,7 +89,7 @@ public class InteractMenu extends GuiComponent implements Widget {
         }));
 
         buttons.add(new InteractMenuButton(new TranslatableComponent("gui.wagyourminimap.teleport_to"), (btn) -> {
-            parent.sendMessage(String.format("%s %f %f %f", teleport_command, pos.x, pos.y + 1, pos.z));
+            parent.sendMessage(String.format("%s %d %d %d", teleport_command, (int)pos.x, (int)pos.y + 1, (int)pos.z));
         }));
         return buttons;
     }
