@@ -46,7 +46,7 @@ remapJar {
 }
 
 jar {
-    classifier "dev"
+    classifier "forge-dev"
 }
 
 sourcesJar {

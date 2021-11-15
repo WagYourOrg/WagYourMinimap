@@ -55,7 +55,7 @@ remapJar {
 }
 
 jar {
-    classifier "dev"
+    classifier "fabric-dev"
 }
 
 sourcesJar {
