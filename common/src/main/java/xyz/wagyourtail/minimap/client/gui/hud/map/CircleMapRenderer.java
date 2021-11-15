@@ -22,7 +22,7 @@ public class CircleMapRenderer extends AbstractMinimapRenderer {
 
     @Override
     public float getScaleForVecToBorder(Vec3 in, int chunkRadius, float maxLength) {
-        return  ((chunkRadius - 1) * 16f) / (float) in.horizontalDistance();
+        return ((chunkRadius - 1) * 16f) / (float) in.horizontalDistance();
     }
 
     public void circle(PoseStack matrixStack, float x, float y, float radius, int segments) {
@@ -50,4 +50,5 @@ public class CircleMapRenderer extends AbstractMinimapRenderer {
         BufferUploader.end(builder);
         matrixStack.popPose();
     }
+
 }

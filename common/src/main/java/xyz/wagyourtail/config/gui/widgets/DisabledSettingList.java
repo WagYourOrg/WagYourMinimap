@@ -33,10 +33,12 @@ public class DisabledSettingList<T> extends ObjectSelectionList<DisabledSettingL
 
     @Override
     protected void renderHeader(PoseStack poseStack, int x, int y, Tesselator tessellator) {
-        Component component = (new TextComponent("")).append(this.title).withStyle(ChatFormatting.UNDERLINE,
+        Component component = (new TextComponent("")).append(this.title).withStyle(
+            ChatFormatting.UNDERLINE,
             ChatFormatting.BOLD
         );
-        this.minecraft.font.draw(poseStack,
+        this.minecraft.font.draw(
+            poseStack,
             component,
             (float) (x + this.width / 2 - this.minecraft.font.width(component) / 2),
             (float) Math.min(this.y0 + 3, y),

@@ -14,8 +14,8 @@ import xyz.wagyourtail.minimap.WagYourMinimap;
 import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
 import xyz.wagyourtail.minimap.api.client.MinimapClientEvents;
 import xyz.wagyourtail.minimap.api.client.config.MinimapClientConfig;
-import xyz.wagyourtail.minimap.api.client.config.overlay.fullscreen.AbstractFullscreenOverlaySettings;
 import xyz.wagyourtail.minimap.api.client.config.layers.AbstractLayerOptions;
+import xyz.wagyourtail.minimap.api.client.config.overlay.fullscreen.AbstractFullscreenOverlaySettings;
 import xyz.wagyourtail.minimap.client.gui.screen.map.AbstractFullscreenOverlay;
 import xyz.wagyourtail.minimap.client.gui.screen.map.ScreenMapRenderer;
 import xyz.wagyourtail.minimap.client.gui.screen.widget.InteractMenu;
@@ -27,16 +27,20 @@ import java.util.Arrays;
 import java.util.List;
 
 public class MapScreen extends Screen {
-    private static final ResourceLocation settings_tex = new ResourceLocation(WagYourMinimap.MOD_ID,
+    private static final ResourceLocation settings_tex = new ResourceLocation(
+        WagYourMinimap.MOD_ID,
         "textures/gui/setting_icon.png"
     );
-    private static final ResourceLocation waypoint_tex = new ResourceLocation(WagYourMinimap.MOD_ID,
+    private static final ResourceLocation waypoint_tex = new ResourceLocation(
+        WagYourMinimap.MOD_ID,
         "textures/gui/waypoint_icon.png"
     );
-    private static final ResourceLocation menu_end_tex = new ResourceLocation(WagYourMinimap.MOD_ID,
+    private static final ResourceLocation menu_end_tex = new ResourceLocation(
+        WagYourMinimap.MOD_ID,
         "textures/gui/menu_end.png"
     );
-    private static final ResourceLocation menu_tex = new ResourceLocation(WagYourMinimap.MOD_ID,
+    private static final ResourceLocation menu_tex = new ResourceLocation(
+        WagYourMinimap.MOD_ID,
         "textures/gui/menu.png"
     );
 
@@ -71,7 +75,8 @@ public class MapScreen extends Screen {
             return true;
         }
         if (!consumed) {
-            renderer.moveCenter(renderer.center.subtract((dragX / renderer.chunkWidth) * 16,
+            renderer.moveCenter(renderer.center.subtract(
+                (dragX / renderer.chunkWidth) * 16,
                 0,
                 (dragY / renderer.chunkWidth) * 16
             ));
@@ -144,7 +149,8 @@ public class MapScreen extends Screen {
             minecraft.setScreen(new SettingsScreen(this));
         }));
 
-        buttonList.add(new MenuButton(new TranslatableComponent("gui.wagyourminimap.waypoints"),
+        buttonList.add(new MenuButton(
+            new TranslatableComponent("gui.wagyourminimap.waypoints"),
             waypoint_tex,
             (btn) -> {
                 minecraft.setScreen(new WaypointListScreen(this));

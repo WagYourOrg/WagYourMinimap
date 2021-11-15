@@ -24,7 +24,8 @@ public class VanillaMapImageStrategy extends AbstractImageStrategy {
     protected static final Map<Biome, Integer> grassCache = new ConcurrentHashMap<>();
     protected static final Map<Biome, Integer> foliageCache = new ConcurrentHashMap<>();
     protected static final Map<Biome, Integer> waterCache = new ConcurrentHashMap<>();
-    public final static Predicate<Block> water = Set.of(Blocks.WATER,
+    public final static Predicate<Block> water = Set.of(
+        Blocks.WATER,
         Blocks.SEAGRASS,
         Blocks.TALL_SEAGRASS,
         Blocks.KELP_PLANT,
@@ -83,7 +84,8 @@ public class VanillaMapImageStrategy extends AbstractImageStrategy {
             } else if (z == 15) {
                 color = brightnessForHeight2(color, surface.heightmap[i], surface.heightmap[i - 1], south[16 * x]);
             } else {
-                color = brightnessForHeight2(color,
+                color = brightnessForHeight2(
+                    color,
                     surface.heightmap[i],
                     surface.heightmap[i - 1],
                     surface.heightmap[i + 1]

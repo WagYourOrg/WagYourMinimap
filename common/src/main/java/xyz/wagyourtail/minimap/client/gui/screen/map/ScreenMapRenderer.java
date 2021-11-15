@@ -73,7 +73,8 @@ public class ScreenMapRenderer extends AbstractMapRenderer {
 
         drawPartialChunk(matrixStack, getChunk(chunkX, chunkZ), 0, 0, chunkWidth, blockX, blockZ, 16, 16);
         for (int j = 1; j < chunkZDiam; ++j) {
-            drawPartialChunk(matrixStack,
+            drawPartialChunk(
+                matrixStack,
                 getChunk(chunkX, chunkZ + j),
                 0,
                 j * chunkWidth - offsetZ,
@@ -84,7 +85,8 @@ public class ScreenMapRenderer extends AbstractMapRenderer {
                 16
             );
         }
-        drawPartialChunk(matrixStack,
+        drawPartialChunk(
+            matrixStack,
             getChunk(chunkX, chunkZ + chunkZDiam),
             0,
             chunkZDiam * chunkWidth - offsetZ,
@@ -96,7 +98,8 @@ public class ScreenMapRenderer extends AbstractMapRenderer {
         );
 
         for (int i = 1; i < chunkXDiam; ++i) {
-            drawPartialChunk(matrixStack,
+            drawPartialChunk(
+                matrixStack,
                 getChunk(chunkX + i, chunkZ),
                 i * chunkWidth - offsetX,
                 0,
@@ -107,14 +110,16 @@ public class ScreenMapRenderer extends AbstractMapRenderer {
                 16
             );
             for (int j = 1; j < chunkZDiam; ++j) {
-                drawChunk(matrixStack,
+                drawChunk(
+                    matrixStack,
                     getChunk(chunkX + i, chunkZ + j),
                     i * chunkWidth - offsetX,
                     j * chunkWidth - offsetZ,
                     chunkWidth
                 );
             }
-            drawPartialChunk(matrixStack,
+            drawPartialChunk(
+                matrixStack,
                 getChunk(chunkX + i, chunkZ + chunkZDiam),
                 i * chunkWidth - offsetX,
                 chunkZDiam * chunkWidth - offsetZ,
@@ -126,7 +131,8 @@ public class ScreenMapRenderer extends AbstractMapRenderer {
             );
         }
 
-        drawPartialChunk(matrixStack,
+        drawPartialChunk(
+            matrixStack,
             getChunk(chunkX + chunkXDiam, chunkZ),
             chunkXDiam * chunkWidth - offsetX,
             0,
@@ -137,7 +143,8 @@ public class ScreenMapRenderer extends AbstractMapRenderer {
             16
         );
         for (int j = 1; j < chunkZDiam; ++j) {
-            drawPartialChunk(matrixStack,
+            drawPartialChunk(
+                matrixStack,
                 getChunk(chunkX + chunkXDiam, chunkZ + j),
                 chunkXDiam * chunkWidth - offsetX,
                 j * chunkWidth - offsetZ,
@@ -148,7 +155,8 @@ public class ScreenMapRenderer extends AbstractMapRenderer {
                 16
             );
         }
-        drawPartialChunk(matrixStack,
+        drawPartialChunk(
+            matrixStack,
             getChunk(chunkX + chunkXDiam, chunkZ + chunkZDiam),
             chunkXDiam * chunkWidth - offsetX,
             chunkZDiam * chunkWidth - offsetZ,

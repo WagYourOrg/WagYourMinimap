@@ -50,14 +50,16 @@ public class WaypointListScreen extends Screen {
         waypointListWidget = new WaypointList(this, minecraft, width, height, 32, height - 64, 16);
         addWidget(waypointListWidget);
 
-        buttons.addAll(List.of(new Button(0,
+        buttons.addAll(List.of(new Button(
+            0,
             0,
             0,
             20,
             new TranslatableComponent("gui.wagyourminimap.waypoints.add"),
             (button) -> {
                 assert minecraft.player != null;
-                minecraft.setScreen(WaypointEditScreen.createNewFromPos(this,
+                minecraft.setScreen(WaypointEditScreen.createNewFromPos(
+                    this,
                     new BlockPos(minecraft.player.getPosition(0)).above()
                 ));
             }
@@ -68,7 +70,9 @@ public class WaypointListScreen extends Screen {
         })));
 
 
-        waypointNotNullButtons.addAll(List.of(new Button(0,
+        waypointNotNullButtons.addAll(List.of(
+            new Button(
+                0,
                 0,
                 0,
                 20,
@@ -99,7 +103,8 @@ public class WaypointListScreen extends Screen {
                 if (selected != null) {
                     assert minecraft != null;
                     BlockPos pos = selected.point.posForCoordScale(minecraft.level.dimensionType().coordinateScale());
-                    this.sendMessage(String.format("%s %d %d %d",
+                    this.sendMessage(String.format(
+                        "%s %d %d %d",
                         InteractMenu.teleport_command,
                         pos.getX(),
                         pos.getY(),

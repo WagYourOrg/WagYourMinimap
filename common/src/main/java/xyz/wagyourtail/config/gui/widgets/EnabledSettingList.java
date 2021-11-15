@@ -36,10 +36,12 @@ public class EnabledSettingList<T> extends ObjectSelectionList<EnabledSettingLis
 
     @Override
     protected void renderHeader(PoseStack poseStack, int x, int y, Tesselator tessellator) {
-        Component component = (new TextComponent("")).append(this.title).withStyle(ChatFormatting.UNDERLINE,
+        Component component = (new TextComponent("")).append(this.title).withStyle(
+            ChatFormatting.UNDERLINE,
             ChatFormatting.BOLD
         );
-        this.minecraft.font.draw(poseStack,
+        this.minecraft.font.draw(
+            poseStack,
             component,
             (float) (x + this.width / 2 - this.minecraft.font.width(component) / 2),
             (float) Math.min(this.y0 + 3, y),
@@ -118,7 +120,8 @@ public class EnabledSettingList<T> extends ObjectSelectionList<EnabledSettingLis
                 }
             }
 
-            minecraft.font.draw(matrixStack,
+            minecraft.font.draw(
+                matrixStack,
                 minecraft.font.split(name, width - 36 - 45).get(0),
                 left + 36,
                 top,
@@ -170,9 +173,10 @@ public class EnabledSettingList<T> extends ObjectSelectionList<EnabledSettingLis
                 option.getClass().isAnnotationPresent(SettingsContainer.class)) {
                 minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
                 ((ListScreen<T, T>) parentScreen).applyValue();
-                minecraft.setScreen(new SettingScreen(new TranslatableComponent(option.getClass()
-                    .getAnnotation(SettingsContainer.class)
-                    .value()),
+                minecraft.setScreen(new SettingScreen(
+                    new TranslatableComponent(option.getClass()
+                        .getAnnotation(SettingsContainer.class)
+                        .value()),
                     (Screen) parentScreen,
                     option
                 ));

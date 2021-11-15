@@ -16,10 +16,10 @@ import xyz.wagyourtail.minimap.client.gui.AbstractMapRenderer;
 import xyz.wagyourtail.minimap.client.gui.hud.overlay.AbstractMinimapOverlay;
 
 public abstract class AbstractMinimapRenderer extends AbstractMapRenderer {
-    public AbstractMinimapOverlay[] overlays = new AbstractMinimapOverlay[0];
     public final boolean rotate;
     public final float scaleBy;
     public final boolean hasStencil;
+    public AbstractMinimapOverlay[] overlays = new AbstractMinimapOverlay[0];
 
     protected AbstractMinimapRenderer(boolean rotate, float scaleBy, boolean hasStencil) {
         this.rotate = rotate;
@@ -142,7 +142,8 @@ public abstract class AbstractMinimapRenderer extends AbstractMapRenderer {
         float partialZ = blockZ / 16f * chunkScale;
 
         //DRAW CHUNKS
-        drawPartialChunk(matrixStack,
+        drawPartialChunk(
+            matrixStack,
             getChunk(topChunkX + i, topChunkZ + j),
             chunkScale * i,
             chunkScale * j,
@@ -153,7 +154,8 @@ public abstract class AbstractMinimapRenderer extends AbstractMapRenderer {
             16
         );
         for (++j; j < chunkDiam - 1; ++j) {
-            drawPartialChunk(matrixStack,
+            drawPartialChunk(
+                matrixStack,
                 getChunk(topChunkX + i, topChunkZ + j),
                 chunkScale * i,
                 chunkScale * j - partialZ,
@@ -164,7 +166,8 @@ public abstract class AbstractMinimapRenderer extends AbstractMapRenderer {
                 16
             );
         }
-        drawPartialChunk(matrixStack,
+        drawPartialChunk(
+            matrixStack,
             getChunk(topChunkX + i, topChunkZ + j),
             chunkScale * i,
             chunkScale * j - partialZ,
@@ -176,7 +179,8 @@ public abstract class AbstractMinimapRenderer extends AbstractMapRenderer {
         );
         for (++i; i < chunkDiam - 1; ++i) {
             j = 0;
-            drawPartialChunk(matrixStack,
+            drawPartialChunk(
+                matrixStack,
                 getChunk(topChunkX + i, topChunkZ + j),
                 chunkScale * i - partialX,
                 chunkScale * j,
@@ -187,14 +191,16 @@ public abstract class AbstractMinimapRenderer extends AbstractMapRenderer {
                 16
             );
             for (++j; j < chunkDiam - 1; ++j) {
-                drawChunk(matrixStack,
+                drawChunk(
+                    matrixStack,
                     getChunk(topChunkX + i, topChunkZ + j),
                     chunkScale * i - partialX,
                     chunkScale * j - partialZ,
                     chunkScale
                 );
             }
-            drawPartialChunk(matrixStack,
+            drawPartialChunk(
+                matrixStack,
                 getChunk(topChunkX + i, topChunkZ + j),
                 chunkScale * i - partialX,
                 chunkScale * j - partialZ,
@@ -206,7 +212,8 @@ public abstract class AbstractMinimapRenderer extends AbstractMapRenderer {
             );
         }
         j = 0;
-        drawPartialChunk(matrixStack,
+        drawPartialChunk(
+            matrixStack,
             getChunk(topChunkX + i, topChunkZ + j),
             chunkScale * i - partialX,
             chunkScale * j,
@@ -217,7 +224,8 @@ public abstract class AbstractMinimapRenderer extends AbstractMapRenderer {
             16
         );
         for (++j; j < chunkDiam - 1; ++j) {
-            drawPartialChunk(matrixStack,
+            drawPartialChunk(
+                matrixStack,
                 getChunk(topChunkX + i, topChunkZ + j),
                 chunkScale * i - partialX,
                 chunkScale * j - partialZ,
@@ -228,7 +236,8 @@ public abstract class AbstractMinimapRenderer extends AbstractMapRenderer {
                 16
             );
         }
-        drawPartialChunk(matrixStack,
+        drawPartialChunk(
+            matrixStack,
             getChunk(topChunkX + i, topChunkZ + j),
             chunkScale * i - partialX,
             chunkScale * j - partialZ,
@@ -257,8 +266,6 @@ public abstract class AbstractMinimapRenderer extends AbstractMapRenderer {
 
     protected abstract void drawStencil(PoseStack stack, float maxLength);
 
-    public abstract float getScaleForVecToBorder(Vec3 in, int chunkRadius, float maxLength);
-
     public void renderText(PoseStack matrixStack, float maxLength, boolean bottom, Component... textLines) {
         matrixStack.translate(0, 10, 0);
         float lineOffset = 0;
@@ -268,7 +275,8 @@ public abstract class AbstractMinimapRenderer extends AbstractMapRenderer {
             if (scale > 1) {
                 matrixStack.scale(1 / scale, 1 / scale, 0);
             }
-            minecraft.font.drawShadow(matrixStack,
+            minecraft.font.drawShadow(
+                matrixStack,
                 textLine,
                 len < maxLength ? (maxLength - len) / 2 : 0,
                 lineOffset,
@@ -282,4 +290,7 @@ public abstract class AbstractMinimapRenderer extends AbstractMapRenderer {
             }
         }
     }
+
+    public abstract float getScaleForVecToBorder(Vec3 in, int chunkRadius, float maxLength);
+
 }

@@ -33,7 +33,8 @@ public class ScaleOverlay extends AbstractFullscreenOverlay {
         fill(stack, 0, 8, 2, 0, 0xFFFFFFFF);
         fill(stack, length - 2, 8, length, 0, 0xFFFFFFFF);
 
-        GuiComponent.drawCenteredString(stack,
+        GuiComponent.drawCenteredString(
+            stack,
             minecraft.font,
             String.format("%d blocks", blocks),
             (int) length / 2,

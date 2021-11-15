@@ -28,7 +28,8 @@ public class DataOverlay extends AbstractFullscreenOverlay {
             SurfaceDataPart surface = chunk.getData(SurfaceDataPart.class).orElse(null);
             if (surface != null) {
                 y = surface.heightmap[SurfaceDataPart.blockPosToIndex(x, z)];
-                block = Registry.BLOCK.getKey(chunk.getBlockState(surface.blockid[SurfaceDataPart.blockPosToIndex(x,
+                block = Registry.BLOCK.getKey(chunk.getBlockState(surface.blockid[SurfaceDataPart.blockPosToIndex(
+                    x,
                     z
                 )]).getBlock()).toString();
                 biome = chunk.getBiome(surface.biomeid[SurfaceDataPart.blockPosToIndex(x, z)]).toString();
@@ -36,7 +37,8 @@ public class DataOverlay extends AbstractFullscreenOverlay {
             }
         }
         minecraft.font.draw(stack, level.parent().server_slug, 50, 4, 0xFFFFFF);
-        minecraft.font.draw(stack,
+        minecraft.font.draw(
+            stack,
             String.format("%d, %d, %d  %s/%s %d", x, y, z, biome, block, light),
             50,
             parent.height - 10,

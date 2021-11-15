@@ -13,17 +13,18 @@ import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
 import xyz.wagyourtail.minimap.api.client.config.MinimapClientConfig;
 import xyz.wagyourtail.minimap.client.gui.AbstractMapRenderer;
 import xyz.wagyourtail.minimap.client.gui.hud.overlay.AbstractMinimapOverlay;
-import xyz.wagyourtail.minimap.client.gui.hud.map.AbstractMinimapRenderer;
 import xyz.wagyourtail.minimap.waypoint.Waypoint;
 
 import java.util.Set;
 
 public class WaypointOverlay extends AbstractMinimapOverlay {
 
-    private static final ResourceLocation waypoint_tex = new ResourceLocation(WagYourMinimap.MOD_ID,
+    private static final ResourceLocation waypoint_tex = new ResourceLocation(
+        WagYourMinimap.MOD_ID,
         "textures/waypoint.png"
     );
-    private static final ResourceLocation waypoint_arrow_tex = new ResourceLocation(WagYourMinimap.MOD_ID,
+    private static final ResourceLocation waypoint_arrow_tex = new ResourceLocation(
+        WagYourMinimap.MOD_ID,
         "textures/waypoint_arrow.png"
     );
 
@@ -47,7 +48,9 @@ public class WaypointOverlay extends AbstractMinimapOverlay {
                 pointVec = pointVec.yRot((float) Math.toRadians(
                     player_rot - 180));
             }
-            if (parent.scaleBy != 1) pointVec = pointVec.multiply(parent.scaleBy, 1, parent.scaleBy);
+            if (parent.scaleBy != 1) {
+                pointVec = pointVec.multiply(parent.scaleBy, 1, parent.scaleBy);
+            }
             float scale = parent.getScaleForVecToBorder(pointVec, chunkRadius, maxLength);
             if (scale < 1) {
                 pointVec = pointVec.multiply(scale, 1, scale);

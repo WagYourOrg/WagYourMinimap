@@ -34,7 +34,8 @@ public class ChunkLoadStrategy extends AbstractChunkUpdateStrategy<SurfaceDataPa
             }
             MapServer.MapLevel mapLevel = MinimapApi.getInstance().getMapServer().getCurrentLevel();
             ChunkPos pos = chunk.getPos();
-            updateChunk(getChunkLocation(mapLevel, pos),
+            updateChunk(
+                getChunkLocation(mapLevel, pos),
                 (location, parent, oldData) -> loadFromChunk(chunk, mapLevel, level, parent, oldData)
             );
         });
@@ -80,7 +81,8 @@ public class ChunkLoadStrategy extends AbstractChunkUpdateStrategy<SurfaceDataPa
                 int x = (i >> 4) % 16;
                 int z = i % 16;
                 data.heightmap[i] = chunk.getHeight(Heightmap.Types.MOTION_BLOCKING, x, z);
-                BlockState top = chunk.getBlockState(blockPos.set((pos.x << 4) + x,
+                BlockState top = chunk.getBlockState(blockPos.set(
+                    (pos.x << 4) + x,
                     data.heightmap[i],
                     (pos.z << 4) + z
                 ));

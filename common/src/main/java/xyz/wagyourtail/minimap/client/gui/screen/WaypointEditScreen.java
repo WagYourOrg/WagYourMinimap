@@ -56,7 +56,8 @@ public class WaypointEditScreen extends Screen {
             dims = new String[] {MinimapApi.getInstance().getMapServer().getCurrentLevel().level_slug()};
         }
 
-        return new WaypointEditScreen(parent, new Waypoint(mc.level.dimensionType().coordinateScale(),
+        return new WaypointEditScreen(parent, new Waypoint(
+            mc.level.dimensionType().coordinateScale(),
             pos.getX(),
             pos.getY(),
             pos.getZ(),
@@ -115,7 +116,8 @@ public class WaypointEditScreen extends Screen {
             extra = new JsonObject();
         }
 
-        return new Waypoint(coordScale,
+        return new Waypoint(
+            coordScale,
             posX,
             posY,
             posZ,
@@ -135,7 +137,8 @@ public class WaypointEditScreen extends Screen {
     protected void init() {
         super.init();
         int h = Math.max(height / 2 - 100, 30);
-        name = addRenderableWidget(new NamedEditBox(font,
+        name = addRenderableWidget(new NamedEditBox(
+            font,
             width / 2 - 200,
             h,
             400,
@@ -144,7 +147,8 @@ public class WaypointEditScreen extends Screen {
         ));
         name.setValue(prev_point.name);
 
-        coordScale = addRenderableWidget(new NamedEditBox(font,
+        coordScale = addRenderableWidget(new NamedEditBox(
+            font,
             width / 2 - 200,
             h + 25,
             60,
@@ -166,7 +170,8 @@ public class WaypointEditScreen extends Screen {
         posZ.setFilter(s -> s.matches("-?\\d*"));
         posZ.setValue(Integer.toString(prev_point.posZ));
 
-        color = addRenderableWidget(new NamedEditBox(font,
+        color = addRenderableWidget(new NamedEditBox(
+            font,
             width / 2 + 64,
             h + 25,
             136,
@@ -181,7 +186,8 @@ public class WaypointEditScreen extends Screen {
         int gradientHeight = Math.max(Math.min(100, height - h - 155), 0);
         //TODO: finish and use ColorButton (gradient color picker)
 
-        groups = addRenderableWidget(new NamedEditBox(font,
+        groups = addRenderableWidget(new NamedEditBox(
+            font,
             width / 2 - 200,
             h + gradientHeight + 50,
             400,
@@ -191,7 +197,8 @@ public class WaypointEditScreen extends Screen {
         groups.setMaxLength(Integer.MAX_VALUE);
         groups.setValue(String.join(", ", prev_point.groups));
 
-        dims = addRenderableWidget(new NamedEditBox(font,
+        dims = addRenderableWidget(new NamedEditBox(
+            font,
             width / 2 - 200,
             h + gradientHeight + 75,
             400,
@@ -201,7 +208,8 @@ public class WaypointEditScreen extends Screen {
         dims.setMaxLength(Integer.MAX_VALUE);
         dims.setValue(String.join(", ", prev_point.levels));
 
-        extra = addRenderableWidget(new NamedEditBox(font,
+        extra = addRenderableWidget(new NamedEditBox(
+            font,
             width / 2 - 200,
             h + gradientHeight + 100,
             400,
@@ -211,7 +219,8 @@ public class WaypointEditScreen extends Screen {
         extra.setMaxLength(Integer.MAX_VALUE);
         extra.setValue(gson.toJson(prev_point.extra));
 
-        addRenderableWidget(new Button(width / 2 - 100,
+        addRenderableWidget(new Button(
+            width / 2 - 100,
             h + gradientHeight + 125,
             95,
             20,
@@ -222,7 +231,8 @@ public class WaypointEditScreen extends Screen {
             }
         ));
 
-        addRenderableWidget(new Button(width / 2 + 5,
+        addRenderableWidget(new Button(
+            width / 2 + 5,
             h + gradientHeight + 125,
             95,
             20,

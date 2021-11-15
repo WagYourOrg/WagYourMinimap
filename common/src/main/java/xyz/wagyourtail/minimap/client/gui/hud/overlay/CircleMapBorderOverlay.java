@@ -8,11 +8,11 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import xyz.wagyourtail.minimap.WagYourMinimap;
-import xyz.wagyourtail.minimap.client.gui.hud.overlay.AbstractMinimapOverlay;
 import xyz.wagyourtail.minimap.client.gui.hud.map.AbstractMinimapRenderer;
 
 public class CircleMapBorderOverlay extends AbstractMinimapOverlay {
-    private static final ResourceLocation border = new ResourceLocation(WagYourMinimap.MOD_ID,
+    private static final ResourceLocation border = new ResourceLocation(
+        WagYourMinimap.MOD_ID,
         "textures/circle_border.png"
     );
 
@@ -39,7 +39,8 @@ public class CircleMapBorderOverlay extends AbstractMinimapOverlay {
         float dU = 1f / u_loop_at;
         float current_u = dU;
         for (int i = 1; i < segments; i++) {
-            builder.vertex(matrix,
+            builder.vertex(
+                matrix,
                 maxLength * (float) Math.cos(current_angle),
                 maxLength * (float) Math.sin(current_angle),
                 0

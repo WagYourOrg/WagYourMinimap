@@ -60,7 +60,8 @@ public class SurfaceDataPart extends DataPart<SurfaceDataPart> {
                 changed = changed || newLight != this.blocklight[i];
                 this.blocklight[i] = newLight;
 
-                int newBlockid = idmap.computeIfAbsent(other.blockid[i],
+                int newBlockid = idmap.computeIfAbsent(
+                    other.blockid[i],
                     k -> parent.getOrRegisterBlockState(other.parent.getBlockState(k))
                 );
                 changed = changed || newBlockid != this.blockid[i];

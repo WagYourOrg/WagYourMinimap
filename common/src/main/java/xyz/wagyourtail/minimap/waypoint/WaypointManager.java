@@ -15,7 +15,8 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class WaypointManager {
-    private static final Set<WaypointFilter> filters = new HashSet<>(Set.of(new EnabledFilter(),
+    private static final Set<WaypointFilter> filters = new HashSet<>(Set.of(
+        new EnabledFilter(),
         new DimensionFilter(),
         new DistanceFilter(1000)
     ));
@@ -100,7 +101,8 @@ public class WaypointManager {
     public void saveWaypoints() {
         MapServer.addToSaveQueue(() -> {
             synchronized (this) {
-                MinimapApi.getInstance().cacheManager.saveWaypoints(server,
+                MinimapApi.getInstance().cacheManager.saveWaypoints(
+                    server,
                     waypointList.stream().filter((e) -> !e.ephemeral)
                 );
             }

@@ -19,7 +19,8 @@ import java.util.concurrent.TimeUnit;
 public class BlockUpdateStrategy extends AbstractChunkUpdateStrategy<SurfaceDataPart> {
     public static final Event<BlockUpdate> BLOCK_UPDATE_EVENT = EventFactory.createLoop();
 
-    private final LoadingCache<BlockUpdateData, Runnable> updateCache = CacheBuilder.newBuilder().expireAfterWrite(5000,
+    private final LoadingCache<BlockUpdateData, Runnable> updateCache = CacheBuilder.newBuilder().expireAfterWrite(
+        5000,
         TimeUnit.MILLISECONDS
     ).removalListener((a) -> ((Runnable) a.getValue()).run()).build(new CacheLoader<>() {
         @Override
@@ -41,8 +42,10 @@ public class BlockUpdateStrategy extends AbstractChunkUpdateStrategy<SurfaceData
                         continue;
                     }
                     //TODO: update lighting only function
-                    updateChunk(getChunkLocation(level, i, j),
-                        (location, parent, oldData) -> ChunkLoadStrategy.loadFromChunk(chunk,
+                    updateChunk(
+                        getChunkLocation(level, i, j),
+                        (location, parent, oldData) -> ChunkLoadStrategy.loadFromChunk(
+                            chunk,
                             level,
                             mclevel,
                             parent,
@@ -63,7 +66,8 @@ public class BlockUpdateStrategy extends AbstractChunkUpdateStrategy<SurfaceData
             int chunkX = pos.getX() >> 4;
             int chunkZ = pos.getZ() >> 4;
             try {
-                updateCache.get(new BlockUpdateData(MinimapApi.getInstance().getMapServer().getCurrentLevel(),
+                updateCache.get(new BlockUpdateData(
+                    MinimapApi.getInstance().getMapServer().getCurrentLevel(),
                     level,
                     chunkX,
                     chunkZ

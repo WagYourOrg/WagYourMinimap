@@ -48,7 +48,8 @@ public class Waypoint {
 
     public static Waypoint deserialize(String inp) {
         JsonObject waypoint = new JsonParser().parse(inp).getAsJsonObject();
-        return new Waypoint(getKeyOrDefault(waypoint, "coordScale", JsonElement::getAsDouble, 1.0),
+        return new Waypoint(
+            getKeyOrDefault(waypoint, "coordScale", JsonElement::getAsDouble, 1.0),
             getKeyOrDefault(waypoint, "posX", JsonElement::getAsInt, 0),
             getKeyOrDefault(waypoint, "posY", JsonElement::getAsInt, 0),
             getKeyOrDefault(waypoint, "posZ", JsonElement::getAsInt, 0),
@@ -71,7 +72,8 @@ public class Waypoint {
     }
 
     public Waypoint copy() {
-        return new Waypoint(coordScale,
+        return new Waypoint(
+            coordScale,
             posX,
             posY,
             posZ,
@@ -88,7 +90,8 @@ public class Waypoint {
     }
 
     public Waypoint copyWithChangePos(int posX, int posY, int posZ) {
-        return new Waypoint(coordScale,
+        return new Waypoint(
+            coordScale,
             posX,
             posY,
             posZ,
@@ -105,7 +108,8 @@ public class Waypoint {
     }
 
     public Waypoint copyWithChangeCol(byte colR, byte colG, byte colB) {
-        return new Waypoint(coordScale,
+        return new Waypoint(
+            coordScale,
             posX,
             posY,
             posZ,
@@ -122,7 +126,8 @@ public class Waypoint {
     }
 
     public Waypoint copyWithChangeName(String name) {
-        return new Waypoint(coordScale,
+        return new Waypoint(
+            coordScale,
             posX,
             posY,
             posZ,
@@ -139,7 +144,8 @@ public class Waypoint {
     }
 
     public Waypoint copyWithChangeGroups(String[] groups) {
-        return new Waypoint(coordScale,
+        return new Waypoint(
+            coordScale,
             posX,
             posY,
             posZ,
@@ -156,7 +162,8 @@ public class Waypoint {
     }
 
     public Waypoint copyWithChangeLevels(String[] levels) {
-        return new Waypoint(coordScale,
+        return new Waypoint(
+            coordScale,
             posX,
             posY,
             posZ,
@@ -173,7 +180,8 @@ public class Waypoint {
     }
 
     public Waypoint copyWithChangeExtra(JsonObject extra) {
-        return new Waypoint(coordScale,
+        return new Waypoint(
+            coordScale,
             posX,
             posY,
             posZ,
@@ -190,7 +198,8 @@ public class Waypoint {
     }
 
     public Waypoint copyWithChangeEnabled(boolean enabled) {
-        return new Waypoint(coordScale,
+        return new Waypoint(
+            coordScale,
             posX,
             posY,
             posZ,
@@ -207,7 +216,8 @@ public class Waypoint {
     }
 
     public Waypoint copyWithChangeEphemeral(boolean ephemeral) {
-        return new Waypoint(coordScale,
+        return new Waypoint(
+            coordScale,
             posX,
             posY,
             posZ,

@@ -7,14 +7,15 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import xyz.wagyourtail.minimap.WagYourMinimap;
 import xyz.wagyourtail.minimap.client.gui.AbstractMapRenderer;
-import xyz.wagyourtail.minimap.client.gui.hud.overlay.AbstractMinimapOverlay;
 import xyz.wagyourtail.minimap.client.gui.hud.map.AbstractMinimapRenderer;
 
 public class SquareMapBorderOverlay extends AbstractMinimapOverlay {
-    private static final ResourceLocation map_corner = new ResourceLocation(WagYourMinimap.MOD_ID,
+    private static final ResourceLocation map_corner = new ResourceLocation(
+        WagYourMinimap.MOD_ID,
         "textures/square_border_corner.png"
     );
-    private static final ResourceLocation map_side = new ResourceLocation(WagYourMinimap.MOD_ID,
+    private static final ResourceLocation map_side = new ResourceLocation(
+        WagYourMinimap.MOD_ID,
         "textures/square_border_side.png"
     );
 
@@ -34,7 +35,8 @@ public class SquareMapBorderOverlay extends AbstractMinimapOverlay {
         // top right
         AbstractMapRenderer.drawTex(stack, -16 + texLength * (texcount - 1), -16, texLength, texLength, 1, 1, 0, 0);
         // bottom right
-        AbstractMapRenderer.drawTex(stack,
+        AbstractMapRenderer.drawTex(
+            stack,
             -16 + texLength * (texcount - 1),
             -16 + texLength * (texcount - 1),
             texLength,
@@ -47,7 +49,8 @@ public class SquareMapBorderOverlay extends AbstractMinimapOverlay {
         RenderSystem.setShaderTexture(0, map_side);
         for (int i = 2; i < texcount; ++i) {
             AbstractMapRenderer.drawTex(stack, -16 + texLength * (i - 1), -16, texLength, texLength, 0, 1, 1, 0);
-            AbstractMapRenderer.drawTex(stack,
+            AbstractMapRenderer.drawTex(
+                stack,
                 -16 + texLength * (i - 1),
                 -16 + texLength * (texcount - 1),
                 texLength,
@@ -59,7 +62,8 @@ public class SquareMapBorderOverlay extends AbstractMinimapOverlay {
             );
         }
         for (int i = 2; i < texcount; ++i) {
-            AbstractMapRenderer.drawTexSideways(stack,
+            AbstractMapRenderer.drawTexSideways(
+                stack,
                 -16,
                 -16 + texLength * (i - 1),
                 texLength,
@@ -69,7 +73,8 @@ public class SquareMapBorderOverlay extends AbstractMinimapOverlay {
                 1,
                 1
             );
-            AbstractMapRenderer.drawTexSideways(stack,
+            AbstractMapRenderer.drawTexSideways(
+                stack,
                 -16 + texLength * (texcount - 1),
                 -16 + texLength * (i - 1),
                 texLength,

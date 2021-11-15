@@ -1,7 +1,7 @@
 package xyz.wagyourtail.minimap.client.gui;
 
-import xyz.wagyourtail.minimap.client.gui.hud.overlay.AbstractMinimapOverlay;
 import xyz.wagyourtail.minimap.client.gui.hud.map.AbstractMinimapRenderer;
+import xyz.wagyourtail.minimap.client.gui.hud.overlay.AbstractMinimapOverlay;
 import xyz.wagyourtail.minimap.map.image.AbstractImageStrategy;
 
 import java.util.ArrayList;

@@ -22,7 +22,8 @@ public class InGameHud {
     }
 
     public enum SnapSide {
-        TOP_LEFT(false, false, false), TOP_CENTER(false, true, false), TOP_RIGHT(true, false, false), BOTTOM_LEFT(false,
+        TOP_LEFT(false, false, false), TOP_CENTER(false, true, false), TOP_RIGHT(true, false, false), BOTTOM_LEFT(
+            false,
             false,
             true
         ), BOTTOM_RIGHT(true, false, true);

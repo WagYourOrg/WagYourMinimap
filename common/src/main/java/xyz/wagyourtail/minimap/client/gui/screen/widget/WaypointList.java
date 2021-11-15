@@ -47,7 +47,8 @@ public class WaypointList extends ObjectSelectionList<WaypointList.WaypointListE
     }
 
     public static class WaypointListEntry extends ObjectSelectionList.Entry<WaypointListEntry> {
-        private static final ResourceLocation waypoint_tex = new ResourceLocation(WagYourMinimap.MOD_ID,
+        private static final ResourceLocation waypoint_tex = new ResourceLocation(
+            WagYourMinimap.MOD_ID,
             "textures/waypoint.png"
         );
 
@@ -97,7 +98,8 @@ public class WaypointList extends ObjectSelectionList<WaypointList.WaypointListE
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
             int abgr = 0xFF000000 | point.colB & 0xFF << 0x10 | point.colG & 0xFF << 0x8 | point.colR & 0xFF;
             AbstractMapRenderer.drawTexCol(poseStack, left + 1, top + 1, height - 2, height - 2, 0, 0, 1, 1, abgr);
-            mc.font.draw(poseStack,
+            mc.font.draw(
+                poseStack,
                 Language.getInstance().getVisualOrder(mc.font.substrByWidth(name, width - 100)),
                 left + height + 3,
                 top + 1,

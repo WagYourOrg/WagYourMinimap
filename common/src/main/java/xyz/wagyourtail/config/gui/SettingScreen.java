@@ -61,7 +61,8 @@ public class SettingScreen extends Screen {
         super.init();
         AtomicInteger currentPage = new AtomicInteger();
 
-        backButton = addRenderableWidget(new Button(this.width / 2 - 210,
+        backButton = addRenderableWidget(new Button(
+            this.width / 2 - 210,
             this.height - 30,
             100,
             20,
@@ -71,7 +72,8 @@ public class SettingScreen extends Screen {
             }
         ));
 
-        forwardButton = addRenderableWidget(new Button(this.width / 2 - 105,
+        forwardButton = addRenderableWidget(new Button(
+            this.width / 2 - 105,
             this.height - 30,
             100,
             20,
@@ -95,7 +97,8 @@ public class SettingScreen extends Screen {
         for (int i = start; i < start + buttonsPerPage && i < settings.length; ++i) {
             int finalI = i;
             if (i % 2 == 0) {
-                for (AbstractWidget abstractWidget : compileSetting(this.width / 2 - 210,
+                for (AbstractWidget abstractWidget : compileSetting(
+                    this.width / 2 - 210,
                     50 + (i / 2) * 30,
                     205,
                     20,
@@ -104,7 +107,8 @@ public class SettingScreen extends Screen {
                     pageButtons.add(addRenderableWidget(abstractWidget));
                 }
             } else {
-                for (AbstractWidget abstractWidget : compileSetting(this.width / 2 + 5,
+                for (AbstractWidget abstractWidget : compileSetting(
+                    this.width / 2 + 5,
                     50 + (i / 2) * 30,
                     205,
                     20,
@@ -123,7 +127,8 @@ public class SettingScreen extends Screen {
         if (Modifier.isFinal(setting.getModifiers()) &&
             setting.getType().isAnnotationPresent(SettingsContainer.class)) {
             return new AbstractWidget[] {
-                new Button(x,
+                new Button(
+                    x,
                     y,
                     width,
                     height,
@@ -147,7 +152,8 @@ public class SettingScreen extends Screen {
 
             //boolean
             if (settingField.fieldType.equals(boolean.class) || settingField.fieldType.equals(Boolean.class)) {
-                element = new Checkbox(x,
+                element = new Checkbox(
+                    x,
                     y,
                     width,
                     height,
@@ -172,7 +178,8 @@ public class SettingScreen extends Screen {
                     //number
                     if (settingField.fieldType.isPrimitive() || Number.class.isAssignableFrom(settingField.fieldType)) {
                         if (settingField.intRange != null) {
-                            element = new Slider(x,
+                            element = new Slider(
+                                x,
                                 y,
                                 width,
                                 height,
@@ -191,7 +198,8 @@ public class SettingScreen extends Screen {
                                 }
                             );
                         } else if (settingField.doubleRange != null) {
-                            element = new Slider(x,
+                            element = new Slider(
+                                x,
                                 y,
                                 width,
                                 height,
@@ -209,7 +217,8 @@ public class SettingScreen extends Screen {
                                 }
                             );
                         } else {
-                            element = new NamedEditBox(font,
+                            element = new NamedEditBox(
+                                font,
                                 x,
                                 y,
                                 width,
@@ -255,7 +264,8 @@ public class SettingScreen extends Screen {
                             if (settingField.options() != null) {
                                 MutableComponent title = new TranslatableComponent(settingField.setting.value());
                                 List<String> settings = (List<String>) settingField.options().stream().toList();
-                                element = new Button(x,
+                                element = new Button(
+                                    x,
                                     y,
                                     width,
                                     height,
@@ -271,7 +281,8 @@ public class SettingScreen extends Screen {
                                     }
                                 );
                             } else {
-                                element = new NamedEditBox(font,
+                                element = new NamedEditBox(
+                                    font,
                                     x,
                                     y,
                                     width,
@@ -292,7 +303,8 @@ public class SettingScreen extends Screen {
                             if (settingField.fieldType.isEnum()) {
                                 MutableComponent title = new TranslatableComponent(settingField.setting.value());
                                 List<?> settings = settingField.options().stream().toList();
-                                element = new Button(x,
+                                element = new Button(
+                                    x,
                                     y,
                                     width,
                                     height,
@@ -311,13 +323,15 @@ public class SettingScreen extends Screen {
 
                                 //array
                                 if (settingField.fieldType.isArray()) {
-                                    element = new Button(x,
+                                    element = new Button(
+                                        x,
                                         y,
                                         width,
                                         height,
                                         new TranslatableComponent(settingField.setting.value()),
                                         (btn) -> {
-                                            minecraft.setScreen(new ListScreen<>(new TranslatableComponent(settingField.setting.value()),
+                                            minecraft.setScreen(new ListScreen<>(
+                                                new TranslatableComponent(settingField.setting.value()),
                                                 this,
                                                 (SettingField<Object[]>) settingField
                                             ));
@@ -329,7 +343,8 @@ public class SettingScreen extends Screen {
                                 {
                                     MutableComponent title = new TranslatableComponent(settingField.setting.value());
                                     List<Class<?>> settings = (List<Class<?>>) settingField.options().stream().toList();
-                                    element = new Button(x,
+                                    element = new Button(
+                                        x,
                                         y,
                                         width - height - 5,
                                         height,
@@ -355,7 +370,8 @@ public class SettingScreen extends Screen {
                                             }
                                         }
                                     );
-                                    settingButton = new Button(x + width - height,
+                                    settingButton = new Button(
+                                        x + width - height,
                                         y,
                                         height,
                                         height,

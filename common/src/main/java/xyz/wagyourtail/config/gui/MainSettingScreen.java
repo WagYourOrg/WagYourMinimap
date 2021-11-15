@@ -48,7 +48,8 @@ public class MainSettingScreen extends Screen {
         super.init();
         AtomicInteger currentPage = new AtomicInteger();
 
-        backButton = addRenderableWidget(new Button(this.width / 2 - 210,
+        backButton = addRenderableWidget(new Button(
+            this.width / 2 - 210,
             this.height - 30,
             100,
             20,
@@ -58,7 +59,8 @@ public class MainSettingScreen extends Screen {
             }
         ));
 
-        forwardButton = addRenderableWidget(new Button(this.width / 2 - 105,
+        forwardButton = addRenderableWidget(new Button(
+            this.width / 2 - 105,
             this.height - 30,
             100,
             20,
@@ -85,7 +87,8 @@ public class MainSettingScreen extends Screen {
                 .getAnnotation(SettingsContainer.class)
                 .value());
             if (i % 2 == 0) {
-                pageButtons.add(addRenderableWidget(new Button(this.width / 2 - 210,
+                pageButtons.add(addRenderableWidget(new Button(
+                    this.width / 2 - 210,
                     50 + (i / 2) * 30,
                     205,
                     20,
@@ -95,7 +98,8 @@ public class MainSettingScreen extends Screen {
                     }
                 )));
             } else {
-                pageButtons.add(addRenderableWidget(new Button(this.width / 2 + 5,
+                pageButtons.add(addRenderableWidget(new Button(
+                    this.width / 2 + 5,
                     50 + (i / 2) * 30,
                     205,
                     20,

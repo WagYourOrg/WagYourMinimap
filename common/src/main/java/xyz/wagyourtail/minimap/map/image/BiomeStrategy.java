@@ -22,7 +22,8 @@ public class BiomeStrategy extends AbstractImageStrategy {
         for (int i = 0; i < 256; ++i) {
             int x = (i >> 4) % 16;
             int z = i % 16;
-            image.setPixelRGBA(x,
+            image.setPixelRGBA(
+                x,
                 z,
                 0x7FFFFFFF & colorFormatSwap(colorForBiome(data.getBiome(surface.biomeid[i]), biomeRegistry))
             );

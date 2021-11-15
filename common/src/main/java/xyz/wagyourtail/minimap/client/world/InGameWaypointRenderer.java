@@ -20,7 +20,8 @@ import xyz.wagyourtail.minimap.waypoint.Waypoint;
 
 public class InGameWaypointRenderer {
     private static final Minecraft mc = Minecraft.getInstance();
-    private static final ResourceLocation waypoint_tex = new ResourceLocation(WagYourMinimap.MOD_ID,
+    private static final ResourceLocation waypoint_tex = new ResourceLocation(
+        WagYourMinimap.MOD_ID,
         "textures/waypoint.png"
     );
     public static final Event<RenderLastEvent> RENDER_LAST = EventFactory.createLoop();
@@ -78,7 +79,8 @@ public class InGameWaypointRenderer {
 
     public static void drawText(PoseStack stack, String text) {
         MultiBufferSource.BufferSource buffer = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
-        mc.font.drawInBatch(text,
+        mc.font.drawInBatch(
+            text,
             -mc.font.width(text) / 2f,
             20,
             -1,

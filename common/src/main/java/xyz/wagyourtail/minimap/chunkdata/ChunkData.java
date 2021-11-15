@@ -72,7 +72,8 @@ public class ChunkData {
                         "xyz.wagyourtail.minimap.map.chunkdata.parts.SurfaceDataPart",
                         "xyz.wagyourtail.minimap.chunkdata.parts.SurfaceDataPart"
                     );
-                    clazz = (Class<? extends DataPart<?>>) Class.forName(classRemapper.getOrDefault(className,
+                    clazz = (Class<? extends DataPart<?>>) Class.forName(classRemapper.getOrDefault(
+                        className,
                         className
                     ));
                     data.put(clazz, dp = clazz.getConstructor(ChunkData.class).newInstance(this));

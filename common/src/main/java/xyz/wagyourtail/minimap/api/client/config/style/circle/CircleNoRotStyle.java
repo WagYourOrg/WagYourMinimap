@@ -8,7 +8,7 @@ import xyz.wagyourtail.minimap.api.client.config.overlay.WaypointOverlaySettings
 import xyz.wagyourtail.minimap.client.gui.hud.map.CircleMapRenderer;
 
 @SettingsContainer("gui.wagyourminimap.settings.circle_norot_style")
-public class CircleNoRotStyle extends AbstractCircleStyle{
+public class CircleNoRotStyle extends AbstractCircleStyle {
     public CircleNoRotStyle() {
         super();
 

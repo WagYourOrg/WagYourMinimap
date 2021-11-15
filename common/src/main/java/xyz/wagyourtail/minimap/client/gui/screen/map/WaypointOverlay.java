@@ -10,7 +10,8 @@ import xyz.wagyourtail.minimap.client.gui.AbstractMapRenderer;
 import xyz.wagyourtail.minimap.waypoint.Waypoint;
 
 public class WaypointOverlay extends AbstractFullscreenOverlay {
-    private static final ResourceLocation waypoint_tex = new ResourceLocation(WagYourMinimap.MOD_ID,
+    private static final ResourceLocation waypoint_tex = new ResourceLocation(
+        WagYourMinimap.MOD_ID,
         "textures/waypoint.png"
     );
 
@@ -29,7 +30,8 @@ public class WaypointOverlay extends AbstractFullscreenOverlay {
             if (pos.getX() > parent.topX && pos.getX() < endX && pos.getZ() > parent.topZ && pos.getZ() < endZ) {
                 stack.pushPose();
 
-                stack.translate((pos.getX() - parent.topX) * parent.chunkWidth / 16f,
+                stack.translate(
+                    (pos.getX() - parent.topX) * parent.chunkWidth / 16f,
                     (pos.getZ() - parent.topZ) * parent.chunkWidth / 16f,
                     0
                 );

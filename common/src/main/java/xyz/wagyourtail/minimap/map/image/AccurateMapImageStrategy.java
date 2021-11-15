@@ -27,7 +27,8 @@ public class AccurateMapImageStrategy extends VanillaMapImageStrategy {
         return blockColorCache.computeIfAbsent(block, (b) -> {
             BlockState state = b;
             random.setSeed(pos.asLong());
-            List<BakedQuad> quads = minecraft.getBlockRenderer().getBlockModel(state).getQuads(state,
+            List<BakedQuad> quads = minecraft.getBlockRenderer().getBlockModel(state).getQuads(
+                state,
                 Direction.UP,
                 random
             );

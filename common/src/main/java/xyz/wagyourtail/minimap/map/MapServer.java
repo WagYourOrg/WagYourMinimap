@@ -14,7 +14,8 @@ import java.util.concurrent.TimeUnit;
 
 public class MapServer {
     private static final Minecraft mc = Minecraft.getInstance();
-    private static final ThreadPoolExecutor save_pool = new ThreadPoolExecutor(1,
+    private static final ThreadPoolExecutor save_pool = new ThreadPoolExecutor(
+        1,
         1,
         0L,
         TimeUnit.NANOSECONDS,
@@ -53,7 +54,8 @@ public class MapServer {
     }
 
     public synchronized MapLevel getLevelFor(String name, DimensionType dimType) {
-        return levels.computeIfAbsent(name,
+        return levels.computeIfAbsent(
+            name,
             (slug) -> new MapLevel(this, slug, dimType.minY(), dimType.minY() + dimType.height())
         );
     }

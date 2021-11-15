@@ -29,7 +29,8 @@ public class WagYourMinimapForge {
 
     public void onClientInit(FMLClientSetupEvent setup) {
         WagYourMinimapClient.init();
-        ModLoadingContext.get().registerExtensionPoint(ConfigGuiHandler.ConfigGuiFactory.class,
+        ModLoadingContext.get().registerExtensionPoint(
+            ConfigGuiHandler.ConfigGuiFactory.class,
             () -> new ConfigGuiHandler.ConfigGuiFactory((mc, parent) -> new SettingsScreen(parent))
         );
     }
@@ -46,7 +47,8 @@ public class WagYourMinimapForge {
 
     @SubscribeEvent
     public void onRenderLast(RenderWorldLastEvent renderEvent) {
-        InGameWaypointRenderer.RENDER_LAST.invoker().onRenderLast(renderEvent.getMatrixStack(),
+        InGameWaypointRenderer.RENDER_LAST.invoker().onRenderLast(
+            renderEvent.getMatrixStack(),
             renderEvent.getPartialTicks(),
             renderEvent.getFinishTimeNano()
         );

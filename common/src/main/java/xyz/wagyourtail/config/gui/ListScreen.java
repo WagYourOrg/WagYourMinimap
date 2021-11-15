@@ -70,7 +70,8 @@ public class ListScreen<T, U> extends Screen implements EnabledSettingList.Entry
         this.enabledEntries.setLeftPos(this.width / 2 - 4 - this.enabledEntries.getRowWidth());
         try {
             this.enabledEntries.children().addAll(Arrays.stream(setting.get())
-                .map(e -> new EnabledSettingList.EnabledSettingEntry<>(minecraft,
+                .map(e -> new EnabledSettingList.EnabledSettingEntry<>(
+                    minecraft,
                     this,
                     enabledEntries,
                     e,
@@ -95,14 +96,16 @@ public class ListScreen<T, U> extends Screen implements EnabledSettingList.Entry
                 if (options != null) {
                     throw new RuntimeException("STRING OPTIONS NOT YET IMPLEMENTED");
                 } else {
-                    NamedEditBox box = this.addRenderableWidget(new NamedEditBox(font,
+                    NamedEditBox box = this.addRenderableWidget(new NamedEditBox(
+                        font,
                         this.width / 2 + 4,
                         this.height / 2 - 20,
                         200,
                         20,
                         new TranslatableComponent("gui.wagyourconfig.addentry")
                     ));
-                    this.addRenderableWidget(new Button(this.width / 2 + 4,
+                    this.addRenderableWidget(new Button(
+                        this.width / 2 + 4,
                         this.height / 2 + 4,
                         200,
                         20,
@@ -113,7 +116,8 @@ public class ListScreen<T, U> extends Screen implements EnabledSettingList.Entry
                                 .anyMatch(e -> e.option.equals(box.getValue()))) {
                                 return;
                             }
-                            this.enabledEntries.children().add(new EnabledSettingList.EnabledSettingEntry(minecraft,
+                            this.enabledEntries.children().add(new EnabledSettingList.EnabledSettingEntry(
+                                minecraft,
                                 this,
                                 enabledEntries,
                                 box.getValue(),
@@ -129,7 +133,8 @@ public class ListScreen<T, U> extends Screen implements EnabledSettingList.Entry
             } else {
                 Collection<Class<T>> options = (Collection<Class<T>>) setting.options();
                 if (options != null) {
-                    this.addWidget(availableEntries = new DisabledSettingList<>(minecraft,
+                    this.addWidget(availableEntries = new DisabledSettingList<>(
+                        minecraft,
                         width > 810 ? 400 : 200,
                         this.height
                     ));
@@ -201,7 +206,8 @@ public class ListScreen<T, U> extends Screen implements EnabledSettingList.Entry
                     throw new RuntimeException("NON Object List not yet implemented");
                 } else {
                     if (options != null) {
-                        availableEntries.children().add(new DisabledSettingList.DisabledSettingEntry<>(minecraft,
+                        availableEntries.children().add(new DisabledSettingList.DisabledSettingEntry<>(
+                            minecraft,
                             this,
                             availableEntries,
                             (U) option.option.getClass(),
@@ -243,7 +249,8 @@ public class ListScreen<T, U> extends Screen implements EnabledSettingList.Entry
             } else {
                 Collection<String> options = (Collection<String>) setting.options();
                 if (options != null) {
-                    enabledEntries.children().add(new EnabledSettingList.EnabledSettingEntry<>(minecraft,
+                    enabledEntries.children().add(new EnabledSettingList.EnabledSettingEntry<>(
+                        minecraft,
                         this,
                         enabledEntries,
                         ((Class<T>) option.option).getConstructor().newInstance(),

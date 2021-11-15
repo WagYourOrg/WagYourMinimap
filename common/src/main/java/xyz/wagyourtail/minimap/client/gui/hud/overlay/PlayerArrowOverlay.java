@@ -13,7 +13,8 @@ import xyz.wagyourtail.minimap.client.gui.AbstractMapRenderer;
 import xyz.wagyourtail.minimap.client.gui.hud.map.AbstractMinimapRenderer;
 
 public class PlayerArrowOverlay extends AbstractMinimapOverlay {
-    private static final ResourceLocation player_icon_tex = new ResourceLocation(WagYourMinimap.MOD_ID,
+    private static final ResourceLocation player_icon_tex = new ResourceLocation(
+        WagYourMinimap.MOD_ID,
         "textures/player_arrow.png"
     );
 

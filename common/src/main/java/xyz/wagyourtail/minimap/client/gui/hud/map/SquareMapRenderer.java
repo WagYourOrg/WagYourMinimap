@@ -23,4 +23,5 @@ public class SquareMapRenderer extends AbstractMinimapRenderer {
     public float getScaleForVecToBorder(Vec3 in, int chunkRadius, float maxLength) {
         return ((chunkRadius - 1) * 16f) / (float) Math.max(Math.abs(in.x), Math.abs(in.z));
     }
+
 }

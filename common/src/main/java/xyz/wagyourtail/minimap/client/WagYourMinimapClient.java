@@ -18,7 +18,8 @@ import xyz.wagyourtail.minimap.client.world.InGameWaypointRenderer;
 import xyz.wagyourtail.minimap.map.MapServer;
 
 public class WagYourMinimapClient extends WagYourMinimap {
-    private static final KeyMapping key_openmap = new KeyMapping("key.wagyourminimap.openmap",
+    private static final KeyMapping key_openmap = new KeyMapping(
+        "key.wagyourminimap.openmap",
         InputConstants.KEY_M,
         "WagYourMinimap"
     );
