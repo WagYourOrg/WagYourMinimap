@@ -1,10 +1,9 @@
 package xyz.wagyourtail.minimap.client.gui;
 
-import xyz.wagyourtail.minimap.client.gui.hud.map.AbstractMapOverlayRenderer;
+import xyz.wagyourtail.minimap.client.gui.hud.overlay.AbstractMinimapOverlay;
 import xyz.wagyourtail.minimap.client.gui.hud.map.AbstractMinimapRenderer;
 import xyz.wagyourtail.minimap.map.image.AbstractImageStrategy;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,20 +11,15 @@ public class MapRendererBuilder<T extends AbstractMinimapRenderer> {
 
     private final T mapRenderer;
     private final List<AbstractImageStrategy> renderLayers = new ArrayList<>();
-    private final List<AbstractMapOverlayRenderer> overlays = new ArrayList<>();
+    private final List<AbstractMinimapOverlay> overlays = new ArrayList<>();
 
 
-    private MapRendererBuilder(Class<T> mapRenderer) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-        this.mapRenderer = mapRenderer.getConstructor().newInstance();
+    private MapRendererBuilder(T mapRenderer) {
+        this.mapRenderer = mapRenderer;
     }
 
-    public static <T extends AbstractMinimapRenderer> MapRendererBuilder<T> createBuilder(Class<T> mapRenderer) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+    public static <T extends AbstractMinimapRenderer> MapRendererBuilder<T> createBuilder(T mapRenderer) {
         return new MapRendererBuilder<>(mapRenderer);
-    }
-
-    public MapRendererBuilder<T> addRenderLayer(Class<? extends AbstractImageStrategy> renderLayer) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-        addRenderLayer(renderLayer.getConstructor().newInstance());
-        return this;
     }
 
     public MapRendererBuilder<T> addRenderLayer(AbstractImageStrategy renderLayer) {
@@ -33,12 +27,7 @@ public class MapRendererBuilder<T extends AbstractMinimapRenderer> {
         return this;
     }
 
-    public MapRendererBuilder<T> addOverlay(Class<? extends AbstractMapOverlayRenderer> overlay) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-        addOverlay(overlay.getConstructor(AbstractMapRenderer.class).newInstance(mapRenderer));
-        return this;
-    }
-
-    public MapRendererBuilder<T> addOverlay(AbstractMapOverlayRenderer overlay) {
+    public MapRendererBuilder<T> addOverlay(AbstractMinimapOverlay overlay) {
         overlays.add(overlay);
         return this;
     }
@@ -49,7 +38,7 @@ public class MapRendererBuilder<T extends AbstractMinimapRenderer> {
 
     public T build() {
         mapRenderer.setRenderLayers(renderLayers.toArray(AbstractImageStrategy[]::new));
-        mapRenderer.setOverlays(overlays.toArray(AbstractMapOverlayRenderer[]::new));
+        mapRenderer.setOverlays(overlays.toArray(AbstractMinimapOverlay[]::new));
         return mapRenderer;
     }
 

@@ -3,17 +3,16 @@ package xyz.wagyourtail.minimap.api.client.config;
 import xyz.wagyourtail.config.field.IntRange;
 import xyz.wagyourtail.config.field.Setting;
 import xyz.wagyourtail.config.field.SettingsContainer;
-import xyz.wagyourtail.minimap.api.client.config.circle.norot.CircleNoRotStyle;
-import xyz.wagyourtail.minimap.api.client.config.circle.rot.CircleRotStyle;
-import xyz.wagyourtail.minimap.api.client.config.square.norot.SquareNoRotStyle;
-import xyz.wagyourtail.minimap.api.client.config.square.rot.SquareRotStyle;
+import xyz.wagyourtail.minimap.api.client.config.style.AbstractMinimapStyle;
+import xyz.wagyourtail.minimap.api.client.config.style.circle.CircleNoRotStyle;
+import xyz.wagyourtail.minimap.api.client.config.style.circle.CircleRotStyle;
+import xyz.wagyourtail.minimap.api.client.config.style.square.SquareNoRotStyle;
+import xyz.wagyourtail.minimap.api.client.config.style.square.SquareRotStyle;
 import xyz.wagyourtail.minimap.api.client.config.waypointfilter.*;
 import xyz.wagyourtail.minimap.client.gui.AbstractMapRenderer;
 import xyz.wagyourtail.minimap.client.gui.hud.InGameHud;
-import xyz.wagyourtail.minimap.client.gui.hud.map.circle.norot.CircleMapNoRotRenderer;
-import xyz.wagyourtail.minimap.client.gui.hud.map.circle.rotate.CircleMapRotRenderer;
-import xyz.wagyourtail.minimap.client.gui.hud.map.square.norot.SquareMapNoRotRenderer;
-import xyz.wagyourtail.minimap.client.gui.hud.map.square.rotate.SquareMapRotRenderer;
+import xyz.wagyourtail.minimap.client.gui.hud.map.CircleMapRenderer;
+import xyz.wagyourtail.minimap.client.gui.hud.map.SquareMapRenderer;
 import xyz.wagyourtail.minimap.waypoint.WaypointManager;
 import xyz.wagyourtail.minimap.waypoint.filters.*;
 
@@ -26,14 +25,14 @@ import java.util.concurrent.ConcurrentHashMap;
 @SettingsContainer("gui.wagyourminimap.settings.client")
 public class MinimapClientConfig {
 
-    public static Map<Class<? extends AbstractMapRenderer>, Class<? extends AbstractMinimapStyle>> minimapStyleOptions = new ConcurrentHashMap<>();
+    public static Map<Class<? extends AbstractMinimapStyle>, Class<? extends AbstractMapRenderer>> minimapStyleOptions = new ConcurrentHashMap<>();
     public static Map<Class<? extends WaypointFilter>, Class<? extends AbstractWaypointFilterOptions>> waypointFilterOptions = new ConcurrentHashMap<>();
 
     static {
-        minimapStyleOptions.put(SquareMapNoRotRenderer.class, SquareNoRotStyle.class);
-        minimapStyleOptions.put(SquareMapRotRenderer.class, SquareRotStyle.class);
-        minimapStyleOptions.put(CircleMapNoRotRenderer.class, CircleNoRotStyle.class);
-        minimapStyleOptions.put(CircleMapRotRenderer.class, CircleRotStyle.class);
+        minimapStyleOptions.put(SquareNoRotStyle.class, SquareMapRenderer.class);
+        minimapStyleOptions.put(SquareRotStyle.class, SquareMapRenderer.class);
+        minimapStyleOptions.put(CircleNoRotStyle.class, CircleMapRenderer.class);
+        minimapStyleOptions.put(CircleRotStyle.class, CircleMapRenderer.class);
 
         waypointFilterOptions.put(EnabledFilter.class, EnabledFilterOptions.class);
         waypointFilterOptions.put(DistanceFilter.class, DistanceFilterOptions.class);
@@ -94,7 +93,7 @@ public class MinimapClientConfig {
     }
 
     public Collection<Class<? extends AbstractMinimapStyle>> mapStyles() {
-        return minimapStyleOptions.values();
+        return minimapStyleOptions.keySet();
     }
 
     public Collection<Class<? extends AbstractWaypointFilterOptions>> waypointFilters() {

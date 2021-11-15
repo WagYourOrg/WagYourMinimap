@@ -3,10 +3,10 @@ package xyz.wagyourtail.minimap.api.client.config;
 import xyz.wagyourtail.config.field.Setting;
 import xyz.wagyourtail.config.field.SettingsContainer;
 import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
-import xyz.wagyourtail.minimap.api.client.config.fullscreenoverlays.*;
 import xyz.wagyourtail.minimap.api.client.config.layers.AbstractLayerOptions;
 import xyz.wagyourtail.minimap.api.client.config.layers.LightLayer;
 import xyz.wagyourtail.minimap.api.client.config.layers.VanillaMapLayer;
+import xyz.wagyourtail.minimap.api.client.config.overlay.fullscreen.*;
 import xyz.wagyourtail.minimap.client.gui.screen.map.*;
 import xyz.wagyourtail.minimap.map.image.AbstractImageStrategy;
 import xyz.wagyourtail.minimap.map.image.BlockLightImageStrategy;
@@ -21,28 +21,28 @@ import java.util.concurrent.ConcurrentHashMap;
 public class FullscreenMapStyle {
     public Map<Class<? extends AbstractImageStrategy>, Class<? extends AbstractLayerOptions>> availableLayers = new ConcurrentHashMap<>();
 
-    public Map<Class<? extends AbstractFullscreenOverlay>, Class<? extends AbstractFullscreenOverlayOptions>> availableOverlays = new ConcurrentHashMap<>();
+    public Map<Class<? extends AbstractFullscreenOverlay>, Class<? extends AbstractFullscreenOverlaySettings>> availableOverlays = new ConcurrentHashMap<>();
 
     @Setting(value = "gui.wagyourminimap.settings.style.layers", options = "layerOptions", setter = "setLayers")
     public AbstractLayerOptions<?>[] layers;
 
     @Setting(value = "gui.wagyourminimap.settings.style.overlays", options = "overlayOptions", setter = "setOverlays")
-    public AbstractFullscreenOverlayOptions<?>[] overlays;
+    public AbstractFullscreenOverlaySettings<?>[] overlays;
 
     public FullscreenMapStyle() {
         availableLayers.put(VanillaMapImageStrategy.class, VanillaMapLayer.class);
         availableLayers.put(BlockLightImageStrategy.class, LightLayer.class);
 
-        availableOverlays.put(DataOverlay.class, DataOverlayOptions.class);
-        availableOverlays.put(PlayerIconOverlay.class, PlayerIconOptions.class);
-        availableOverlays.put(WaypointOverlay.class, WaypointOverlayOptions.class);
-        availableOverlays.put(ScaleOverlay.class, ScaleOverlayOptions.class);
+        availableOverlays.put(DataOverlay.class, DataOverlaySettings.class);
+        availableOverlays.put(PlayerIconOverlay.class, PlayerIconSettings.class);
+        availableOverlays.put(WaypointOverlay.class, WaypointOverlaySettings.class);
+        availableOverlays.put(ScaleOverlay.class, ScaleOverlaySettings.class);
 
         //        overlays = new AbstractOverlayOptions[] {};
         layers = new AbstractLayerOptions[] {new VanillaMapLayer(), new LightLayer()};
 
-        overlays = new AbstractFullscreenOverlayOptions[] {
-            new DataOverlayOptions(), new PlayerIconOptions(), new WaypointOverlayOptions()
+        overlays = new AbstractFullscreenOverlaySettings[] {
+            new DataOverlaySettings(), new PlayerIconSettings(), new WaypointOverlaySettings()
         };
     }
 
@@ -54,7 +54,7 @@ public class FullscreenMapStyle {
         return availableLayers.values();
     }
 
-    public Collection<Class<? extends AbstractFullscreenOverlayOptions>> overlayOptions() {
+    public Collection<Class<? extends AbstractFullscreenOverlaySettings>> overlayOptions() {
         return availableOverlays.values();
     }
 
@@ -68,11 +68,11 @@ public class FullscreenMapStyle {
         }
     }
 
-    public void setOverlays(AbstractFullscreenOverlayOptions[] overlays) {
+    public void setOverlays(AbstractFullscreenOverlaySettings[] overlays) {
         this.overlays = overlays;
         try {
             MinimapClientApi.getInstance().screen.renderer.setOverlays(Arrays.stream(overlays)
-                .map(AbstractFullscreenOverlayOptions::compileOverlay)
+                .map(AbstractFullscreenOverlaySettings::compileOverlay)
                 .toArray(AbstractFullscreenOverlay[]::new));
         } catch (NullPointerException ignored) {
         }

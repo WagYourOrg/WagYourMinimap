@@ -14,7 +14,7 @@ import xyz.wagyourtail.minimap.WagYourMinimap;
 import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
 import xyz.wagyourtail.minimap.api.client.MinimapClientEvents;
 import xyz.wagyourtail.minimap.api.client.config.MinimapClientConfig;
-import xyz.wagyourtail.minimap.api.client.config.fullscreenoverlays.AbstractFullscreenOverlayOptions;
+import xyz.wagyourtail.minimap.api.client.config.overlay.fullscreen.AbstractFullscreenOverlaySettings;
 import xyz.wagyourtail.minimap.api.client.config.layers.AbstractLayerOptions;
 import xyz.wagyourtail.minimap.client.gui.screen.map.AbstractFullscreenOverlay;
 import xyz.wagyourtail.minimap.client.gui.screen.map.ScreenMapRenderer;
@@ -128,7 +128,7 @@ public class MapScreen extends Screen {
         renderer.setOverlays(Arrays.stream(MinimapClientApi.getInstance()
                 .getConfig()
                 .get(MinimapClientConfig.class).fullscreenMapStyle.overlays)
-            .map(AbstractFullscreenOverlayOptions::compileOverlay)
+            .map(AbstractFullscreenOverlaySettings::compileOverlay)
             .toArray(AbstractFullscreenOverlay[]::new));
         renderer.setRenderLayers(Arrays.stream(MinimapClientApi.getInstance()
                 .getConfig()
