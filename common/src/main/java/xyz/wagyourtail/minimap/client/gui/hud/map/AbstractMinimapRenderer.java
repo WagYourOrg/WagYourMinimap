@@ -13,12 +13,14 @@ import xyz.wagyourtail.minimap.ModLoaderSpecific;
 import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
 import xyz.wagyourtail.minimap.api.client.config.MinimapClientConfig;
 import xyz.wagyourtail.minimap.client.gui.AbstractMapRenderer;
+import xyz.wagyourtail.minimap.client.gui.hud.InGameHud;
 import xyz.wagyourtail.minimap.client.gui.hud.overlay.AbstractMinimapOverlay;
 
 public abstract class AbstractMinimapRenderer extends AbstractMapRenderer {
     public final boolean rotate;
     public final float scaleBy;
     public final boolean hasStencil;
+    public boolean fullscreen_toggle;
     public AbstractMinimapOverlay[] overlays = new AbstractMinimapOverlay[0];
 
     protected AbstractMinimapRenderer(boolean rotate, float scaleBy, boolean hasStencil) {
@@ -39,19 +41,21 @@ public abstract class AbstractMinimapRenderer extends AbstractMapRenderer {
         int w = minecraft.getWindow().getGuiScaledWidth();
         int h = minecraft.getWindow().getGuiScaledHeight();
 
-        float minimapSize = Math.min(w, h) *
-            MinimapClientApi.getInstance().getConfig().get(MinimapClientConfig.class).minimapScale / 100f;
+        int minimapScale = fullscreen_toggle ?
+            (h - 20) * 100 / h :
+            MinimapClientApi.getInstance().getConfig().get(MinimapClientConfig.class).minimapScale;
+        float minimapSize = Math.min(w, h) * minimapScale / 100f;
 
         LocalPlayer player = minecraft.player;
         assert player != null;
 
-        boolean bottom = MinimapClientApi.getInstance().getConfig().get(MinimapClientConfig.class).snapSide.bottom;
+        InGameHud.SnapSide snap = fullscreen_toggle ?
+            InGameHud.SnapSide.TOP_CENTER :
+            MinimapClientApi.getInstance().getConfig().get(MinimapClientConfig.class).snapSide;
 
-        float posX = MinimapClientApi.getInstance().getConfig().get(MinimapClientConfig.class).snapSide.right ?
-            w - minimapSize - 10 :
-            MinimapClientApi.getInstance().getConfig().get(MinimapClientConfig.class).snapSide.center ?
-                w / 2f - minimapSize / 2f :
-                10;
+        boolean bottom = snap.bottom;
+
+        float posX = snap.right ? w - minimapSize - 10 : snap.center ? w / 2f - minimapSize / 2f : 10;
         float posZ = bottom ? h - minimapSize - minecraft.font.lineHeight - 10 : 10;
         Vec3 player_pos = player.getPosition(tickDelta);
         float player_rot = player.getYRot();

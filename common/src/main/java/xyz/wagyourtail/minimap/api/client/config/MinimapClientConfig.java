@@ -24,6 +24,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @SettingsContainer("gui.wagyourminimap.settings.client")
 public class MinimapClientConfig {
+    public static final int MIN_CHUNK_RADIUS = 1;
+    public static final int MAX_CHUNK_RADIUS = 30;
 
     public static Map<Class<? extends AbstractMinimapStyle>, Class<? extends AbstractMapRenderer>> minimapStyleOptions = new ConcurrentHashMap<>();
     public static Map<Class<? extends WaypointFilter>, Class<? extends AbstractWaypointFilterOptions>> waypointFilterOptions = new ConcurrentHashMap<>();
@@ -51,7 +53,7 @@ public class MinimapClientConfig {
     public InGameHud.SnapSide snapSide = InGameHud.SnapSide.TOP_RIGHT;
 
     @Setting(value = "gui.wagyourminimap.settings.chunk_radius", getter = "getChunkRadius", setter = "setChunkRadius")
-    @IntRange(from = 1, to = 30)
+    @IntRange(from = MIN_CHUNK_RADIUS, to = MAX_CHUNK_RADIUS)
     public int chunkRadius = 5;
 
     @Setting(value = "gui.wagyourminimap.settings.minimap_style", options = "mapStyles", setter = "setMinimapStyle")

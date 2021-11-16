@@ -66,5 +66,10 @@
     "gui.wagyourminimap.waypoints.teleport": "Teleport To",
     "gui.wagyourminimap.waypoints.reload": "Reload",
     "gui.wagyourminimap.waypoints.enable": "Toggle Visible",
-    "gui.wagyourminimap.close": "Close"
+    "gui.wagyourminimap.close": "Close",
+    "key.wagyourminimap.openmap": "Open Map",
+    "key.wagyourminimap.new_waypoint": "Create Waypoint",
+    "key.wagyourminimap.fullscreen_minimap": "Fullscreen Minimap",
+    "key.wagyourminimap.zoom_in": "Zoom In",
+    "key.wagyourminimap.zoom_out": "Zoom Out"
 }
