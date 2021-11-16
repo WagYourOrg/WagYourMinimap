@@ -132,7 +132,7 @@ public class InteractMenu extends GuiComponent implements Widget {
     private List<Waypoint> waypointsNearPos(int x, int z) {
         float rad = 10f * 16f / parent.renderer.chunkWidth;
         double coordScale = minecraft.level.dimensionType().coordinateScale();
-        return MinimapApi.getInstance().getMapServer().waypoints.getVisibleWaypoints().stream().filter(e -> {
+        return MinimapApi.getInstance().getMapServer().waypoints.getAllWaypoints().stream().filter(e -> {
             BlockPos pos = e.posForCoordScale(coordScale);
             return new Vec3(pos.getX(), 0, pos.getZ()).distanceTo(new Vec3(x, 0, z)) <= rad;
         }).collect(Collectors.toList());
