@@ -3,16 +3,27 @@ package xyz.wagyourtail.minimap.api.client;
 import dev.architectury.event.Event;
 import dev.architectury.event.EventFactory;
 import net.minecraft.client.gui.components.Button;
+import xyz.wagyourtail.minimap.api.client.config.FullscreenMapConfig;
+import xyz.wagyourtail.minimap.api.client.config.layers.AbstractLayerOptions;
+import xyz.wagyourtail.minimap.api.client.config.overlay.AbstractOverlaySettings;
+import xyz.wagyourtail.minimap.api.client.config.overlay.fullscreen.AbstractFullscreenOverlaySettings;
+import xyz.wagyourtail.minimap.api.client.config.style.AbstractMinimapStyle;
+import xyz.wagyourtail.minimap.client.gui.hud.overlay.AbstractMinimapOverlay;
 import xyz.wagyourtail.minimap.client.gui.screen.WaypointListScreen;
+import xyz.wagyourtail.minimap.client.gui.screen.map.AbstractFullscreenOverlay;
 import xyz.wagyourtail.minimap.client.gui.screen.widget.InteractMenu;
 import xyz.wagyourtail.minimap.client.gui.screen.widget.MenuButton;
+import xyz.wagyourtail.minimap.map.image.AbstractImageStrategy;
 
 import java.util.List;
+import java.util.Map;
 
 public class MinimapClientEvents {
     public static final Event<FullscreenMenu> FULLSCREEN_MENU = EventFactory.createLoop();
     public static final Event<FullscreenInteractMenu> FULLSCREEN_INTERACT_MENU = EventFactory.createLoop();
     public static final Event<WaypointListMenu> WAYPOINT_LIST_MENU = EventFactory.createLoop();
+    public static final Event<AvailableMinimapOptions> AVAILABLE_MINIMAP_OPTIONS = EventFactory.createLoop();
+    public static final Event<AvailableFullscreenOptions> AVAILABLE_FULLSCREEN_OPTIONS = EventFactory.createLoop();
 
     public interface FullscreenInteractMenu {
         void onPopulate(InteractMenu menu);
@@ -29,4 +40,11 @@ public class MinimapClientEvents {
 
     }
 
+    public interface AvailableMinimapOptions {
+        void onLayers(Class<? extends AbstractMinimapStyle> style, Map<Class<? extends AbstractImageStrategy>, Class<? extends AbstractLayerOptions>> layers, Map<Class<? extends AbstractMinimapOverlay>, Class<? extends AbstractOverlaySettings>> overlays);
+    }
+
+    public interface AvailableFullscreenOptions {
+        void onLayers(Class<? extends FullscreenMapConfig> style, Map<Class<? extends AbstractImageStrategy>, Class<? extends AbstractLayerOptions>> layers, Map<Class<? extends AbstractFullscreenOverlay>, Class<? extends AbstractFullscreenOverlaySettings>> overlays);
+    }
 }

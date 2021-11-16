@@ -268,7 +268,7 @@ public abstract class AbstractMinimapRenderer extends AbstractMapRenderer {
         matrixStack.translate(-maxLength / 2, -maxLength / 2, 0);
     }
 
-    protected abstract void drawStencil(PoseStack stack, float maxLength);
+    public abstract void drawStencil(PoseStack stack, float maxLength);
 
     public void renderText(PoseStack matrixStack, float maxLength, boolean bottom, Component... textLines) {
         matrixStack.translate(0, 10, 0);

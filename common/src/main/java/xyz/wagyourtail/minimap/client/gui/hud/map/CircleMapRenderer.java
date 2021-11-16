@@ -16,7 +16,7 @@ public class CircleMapRenderer extends AbstractMinimapRenderer {
     }
 
     @Override
-    protected void drawStencil(PoseStack stack, float maxLength) {
+    public void drawStencil(PoseStack stack, float maxLength) {
         circle(stack, maxLength / 2, maxLength / 2, maxLength / 2, 50);
     }
 

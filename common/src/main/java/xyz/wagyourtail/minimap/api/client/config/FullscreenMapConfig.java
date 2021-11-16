@@ -3,6 +3,7 @@ package xyz.wagyourtail.minimap.api.client.config;
 import xyz.wagyourtail.config.field.Setting;
 import xyz.wagyourtail.config.field.SettingsContainer;
 import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
+import xyz.wagyourtail.minimap.api.client.MinimapClientEvents;
 import xyz.wagyourtail.minimap.api.client.config.layers.AbstractLayerOptions;
 import xyz.wagyourtail.minimap.api.client.config.layers.LightLayer;
 import xyz.wagyourtail.minimap.api.client.config.layers.VanillaMapLayer;
@@ -30,6 +31,13 @@ public class FullscreenMapConfig {
     public AbstractFullscreenOverlaySettings<?>[] overlays;
 
     public FullscreenMapConfig() {
+        // overlays = new AbstractOverlayOptions[] {};
+        layers = new AbstractLayerOptions[] {new VanillaMapLayer(), new LightLayer()};
+
+        overlays = new AbstractFullscreenOverlaySettings[] {
+            new DataOverlaySettings(), new PlayerIconSettings(), new WaypointOverlaySettings()
+        };
+
         availableLayers.put(VanillaMapImageStrategy.class, VanillaMapLayer.class);
         availableLayers.put(BlockLightImageStrategy.class, LightLayer.class);
 
@@ -38,12 +46,7 @@ public class FullscreenMapConfig {
         availableOverlays.put(WaypointOverlay.class, WaypointOverlaySettings.class);
         availableOverlays.put(ScaleOverlay.class, ScaleOverlaySettings.class);
 
-        //        overlays = new AbstractOverlayOptions[] {};
-        layers = new AbstractLayerOptions[] {new VanillaMapLayer(), new LightLayer()};
-
-        overlays = new AbstractFullscreenOverlaySettings[] {
-            new DataOverlaySettings(), new PlayerIconSettings(), new WaypointOverlaySettings()
-        };
+        MinimapClientEvents.AVAILABLE_FULLSCREEN_OPTIONS.invoker().onLayers(this.getClass(), availableLayers, availableOverlays);
     }
 
     //    public Collection<Class<? extends AbstractOverlayOptions>> overlayOptions() {

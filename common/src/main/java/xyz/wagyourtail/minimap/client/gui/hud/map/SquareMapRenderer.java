@@ -15,7 +15,7 @@ public class SquareMapRenderer extends AbstractMinimapRenderer {
 
 
     @Override
-    protected void drawStencil(PoseStack stack, float maxLength) {
+    public void drawStencil(PoseStack stack, float maxLength) {
         rect(stack, 0, 0, maxLength, maxLength);
     }
 

@@ -1,6 +1,7 @@
 package xyz.wagyourtail.minimap.api.client.config.style;
 
 import xyz.wagyourtail.config.field.Setting;
+import xyz.wagyourtail.minimap.api.client.MinimapClientEvents;
 import xyz.wagyourtail.minimap.api.client.config.layers.AbstractLayerOptions;
 import xyz.wagyourtail.minimap.api.client.config.layers.LightLayer;
 import xyz.wagyourtail.minimap.api.client.config.layers.VanillaMapLayer;
@@ -47,6 +48,7 @@ public abstract class AbstractMinimapStyle<T extends AbstractMinimapRenderer> {
         //overlay register
         availableOverlays.put(PlayerArrowOverlay.class, ArrowOverlaySettings.class);
         availableOverlays.put(WaypointOverlay.class, WaypointOverlaySettings.class);
+        MinimapClientEvents.AVAILABLE_MINIMAP_OPTIONS.invoker().onLayers(this.getClass(), availableLayers, availableOverlays);
     }
 
     public Collection<Class<? extends AbstractOverlaySettings>> overlayOptions() {
