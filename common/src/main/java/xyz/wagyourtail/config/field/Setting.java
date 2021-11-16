@@ -30,10 +30,29 @@ public @interface Setting {
     String options() default "";
 
     /**
-     * @return name of function (boolean returning) that determines wether this field should be disabled.
+     * @return name of function (boolean returning) that determines whether this field should be disabled.
      */
     String enabled() default "";
 
+    /**
+     * @return duplicate option boolean (only relevant for Array type)
+     */
     boolean allowDuplicateOption() default false;
 
+    /**
+     * @return should use getter/setter in the serializer
+     */
+    boolean useFunctionsToSerialize() default true;
+
+    /**
+     * setting gui should use this field type instead, this may require a getter/setter depending on the type
+     * you can also use to specify a map/collection implementation, in which case it MUST be an implementation
+     * @return type of field
+     */
+    Class<?> overrideType() default void.class;
+
+    /**
+     * @return component type for Map Value and Collections
+     */
+    Class<?> elementType() default void.class;
 }

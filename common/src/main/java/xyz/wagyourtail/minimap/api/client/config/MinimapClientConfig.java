@@ -40,7 +40,8 @@ public class MinimapClientConfig {
         waypointFilterOptions.put(GroupFilter.class, GroupFilterOptions.class);
     }
 
-    public final FullscreenMapStyle fullscreenMapStyle = new FullscreenMapStyle();
+    // todo: own implementation of serializedname for old setting names
+    public final FullscreenMapConfig fullscreenMapStyle = new FullscreenMapConfig();
 
     @Setting(value = "gui.wagyourminimap.settings.minimap_scale")
     @IntRange(from = 0, to = 100)
@@ -52,6 +53,7 @@ public class MinimapClientConfig {
     @Setting(value = "gui.wagyourminimap.settings.chunk_radius", getter = "getChunkRadius", setter = "setChunkRadius")
     @IntRange(from = 1, to = 30)
     public int chunkRadius = 5;
+
     @Setting(value = "gui.wagyourminimap.settings.minimap_style", options = "mapStyles", setter = "setMinimapStyle")
     public AbstractMinimapStyle<?> style;
 

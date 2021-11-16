@@ -5,6 +5,7 @@ import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.server.IntegratedServer;
 import net.minecraft.world.level.storage.LevelResource;
 import xyz.wagyourtail.minimap.api.MinimapApi;
+import xyz.wagyourtail.minimap.api.client.config.CurrentServerConfig;
 import xyz.wagyourtail.minimap.api.client.config.MinimapClientConfig;
 import xyz.wagyourtail.minimap.client.gui.screen.MapScreen;
 
@@ -15,6 +16,7 @@ public class MinimapClientApi extends MinimapApi {
     protected MinimapClientApi() {
         super();
         config.registerConfig("client", MinimapClientConfig.class);
+        config.registerConfig("perServer", CurrentServerConfig.class);
     }
 
     public static MinimapClientApi getInstance() {

@@ -10,6 +10,7 @@ import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.phys.Vec3;
 import xyz.wagyourtail.minimap.api.MinimapApi;
 import xyz.wagyourtail.minimap.api.client.MinimapClientEvents;
+import xyz.wagyourtail.minimap.api.client.config.CurrentServerConfig;
 import xyz.wagyourtail.minimap.chunkdata.ChunkData;
 import xyz.wagyourtail.minimap.chunkdata.ChunkLocation;
 import xyz.wagyourtail.minimap.chunkdata.parts.SurfaceDataPart;
@@ -27,7 +28,6 @@ import java.util.stream.Collectors;
 public class InteractMenu extends GuiComponent implements Widget {
     protected static final Minecraft minecraft = Minecraft.getInstance();
     public static int backround_color = 0xFF3F3F74;
-    public static String teleport_command = "/tp";
     public final MapScreen parent;
     public final float x, z;
     public final double topX, topY;
@@ -84,30 +84,48 @@ public class InteractMenu extends GuiComponent implements Widget {
 
     private List<InteractMenuButton> buttonsForPos(Vec3 pos) {
         List<InteractMenuButton> buttons = new ArrayList<>();
-        buttons.add(new InteractMenuButton(new TranslatableComponent("gui.wagyourminimap.create_waypoint"), (btn) -> {
-            minecraft.setScreen(WaypointEditScreen.createNewFromPos(parent, new BlockPos(pos).above()));
-        }));
+        buttons.add(new InteractMenuButton(
+            new TranslatableComponent("gui.wagyourminimap.create_waypoint"),
+            (btn) -> minecraft.setScreen(WaypointEditScreen.createNewFromPos(parent, new BlockPos(pos).above()))
+        ));
 
-        buttons.add(new InteractMenuButton(new TranslatableComponent("gui.wagyourminimap.teleport_to"), (btn) -> {
-            parent.sendMessage(String.format("%s %d %d %d", teleport_command, (int)pos.x, (int)pos.y + 1, (int)pos.z));
-        }));
+        buttons.add(new InteractMenuButton(
+            new TranslatableComponent("gui.wagyourminimap.teleport_to"),
+            (btn) -> parent.sendMessage(MinimapApi.getInstance()
+                .getConfig()
+                .get(CurrentServerConfig.class)
+                .getTpCommand()
+                .replace("%player", minecraft.player.getGameProfile().getName())
+                .replace("%x", Integer.toString((int) pos.x))
+                .replace("%y", Integer.toString((int) pos.y + 1))
+                .replace("%z", Integer.toString((int) pos.z)))
+        ));
         return buttons;
     }
 
     private List<InteractMenuButton> buttonsForWaypoint(Waypoint point) {
         List<InteractMenuButton> buttons = new ArrayList<>();
-        buttons.add(new InteractMenuButton(new TranslatableComponent("gui.wagyourminimap.edit_waypoint"), (btn) -> {
-            minecraft.setScreen(new WaypointEditScreen(parent, point));
-        }));
+        buttons.add(new InteractMenuButton(
+            new TranslatableComponent("gui.wagyourminimap.edit_waypoint"),
+            (btn) -> minecraft.setScreen(new WaypointEditScreen(parent, point))
+        ));
 
         buttons.add(new InteractMenuButton(new TranslatableComponent("gui.wagyourminimap.teleport_to"), (btn) -> {
             BlockPos pos = point.posForCoordScale(minecraft.level.dimensionType().coordinateScale());
-            parent.sendMessage(String.format("%s %d %d %d", teleport_command, pos.getX(), pos.getY(), pos.getZ()));
+            parent.sendMessage(MinimapApi.getInstance()
+                .getConfig()
+                .get(CurrentServerConfig.class)
+                .getTpCommand()
+                .replace("%player", minecraft.player.getGameProfile().getName())
+                .replace("%x", Integer.toString(pos.getX()))
+                .replace("%y", Integer.toString(pos.getY()))
+                .replace("%z", Integer.toString(pos.getZ())));
         }));
 
-        buttons.add(new InteractMenuButton(new TranslatableComponent("gui.wagyourminimap.delete_waypoint"), (btn) -> {
-            MinimapApi.getInstance().getMapServer().waypoints.removeWaypoint(point);
-        }));
+        buttons.add(new InteractMenuButton(
+            new TranslatableComponent("gui.wagyourminimap.delete_waypoint"),
+            (btn) -> MinimapApi.getInstance().getMapServer().waypoints.removeWaypoint(point)
+        ));
         return buttons;
     }
 

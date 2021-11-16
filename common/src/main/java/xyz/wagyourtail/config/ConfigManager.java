@@ -107,7 +107,7 @@ public class ConfigManager {
                         );
                     }
                     Files.writeString(configPath, gson.toJson(rawConfig));
-                } catch (IOException | IllegalAccessException e) {
+                } catch (IOException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
                     throw new RuntimeException(e);
                 }
                 dirty = false;

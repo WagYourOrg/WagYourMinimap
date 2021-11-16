@@ -8,6 +8,7 @@ import net.minecraft.network.chat.TranslatableComponent;
 import org.jetbrains.annotations.Nullable;
 import xyz.wagyourtail.minimap.api.MinimapApi;
 import xyz.wagyourtail.minimap.api.client.MinimapClientEvents;
+import xyz.wagyourtail.minimap.api.client.config.CurrentServerConfig;
 import xyz.wagyourtail.minimap.client.gui.screen.widget.InteractMenu;
 import xyz.wagyourtail.minimap.client.gui.screen.widget.WaypointList;
 
@@ -103,13 +104,14 @@ public class WaypointListScreen extends Screen {
                 if (selected != null) {
                     assert minecraft != null;
                     BlockPos pos = selected.point.posForCoordScale(minecraft.level.dimensionType().coordinateScale());
-                    this.sendMessage(String.format(
-                        "%s %d %d %d",
-                        InteractMenu.teleport_command,
-                        pos.getX(),
-                        pos.getY(),
-                        pos.getZ()
-                    ));
+                    this.sendMessage(MinimapApi.getInstance()
+                        .getConfig()
+                        .get(CurrentServerConfig.class)
+                        .getTpCommand()
+                        .replace("%player", minecraft.player.getGameProfile().getName())
+                        .replace("%x", Integer.toString(pos.getX()))
+                        .replace("%y", Integer.toString(pos.getY()))
+                        .replace("%z", Integer.toString(pos.getZ())));
                 }
             })
         ));

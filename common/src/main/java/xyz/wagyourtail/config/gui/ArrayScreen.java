@@ -19,13 +19,13 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ListScreen<T, U> extends Screen implements EnabledSettingList.EntryController<T>, DisabledSettingList.EntryController<U> {
+public class ArrayScreen<T, U> extends Screen implements EnabledSettingList.EntryController<T>, DisabledSettingList.EntryController<U> {
     private final Screen parent;
     private final SettingField<T[]> setting;
     private EnabledSettingList<T> enabledEntries;
     private DisabledSettingList<U> availableEntries;
 
-    protected ListScreen(Component component, Screen parent, SettingField<T[]> setting) {
+    protected ArrayScreen(Component component, Screen parent, SettingField<T[]> setting) {
         super(component);
         this.parent = parent;
         this.setting = setting;

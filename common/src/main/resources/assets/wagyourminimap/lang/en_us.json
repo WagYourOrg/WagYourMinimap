@@ -10,6 +10,8 @@
     "gui.wagyourminimap.settings": "WagYourMinimap Config",
     "gui.wagyourminimap.settings.client": "Client",
     "gui.wagyourminimap.settings.common": "Common",
+    "gui.wagyourminimap.settings.per_server": "Per Server",
+    "gui.wagyourminimap.settings.per_server.tp_command": "Teleport Command",
     "gui.wagyourminimap.settings.minimap_scale": "Minimap Scale:",
     "gui.wagyourminimap.settings.map_location": "Map Location",
     "gui.wagyourminimap.settings.minimap_style": "Map Style:",

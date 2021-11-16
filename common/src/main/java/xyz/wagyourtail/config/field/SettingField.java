@@ -18,11 +18,13 @@ public class SettingField<T> {
     public final IntRange intRange;
     public final DoubleRange doubleRange;
 
-    public SettingField(Object parent, Field field, Class<T> fieldType) throws NoSuchMethodException {
+    public SettingField(Object parent, Field field) throws NoSuchMethodException {
         this.parent = parent;
         this.field = field;
-        this.fieldType = fieldType;
         setting = field.getAnnotation(Setting.class);
+        this.fieldType = setting.overrideType() != void.class ?
+            (Class<T>) setting.overrideType() :
+            (Class<T>) field.getType();
         intRange = field.getAnnotation(IntRange.class);
         doubleRange = field.getAnnotation(DoubleRange.class);
         if (!setting.enabled().equals("")) {
@@ -77,6 +79,14 @@ public class SettingField<T> {
             return Arrays.asList((Object[]) fieldType.getDeclaredMethod("values").invoke(null));
         }
         return null;
+    }
+
+    public Object getRawParent() {
+        return parent;
+    }
+
+    public Field getRawField() {
+        return field;
     }
 
 }

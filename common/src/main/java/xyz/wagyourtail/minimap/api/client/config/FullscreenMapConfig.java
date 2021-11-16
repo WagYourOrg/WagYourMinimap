@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @SettingsContainer("gui.wagyourminimap.settings.fullscreen_map")
-public class FullscreenMapStyle {
+public class FullscreenMapConfig {
     public Map<Class<? extends AbstractImageStrategy>, Class<? extends AbstractLayerOptions>> availableLayers = new ConcurrentHashMap<>();
 
     public Map<Class<? extends AbstractFullscreenOverlay>, Class<? extends AbstractFullscreenOverlaySettings>> availableOverlays = new ConcurrentHashMap<>();
@@ -29,7 +29,7 @@ public class FullscreenMapStyle {
     @Setting(value = "gui.wagyourminimap.settings.style.overlays", options = "overlayOptions", setter = "setOverlays")
     public AbstractFullscreenOverlaySettings<?>[] overlays;
 
-    public FullscreenMapStyle() {
+    public FullscreenMapConfig() {
         availableLayers.put(VanillaMapImageStrategy.class, VanillaMapLayer.class);
         availableLayers.put(BlockLightImageStrategy.class, LightLayer.class);
 
