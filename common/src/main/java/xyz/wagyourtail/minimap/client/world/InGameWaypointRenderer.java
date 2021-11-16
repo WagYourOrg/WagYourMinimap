@@ -11,6 +11,7 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import xyz.wagyourtail.minimap.WagYourMinimap;
 import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
@@ -25,6 +26,9 @@ public class InGameWaypointRenderer {
         "textures/waypoint.png"
     );
     public static final Event<RenderLastEvent> RENDER_LAST = EventFactory.createLoop();
+    public static final double WARP_COMPENSATION_Y_FACTOR = 70;
+    public static final double WARP_COMPENSATION_X_FACTOR = 10;
+
 
 
     public static void onRender(PoseStack stack, float partialTicks, long finishTimeNano) {
@@ -37,10 +41,17 @@ public class InGameWaypointRenderer {
             //move center to waypoint
             BlockPos pos = visibleWaypoint.posForCoordScale(mc.level.dimensionType().coordinateScale());
             Vec3 offset = new Vec3(pos.getX() + .5f, pos.getY() + .5f, pos.getZ() + .5f).subtract(center);
-            Vec3 normalized_offset = offset.normalize().multiply(20, 20, 20);
-            double xz = Math.sqrt(normalized_offset.x * normalized_offset.x + normalized_offset.z * normalized_offset.z);
-            float xRot = 90F - (float) Math.toDegrees(Math.atan2(xz, -normalized_offset.y));
-            float yRot = (float) Math.toDegrees(Math.atan2(normalized_offset.x, normalized_offset.z));
+            double xz = Math.sqrt(offset.x * offset.x + offset.z * offset.z);
+            float xRot = 90F - (float) Mth.wrapDegrees(Math.toDegrees(Math.atan2(xz, -offset.y)));
+            float yRot = (float) Mth.wrapDegrees(Math.toDegrees(Math.atan2(offset.x, offset.z)));
+            // because of view warping we want to scale down as the y rot increases, using equation:
+            //                      factor = yFactor / 180 * abs(relative_camera_yRot) + xFactor / 180 * abs(relative_camera_xRot) + 20;
+            // this is a bit of a hack, but it works.
+            // this warping is more appearent as the FOV increases
+            // if you want to see how worse it really is, try making it statically set to 20 and quake pro
+            double factor = WARP_COMPENSATION_Y_FACTOR / 180d * Math.abs(Mth.wrapDegrees(mc.gameRenderer.getMainCamera().getYRot() + yRot)) +
+                WARP_COMPENSATION_X_FACTOR / 180d * Math.abs(mc.gameRenderer.getMainCamera().getXRot() - xRot) + 20;
+            Vec3 normalized_offset = offset.normalize().multiply(factor, factor, factor);
             stack.translate(normalized_offset.x, normalized_offset.y, normalized_offset.z);
             double distance = offset.distanceTo(Vec3.ZERO);
 
