@@ -12,7 +12,7 @@
         "sources": "https://github.com/wagyourtail/WagYourMinimap"
     },
     "license": "MPL-2.0",
-    "icon": "assets/examplemod/icon.png",
+    "icon": "assets/wagyourminimap/icon/icon.png",
     "environment": "*",
     "entrypoints": {
         "client": [
