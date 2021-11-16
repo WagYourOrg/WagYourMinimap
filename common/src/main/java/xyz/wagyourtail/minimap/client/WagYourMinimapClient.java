@@ -81,7 +81,7 @@ public class WagYourMinimapClient extends WagYourMinimap {
                 InGameHud.getRenderer().fullscreen_toggle = false;
             }
             if (key_new_waypoint.consumeClick()) {
-                mc.setScreen(WaypointEditScreen.createNewFromPos(null, new BlockPos(mc.player.getEyePosition())));
+                mc.setScreen(WaypointEditScreen.createNewFromPos(null, new BlockPos(mc.cameraEntity.getEyePosition())));
             }
             if (key_zoom_in.consumeClick()) {
                 int rad = MinimapApi.getInstance().getConfig().get(MinimapClientConfig.class).getChunkRadius();

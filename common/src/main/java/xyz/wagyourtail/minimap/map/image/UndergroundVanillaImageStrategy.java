@@ -17,10 +17,10 @@ public class UndergroundVanillaImageStrategy extends VanillaMapImageStrategy {
     @Override
     public DynamicTexture load(ChunkLocation location, ChunkData data) {
         Level level = minecraft.level;
-        if (level == null || minecraft.player == null) {
+        if (level == null || minecraft.cameraEntity == null) {
             return null;
         }
-        int y = minecraft.player.getBlockY() - level.dimensionType().minY();
+        int y = minecraft.cameraEntity.getBlockY() - level.dimensionType().minY();
         y = y - y % resolution;
         lastY.set(y);
         //TODO: make this work

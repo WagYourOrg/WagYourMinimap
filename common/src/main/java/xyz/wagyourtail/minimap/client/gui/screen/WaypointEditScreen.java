@@ -245,7 +245,7 @@ public class WaypointEditScreen extends Screen {
         sideText = new ArrayList<>();
         if (width > 600) {
             sideText.add(new TranslatableComponent("gui.wagyourminimap.player_pos"));
-            sideText.add(new TextComponent(minecraft.player.blockPosition().toShortString()));
+            sideText.add(new TextComponent(minecraft.cameraEntity.blockPosition().toShortString()));
             sideText.add(new TextComponent(""));
             sideText.add(new TranslatableComponent("gui.wagyourminimap.dimensions_list").append(": "));
             realDims.stream().sorted().forEach(e -> sideText.add(new TextComponent(e)));

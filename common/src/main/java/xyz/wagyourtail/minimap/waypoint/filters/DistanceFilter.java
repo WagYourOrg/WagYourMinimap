@@ -16,7 +16,7 @@ public class DistanceFilter extends WaypointFilter {
     @Override
     public boolean test(Waypoint waypoint) {
         BlockPos pos = waypoint.posForCoordScale(minecraft.level.dimensionType().coordinateScale());
-        return new Vec3(pos.getX(), pos.getY(), pos.getZ()).distanceTo(minecraft.player.position()) < distance;
+        return new Vec3(pos.getX(), pos.getY(), pos.getZ()).distanceTo(minecraft.cameraEntity.position()) < distance;
     }
 
 }

@@ -29,7 +29,6 @@ public class InGameWaypointRenderer {
 
     public static void onRender(PoseStack stack, float partialTicks, long finishTimeNano) {
         stack.pushPose();
-        assert mc.cameraEntity != null;
         Vec3 center = mc.gameRenderer.getMainCamera().getPosition();
         RenderSystem.disableDepthTest();
         boolean showBeam = MinimapClientApi.getInstance().getConfig().get(MinimapClientConfig.class).showWaypointBeam;
