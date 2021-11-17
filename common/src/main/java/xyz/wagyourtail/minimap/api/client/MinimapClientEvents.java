@@ -24,7 +24,6 @@ public class MinimapClientEvents {
     public static final Event<FullscreenInteractMenu> FULLSCREEN_INTERACT_MENU = EventFactory.createLoop();
     public static final Event<WaypointListMenu> WAYPOINT_LIST_MENU = EventFactory.createLoop();
     public static final Event<AvailableMinimapOptions> AVAILABLE_MINIMAP_OPTIONS = EventFactory.createLoop();
-    public static final Event<AvailableFullscreenOptions> AVAILABLE_FULLSCREEN_OPTIONS = EventFactory.createLoop();
 
     public interface FullscreenInteractMenu {
         void onPopulate(InteractMenu menu);
@@ -42,10 +41,6 @@ public class MinimapClientEvents {
     }
 
     public interface AvailableMinimapOptions {
-        void onOptions(Class<? extends AbstractMinimapStyle> style, Map<Class<? extends AbstractImageStrategy>, Class<? extends AbstractLayerOptions>> layers, Map<Class<? extends AbstractMinimapOverlay>, Class<? extends AbstractOverlaySettings>> overlays);
-    }
-
-    public interface AvailableFullscreenOptions {
-        void onOptions(Class<? extends FullscreenMapConfig> style, Map<Class<? extends AbstractImageStrategy>, Class<? extends AbstractLayerOptions>> layers, Map<Class<? extends AbstractFullscreenOverlay>, Class<? extends AbstractFullscreenOverlaySettings>> overlays);
+        void onOptions(AbstractMinimapStyle style, Map<Class<? extends AbstractImageStrategy>, Class<? extends AbstractLayerOptions>> layers, Map<Class<? extends AbstractMinimapOverlay>, Class<? extends AbstractOverlaySettings>> overlays);
     }
 }

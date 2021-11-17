@@ -45,8 +45,6 @@ public class FullscreenMapConfig {
         availableOverlays.put(PlayerIconOverlay.class, PlayerIconSettings.class);
         availableOverlays.put(WaypointOverlay.class, WaypointOverlaySettings.class);
         availableOverlays.put(ScaleOverlay.class, ScaleOverlaySettings.class);
-
-        MinimapClientEvents.AVAILABLE_FULLSCREEN_OPTIONS.invoker().onLayers(this.getClass(), availableLayers, availableOverlays);
     }
 
     //    public Collection<Class<? extends AbstractOverlayOptions>> overlayOptions() {
