@@ -16,7 +16,7 @@ public class VanillaLevelSupplier extends LevelSupplier {
     }
 
     protected VanillaLevelSupplier(ClientPacketListener listener) {
-        super(ImmutableSet.copyOf(listener == null ?
+        super(() -> ImmutableSet.copyOf(listener == null ?
             ImmutableSet.of() :
             listener.levels().stream().map(VanillaLevelSupplier::getLevelName).collect(Collectors.toSet())));
     }

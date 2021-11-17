@@ -36,7 +36,7 @@ public class WaypointEditScreen extends Screen {
     protected EditBox groups;
     protected EditBox dims;
     protected EditBox extra;
-    protected Set<String> realDims = MinimapApi.getInstance().getMapServer().currentLevelNameSupplier.availableLevels;
+    protected Set<String> realDims = MinimapApi.getInstance().getMapServer().currentLevelNameSupplier.availableLevels.get();
     protected List<Component> sideText;
     protected boolean canceled = false;
 
@@ -107,7 +107,7 @@ public class WaypointEditScreen extends Screen {
         int color = Integer.parseInt(this.color.getValue(), 16);
 
         String[] groups = Arrays.stream(this.groups.getValue().split(",")).map(String::trim).toArray(String[]::new);
-        String[] dims = Arrays.stream(this.dims.getValue().split(",")).map(e -> e.trim().replace(":", "_")).filter(
+        String[] dims = Arrays.stream(this.dims.getValue().split(",")).map(e -> e.trim().replace(":", "/")).filter(
             realDims::contains).toArray(String[]::new);
 
         JsonObject extra;
