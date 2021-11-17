@@ -5,6 +5,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.Nullable;
+import xyz.wagyourtail.minimap.WagYourMinimap;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,6 +16,10 @@ import java.util.function.Function;
 
 public class Waypoint {
     private static final Gson gson = new Gson();
+    private static final ResourceLocation default_waypoint_tex = new ResourceLocation(WagYourMinimap.MOD_ID, "textures/waypoint.png");
+    private static final Map<String, ResourceLocation> waypoint_tex = new HashMap<>(Map.of(
+        "default", default_waypoint_tex
+    ));
     private final Map<Double, BlockPos> posForCoordScale = new HashMap<>();
     public final double coordScale;
     public final int posX;
@@ -25,11 +32,12 @@ public class Waypoint {
     public final String[] groups;
     public final String[] levels;
     public final JsonObject extra;
+    public final String icon;
     public final boolean enabled;
     public final boolean ephemeral;
 
     public Waypoint(
-        double coordScale, int posX, int posY, int posZ, byte colR, byte colG, byte colB, String name, String[] groups, String[] levels, JsonObject extra, boolean enabled, boolean ephemeral
+        double coordScale, int posX, int posY, int posZ, byte colR, byte colG, byte colB, String name, String[] groups, String[] levels, JsonObject extra, String icon, boolean enabled, boolean ephemeral
     ) {
         this.coordScale = coordScale;
         this.posX = posX;
@@ -42,6 +50,7 @@ public class Waypoint {
         this.groups = groups;
         this.levels = levels;
         this.extra = extra;
+        this.icon = icon;
         this.enabled = enabled;
         this.ephemeral = ephemeral;
     }
@@ -62,6 +71,7 @@ public class Waypoint {
                 gson.fromJson(waypoint.get("levels"), String[].class) :
                 new String[] {"minecraft/overworld", "minecraft/the_nether"},
             getKeyOrDefault(waypoint, "extra", JsonElement::getAsJsonObject, new JsonObject()),
+            getKeyOrDefault(waypoint, "icon", JsonElement::getAsString, ""),
             getKeyOrDefault(waypoint, "enabled", JsonElement::getAsBoolean, true),
             false
         );
@@ -84,6 +94,7 @@ public class Waypoint {
             groups,
             levels,
             extra,
+            icon,
             enabled,
             ephemeral
         );
@@ -102,6 +113,7 @@ public class Waypoint {
             groups,
             levels,
             extra,
+            icon,
             enabled,
             ephemeral
         );
@@ -120,6 +132,7 @@ public class Waypoint {
             groups,
             levels,
             extra,
+            icon,
             enabled,
             ephemeral
         );
@@ -138,6 +151,7 @@ public class Waypoint {
             groups,
             levels,
             extra,
+            icon,
             enabled,
             ephemeral
         );
@@ -156,6 +170,7 @@ public class Waypoint {
             groups,
             levels,
             extra,
+            icon,
             enabled,
             ephemeral
         );
@@ -174,6 +189,7 @@ public class Waypoint {
             groups,
             levels,
             extra,
+            icon,
             enabled,
             ephemeral
         );
@@ -192,6 +208,26 @@ public class Waypoint {
             groups,
             levels,
             extra,
+            icon,
+            enabled,
+            ephemeral
+        );
+    }
+
+    public Waypoint copyWithChangedIcon(String icon) {
+        return new Waypoint(
+            coordScale,
+            posX,
+            posY,
+            posZ,
+            colR,
+            colG,
+            colB,
+            name,
+            groups,
+            levels,
+            extra,
+            icon,
             enabled,
             ephemeral
         );
@@ -210,6 +246,7 @@ public class Waypoint {
             groups,
             levels,
             extra,
+            icon,
             enabled,
             ephemeral
         );
@@ -228,6 +265,7 @@ public class Waypoint {
             groups,
             levels,
             extra,
+            icon,
             enabled,
             ephemeral
         );
@@ -258,6 +296,21 @@ public class Waypoint {
             return false;
         }
         return posX == waypoint.posX && posY == waypoint.posY && posZ == waypoint.posZ;
+    }
+
+    public ResourceLocation getIcon() {
+        ResourceLocation icon = waypoint_tex.get(this.icon);
+        if (icon == null) {
+            icon = default_waypoint_tex;
+        }
+        return icon;
+    }
+
+    public ResourceLocation setIcon(String name, @Nullable ResourceLocation tex) {
+        if (tex == null) {
+            return waypoint_tex.remove(name);
+        }
+        return waypoint_tex.put(name, tex);
     }
 
 }

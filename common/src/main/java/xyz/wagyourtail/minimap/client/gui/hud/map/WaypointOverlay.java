@@ -18,11 +18,6 @@ import xyz.wagyourtail.minimap.waypoint.Waypoint;
 import java.util.Set;
 
 public class WaypointOverlay extends AbstractMinimapOverlay {
-
-    private static final ResourceLocation waypoint_tex = new ResourceLocation(
-        WagYourMinimap.MOD_ID,
-        "textures/waypoint.png"
-    );
     private static final ResourceLocation waypoint_arrow_tex = new ResourceLocation(
         WagYourMinimap.MOD_ID,
         "textures/waypoint_arrow.png"
@@ -65,7 +60,7 @@ public class WaypointOverlay extends AbstractMinimapOverlay {
                 stack.mulPose(Vector3f.ZN.rotation((float) Math.atan2(pointVec.x, pointVec.z)));
                 RenderSystem.setShaderTexture(0, waypoint_arrow_tex);
             } else {
-                RenderSystem.setShaderTexture(0, waypoint_tex);
+                RenderSystem.setShaderTexture(0, point.getIcon());
             }
             int abgr = 0xFF000000 | point.colB & 0xFF << 0x10 | point.colG & 0xFF << 0x8 | point.colR & 0xFF;
             AbstractMapRenderer.drawTexCol(stack, -10, -10, 20, 20, 1, 1, 0, 0, abgr);

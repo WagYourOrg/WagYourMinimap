@@ -8,9 +8,7 @@ import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
-import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
-import xyz.wagyourtail.minimap.WagYourMinimap;
 import xyz.wagyourtail.minimap.api.MinimapApi;
 import xyz.wagyourtail.minimap.client.gui.AbstractMapRenderer;
 import xyz.wagyourtail.minimap.client.gui.screen.WaypointListScreen;
@@ -47,11 +45,6 @@ public class WaypointList extends ObjectSelectionList<WaypointList.WaypointListE
     }
 
     public static class WaypointListEntry extends ObjectSelectionList.Entry<WaypointListEntry> {
-        private static final ResourceLocation waypoint_tex = new ResourceLocation(
-            WagYourMinimap.MOD_ID,
-            "textures/waypoint.png"
-        );
-
         private final Minecraft mc;
         private final WaypointListScreen screen;
         public Waypoint point;
@@ -94,7 +87,7 @@ public class WaypointList extends ObjectSelectionList<WaypointList.WaypointListE
 
         @Override
         public void render(PoseStack poseStack, int index, int top, int left, int width, int height, int mouseX, int mouseY, boolean isMouseOver, float partialTick) {
-            RenderSystem.setShaderTexture(0, waypoint_tex);
+            RenderSystem.setShaderTexture(0, point.getIcon());
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
             int abgr = 0xFF000000 | point.colB & 0xFF << 0x10 | point.colG & 0xFF << 0x8 | point.colR & 0xFF;
             AbstractMapRenderer.drawTexCol(poseStack, left + 1, top + 1, height - 2, height - 2, 0, 0, 1, 1, abgr);

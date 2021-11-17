@@ -3,8 +3,6 @@ package xyz.wagyourtail.minimap.client.gui.screen.map;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
-import xyz.wagyourtail.minimap.WagYourMinimap;
 import xyz.wagyourtail.minimap.api.MinimapApi;
 import xyz.wagyourtail.minimap.client.gui.AbstractMapRenderer;
 import xyz.wagyourtail.minimap.waypoint.Waypoint;
@@ -12,10 +10,6 @@ import xyz.wagyourtail.minimap.waypoint.Waypoint;
 import java.util.Set;
 
 public class WaypointOverlay extends AbstractFullscreenOverlay {
-    private static final ResourceLocation waypoint_tex = new ResourceLocation(
-        WagYourMinimap.MOD_ID,
-        "textures/waypoint.png"
-    );
 
     public WaypointOverlay(ScreenMapRenderer parent) {
         super(parent);
@@ -39,7 +33,7 @@ public class WaypointOverlay extends AbstractFullscreenOverlay {
                     0
                 );
                 stack.scale(.75f, .75f, 1);
-                RenderSystem.setShaderTexture(0, waypoint_tex);
+                RenderSystem.setShaderTexture(0, point.getIcon());
                 int abgr = point.colB & 0xFF << 0x10 | point.colG & 0xFF << 0x8 | point.colR & 0xFF;
                 if (visible.contains(point)) {
                     abgr = 0xFF000000 | abgr;

@@ -68,6 +68,7 @@ public class WaypointEditScreen extends Screen {
             new String[] {"default"},
             dims,
             new JsonObject(),
+            "default",
             true,
             false
         ));
@@ -128,6 +129,7 @@ public class WaypointEditScreen extends Screen {
             groups,
             dims,
             extra,
+            "default",
             true,
             false
         );

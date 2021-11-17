@@ -57,3 +57,31 @@ allprojects {
         withSourcesJar()
     }
 }
+
+task fabricDist(type: Copy) {
+    from new File(project(":fabric").buildDir, "libs")
+    into new File(project.rootDir, "dist")
+    rename {
+        it.replace ".jar", "-fabric.jar"
+    }
+}
+
+
+task forgeDist(type: Copy) {
+    from new File(project(":forge").buildDir, "libs")
+    into new File(project.rootDir, "dist")
+    rename {
+        it.replace ".jar", "-forge.jar"
+    }
+}
+
+task clearDist(type: Delete) {
+    delete new File(project.rootDir, "dist")
+}
+
+task createDist(dependsOn: build) {}
+
+createDist.finalizedBy fabricDist
+createDist.finalizedBy forgeDist
+
+clean.finalizedBy(clearDist)

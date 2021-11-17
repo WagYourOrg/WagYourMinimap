@@ -10,10 +10,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
-import xyz.wagyourtail.minimap.WagYourMinimap;
 import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
 import xyz.wagyourtail.minimap.api.client.config.MinimapClientConfig;
 import xyz.wagyourtail.minimap.client.gui.AbstractMapRenderer;
@@ -21,10 +19,6 @@ import xyz.wagyourtail.minimap.waypoint.Waypoint;
 
 public class InGameWaypointRenderer {
     private static final Minecraft mc = Minecraft.getInstance();
-    private static final ResourceLocation waypoint_tex = new ResourceLocation(
-        WagYourMinimap.MOD_ID,
-        "textures/waypoint.png"
-    );
     public static final Event<RenderLastEvent> RENDER_LAST = EventFactory.createLoop();
     public static final double WARP_COMPENSATION_Y_FACTOR = 70;
     public static final double WARP_COMPENSATION_X_FACTOR = 10;
@@ -76,7 +70,7 @@ public class InGameWaypointRenderer {
         stack.mulPose(Vector3f.ZP.rotationDegrees(180));
         float scale = (float) Math.max(.0675, -distance / 50f * .0625 + .125f);
         stack.scale(scale, scale, scale);
-        RenderSystem.setShaderTexture(0, waypoint_tex);
+        RenderSystem.setShaderTexture(0, waypoint.getIcon());
         int abgr = 0xFF000000 | waypoint.colB & 0xFF << 0x10 | waypoint.colG & 0xFF << 0x8 | waypoint.colR & 0xFF;
         AbstractMapRenderer.drawTexCol(stack, -10, -10, 20, 20, 0, 0, 1, 1, abgr);
         if (isLookingAt(offset.normalize(), mc.gameRenderer.getMainCamera().getXRot(), mc.gameRenderer.getMainCamera().getYRot())) {
