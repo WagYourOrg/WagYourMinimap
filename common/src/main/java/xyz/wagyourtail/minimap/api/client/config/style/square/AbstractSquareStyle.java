@@ -7,8 +7,8 @@ import xyz.wagyourtail.minimap.client.gui.hud.overlay.SquareMapBorderOverlay;
 
 public abstract class AbstractSquareStyle extends AbstractMinimapStyle<SquareMapRenderer> {
 
-    public AbstractSquareStyle() {
-        super();
+    protected AbstractSquareStyle(boolean rotate) {
+        super(rotate);
         availableOverlays.put(SquareMapBorderOverlay.class, SquareMapBorderOverlaySettings.class);
     }
 

@@ -13,6 +13,7 @@ import xyz.wagyourtail.minimap.client.gui.screen.WaypointListScreen;
 import xyz.wagyourtail.minimap.client.gui.screen.map.AbstractFullscreenOverlay;
 import xyz.wagyourtail.minimap.client.gui.screen.widget.InteractMenu;
 import xyz.wagyourtail.minimap.client.gui.screen.widget.MenuButton;
+import xyz.wagyourtail.minimap.map.MapServer;
 import xyz.wagyourtail.minimap.map.image.AbstractImageStrategy;
 
 import java.util.List;
@@ -41,10 +42,10 @@ public class MinimapClientEvents {
     }
 
     public interface AvailableMinimapOptions {
-        void onLayers(Class<? extends AbstractMinimapStyle> style, Map<Class<? extends AbstractImageStrategy>, Class<? extends AbstractLayerOptions>> layers, Map<Class<? extends AbstractMinimapOverlay>, Class<? extends AbstractOverlaySettings>> overlays);
+        void onOptions(Class<? extends AbstractMinimapStyle> style, Map<Class<? extends AbstractImageStrategy>, Class<? extends AbstractLayerOptions>> layers, Map<Class<? extends AbstractMinimapOverlay>, Class<? extends AbstractOverlaySettings>> overlays);
     }
 
     public interface AvailableFullscreenOptions {
-        void onLayers(Class<? extends FullscreenMapConfig> style, Map<Class<? extends AbstractImageStrategy>, Class<? extends AbstractLayerOptions>> layers, Map<Class<? extends AbstractFullscreenOverlay>, Class<? extends AbstractFullscreenOverlaySettings>> overlays);
+        void onOptions(Class<? extends FullscreenMapConfig> style, Map<Class<? extends AbstractImageStrategy>, Class<? extends AbstractLayerOptions>> layers, Map<Class<? extends AbstractFullscreenOverlay>, Class<? extends AbstractFullscreenOverlaySettings>> overlays);
     }
 }

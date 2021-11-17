@@ -12,7 +12,7 @@ import xyz.wagyourtail.minimap.client.gui.hud.overlay.rotate.NorthIconOverlay;
 @SettingsContainer("gui.wagyourminimap.settings.circle_norot_style")
 public class CircleRotStyle extends AbstractCircleStyle {
     public CircleRotStyle() {
-        super();
+        super(true);
         availableOverlays.put(NorthIconOverlay.class, NorthIconOverlaySettings.class);
 
         overlays = new AbstractOverlaySettings[] {
@@ -26,7 +26,7 @@ public class CircleRotStyle extends AbstractCircleStyle {
 
     @Override
     protected CircleMapRenderer getMapRenderer() {
-        return new CircleMapRenderer(true);
+        return new CircleMapRenderer(rotate);
     }
 
 }

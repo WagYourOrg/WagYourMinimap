@@ -27,6 +27,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @SuppressWarnings("rawtypes")
 public abstract class AbstractMinimapStyle<T extends AbstractMinimapRenderer> {
+    public final boolean rotate;
+
     public Map<Class<? extends AbstractMinimapOverlay>, Class<? extends AbstractOverlaySettings>> availableOverlays = new ConcurrentHashMap<>();
 
     public Map<Class<? extends AbstractImageStrategy>, Class<? extends AbstractLayerOptions>> availableLayers = new ConcurrentHashMap<>();
@@ -37,7 +39,11 @@ public abstract class AbstractMinimapStyle<T extends AbstractMinimapRenderer> {
     @Setting(value = "gui.wagyourminimap.settings.style.layers", options = "layerOptions", setter = "setLayers")
     public AbstractLayerOptions<?>[] layers;
 
-    public AbstractMinimapStyle() {
+    /**
+     * @param rotate should be filled in by a subclass, value being if style should rotate the map.
+     */
+    protected AbstractMinimapStyle(boolean rotate) {
+        this.rotate = rotate;
         // default layers
         layers = new AbstractLayerOptions[] {new VanillaMapLayer(), new LightLayer()};
 

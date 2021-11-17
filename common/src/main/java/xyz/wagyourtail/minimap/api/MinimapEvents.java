@@ -6,9 +6,11 @@ import xyz.wagyourtail.minimap.chunkdata.ChunkData;
 import xyz.wagyourtail.minimap.chunkdata.ChunkLocation;
 import xyz.wagyourtail.minimap.chunkdata.parts.DataPart;
 import xyz.wagyourtail.minimap.chunkdata.updater.AbstractChunkUpdateStrategy;
+import xyz.wagyourtail.minimap.map.MapServer;
 import xyz.wagyourtail.minimap.waypoint.Waypoint;
 
 public class MinimapEvents {
+    public static final Event<MapServerChanged> MAP_SERVER_CHANGED = EventFactory.createLoop();
     public static final Event<ChunkUpdated> CHUNK_UPDATED = EventFactory.createLoop();
     public static final Event<WaypointAdded> WAYPOINT_ADDED = EventFactory.createLoop();
     public static final Event<WaypointRemoved> WAYPOINT_REMOVED = EventFactory.createLoop();
@@ -32,6 +34,10 @@ public class MinimapEvents {
     public interface WaypointUpdated {
         void onWaypoint(Waypoint old_waypoint, Waypoint new_waypoint);
 
+    }
+
+    public interface MapServerChanged {
+        void onMapServerChanged(MapServer oldServer, MapServer newServer);
     }
 
 }

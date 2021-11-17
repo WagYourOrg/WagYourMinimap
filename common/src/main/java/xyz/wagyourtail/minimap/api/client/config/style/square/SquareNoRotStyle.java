@@ -10,7 +10,7 @@ import xyz.wagyourtail.minimap.client.gui.hud.map.SquareMapRenderer;
 @SettingsContainer("gui.wagyourminimap.settings.square_norot_style")
 public class SquareNoRotStyle extends AbstractSquareStyle {
     public SquareNoRotStyle() {
-        super();
+        super(false);
 
         //default overlays
         overlays = new AbstractOverlaySettings[] {
@@ -22,7 +22,7 @@ public class SquareNoRotStyle extends AbstractSquareStyle {
 
     @Override
     protected SquareMapRenderer getMapRenderer() {
-        return new SquareMapRenderer(false);
+        return new SquareMapRenderer(rotate);
     }
 
 }

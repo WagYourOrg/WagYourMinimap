@@ -7,8 +7,8 @@ import xyz.wagyourtail.minimap.client.gui.hud.overlay.CircleMapBorderOverlay;
 
 public abstract class AbstractCircleStyle extends AbstractMinimapStyle<CircleMapRenderer> {
 
-    public AbstractCircleStyle() {
-        super();
+    protected AbstractCircleStyle(boolean rotate) {
+        super(rotate);
         availableOverlays.put(CircleMapBorderOverlay.class, SquareMapBorderOverlaySettings.class);
     }
 

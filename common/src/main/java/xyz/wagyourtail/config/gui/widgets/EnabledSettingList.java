@@ -15,9 +15,13 @@ import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
+import xyz.wagyourtail.config.field.Setting;
 import xyz.wagyourtail.config.field.SettingsContainer;
 import xyz.wagyourtail.config.gui.ArrayScreen;
 import xyz.wagyourtail.config.gui.SettingScreen;
+
+import java.lang.reflect.Modifier;
+import java.util.Arrays;
 
 public class EnabledSettingList<T> extends ObjectSelectionList<EnabledSettingList.EnabledSettingEntry<T>> {
 
@@ -76,6 +80,7 @@ public class EnabledSettingList<T> extends ObjectSelectionList<EnabledSettingLis
         private final EnabledSettingList<T> parent;
         private final Component name;
         public final T option;
+        private final boolean hasSubSettings;
 
         public EnabledSettingEntry(Minecraft minecraft, EntryController<T> parentScreen, EnabledSettingList<T> parent, T option, Component name) {
             this.minecraft = minecraft;
@@ -83,6 +88,9 @@ public class EnabledSettingList<T> extends ObjectSelectionList<EnabledSettingLis
             this.parent = parent;
             this.option = option;
             this.name = name;
+
+            this.hasSubSettings = option.getClass().isAnnotationPresent(SettingsContainer.class) && Arrays.stream(option.getClass().getFields()).anyMatch(e -> e.isAnnotationPresent(
+                Setting.class) || (Modifier.isFinal(e.getModifiers()) && e.isAnnotationPresent(SettingsContainer.class)));
         }
 
         @Override
@@ -128,7 +136,7 @@ public class EnabledSettingList<T> extends ObjectSelectionList<EnabledSettingLis
                 0xFFFFFF
             );
 
-            if (option.getClass().isAnnotationPresent(SettingsContainer.class)) {
+            if (hasSubSettings) {
                 RenderSystem.setShader(GameRenderer::getPositionTexShader);
                 RenderSystem.setShaderTexture(0, WIDGETS_LOCATION);
                 RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
@@ -169,8 +177,7 @@ public class EnabledSettingList<T> extends ObjectSelectionList<EnabledSettingLis
                     return true;
                 }
             }
-            if (d > parent.getRowWidth() - 40 && e > 6 && e < 26 && d < parent.getRowWidth() - 20 &&
-                option.getClass().isAnnotationPresent(SettingsContainer.class)) {
+            if (d > parent.getRowWidth() - 40 && e > 6 && e < 26 && d < parent.getRowWidth() - 20 && hasSubSettings) {
                 minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
                 ((ArrayScreen<T, T>) parentScreen).applyValue();
                 minecraft.setScreen(new SettingScreen(

@@ -10,7 +10,7 @@ import xyz.wagyourtail.minimap.client.gui.hud.map.CircleMapRenderer;
 @SettingsContainer("gui.wagyourminimap.settings.circle_rot_style")
 public class CircleNoRotStyle extends AbstractCircleStyle {
     public CircleNoRotStyle() {
-        super();
+        super(false);
 
         overlays = new AbstractOverlaySettings[] {
             new CircleMapBorderOverlaySettings(),
@@ -22,7 +22,7 @@ public class CircleNoRotStyle extends AbstractCircleStyle {
 
     @Override
     protected CircleMapRenderer getMapRenderer() {
-        return new CircleMapRenderer(false);
+        return new CircleMapRenderer(rotate);
     }
 
 }
