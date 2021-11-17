@@ -54,7 +54,7 @@ public abstract class AbstractMinimapStyle<T extends AbstractMinimapRenderer> {
         //overlay register
         availableOverlays.put(PlayerArrowOverlay.class, ArrowOverlaySettings.class);
         availableOverlays.put(WaypointOverlay.class, WaypointOverlaySettings.class);
-        MinimapClientEvents.AVAILABLE_MINIMAP_OPTIONS.invoker().onLayers(this.getClass(), availableLayers, availableOverlays);
+        MinimapClientEvents.AVAILABLE_MINIMAP_OPTIONS.invoker().onOptions(this, availableLayers, availableOverlays);
     }
 
     public Collection<Class<? extends AbstractOverlaySettings>> overlayOptions() {
