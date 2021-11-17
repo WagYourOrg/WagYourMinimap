@@ -36,7 +36,7 @@ public class WaypointEditScreen extends Screen {
     protected EditBox groups;
     protected EditBox dims;
     protected EditBox extra;
-    protected Set<String> realDims = MinimapApi.getInstance().getMapServer().currentLevelNameSupplier.availableLevels.get();
+    protected Set<String> realDims = MinimapApi.getInstance().getMapServer().currentLevelNameSupplier.getAvailableLevels();
     protected List<Component> sideText;
     protected boolean canceled = false;
 
