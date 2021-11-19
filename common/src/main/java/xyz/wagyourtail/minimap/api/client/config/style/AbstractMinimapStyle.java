@@ -7,12 +7,14 @@ import xyz.wagyourtail.minimap.api.client.config.layers.LightLayer;
 import xyz.wagyourtail.minimap.api.client.config.layers.VanillaMapLayer;
 import xyz.wagyourtail.minimap.api.client.config.overlay.AbstractOverlaySettings;
 import xyz.wagyourtail.minimap.api.client.config.overlay.ArrowOverlaySettings;
+import xyz.wagyourtail.minimap.api.client.config.overlay.MobIconOverlaySettings;
 import xyz.wagyourtail.minimap.api.client.config.overlay.WaypointOverlaySettings;
 import xyz.wagyourtail.minimap.client.gui.MapRendererBuilder;
 import xyz.wagyourtail.minimap.client.gui.hud.InGameHud;
 import xyz.wagyourtail.minimap.client.gui.hud.map.AbstractMinimapRenderer;
 import xyz.wagyourtail.minimap.client.gui.hud.map.WaypointOverlay;
 import xyz.wagyourtail.minimap.client.gui.hud.overlay.AbstractMinimapOverlay;
+import xyz.wagyourtail.minimap.client.gui.hud.overlay.MobIconOverlay;
 import xyz.wagyourtail.minimap.client.gui.hud.overlay.PlayerArrowOverlay;
 import xyz.wagyourtail.minimap.map.image.AbstractImageStrategy;
 import xyz.wagyourtail.minimap.map.image.BlockLightImageStrategy;
@@ -54,6 +56,7 @@ public abstract class AbstractMinimapStyle<T extends AbstractMinimapRenderer> {
         //overlay register
         availableOverlays.put(PlayerArrowOverlay.class, ArrowOverlaySettings.class);
         availableOverlays.put(WaypointOverlay.class, WaypointOverlaySettings.class);
+        availableOverlays.put(MobIconOverlay.class, MobIconOverlaySettings.class);
         MinimapClientEvents.AVAILABLE_MINIMAP_OPTIONS.invoker().onOptions(this, availableLayers, availableOverlays);
     }
 
