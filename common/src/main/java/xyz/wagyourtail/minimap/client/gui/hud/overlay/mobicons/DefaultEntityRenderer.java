@@ -2,7 +2,6 @@ package xyz.wagyourtail.minimap.client.gui.hud.overlay.mobicons;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.GlowSquid;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ambient.Bat;
@@ -20,12 +19,15 @@ import net.minecraft.world.entity.npc.WanderingTrader;
 import org.jetbrains.annotations.Nullable;
 import xyz.wagyourtail.minimap.client.gui.AbstractMapRenderer;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class DefaultEntityRenderer extends AbstractEntityRenderer<LivingEntity> {
     private static final EntityHeadOffset defaultOffset = new EntityHeadOffset(64, 32, 8, 8, 8, 8);
     private static final Map<Class<? extends LivingEntity>, EntityHeadOffset> texMap = new HashMap<>();
+    private static List<Pair<Class<? extends LivingEntity>, EntityHeadOffset>> texOrdered = new ArrayList<>();
 
     static {
         register(Axolotl.class, 64, 64, 5, 6, 8, 5);
@@ -34,7 +36,7 @@ public class DefaultEntityRenderer extends AbstractEntityRenderer<LivingEntity> 
         register(Bee.class, 64, 64, 10, 10, 7, 7);
         register(Blaze.class, 64, 64, 8, 8, 8, 8);
         register(Cat.class, 64, 32, 5, 5, 5, 4);
-        register(Chicken.class, 64, 32, 3, 3, 5, 5);
+        register(Chicken.class, 64, 32, 3, 3, 4, 5);
         register(Cow.class, 64, 32, 6, 6, 8, 8);
         register(Creeper.class, 64, 32, 8, 8, 8, 8);
         //TODO: custom renderer for dolphin
@@ -80,7 +82,7 @@ public class DefaultEntityRenderer extends AbstractEntityRenderer<LivingEntity> 
         register(AbstractPiglin.class, 64, 64, 8, 8, 8, 8);
 
         //TODO: custom renderer for rabbit
-        register(Sheep.class, 64, 32, 6, 8, 8, 6);
+        register(Sheep.class, 64, 32, 7, 8, 8, 6);
         //TODO: custom renderer for shulker
         //TODO: custom renderer for silverfish
         register(Skeleton.class, 64, 32, 8, 8, 8, 8);
@@ -126,15 +128,32 @@ public class DefaultEntityRenderer extends AbstractEntityRenderer<LivingEntity> 
         register(LivingEntity.class, 64, 32, 8, 8, 8, 8);
     }
 
-    public static EntityHeadOffset register(Class<? extends LivingEntity> entity, @Nullable DefaultEntityRenderer.EntityHeadOffset tex) {
+    public synchronized static EntityHeadOffset register(Class<? extends LivingEntity> entity, @Nullable EntityHeadOffset tex) {
+        texOrdered.removeIf(e -> e.t == entity);
         if (tex == null) {
             return texMap.remove(entity);
         }
+        texOrdered.add(new Pair<>(entity, tex));
         return texMap.put(entity, tex);
     }
 
-    public static EntityHeadOffset register(Class<? extends LivingEntity> entity, int width, int height, float u, float v, float w, float h) {
-        return texMap.put(entity, new EntityHeadOffset(width, height, u, v, w, h));
+    public synchronized static EntityHeadOffset register(Class<? extends LivingEntity> entity, int width, int height, float u, float v, float w, float h) {
+        texOrdered.removeIf(e -> e.t == entity);
+        EntityHeadOffset tex = new EntityHeadOffset(width, height, u, v, w, h);
+        texOrdered.add(new Pair<>(entity, tex));
+        return texMap.put(entity, tex);
+    }
+
+    public synchronized static EntityHeadOffset registerBefore(Class<? extends LivingEntity> before, Class<? extends LivingEntity> entity, int width, int height, float u, float v, float w, float h) {
+        texOrdered.removeIf(e -> e.t == entity);
+        EntityHeadOffset tex = new EntityHeadOffset(width, height, u, v, w, h);
+        texOrdered.add(
+            texOrdered.stream()
+                .filter(e -> e.t == before).findFirst()
+                .map(e -> texOrdered.indexOf(e)).orElse(texOrdered.size()),
+            new Pair<>(entity, tex)
+        );
+        return texMap.put(entity, tex);
     }
 
     @Override
@@ -144,22 +163,28 @@ public class DefaultEntityRenderer extends AbstractEntityRenderer<LivingEntity> 
 
     @Override
     public void render(PoseStack stack, LivingEntity entity, float maxSize) {
-        for (Map.Entry<Class<? extends LivingEntity>, DefaultEntityRenderer.EntityHeadOffset> entry : texMap.entrySet()) {
-            if (entry.getKey().isAssignableFrom(entity.getClass())) {
-                EntityHeadOffset offset = entry.getValue();
+        for (Pair<Class<? extends LivingEntity>, DefaultEntityRenderer.EntityHeadOffset> entry : texOrdered) {
+            if (entry.t.isAssignableFrom(entity.getClass())) {
                 // draw tex centered
-                RenderSystem.setShaderTexture(0, Minecraft.getInstance().getEntityRenderDispatcher().getRenderer(entity).getTextureLocation(entity));
-                if (offset.h < offset.w) {
-                    float diff = (offset.w - offset.h) / maxSize;
-                    AbstractMapRenderer.drawTex(stack, diff / 2, 0, maxSize - diff, maxSize, offset.u / offset.width, offset.v / offset.height, (offset.u + offset.w) / offset.width, (offset.v + offset.h) / offset.height);
-                } else {
-                    float diff = (offset.h - offset.w) / maxSize;
-                    AbstractMapRenderer.drawTex(stack, 0, diff / 2, maxSize, maxSize - diff, offset.u / offset.width, offset.v / offset.height, (offset.u + offset.w) / offset.width, (offset.v + offset.h) / offset.height);
-                }
+                RenderSystem.setShaderTexture(0, minecraft.getEntityRenderDispatcher().getRenderer(entity).getTextureLocation(entity));
+                entry.u.render(stack, maxSize);
                 return;
             }
         }
     }
 
-    public static record EntityHeadOffset(int width, int height, float u, float v, float w, float h) {}
+    public static record EntityHeadOffset(int width, int height, float u, float v, float w, float h) {
+        public void render(PoseStack stack, float maxSize) {
+            stack.translate(-maxSize / 2, -maxSize / 2, 1);
+            if (h < w) {
+                float diff = (w - h) / maxSize;
+                AbstractMapRenderer.drawTex(stack, diff / 2, 0, maxSize - diff, maxSize, u / width, v / height, (u + w) / width, (v + h) / height);
+            } else {
+                float diff = (h - w) / maxSize;
+                AbstractMapRenderer.drawTex(stack, 0, diff / 2, maxSize, maxSize - diff, u / width, v / height, (u + w) / width, (v + h) / height);
+            }
+        }
+    }
+
+    public static record Pair<T, U>(T t, U u) {};
 }

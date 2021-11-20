@@ -11,12 +11,16 @@ import xyz.wagyourtail.minimap.api.client.config.MinimapClientConfig;
 import xyz.wagyourtail.minimap.client.gui.hud.map.AbstractMinimapRenderer;
 import xyz.wagyourtail.minimap.client.gui.hud.overlay.mobicons.AbstractEntityRenderer;
 import xyz.wagyourtail.minimap.client.gui.hud.overlay.mobicons.DefaultEntityRenderer;
+import xyz.wagyourtail.minimap.client.gui.hud.overlay.mobicons.MultiComponentRenderer;
+import xyz.wagyourtail.minimap.client.gui.hud.overlay.mobicons.PlayerEntityRenderer;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MobIconOverlay extends AbstractMinimapOverlay {
     public static final List<AbstractEntityRenderer<?>> availableMobIconRenderers = new ArrayList<>(List.of(
+        new PlayerEntityRenderer(),
+        new MultiComponentRenderer(),
         new DefaultEntityRenderer()
     ));
 
@@ -50,8 +54,8 @@ public class MobIconOverlay extends AbstractMinimapOverlay {
                     continue;
                 }
                 stack.translate(
-                    maxLength / 2 + pointVec.x * chunkScale / 16f - iconSize / 2,
-                    maxLength / 2 + pointVec.z * chunkScale / 16f - iconSize / 2,
+                    maxLength / 2 + pointVec.x * chunkScale / 16f,
+                    maxLength / 2 + pointVec.z * chunkScale / 16f,
                     0
                 );
                 renderEntity(stack, le, iconSize);
