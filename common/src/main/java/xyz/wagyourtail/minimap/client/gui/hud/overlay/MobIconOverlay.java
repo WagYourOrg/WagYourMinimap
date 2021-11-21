@@ -9,14 +9,16 @@ import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
 import xyz.wagyourtail.minimap.api.client.config.MinimapClientConfig;
 import xyz.wagyourtail.minimap.client.gui.hud.map.AbstractMinimapRenderer;
 import xyz.wagyourtail.minimap.client.gui.hud.overlay.mobicons.AbstractEntityRenderer;
-import xyz.wagyourtail.minimap.client.gui.hud.overlay.mobicons.MultiComponentRenderer;
+import xyz.wagyourtail.minimap.client.gui.hud.overlay.mobicons.JSONEntityRenderer;
+import xyz.wagyourtail.minimap.client.gui.hud.overlay.mobicons.VanillaEntityRenderer;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MobIconOverlay extends AbstractMinimapOverlay {
     public static final List<AbstractEntityRenderer<?>> availableMobIconRenderers = new ArrayList<>(List.of(
-        new MultiComponentRenderer()
+        new JSONEntityRenderer(),
+        new VanillaEntityRenderer()
     ));
 
     public MobIconOverlay(AbstractMinimapRenderer parent) {
