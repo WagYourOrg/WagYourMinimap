@@ -1,7 +1,6 @@
 package xyz.wagyourtail.minimap.client.gui.hud.overlay;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
@@ -10,18 +9,14 @@ import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
 import xyz.wagyourtail.minimap.api.client.config.MinimapClientConfig;
 import xyz.wagyourtail.minimap.client.gui.hud.map.AbstractMinimapRenderer;
 import xyz.wagyourtail.minimap.client.gui.hud.overlay.mobicons.AbstractEntityRenderer;
-import xyz.wagyourtail.minimap.client.gui.hud.overlay.mobicons.DefaultEntityRenderer;
 import xyz.wagyourtail.minimap.client.gui.hud.overlay.mobicons.MultiComponentRenderer;
-import xyz.wagyourtail.minimap.client.gui.hud.overlay.mobicons.PlayerEntityRenderer;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MobIconOverlay extends AbstractMinimapOverlay {
     public static final List<AbstractEntityRenderer<?>> availableMobIconRenderers = new ArrayList<>(List.of(
-        new PlayerEntityRenderer(),
-        new MultiComponentRenderer(),
-        new DefaultEntityRenderer()
+        new MultiComponentRenderer()
     ));
 
     public MobIconOverlay(AbstractMinimapRenderer parent) {
