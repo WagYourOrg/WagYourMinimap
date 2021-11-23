@@ -20,9 +20,13 @@ public class MobIconOverlay extends AbstractMinimapOverlay {
         new JSONEntityRenderer(),
         new VanillaEntityRenderer()
     ));
+    public final float maxSizeScale;
+    public final int maxSize;
 
-    public MobIconOverlay(AbstractMinimapRenderer parent) {
+    public MobIconOverlay(AbstractMinimapRenderer parent, float maxSizeScale, int maxSize) {
         super(parent);
+        this.maxSizeScale = maxSizeScale;
+        this.maxSize = maxSize;
     }
 
     @Override
@@ -31,7 +35,7 @@ public class MobIconOverlay extends AbstractMinimapOverlay {
         int chunkDiam = chunkRadius * 2 - 1;
         float chunkScale = maxLength / ((float) chunkDiam - 1);
 
-        float iconSize = Math.min(10, maxLength / 15);
+        float iconSize = Math.min(maxSizeScale * maxLength, maxSize);
 
         assert minecraft.level != null;
         for (Entity e : minecraft.level.entitiesForRendering()) {
