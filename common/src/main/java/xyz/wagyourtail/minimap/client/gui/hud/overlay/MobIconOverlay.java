@@ -3,6 +3,7 @@ package xyz.wagyourtail.minimap.client.gui.hud.overlay;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
@@ -25,11 +26,11 @@ public class MobIconOverlay extends AbstractMinimapOverlay {
     public final int maxSize;
     public final Predicate<LivingEntity> filter;
 
-    public MobIconOverlay(AbstractMinimapRenderer parent, float maxSizeScale, int maxSize, Predicate<LivingEntity> filter) {
+    public MobIconOverlay(AbstractMinimapRenderer parent, float maxSizeScale, int maxSize, Predicate<LivingEntity> filter, boolean players) {
         super(parent);
         this.maxSizeScale = maxSizeScale;
         this.maxSize = maxSize;
-        this.filter = filter;
+        this.filter = players ? filter.or(e -> e instanceof Player) : filter;
     }
 
     @Override

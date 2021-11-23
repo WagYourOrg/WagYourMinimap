@@ -31,13 +31,16 @@ public class MobIconOverlaySettings extends AbstractOverlaySettings<MobIconOverl
     @Setting(value = "gui.wagyourminimap.settings.overlay.mob_icon.filter", options = "getMobFilters")
     public AbstractMobIconFilterSettings filter = new HostileMobFilterSettings();
 
+    @Setting(value = "gui.wagyourminimap.settings.overlay.mob_icon.show_players")
+    public boolean showPlayers = true;
+
     public List<Class<? extends AbstractMobIconFilterSettings>> getMobFilters() {
         return mobFilters;
     }
 
     @Override
     public MobIconOverlay compileOverlay(AbstractMinimapRenderer mapRenderer) {
-        return new MobIconOverlay(mapRenderer, (float) maxScale, maxSize, filter.compileFilter());
+        return new MobIconOverlay(mapRenderer, (float) maxScale, maxSize, filter.compileFilter(), showPlayers);
     }
 
 }

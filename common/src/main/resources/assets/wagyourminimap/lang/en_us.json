@@ -38,6 +38,7 @@
     "gui.wagyourminimap.settings.overlay.mob_icon.max_scale": "Max Scale",
     "gui.wagyourminimap.settings.overlay.mob_icon.max_size": "Max Size",
     "gui.wagyourminimap.settings.overlay.mob_icon.filter": "Mob Filter: ",
+    "gui.wagyourminimap.settings.overlay.mob_icon.show_players": "Show Players",
     "gui.wagyourminimap.settings.mob_icon.filter.all": "All",
     "gui.wagyourminimap.settings.mob_icon.filter.hostile": "Hostile",
     "gui.wagyourminimap.settings.mob_icon.filter.hostile_neutral": "Hostile + Neutral",

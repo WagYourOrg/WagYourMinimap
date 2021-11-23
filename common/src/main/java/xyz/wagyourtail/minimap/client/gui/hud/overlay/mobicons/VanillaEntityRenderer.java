@@ -228,6 +228,9 @@ public class VanillaEntityRenderer extends AbstractEntityRenderer<LivingEntity> 
                     public void render(PoseStack stack, Player entity, float maxSize) {
                         if (entity == minecraft.getCameraEntity()) return; // don't render the controlled entity, it's already the arrow
                         super.render(stack, entity, maxSize);
+                        stack.translate(maxSize / 2, maxSize, 0);
+                        stack.scale(.5f, .5f, 1);
+                        minecraft.font.draw(stack, entity.getDisplayName(), -minecraft.font.width(entity.getDisplayName()) / 2f, 10, 0xFFFFFF);
                     }
                 }
             );
