@@ -32,12 +32,10 @@ public abstract class AbstractEntityRenderer<T extends LivingEntity> {
             this.parts = parts;
         }
 
-        public void bindTex(T entity) {
-            RenderSystem.setShaderTexture(0, minecraft.getEntityRenderDispatcher().getRenderer(entity).getTextureLocation(entity));
-        }
-
         public void render(PoseStack stack, T entity, float maxSize, double yDiff) {
-            if (Math.abs(yDiff) >= 1) return; // don't render if too far away on y axis
+            if (Math.abs(yDiff) >= 1) {
+                return; // don't render if too far away on y axis
+            }
             float minX = Float.POSITIVE_INFINITY;
             float maxX = Float.NEGATIVE_INFINITY;
             float minY = Float.POSITIVE_INFINITY;
@@ -114,6 +112,14 @@ public abstract class AbstractEntityRenderer<T extends LivingEntity> {
                 BufferUploader.end(builder);
             }
         }
+
+        public void bindTex(T entity) {
+            RenderSystem.setShaderTexture(
+                0,
+                minecraft.getEntityRenderDispatcher().getRenderer(entity).getTextureLocation(entity)
+            );
+        }
+
     }
 
     public static class Part<T extends LivingEntity> {
@@ -140,13 +146,25 @@ public abstract class AbstractEntityRenderer<T extends LivingEntity> {
         public void render(Matrix4f matrix, BufferBuilder builder, double fadeDiff, float xdiff, float ydiff, float scale, int texWidth, int texHeight) {
             int abgr;
             if (fadeDiff < 0) {
-                int col = (int)((1+fadeDiff) * 0xFF);
+                int col = (int) ((1 + fadeDiff) * 0xFF);
                 abgr = col << 24 | col << 16 | col << 8 | col;
             } else {
-                int col = (int)((1-fadeDiff) * 0xFF);
+                int col = (int) ((1 - fadeDiff) * 0xFF);
                 abgr = col << 24 | 0xFFFFFF;
             }
-            drawTexCol(matrix, builder, (x + xdiff) * scale, (y + ydiff) * scale, w * scale, h * scale, ux / texWidth, vy / texHeight, (ux + uw) / texWidth, (vy + vh) / texHeight, abgr);
+            drawTexCol(
+                matrix,
+                builder,
+                (x + xdiff) * scale,
+                (y + ydiff) * scale,
+                w * scale,
+                h * scale,
+                ux / texWidth,
+                vy / texHeight,
+                (ux + uw) / texWidth,
+                (vy + vh) / texHeight,
+                abgr
+            );
         }
 
         public static void drawTexCol(Matrix4f matrix, BufferBuilder builder, float x, float y, float width, float height, float startU, float startV, float endU, float endV, int abgr) {
@@ -154,10 +172,10 @@ public abstract class AbstractEntityRenderer<T extends LivingEntity> {
             float b = (abgr >> 16 & 255) / 255f;
             float g = (abgr >> 8 & 255) / 255f;
             float r = (abgr & 255) / 255f;
-            builder.vertex(matrix, x, y + height, 0).color(r,g,b,a).uv(startU, endV).endVertex();
-            builder.vertex(matrix, x + width, y + height, 0).color(r,g,b,a).uv(endU, endV).endVertex();
-            builder.vertex(matrix, x + width, y, 0).color(r,g,b,a).uv(endU, startV).endVertex();
-            builder.vertex(matrix, x, y, 0).color(r,g,b,a).uv(startU, startV).endVertex();
+            builder.vertex(matrix, x, y + height, 0).color(r, g, b, a).uv(startU, endV).endVertex();
+            builder.vertex(matrix, x + width, y + height, 0).color(r, g, b, a).uv(endU, endV).endVertex();
+            builder.vertex(matrix, x + width, y, 0).color(r, g, b, a).uv(endU, startV).endVertex();
+            builder.vertex(matrix, x, y, 0).color(r, g, b, a).uv(startU, startV).endVertex();
         }
 
     }
@@ -177,6 +195,7 @@ public abstract class AbstractEntityRenderer<T extends LivingEntity> {
 
     }
 
-    public static record Pair<T, U>(T t, U u) {}
+    public static record Pair<T, U>(T t, U u) {
+    }
 
 }

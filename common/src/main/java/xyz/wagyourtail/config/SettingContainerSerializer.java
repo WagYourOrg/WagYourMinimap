@@ -110,7 +110,8 @@ public class SettingContainerSerializer {
 
     /**
      * @param element to serialize
-     * @param field field with settings/getter/setter and other stuff (might actually not be type parameter, but it's ok at runtime)
+     * @param field field with settings/getter/setter and other stuff (might actually not be type parameter, but
+     *     it's ok at runtime)
      * @param <T> type of field
      *
      * @throws ClassNotFoundException
@@ -120,7 +121,9 @@ public class SettingContainerSerializer {
      * @throws IllegalAccessException
      */
     private static <T> void deserializeField(JsonElement element, SettingField<T> field) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-        Class<T> fieldClass = field.setting.useFunctionsToSerialize() ? field.fieldType : (Class<T>) field.getRawField().getType();
+        Class<T> fieldClass = field.setting.useFunctionsToSerialize() ?
+            field.fieldType :
+            (Class<T>) field.getRawField().getType();
         if (fieldClass.equals(char.class) || fieldClass.equals(Character.class)) {
             setField(field, (T) (Character) element.getAsCharacter());
         } else if (fieldClass.equals(boolean.class) || fieldClass.equals(Boolean.class)) {
@@ -145,9 +148,10 @@ public class SettingContainerSerializer {
             setField(field, (T) array.toArray((Object[]) Array.newInstance(arrElementClass, 0)));
         } else if (Map.class.isAssignableFrom(fieldClass)) {
             JsonObject map = element.getAsJsonObject();
-            Map<String, Object> mapObj = field.setting.overrideType() != void.class && Map.class.isAssignableFrom(field.setting.overrideType()) ?
-                (Map<String, Object>) field.setting.overrideType().getConstructor().newInstance() :
-                new HashMap<>();
+            Map<String, Object> mapObj =
+                field.setting.overrideType() != void.class && Map.class.isAssignableFrom(field.setting.overrideType()) ?
+                    (Map<String, Object>) field.setting.overrideType().getConstructor().newInstance() :
+                    new HashMap<>();
             for (Map.Entry<String, JsonElement> entry : map.entrySet()) {
                 try {
                     mapObj.put(entry.getKey(), deserializeArrayField(entry.getValue(), field.setting.elementType()));
@@ -158,7 +162,8 @@ public class SettingContainerSerializer {
         } else if (Collection.class.isAssignableFrom(fieldClass)) {
             JsonArray arr = element.getAsJsonArray();
             if (Set.class.isAssignableFrom(fieldClass)) {
-                Set<Object> set = field.setting.overrideType() != void.class && Set.class.isAssignableFrom(field.setting.overrideType()) ?
+                Set<Object> set = field.setting.overrideType() != void.class &&
+                    Set.class.isAssignableFrom(field.setting.overrideType()) ?
                     (Set<Object>) field.setting.overrideType().getConstructor().newInstance() :
                     new HashSet<>();
                 for (JsonElement jsonElement : arr) {
@@ -169,7 +174,8 @@ public class SettingContainerSerializer {
                     }
                 }
             } else if (List.class.isAssignableFrom(fieldClass)) {
-                List<Object> list = field.setting.overrideType() != void.class && List.class.isAssignableFrom(field.setting.overrideType()) ?
+                List<Object> list = field.setting.overrideType() != void.class &&
+                    List.class.isAssignableFrom(field.setting.overrideType()) ?
                     (List<Object>) field.setting.overrideType().getConstructor().newInstance() :
                     new ArrayList<>();
                 for (JsonElement jsonElement : arr) {
@@ -192,10 +198,11 @@ public class SettingContainerSerializer {
     }
 
     private static <T> void setField(SettingField<T> field, T value) throws IllegalAccessException, InvocationTargetException {
-        if (field.setting.useFunctionsToSerialize())
+        if (field.setting.useFunctionsToSerialize()) {
             field.set(value);
-        else
+        } else {
             field.getRawField().set(field.getRawParent(), value);
+        }
     }
 
     private static <T> T deserializeArrayField(JsonElement element, Class<T> fieldClass) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {

@@ -74,7 +74,9 @@ public class MobIconOverlay extends AbstractMinimapOverlay {
 
     public void renderEntity(PoseStack stack, LivingEntity e, float maxIconSize, double yDiff) {
         for (AbstractEntityRenderer<?> renderer : availableMobIconRenderers) {
-            if (renderEntityInner(stack, renderer, e, maxIconSize, yDiff)) return;
+            if (renderEntityInner(stack, renderer, e, maxIconSize, yDiff)) {
+                return;
+            }
         }
     }
 

@@ -15,26 +15,27 @@ public class VanillaLevelSupplier extends LevelSupplier {
     protected VanillaLevelSupplier() {
     }
 
-    public static String getLevelName(ResourceKey<Level> dimension) {
-        return dimension.location().toString().replace(":", "/");
-    }
-
     @Override
     public String get() {
         assert mc.level != null;
         return getLevelName(mc.level);
     }
 
+    public static String getLevelName(Level level) {
+        return getLevelName(level.dimension());
+    }
+
+    public static String getLevelName(ResourceKey<Level> dimension) {
+        return dimension.location().toString().replace(":", "/");
+    }
+
     @Override
     public Set<String> getAvailableLevels() {
         ClientPacketListener listener = mc.getConnection();
-        if (listener == null) return ImmutableSet.of();
+        if (listener == null) {
+            return ImmutableSet.of();
+        }
         return listener.levels().stream().map(VanillaLevelSupplier::getLevelName).collect(Collectors.toSet());
-    }
-
-
-    public static String getLevelName(Level level) {
-        return getLevelName(level.dimension());
     }
 
 }

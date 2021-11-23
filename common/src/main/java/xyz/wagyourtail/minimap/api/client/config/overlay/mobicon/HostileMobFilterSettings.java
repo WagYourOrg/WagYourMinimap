@@ -7,7 +7,7 @@ import xyz.wagyourtail.config.field.SettingsContainer;
 import java.util.function.Predicate;
 
 @SettingsContainer("gui.wagyourminimap.settings.mob_icon.filter.hostile")
-public class HostileMobFilterSettings extends AbstractMobIconFilterSettings{
+public class HostileMobFilterSettings extends AbstractMobIconFilterSettings {
     @Override
     public Predicate<LivingEntity> compileFilter() {
         return (e) -> e instanceof Enemy;

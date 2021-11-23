@@ -3,17 +3,13 @@ package xyz.wagyourtail.minimap.api.client;
 import dev.architectury.event.Event;
 import dev.architectury.event.EventFactory;
 import net.minecraft.client.gui.components.Button;
-import xyz.wagyourtail.minimap.api.client.config.FullscreenMapConfig;
 import xyz.wagyourtail.minimap.api.client.config.layers.AbstractLayerOptions;
 import xyz.wagyourtail.minimap.api.client.config.overlay.AbstractOverlaySettings;
-import xyz.wagyourtail.minimap.api.client.config.overlay.fullscreen.AbstractFullscreenOverlaySettings;
 import xyz.wagyourtail.minimap.api.client.config.style.AbstractMinimapStyle;
 import xyz.wagyourtail.minimap.client.gui.hud.overlay.AbstractMinimapOverlay;
 import xyz.wagyourtail.minimap.client.gui.screen.WaypointListScreen;
-import xyz.wagyourtail.minimap.client.gui.screen.map.AbstractFullscreenOverlay;
 import xyz.wagyourtail.minimap.client.gui.screen.widget.InteractMenu;
 import xyz.wagyourtail.minimap.client.gui.screen.widget.MenuButton;
-import xyz.wagyourtail.minimap.map.MapServer;
 import xyz.wagyourtail.minimap.map.image.AbstractImageStrategy;
 
 import java.util.List;
@@ -42,5 +38,7 @@ public class MinimapClientEvents {
 
     public interface AvailableMinimapOptions {
         void onOptions(AbstractMinimapStyle style, Map<Class<? extends AbstractImageStrategy>, Class<? extends AbstractLayerOptions>> layers, Map<Class<? extends AbstractMinimapOverlay>, Class<? extends AbstractOverlaySettings>> overlays);
+
     }
+
 }

@@ -44,7 +44,14 @@ public class MobIconOverlaySettings extends AbstractOverlaySettings<MobIconOverl
 
     @Override
     public MobIconOverlay compileOverlay(AbstractMinimapRenderer mapRenderer) {
-        return new MobIconOverlay(mapRenderer, (float) maxScale, maxSize, filter.compileFilter(), showPlayers, yFadeDistance);
+        return new MobIconOverlay(
+            mapRenderer,
+            (float) maxScale,
+            maxSize,
+            filter.compileFilter(),
+            showPlayers,
+            yFadeDistance
+        );
     }
 
 }

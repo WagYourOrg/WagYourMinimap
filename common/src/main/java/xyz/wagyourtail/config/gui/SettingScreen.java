@@ -162,11 +162,11 @@ public class SettingScreen extends Screen {
                     }
                 );
 
-            //char
+                //char
             } else if (settingField.fieldType.equals(char.class) || settingField.fieldType.equals(Character.class)) {
                 throw new RuntimeException("CHAR NOT IMPLEMENTED YET!");
 
-            //number
+                //number
             } else if (settingField.fieldType.isPrimitive() || Number.class.isAssignableFrom(settingField.fieldType)) {
                 if (settingField.intRange != null) {
                     element = new Slider(
@@ -249,7 +249,7 @@ public class SettingScreen extends Screen {
                     }
                 }
 
-            //string
+                //string
             } else if (settingField.fieldType.equals(String.class)) {
                 if (settingField.options() != null) {
                     MutableComponent title = new TranslatableComponent(settingField.setting.value());
@@ -289,7 +289,7 @@ public class SettingScreen extends Screen {
                     });
                 }
 
-            //enum
+                //enum
             } else if (settingField.fieldType.isEnum()) {
                 MutableComponent title = new TranslatableComponent(settingField.setting.value());
                 List<?> settings = settingField.options().stream().toList();
@@ -310,7 +310,7 @@ public class SettingScreen extends Screen {
                     }
                 );
 
-            //array
+                //array
             } else if (settingField.fieldType.isArray()) {
                 element = new Button(
                     x,
@@ -326,14 +326,14 @@ public class SettingScreen extends Screen {
                         ));
                     }
                 );
-            //map
+                //map
             } else if (Map.class.isAssignableFrom(settingField.fieldType)) {
                 throw new IllegalArgumentException("Map settings are not supported yet");
 
             } else if (Collection.class.isAssignableFrom(settingField.fieldType)) {
                 throw new IllegalArgumentException("Collection settings are not supported yet");
 
-            //object
+                //object
             } else {
                 MutableComponent title = new TranslatableComponent(settingField.setting.value());
                 List<Class<?>> settings = (List<Class<?>>) settingField.options().stream().toList();
@@ -360,8 +360,11 @@ public class SettingScreen extends Screen {
                                     .getAnnotation(SettingsContainer.class)
                                     .value())));
                             Object option = settingField.get();
-                            settingButton[0].visible = option.getClass().isAnnotationPresent(SettingsContainer.class) && Arrays.stream(option.getClass().getFields()).anyMatch(e -> e.isAnnotationPresent(
-                                Setting.class) || (Modifier.isFinal(e.getModifiers()) && e.isAnnotationPresent(SettingsContainer.class)));
+                            settingButton[0].visible = option.getClass().isAnnotationPresent(SettingsContainer.class) &&
+                                Arrays.stream(option.getClass().getFields()).anyMatch(e -> e.isAnnotationPresent(
+                                    Setting.class) || (
+                                    Modifier.isFinal(e.getModifiers()) && e.isAnnotationPresent(SettingsContainer.class)
+                                ));
                         } catch (InvocationTargetException | IllegalAccessException | NoSuchMethodException | InstantiationException e) {
                             e.printStackTrace();
                         }
@@ -386,8 +389,11 @@ public class SettingScreen extends Screen {
                     }
                 );
                 Object option = settingField.get();
-                settingButton[0].visible = option.getClass().isAnnotationPresent(SettingsContainer.class) && Arrays.stream(option.getClass().getFields()).anyMatch(e -> e.isAnnotationPresent(
-                    Setting.class) || (Modifier.isFinal(e.getModifiers()) && e.isAnnotationPresent(SettingsContainer.class)));
+                settingButton[0].visible =
+                    option.getClass().isAnnotationPresent(SettingsContainer.class) && Arrays.stream(option.getClass()
+                        .getFields()).anyMatch(e -> e.isAnnotationPresent(
+                        Setting.class) ||
+                        (Modifier.isFinal(e.getModifiers()) && e.isAnnotationPresent(SettingsContainer.class)));
             }
 
             if (!settingField.setting.enabled().equals("")) {

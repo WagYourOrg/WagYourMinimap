@@ -55,7 +55,10 @@ public abstract class MinimapApi {
 
     public synchronized MapServer getMapServer() {
         if (currentServer == null || !getServerName().equals(currentServer.server_slug)) {
-            MinimapEvents.MAP_SERVER_CHANGED.invoker().onMapServerChanged(currentServer, currentServer = new MapServer(getServerName()));
+            MinimapEvents.MAP_SERVER_CHANGED.invoker().onMapServerChanged(
+                currentServer,
+                currentServer = new MapServer(getServerName())
+            );
         }
         return currentServer;
     }

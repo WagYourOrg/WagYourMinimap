@@ -47,6 +47,7 @@ public @interface Setting {
     /**
      * setting gui should use this field type instead, this may require a getter/setter depending on the type
      * you can also use to specify a map/collection implementation, in which case it MUST be an implementation
+     *
      * @return type of field
      */
     Class<?> overrideType() default void.class;
@@ -55,4 +56,5 @@ public @interface Setting {
      * @return component type for Map Value and Collections
      */
     Class<?> elementType() default void.class;
+
 }

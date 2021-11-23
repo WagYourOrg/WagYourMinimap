@@ -1,7 +1,7 @@
 package xyz.wagyourtail.minimap.client.gui.hud.overlay.mobicons;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.*;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
@@ -38,19 +38,19 @@ public class VanillaEntityRenderer extends AbstractEntityRenderer<LivingEntity> 
 
     static {
         register(Axolotl.class, 64, 64, .7f,
-            part(0, 0,  8, 5,  5, 6,  8, 5)
+            part(0, 0, 8, 5, 5, 6, 8, 5)
         );
         register(PolarBear.class, 128, 64,
-            part(0, 0,  7, 7,  7, 7,  7, 7)
+            part(0, 0, 7, 7, 7, 7, 7, 7)
         );
         register(Bat.class, 64, 64, .5f,
-            part(0, 0,  6, 6,  6, 6,  6, 6)
+            part(0, 0, 6, 6, 6, 6, 6, 6)
         );
         register(Bee.class, 64, 64,
-            part(0, 0,  7, 7,  10, 10,  7, 7)
+            part(0, 0, 7, 7, 10, 10, 7, 7)
         );
         register(Blaze.class, 64, 64,
-            part(0, 0,  8, 8,  8, 8,  8, 8)
+            part(0, 0, 8, 8, 8, 8, 8, 8)
         );
 
         //cat
@@ -73,13 +73,13 @@ public class VanillaEntityRenderer extends AbstractEntityRenderer<LivingEntity> 
             );
         }
         register(Chicken.class, 64, 32, .7f,
-            part(0, 0,  4, 5,  3, 3,  4, 5)
+            part(0, 0, 4, 5, 3, 3, 4, 5)
         );
         register(Cow.class, 64, 32,
-            part(0, 0,  8, 8,  6, 6,  8, 8)
+            part(0, 0, 8, 8, 6, 6, 8, 8)
         );
         register(Creeper.class, 64, 32,
-            part(0, 0,  8, 8,  8, 8,  8, 8)
+            part(0, 0, 8, 8, 8, 8, 8, 8)
         );
         register(Dolphin.class, 64, 64,
             part(0, 0, 6, 7, 0, 6, 6, 7),
@@ -88,10 +88,10 @@ public class VanillaEntityRenderer extends AbstractEntityRenderer<LivingEntity> 
         );
         //TODO: better renderer for ender dragon
         register(EnderDragon.class, 256, 256,
-            part(0, 0,  16, 16,  128, 46,  16, 16)
+            part(0, 0, 16, 16, 128, 46, 16, 16)
         );
         register(EnderMan.class, 64, 32,
-            part(0, 0,  8, 8,  8, 8,  8, 8)
+            part(0, 0, 8, 8, 8, 8, 8, 8)
         );
         register(Endermite.class, 64, 32, .6f,
             part(0, 0, 4, 3, 2, 2, 4, 3)
@@ -120,19 +120,19 @@ public class VanillaEntityRenderer extends AbstractEntityRenderer<LivingEntity> 
 
 
         register(Fox.class, 48, 32,
-            part(0, 0,  8, 6,  11, 7,  8, 6)
+            part(0, 0, 8, 6, 11, 7, 8, 6)
         );
         register(Ghast.class, 64, 32,
-            part(0, 0,  16, 16,  16, 16,  16, 16)
+            part(0, 0, 16, 16, 16, 16, 16, 16)
         );
         register(Goat.class, 64, 64,
             part(0, 0, 10, 7, 34, 56, 10, 7)
         );
         register(Guardian.class, 64, 64,
-            part(0, 0,  12, 12,  16, 16,  12, 12)
+            part(0, 0, 12, 12, 16, 16, 12, 12)
         );
         register(Hoglin.class, 126, 64,
-            part(0, 0,  14, 19,  80, 1,  14, 19)
+            part(0, 0, 14, 19, 80, 1, 14, 19)
         );
 
         // horse/llama
@@ -177,10 +177,10 @@ public class VanillaEntityRenderer extends AbstractEntityRenderer<LivingEntity> 
 
 
         register(IronGolem.class, 128, 128,
-            part(0, 0,  8, 10,  8, 8,  8, 10)
+            part(0, 0, 8, 10, 8, 8, 8, 10)
         );
         register(Panda.class, 64, 64,
-            part(0, 0,  12, 10,  9, 15,  12, 10)
+            part(0, 0, 12, 10, 9, 15, 12, 10)
         );
         register(Parrot.class, 32, 32, .7f,
             part(0, 1, 2, 2, 2, 4, 2, 2),
@@ -189,10 +189,10 @@ public class VanillaEntityRenderer extends AbstractEntityRenderer<LivingEntity> 
 
         );
         register(Phantom.class, 64, 64,
-            part(0, 0,  7, 3,  5, 5,  7, 3)
+            part(0, 0, 7, 3, 5, 5, 7, 3)
         );
         register(Pig.class, 64, 32,
-            part(0, 0,  8, 8,  8, 8,  8, 8)
+            part(0, 0, 8, 8, 8, 8, 8, 8)
         );
 
         // piglin
@@ -214,7 +214,8 @@ public class VanillaEntityRenderer extends AbstractEntityRenderer<LivingEntity> 
 
         // player
         {
-            register(Player.class,
+            register(
+                Player.class,
                 new Parts<>(64, 64, 1,
                     part(0, 0, 8, 8, 8, 8, 8, 8)
                 ) {
@@ -226,12 +227,22 @@ public class VanillaEntityRenderer extends AbstractEntityRenderer<LivingEntity> 
 
                     @Override
                     public void render(PoseStack stack, Player entity, float maxSize, double yDiff) {
-                        if (entity == minecraft.getCameraEntity()) return; // don't render the controlled entity, it's already the arrow
+                        if (entity == minecraft.getCameraEntity()) {
+                            return; // don't render the controlled entity, it's already the arrow
+                        }
                         super.render(stack, entity, maxSize, yDiff);
-                        if (Math.abs(yDiff) >= 1) return; // don't render if the player is past fade distance
+                        if (Math.abs(yDiff) >= 1) {
+                            return; // don't render if the player is past fade distance
+                        }
                         stack.translate(maxSize / 2, maxSize, 0);
                         stack.scale(.5f, .5f, 1);
-                        minecraft.font.draw(stack, entity.getDisplayName(), -minecraft.font.width(entity.getDisplayName()) / 2f, 10, 0xFFFFFF);
+                        minecraft.font.draw(
+                            stack,
+                            entity.getDisplayName(),
+                            -minecraft.font.width(entity.getDisplayName()) / 2f,
+                            10,
+                            0xFFFFFF
+                        );
                     }
                 }
             );
@@ -244,7 +255,7 @@ public class VanillaEntityRenderer extends AbstractEntityRenderer<LivingEntity> 
             part(3, 0, 2, 5, 59, 1, 2, 5)
         );
         register(Sheep.class, 64, 32,
-            part(0, 0,  8, 6,  7, 8,  8, 6)
+            part(0, 0, 8, 6, 7, 8, 8, 6)
         );
         register(Shulker.class, 64, 64,
             part(0, 0, 16, 12, 0, 16, 16, 12),
@@ -252,7 +263,7 @@ public class VanillaEntityRenderer extends AbstractEntityRenderer<LivingEntity> 
             part(0, 12, 16, 8, 0, 44, 16, 8)
         );
         register(Silverfish.class, 64, 32, .5f,
-            part(0, 0,  3, 2,  2, 2,  3, 2)
+            part(0, 0, 3, 2, 2, 2, 3, 2)
         );
 
 
@@ -268,7 +279,7 @@ public class VanillaEntityRenderer extends AbstractEntityRenderer<LivingEntity> 
 
 
         register(SnowGolem.class, 64, 64,
-            part(0, 0,  8, 8,  8, 8,  8, 8)
+            part(0, 0, 8, 8, 8, 8, 8, 8)
         );
 
 
@@ -307,7 +318,7 @@ public class VanillaEntityRenderer extends AbstractEntityRenderer<LivingEntity> 
         }
 
         register(Strider.class, 64, 128,
-            part(0, 0,  16, 14,  16, 16,  16, 14)
+            part(0, 0, 16, 14, 16, 16, 16, 14)
         );
         //TODO: custom renderer for turtle
 
@@ -320,8 +331,11 @@ public class VanillaEntityRenderer extends AbstractEntityRenderer<LivingEntity> 
                 ) {
                     @Override
                     boolean bindTex(Villager entity) {
-                        if (entity.getVillagerData().getProfession() == VillagerProfession.NONE) return false;
-                        RenderSystem.setShaderTexture(0,
+                        if (entity.getVillagerData().getProfession() == VillagerProfession.NONE) {
+                            return false;
+                        }
+                        RenderSystem.setShaderTexture(
+                            0,
                             getResourceLocation(Registry.VILLAGER_PROFESSION.getKey(entity.getVillagerData()
                                 .getProfession()))
                         );
@@ -329,7 +343,10 @@ public class VanillaEntityRenderer extends AbstractEntityRenderer<LivingEntity> 
                     }
 
                     private ResourceLocation getResourceLocation(ResourceLocation resourceLocation) {
-                        return new ResourceLocation(resourceLocation.getNamespace(), "textures/entity/villager/profession/" + resourceLocation.getPath() + ".png");
+                        return new ResourceLocation(
+                            resourceLocation.getNamespace(),
+                            "textures/entity/villager/profession/" + resourceLocation.getPath() + ".png"
+                        );
                     }
                 }
             );
@@ -343,7 +360,7 @@ public class VanillaEntityRenderer extends AbstractEntityRenderer<LivingEntity> 
 
 
         register(Witch.class, 64, 128,
-            part(0, 0,  8, 10,  8, 8,  8, 10)
+            part(0, 0, 8, 10, 8, 8, 8, 10)
         );
         //TODO: custom renderer for wither
 
@@ -370,8 +387,11 @@ public class VanillaEntityRenderer extends AbstractEntityRenderer<LivingEntity> 
                 ) {
                     @Override
                     boolean bindTex(ZombieVillager entity) {
-                        if (entity.getVillagerData().getProfession() == VillagerProfession.NONE) return false;
-                        RenderSystem.setShaderTexture(0,
+                        if (entity.getVillagerData().getProfession() == VillagerProfession.NONE) {
+                            return false;
+                        }
+                        RenderSystem.setShaderTexture(
+                            0,
                             getResourceLocation(Registry.VILLAGER_PROFESSION.getKey(entity.getVillagerData()
                                 .getProfession()))
                         );
@@ -379,7 +399,10 @@ public class VanillaEntityRenderer extends AbstractEntityRenderer<LivingEntity> 
                     }
 
                     private ResourceLocation getResourceLocation(ResourceLocation resourceLocation) {
-                        return new ResourceLocation(resourceLocation.getNamespace(), "textures/entity/zombie_villager/profession/" + resourceLocation.getPath() + ".png");
+                        return new ResourceLocation(
+                            resourceLocation.getNamespace(),
+                            "textures/entity/zombie_villager/profession/" + resourceLocation.getPath() + ".png"
+                        );
                     }
                 }
             );
@@ -390,22 +413,15 @@ public class VanillaEntityRenderer extends AbstractEntityRenderer<LivingEntity> 
 
         //register default
         register(LivingEntity.class, 64, 32,
-            part(0, 0,  8, 8,  8, 8,  8, 8)
+            part(0, 0, 8, 8, 8, 8, 8, 8)
         );
-    }
-
-    public static <T extends LivingEntity> Parts<?> register(Class<T> entity, @Nullable Parts<T> parts) {
-        texOrdered.removeIf(p -> p.t().equals(entity));
-        if (parts == null) {
-            return texMap.remove(entity);
-        }
-        texOrdered.add(new Pair<>(entity, parts));
-        return texMap.put(entity, parts);
     }
 
     public static <T extends LivingEntity> Parts<?> registerBefore(Class<? extends LivingEntity> before, Class<T> entity, @Nullable Parts<T> parts) {
         texOrdered.removeIf(e -> e.t() == entity);
-        if (parts == null) return texMap.remove(entity);
+        if (parts == null) {
+            return texMap.remove(entity);
+        }
         texOrdered.add(
             texOrdered.stream()
                 .filter(e -> e.t() == before).findFirst()
@@ -418,6 +434,15 @@ public class VanillaEntityRenderer extends AbstractEntityRenderer<LivingEntity> 
     @SafeVarargs
     public static <T extends LivingEntity> Parts<?> register(Class<T> entity, int texWidth, int texHeight, Part<T>... parts) {
         return register(entity, new Parts<>(texWidth, texHeight, 1f, parts));
+    }
+
+    public static <T extends LivingEntity> Parts<?> register(Class<T> entity, @Nullable Parts<T> parts) {
+        texOrdered.removeIf(p -> p.t().equals(entity));
+        if (parts == null) {
+            return texMap.remove(entity);
+        }
+        texOrdered.add(new Pair<>(entity, parts));
+        return texMap.put(entity, parts);
     }
 
     @SafeVarargs
@@ -468,7 +493,7 @@ public class VanillaEntityRenderer extends AbstractEntityRenderer<LivingEntity> 
     }
 
     @Override
-    public  void render(PoseStack stack, LivingEntity entity, float maxSize, double yDiff) {
+    public void render(PoseStack stack, LivingEntity entity, float maxSize, double yDiff) {
         for (Pair<Class<? extends LivingEntity>, Parts<?>> tex : texOrdered) {
             if (tex.t().isAssignableFrom(entity.getClass())) {
                 // cast to base, so we can compile

@@ -8,7 +8,7 @@ import xyz.wagyourtail.config.field.SettingsContainer;
 import java.util.function.Predicate;
 
 @SettingsContainer("gui.wagyourminimap.settings.mob_icon.filter.hostile_neutral")
-public class HostileAndNeutralSettings extends AbstractMobIconFilterSettings{
+public class HostileAndNeutralSettings extends AbstractMobIconFilterSettings {
 
     @Override
     public Predicate<LivingEntity> compileFilter() {

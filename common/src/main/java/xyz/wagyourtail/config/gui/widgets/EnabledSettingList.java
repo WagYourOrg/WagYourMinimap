@@ -79,8 +79,8 @@ public class EnabledSettingList<T> extends ObjectSelectionList<EnabledSettingLis
         private final EntryController<T> parentScreen;
         private final EnabledSettingList<T> parent;
         private final Component name;
-        public final T option;
         private final boolean hasSubSettings;
+        public final T option;
 
         public EnabledSettingEntry(Minecraft minecraft, EntryController<T> parentScreen, EnabledSettingList<T> parent, T option, Component name) {
             this.minecraft = minecraft;
@@ -89,8 +89,11 @@ public class EnabledSettingList<T> extends ObjectSelectionList<EnabledSettingLis
             this.option = option;
             this.name = name;
 
-            this.hasSubSettings = option.getClass().isAnnotationPresent(SettingsContainer.class) && Arrays.stream(option.getClass().getFields()).anyMatch(e -> e.isAnnotationPresent(
-                Setting.class) || (Modifier.isFinal(e.getModifiers()) && e.isAnnotationPresent(SettingsContainer.class)));
+            this.hasSubSettings =
+                option.getClass().isAnnotationPresent(SettingsContainer.class) && Arrays.stream(option.getClass()
+                    .getFields()).anyMatch(e -> e.isAnnotationPresent(
+                    Setting.class) ||
+                    (Modifier.isFinal(e.getModifiers()) && e.isAnnotationPresent(SettingsContainer.class)));
         }
 
         @Override

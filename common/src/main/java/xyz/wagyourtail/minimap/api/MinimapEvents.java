@@ -38,6 +38,7 @@ public class MinimapEvents {
 
     public interface MapServerChanged {
         void onMapServerChanged(MapServer oldServer, MapServer newServer);
+
     }
 
 }
