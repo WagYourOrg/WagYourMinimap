@@ -140,7 +140,7 @@ public class SettingScreen extends Screen {
         }
         try {
             AbstractWidget element;
-            AbstractWidget settingButton = null;
+            AbstractWidget[] settingButton = new AbstractWidget[] {null};
             SettingField<?> settingField = new SettingField<>(settingContainer, setting);
 
             //boolean
@@ -359,12 +359,15 @@ public class SettingScreen extends Screen {
                                     .getClass()
                                     .getAnnotation(SettingsContainer.class)
                                     .value())));
+                            Object option = settingField.get();
+                            settingButton[0].visible = option.getClass().isAnnotationPresent(SettingsContainer.class) && Arrays.stream(option.getClass().getFields()).anyMatch(e -> e.isAnnotationPresent(
+                                Setting.class) || (Modifier.isFinal(e.getModifiers()) && e.isAnnotationPresent(SettingsContainer.class)));
                         } catch (InvocationTargetException | IllegalAccessException | NoSuchMethodException | InstantiationException e) {
                             e.printStackTrace();
                         }
                     }
                 );
-                settingButton = new Button(
+                settingButton[0] = new Button(
                     x + width - height,
                     y,
                     height,
@@ -382,11 +385,14 @@ public class SettingScreen extends Screen {
                         }
                     }
                 );
+                Object option = settingField.get();
+                settingButton[0].visible = option.getClass().isAnnotationPresent(SettingsContainer.class) && Arrays.stream(option.getClass().getFields()).anyMatch(e -> e.isAnnotationPresent(
+                    Setting.class) || (Modifier.isFinal(e.getModifiers()) && e.isAnnotationPresent(SettingsContainer.class)));
             }
 
             if (!settingField.setting.enabled().equals("")) {
                 AbstractWidget finalElement = element;
-                AbstractWidget finalSettingButton = settingButton;
+                AbstractWidget finalSettingButton = settingButton[0];
                 enabledListeners.add(() -> {
                     try {
                         finalElement.active = settingField.enabled();
@@ -398,10 +404,10 @@ public class SettingScreen extends Screen {
                     }
                 });
             }
-            if (settingButton == null) {
+            if (settingButton[0] == null) {
                 return new AbstractWidget[] {element};
             } else {
-                return new AbstractWidget[] {element, settingButton};
+                return new AbstractWidget[] {element, settingButton[0]};
             }
 
         } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException ex) {

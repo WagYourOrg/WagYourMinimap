@@ -7,14 +7,14 @@ import xyz.wagyourtail.config.field.SettingsContainer;
 import xyz.wagyourtail.minimap.client.gui.hud.map.AbstractMinimapRenderer;
 import xyz.wagyourtail.minimap.client.gui.hud.overlay.MobIconOverlay;
 
-@SettingsContainer("gui.wagyourminimap.settings.overlays.mob_icon")
+@SettingsContainer("gui.wagyourminimap.settings.overlay.mob_icon")
 public class MobIconOverlaySettings extends AbstractOverlaySettings<MobIconOverlay> {
 
-    @Setting(value = "gui.wagyourminimap.settings.overlays.mob_icon.max_scale")
+    @Setting(value = "gui.wagyourminimap.settings.overlay.mob_icon.max_scale")
     @DoubleRange(from = 0.0, to = 1.0, steps = 100)
     public double maxScale = .07;
 
-    @Setting(value = "gui.wagyourminimap.settings.overlays.mob_icon.max_size")
+    @Setting(value = "gui.wagyourminimap.settings.overlay.mob_icon.max_size")
     @IntRange(from = 0, to = 100)
     public int maxSize = 10;
 

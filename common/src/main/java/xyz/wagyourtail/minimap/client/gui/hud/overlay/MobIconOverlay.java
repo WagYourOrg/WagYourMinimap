@@ -40,6 +40,7 @@ public class MobIconOverlay extends AbstractMinimapOverlay {
         assert minecraft.level != null;
         for (Entity e : minecraft.level.entitiesForRendering()) {
             if (e instanceof LivingEntity le) {
+                //TODO: filtering settings
                 stack.pushPose();
                 Vec3 pointVec = new Vec3(e.getX(), e.getY(), e.getZ()).subtract(center);
                 if (parent.rotate) {

@@ -21,7 +21,6 @@ public class CircleRotStyle extends AbstractCircleStyle {
             new WaypointOverlaySettings(),
             new NorthIconOverlaySettings()
         };
-
     }
 
     @Override
