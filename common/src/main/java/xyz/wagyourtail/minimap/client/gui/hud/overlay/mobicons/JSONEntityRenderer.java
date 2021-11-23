@@ -45,11 +45,11 @@ public class JSONEntityRenderer extends AbstractEntityRenderer<LivingEntity> {
     }
 
     @Override
-    public void render(PoseStack stack, LivingEntity entity, float maxSize) {
+    public void render(PoseStack stack, LivingEntity entity, float maxSize, double yDiff) {
         for (Map.Entry<EntityType<? extends LivingEntity>, Parts<?>> tex : texMap.entrySet()) {
             if (tex.getKey() == entity.getType()) {
                 // cast to base, so we can compile
-                ((Parts<LivingEntity>) tex.getValue()).render(stack, entity, maxSize);
+                ((Parts<LivingEntity>) tex.getValue()).render(stack, entity, maxSize, yDiff);
                 return;
             }
         }

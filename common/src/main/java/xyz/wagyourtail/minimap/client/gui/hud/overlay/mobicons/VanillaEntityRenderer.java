@@ -225,9 +225,10 @@ public class VanillaEntityRenderer extends AbstractEntityRenderer<LivingEntity> 
                     }
 
                     @Override
-                    public void render(PoseStack stack, Player entity, float maxSize) {
+                    public void render(PoseStack stack, Player entity, float maxSize, double yDiff) {
                         if (entity == minecraft.getCameraEntity()) return; // don't render the controlled entity, it's already the arrow
-                        super.render(stack, entity, maxSize);
+                        super.render(stack, entity, maxSize, yDiff);
+                        if (Math.abs(yDiff) >= 1) return; // don't render if the player is past fade distance
                         stack.translate(maxSize / 2, maxSize, 0);
                         stack.scale(.5f, .5f, 1);
                         minecraft.font.draw(stack, entity.getDisplayName(), -minecraft.font.width(entity.getDisplayName()) / 2f, 10, 0xFFFFFF);
@@ -467,11 +468,11 @@ public class VanillaEntityRenderer extends AbstractEntityRenderer<LivingEntity> 
     }
 
     @Override
-    public  void render(PoseStack stack, LivingEntity entity, float maxSize) {
+    public  void render(PoseStack stack, LivingEntity entity, float maxSize, double yDiff) {
         for (Pair<Class<? extends LivingEntity>, Parts<?>> tex : texOrdered) {
             if (tex.t().isAssignableFrom(entity.getClass())) {
                 // cast to base, so we can compile
-                ((Parts<LivingEntity>) tex.u()).render(stack, entity, maxSize);
+                ((Parts<LivingEntity>) tex.u()).render(stack, entity, maxSize, yDiff);
                 return;
             }
         }

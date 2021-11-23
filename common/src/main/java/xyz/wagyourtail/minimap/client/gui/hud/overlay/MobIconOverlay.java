@@ -24,13 +24,15 @@ public class MobIconOverlay extends AbstractMinimapOverlay {
     ));
     public final float maxSizeScale;
     public final int maxSize;
+    public final int fadeHeightDistance;
     public final Predicate<LivingEntity> filter;
 
-    public MobIconOverlay(AbstractMinimapRenderer parent, float maxSizeScale, int maxSize, Predicate<LivingEntity> filter, boolean players) {
+    public MobIconOverlay(AbstractMinimapRenderer parent, float maxSizeScale, int maxSize, Predicate<LivingEntity> filter, boolean players, int fadeHeightDistance) {
         super(parent);
         this.maxSizeScale = maxSizeScale;
         this.maxSize = maxSize;
         this.filter = players ? filter.or(e -> e instanceof Player) : filter;
+        this.fadeHeightDistance = fadeHeightDistance;
     }
 
     @Override
@@ -64,21 +66,21 @@ public class MobIconOverlay extends AbstractMinimapOverlay {
                     maxLength / 2 + pointVec.z * chunkScale / 16f,
                     0
                 );
-                renderEntity(stack, le, iconSize);
+                renderEntity(stack, le, iconSize, pointVec.y / fadeHeightDistance);
                 stack.popPose();
             }
         }
     }
 
-    public void renderEntity(PoseStack stack, LivingEntity e, float maxIconSize) {
+    public void renderEntity(PoseStack stack, LivingEntity e, float maxIconSize, double yDiff) {
         for (AbstractEntityRenderer<?> renderer : availableMobIconRenderers) {
-            if (renderEntityInner(stack, renderer, e, maxIconSize)) return;
+            if (renderEntityInner(stack, renderer, e, maxIconSize, yDiff)) return;
         }
     }
 
-    private boolean renderEntityInner(PoseStack stack, AbstractEntityRenderer<?> renderer, LivingEntity e, float maxIconSize) {
+    private boolean renderEntityInner(PoseStack stack, AbstractEntityRenderer<?> renderer, LivingEntity e, float maxIconSize, double yDiff) {
         if (renderer.canUseFor(e)) {
-            renderer.render(stack, e, maxIconSize);
+            renderer.render(stack, e, maxIconSize, yDiff);
             return true;
         }
         return false;

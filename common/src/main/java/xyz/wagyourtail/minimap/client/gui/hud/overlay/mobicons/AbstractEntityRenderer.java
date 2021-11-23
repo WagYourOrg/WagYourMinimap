@@ -16,7 +16,7 @@ public abstract class AbstractEntityRenderer<T extends LivingEntity> {
 
     public abstract boolean canUseFor(LivingEntity entity);
 
-    public abstract void render(PoseStack stack, LivingEntity entity, float maxSize);
+    public abstract void render(PoseStack stack, LivingEntity entity, float maxSize, double yDiff);
 
     public static class Parts<T extends LivingEntity> {
         private final int texWidth;
@@ -36,7 +36,8 @@ public abstract class AbstractEntityRenderer<T extends LivingEntity> {
             RenderSystem.setShaderTexture(0, minecraft.getEntityRenderDispatcher().getRenderer(entity).getTextureLocation(entity));
         }
 
-        public void render(PoseStack stack, T entity, float maxSize) {
+        public void render(PoseStack stack, T entity, float maxSize, double yDiff) {
+            if (Math.abs(yDiff) >= 1) return; // don't render if too far away on y axis
             float minX = Float.POSITIVE_INFINITY;
             float maxX = Float.NEGATIVE_INFINITY;
             float minY = Float.POSITIVE_INFINITY;
@@ -52,11 +53,11 @@ public abstract class AbstractEntityRenderer<T extends LivingEntity> {
             float yH = maxY - minY;
             maxSize *= scale;
             stack.translate(-maxSize / 2, -maxSize / 2, 1);
-            renderInner(stack, entity, maxSize, minX, minY, maxX, maxY, xW, yH);
+            renderInner(stack, entity, maxSize, yDiff, minX, minY, maxX, maxY, xW, yH);
         }
 
-        public void renderInner(PoseStack stack, T entity, float maxSize, float minX, float minY, float maxX, float maxY, float xW, float yH) {
-            RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        public void renderInner(PoseStack stack, T entity, float maxSize, double fadeDiff, float minX, float minY, float maxX, float maxY, float xW, float yH) {
+            RenderSystem.setShader(GameRenderer::getPositionColorTexShader);
             RenderSystem.enableBlend();
             RenderSystem.defaultBlendFunc();
             RenderSystem.enableTexture();
@@ -71,8 +72,8 @@ public abstract class AbstractEntityRenderer<T extends LivingEntity> {
                         builder.end();
                         BufferUploader.end(builder);
                         if (tp.bindTex(entity)) {
-                            builder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
-                            tp.render(matrix, builder, diff, 0, scale, tp.texWidth, tp.texHeight);
+                            builder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR_TEX);
+                            tp.render(matrix, builder, fadeDiff, diff, 0, scale, tp.texWidth, tp.texHeight);
                             builder.end();
                             BufferUploader.end(builder);
                         }
@@ -80,10 +81,10 @@ public abstract class AbstractEntityRenderer<T extends LivingEntity> {
                         continue;
                     } else if (prevTexed) {
                         bindTex(entity);
-                        builder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+                        builder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR_TEX);
                         prevTexed = false;
                     }
-                    part.render(matrix, builder, diff, 0, scale, texWidth, texHeight);
+                    part.render(matrix, builder, fadeDiff, diff, 0, scale, texWidth, texHeight);
                 }
             } else {
                 float diff = (xW - yH) / 2;
@@ -93,8 +94,8 @@ public abstract class AbstractEntityRenderer<T extends LivingEntity> {
                         builder.end();
                         BufferUploader.end(builder);
                         if (tp.bindTex(entity)) {
-                            builder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
-                            tp.render(matrix, builder, 0, diff, scale, tp.texWidth, tp.texHeight);
+                            builder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR_TEX);
+                            tp.render(matrix, builder, fadeDiff, 0, diff, scale, tp.texWidth, tp.texHeight);
                             builder.end();
                             BufferUploader.end(builder);
                         }
@@ -102,10 +103,10 @@ public abstract class AbstractEntityRenderer<T extends LivingEntity> {
                         continue;
                     } else if (prevTexed) {
                         bindTex(entity);
-                        builder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+                        builder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR_TEX);
                         prevTexed = false;
                     }
-                    part.render(matrix, builder, 0, diff, scale, texWidth, texHeight);
+                    part.render(matrix, builder, fadeDiff, 0, diff, scale, texWidth, texHeight);
                 }
             }
             if (!prevTexed) {
@@ -136,15 +137,27 @@ public abstract class AbstractEntityRenderer<T extends LivingEntity> {
             this.vh = vh;
         }
 
-        public void render(Matrix4f matrix, BufferBuilder builder, float xdiff, float ydiff, float scale, int texWidth, int texHeight) {
-            drawTex(matrix, builder, (x + xdiff) * scale, (y + ydiff) * scale, w * scale, h * scale, ux / texWidth, vy / texHeight, (ux + uw) / texWidth, (vy + vh) / texHeight);
+        public void render(Matrix4f matrix, BufferBuilder builder, double fadeDiff, float xdiff, float ydiff, float scale, int texWidth, int texHeight) {
+            int abgr;
+            if (fadeDiff < 0) {
+                int col = (int)((1+fadeDiff) * 0xFF);
+                abgr = col << 24 | col << 16 | col << 8 | col;
+            } else {
+                int col = (int)((1-fadeDiff) * 0xFF);
+                abgr = col << 24 | 0xFFFFFF;
+            }
+            drawTexCol(matrix, builder, (x + xdiff) * scale, (y + ydiff) * scale, w * scale, h * scale, ux / texWidth, vy / texHeight, (ux + uw) / texWidth, (vy + vh) / texHeight, abgr);
         }
 
-        public static void drawTex(Matrix4f matrix, BufferBuilder builder, float x, float y, float width, float height, float startU, float startV, float endU, float endV) {
-            builder.vertex(matrix, x, y + height, 0).uv(startU, endV).endVertex();
-            builder.vertex(matrix, x + width, y + height, 0).uv(endU, endV).endVertex();
-            builder.vertex(matrix, x + width, y, 0).uv(endU, startV).endVertex();
-            builder.vertex(matrix, x, y, 0).uv(startU, startV).endVertex();
+        public static void drawTexCol(Matrix4f matrix, BufferBuilder builder, float x, float y, float width, float height, float startU, float startV, float endU, float endV, int abgr) {
+            float a = (abgr >> 24 & 255) / 255f;
+            float b = (abgr >> 16 & 255) / 255f;
+            float g = (abgr >> 8 & 255) / 255f;
+            float r = (abgr & 255) / 255f;
+            builder.vertex(matrix, x, y + height, 0).color(r,g,b,a).uv(startU, endV).endVertex();
+            builder.vertex(matrix, x + width, y + height, 0).color(r,g,b,a).uv(endU, endV).endVertex();
+            builder.vertex(matrix, x + width, y, 0).color(r,g,b,a).uv(endU, startV).endVertex();
+            builder.vertex(matrix, x, y, 0).color(r,g,b,a).uv(startU, startV).endVertex();
         }
 
     }

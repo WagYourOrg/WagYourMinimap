@@ -34,13 +34,17 @@ public class MobIconOverlaySettings extends AbstractOverlaySettings<MobIconOverl
     @Setting(value = "gui.wagyourminimap.settings.overlay.mob_icon.show_players")
     public boolean showPlayers = true;
 
+    @Setting(value = "gui.wagyourminimap.settings.overlay.mob_icon.y_fade_distance")
+    @IntRange(from = 0, to = 4096, stepVal = 8)
+    public int yFadeDistance = 50;
+
     public List<Class<? extends AbstractMobIconFilterSettings>> getMobFilters() {
         return mobFilters;
     }
 
     @Override
     public MobIconOverlay compileOverlay(AbstractMinimapRenderer mapRenderer) {
-        return new MobIconOverlay(mapRenderer, (float) maxScale, maxSize, filter.compileFilter(), showPlayers);
+        return new MobIconOverlay(mapRenderer, (float) maxScale, maxSize, filter.compileFilter(), showPlayers, yFadeDistance);
     }
 
 }
