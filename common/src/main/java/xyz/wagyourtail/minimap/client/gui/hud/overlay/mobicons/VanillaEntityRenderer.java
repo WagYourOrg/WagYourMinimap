@@ -91,7 +91,8 @@ public class VanillaEntityRenderer extends AbstractEntityRenderer<LivingEntity> 
             part(0, 0, 16, 16, 128, 46, 16, 16)
         );
         register(EnderMan.class, 64, 32,
-            part(0, 0, 8, 8, 8, 8, 8, 8)
+            part(0, 0, 8, 8, 8, 8, 8, 8),
+            part(0, 0, 8, 8, 8, 24, 8, 8)
         );
         register(Endermite.class, 64, 32, .6f,
             part(0, 0, 4, 3, 2, 2, 4, 3)

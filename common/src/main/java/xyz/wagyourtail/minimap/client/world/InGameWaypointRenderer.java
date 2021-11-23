@@ -24,7 +24,6 @@ public class InGameWaypointRenderer {
     public static final double WARP_COMPENSATION_X_FACTOR = 10;
 
 
-
     public static void onRender(PoseStack stack, float partialTicks, long finishTimeNano) {
         stack.pushPose();
         Vec3 center = mc.gameRenderer.getMainCamera().getPosition();
@@ -41,9 +40,10 @@ public class InGameWaypointRenderer {
             // because of view warping we want to scale down as the y rot increases, using equation:
             //                      factor = yFactor / 180 * abs(relative_camera_yRot) + xFactor / 180 * abs(relative_camera_xRot) + 20;
             // this is a bit of a hack, but it works.
-            // this warping is more appearent as the FOV increases
+            // this warping is more apparent as the FOV increases
             // if you want to see how worse it really is, try making it statically set to 20 and quake pro
-            double factor = WARP_COMPENSATION_Y_FACTOR / 180d * Math.abs(Mth.wrapDegrees(mc.gameRenderer.getMainCamera().getYRot() + yRot)) +
+            double factor = WARP_COMPENSATION_Y_FACTOR / 180d * Math.abs(Mth.wrapDegrees(
+                mc.gameRenderer.getMainCamera().getYRot() + yRot)) +
                 WARP_COMPENSATION_X_FACTOR / 180d * Math.abs(mc.gameRenderer.getMainCamera().getXRot() - xRot) + 20;
             Vec3 normalized_offset = offset.normalize().multiply(factor, factor, factor);
             stack.translate(normalized_offset.x, normalized_offset.y, normalized_offset.z);
@@ -73,7 +73,11 @@ public class InGameWaypointRenderer {
         RenderSystem.setShaderTexture(0, waypoint.getIcon());
         int abgr = 0xFF000000 | waypoint.colB & 0xFF << 0x10 | waypoint.colG & 0xFF << 0x8 | waypoint.colR & 0xFF;
         AbstractMapRenderer.drawTexCol(stack, -10, -10, 20, 20, 0, 0, 1, 1, abgr);
-        if (isLookingAt(offset.normalize(), mc.gameRenderer.getMainCamera().getXRot(), mc.gameRenderer.getMainCamera().getYRot())) {
+        if (isLookingAt(
+            offset.normalize(),
+            mc.gameRenderer.getMainCamera().getXRot(),
+            mc.gameRenderer.getMainCamera().getYRot()
+        )) {
             drawText(stack, String.format("%s (%.2f m)", waypoint.name, offset.distanceTo(Vec3.ZERO)));
         }
     }

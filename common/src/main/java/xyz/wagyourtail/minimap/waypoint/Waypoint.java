@@ -16,7 +16,10 @@ import java.util.function.Function;
 
 public class Waypoint {
     private static final Gson gson = new Gson();
-    private static final ResourceLocation default_waypoint_tex = new ResourceLocation(WagYourMinimap.MOD_ID, "textures/waypoint.png");
+    private static final ResourceLocation default_waypoint_tex = new ResourceLocation(
+        WagYourMinimap.MOD_ID,
+        "textures/waypoint.png"
+    );
     private static final Map<String, ResourceLocation> waypoint_tex = new HashMap<>(Map.of(
         "default", default_waypoint_tex
     ));

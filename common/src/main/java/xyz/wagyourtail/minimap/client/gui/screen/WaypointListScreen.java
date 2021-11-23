@@ -9,7 +9,6 @@ import org.jetbrains.annotations.Nullable;
 import xyz.wagyourtail.minimap.api.MinimapApi;
 import xyz.wagyourtail.minimap.api.client.MinimapClientEvents;
 import xyz.wagyourtail.minimap.api.client.config.CurrentServerConfig;
-import xyz.wagyourtail.minimap.client.gui.screen.widget.InteractMenu;
 import xyz.wagyourtail.minimap.client.gui.screen.widget.WaypointList;
 
 import java.util.ArrayList;

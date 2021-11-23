@@ -85,12 +85,16 @@ public class WagYourMinimapClient extends WagYourMinimap {
             }
             if (key_zoom_in.consumeClick()) {
                 int rad = MinimapApi.getInstance().getConfig().get(MinimapClientConfig.class).getChunkRadius();
-                if (rad > MinimapClientConfig.MIN_CHUNK_RADIUS) --rad;
+                if (rad > MinimapClientConfig.MIN_CHUNK_RADIUS) {
+                    --rad;
+                }
                 MinimapApi.getInstance().getConfig().get(MinimapClientConfig.class).setChunkRadius(rad);
             }
             if (key_zoom_out.consumeClick()) {
                 int rad = MinimapApi.getInstance().getConfig().get(MinimapClientConfig.class).getChunkRadius();
-                if (rad < MinimapClientConfig.MAX_CHUNK_RADIUS) ++rad;
+                if (rad < MinimapClientConfig.MAX_CHUNK_RADIUS) {
+                    ++rad;
+                }
                 MinimapApi.getInstance().getConfig().get(MinimapClientConfig.class).setChunkRadius(rad);
             }
         });

@@ -3,6 +3,7 @@ package xyz.wagyourtail.minimap.api.client.config.style;
 import xyz.wagyourtail.config.field.Setting;
 import xyz.wagyourtail.minimap.api.client.MinimapClientEvents;
 import xyz.wagyourtail.minimap.api.client.config.layers.AbstractLayerOptions;
+import xyz.wagyourtail.minimap.api.client.config.layers.AccurateMapLayer;
 import xyz.wagyourtail.minimap.api.client.config.layers.LightLayer;
 import xyz.wagyourtail.minimap.api.client.config.layers.VanillaMapLayer;
 import xyz.wagyourtail.minimap.api.client.config.overlay.AbstractOverlaySettings;
@@ -17,6 +18,7 @@ import xyz.wagyourtail.minimap.client.gui.hud.overlay.AbstractMinimapOverlay;
 import xyz.wagyourtail.minimap.client.gui.hud.overlay.MobIconOverlay;
 import xyz.wagyourtail.minimap.client.gui.hud.overlay.PlayerArrowOverlay;
 import xyz.wagyourtail.minimap.map.image.AbstractImageStrategy;
+import xyz.wagyourtail.minimap.map.image.AccurateMapImageStrategy;
 import xyz.wagyourtail.minimap.map.image.BlockLightImageStrategy;
 import xyz.wagyourtail.minimap.map.image.VanillaMapImageStrategy;
 
@@ -51,6 +53,7 @@ public abstract class AbstractMinimapStyle<T extends AbstractMinimapRenderer> {
 
         //layer register
         availableLayers.put(VanillaMapImageStrategy.class, VanillaMapLayer.class);
+        availableLayers.put(AccurateMapImageStrategy.class, AccurateMapLayer.class);
         availableLayers.put(BlockLightImageStrategy.class, LightLayer.class);
 
         //overlay register

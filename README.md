@@ -8,8 +8,8 @@ with api.
 
 ## mob icons
 
-the `mobicons.json` config file can be used to specify custom mob icons.
-an example of how this looks is:
+the `mobicons.json` config file can be used to specify custom mob icons. an example of how this looks is:
+
 ```json
 {
     "minecraft:goat": {
@@ -31,4 +31,5 @@ an example of how this looks is:
     }
 }
 ```
+
 any mobs present in this file *should* override the included textures
