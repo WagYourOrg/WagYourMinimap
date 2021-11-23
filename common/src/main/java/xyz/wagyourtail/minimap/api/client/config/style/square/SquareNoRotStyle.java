@@ -1,10 +1,7 @@
 package xyz.wagyourtail.minimap.api.client.config.style.square;
 
 import xyz.wagyourtail.config.field.SettingsContainer;
-import xyz.wagyourtail.minimap.api.client.config.overlay.AbstractOverlaySettings;
-import xyz.wagyourtail.minimap.api.client.config.overlay.ArrowOverlaySettings;
-import xyz.wagyourtail.minimap.api.client.config.overlay.SquareMapBorderOverlaySettings;
-import xyz.wagyourtail.minimap.api.client.config.overlay.WaypointOverlaySettings;
+import xyz.wagyourtail.minimap.api.client.config.overlay.*;
 import xyz.wagyourtail.minimap.client.gui.hud.map.SquareMapRenderer;
 
 @SettingsContainer("gui.wagyourminimap.settings.square_norot_style")
@@ -16,7 +13,8 @@ public class SquareNoRotStyle extends AbstractSquareStyle {
         overlays = new AbstractOverlaySettings[] {
             new SquareMapBorderOverlaySettings(),
             new ArrowOverlaySettings(),
-            new WaypointOverlaySettings()
+            new WaypointOverlaySettings(),
+            new MobIconOverlaySettings()
         };
     }
 

@@ -1,10 +1,7 @@
 package xyz.wagyourtail.minimap.api.client.config.style.circle;
 
 import xyz.wagyourtail.config.field.SettingsContainer;
-import xyz.wagyourtail.minimap.api.client.config.overlay.AbstractOverlaySettings;
-import xyz.wagyourtail.minimap.api.client.config.overlay.ArrowOverlaySettings;
-import xyz.wagyourtail.minimap.api.client.config.overlay.CircleMapBorderOverlaySettings;
-import xyz.wagyourtail.minimap.api.client.config.overlay.WaypointOverlaySettings;
+import xyz.wagyourtail.minimap.api.client.config.overlay.*;
 import xyz.wagyourtail.minimap.api.client.config.overlay.rotate.NorthIconOverlaySettings;
 import xyz.wagyourtail.minimap.client.gui.hud.map.CircleMapRenderer;
 import xyz.wagyourtail.minimap.client.gui.hud.overlay.rotate.NorthIconOverlay;
@@ -19,7 +16,8 @@ public class CircleRotStyle extends AbstractCircleStyle {
             new CircleMapBorderOverlaySettings(),
             new ArrowOverlaySettings(),
             new WaypointOverlaySettings(),
-            new NorthIconOverlaySettings()
+            new NorthIconOverlaySettings(),
+            new MobIconOverlaySettings()
         };
     }
 

@@ -94,7 +94,24 @@ public class ArrayScreen<T, U> extends Screen implements EnabledSettingList.Entr
             } else if (setting.fieldType.componentType().equals(String.class)) {
                 Collection<String> options = (Collection<String>) setting.options();
                 if (options != null) {
-                    throw new RuntimeException("STRING OPTIONS NOT YET IMPLEMENTED");
+                    this.addWidget(availableEntries = new DisabledSettingList<>(
+                        minecraft,
+                        width > 810 ? 400 : 200,
+                        this.height
+                    ));
+                    this.availableEntries.setLeftPos(this.width / 2 + 4);
+                    List<String> enabledEntries = this.enabledEntries.children()
+                        .stream()
+                        .map(e -> (String) e.option)
+                        .collect(Collectors.toList());
+                    this.availableEntries.children().addAll(options.stream().filter(e -> !enabledEntries.contains(e) ||
+                        setting.setting.allowDuplicateOption()).map(e -> new DisabledSettingList.DisabledSettingEntry<>(
+                        minecraft,
+                        this,
+                        availableEntries,
+                        (U) e,
+                        new TextComponent(e)
+                    )).collect(Collectors.toList()));
                 } else {
                     NamedEditBox box = this.addRenderableWidget(new NamedEditBox(
                         font,
@@ -236,30 +253,26 @@ public class ArrayScreen<T, U> extends Screen implements EnabledSettingList.Entr
                 Number.class.isAssignableFrom(setting.fieldType.componentType())) {
                 throw new RuntimeException("NON Object List not yet implemented");
             } else if (setting.fieldType.componentType().equals(String.class)) {
-                Collection<String> options = (Collection<String>) setting.options();
-                if (options != null) {
-                    throw new RuntimeException("STRING OPTIONS NOT YET IMPLEMENTED");
-                } else {
-                    throw new RuntimeException("NON Object List not yet implemented");
-                }
+                enabledEntries.children().add(new EnabledSettingList.EnabledSettingEntry<>(
+                    minecraft,
+                    this,
+                    enabledEntries,
+                    (T) option.option,
+                    new TextComponent(option.option.toString())
+                ));
             } else if (setting.fieldType.componentType().isEnum()) {
                 throw new RuntimeException("NON Object List not yet implemented");
             } else if (setting.fieldType.componentType().isArray()) {
                 throw new RuntimeException("NON Object List not yet implemented");
             } else {
-                Collection<String> options = (Collection<String>) setting.options();
-                if (options != null) {
-                    enabledEntries.children().add(new EnabledSettingList.EnabledSettingEntry<>(
-                        minecraft,
-                        this,
-                        enabledEntries,
-                        ((Class<T>) option.option).getConstructor().newInstance(),
-                        new TranslatableComponent(((Class<T>) option.option).getAnnotation(SettingsContainer.class)
-                            .value())
-                    ));
-                } else {
-                    throw new RuntimeException("NON Options Object List not yet implemented");
-                }
+                enabledEntries.children().add(new EnabledSettingList.EnabledSettingEntry<>(
+                    minecraft,
+                    this,
+                    enabledEntries,
+                    ((Class<T>) option.option).getConstructor().newInstance(),
+                    new TranslatableComponent(((Class<T>) option.option).getAnnotation(SettingsContainer.class)
+                        .value())
+                ));
             }
         } catch (InvocationTargetException | IllegalAccessException | NoSuchMethodException | InstantiationException e) {
             e.printStackTrace();

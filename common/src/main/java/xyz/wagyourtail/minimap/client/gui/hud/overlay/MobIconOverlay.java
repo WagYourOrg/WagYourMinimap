@@ -14,6 +14,7 @@ import xyz.wagyourtail.minimap.client.gui.hud.overlay.mobicons.VanillaEntityRend
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
 public class MobIconOverlay extends AbstractMinimapOverlay {
     public static final List<AbstractEntityRenderer<?>> availableMobIconRenderers = new ArrayList<>(List.of(
@@ -22,11 +23,13 @@ public class MobIconOverlay extends AbstractMinimapOverlay {
     ));
     public final float maxSizeScale;
     public final int maxSize;
+    public final Predicate<LivingEntity> filter;
 
-    public MobIconOverlay(AbstractMinimapRenderer parent, float maxSizeScale, int maxSize) {
+    public MobIconOverlay(AbstractMinimapRenderer parent, float maxSizeScale, int maxSize, Predicate<LivingEntity> filter) {
         super(parent);
         this.maxSizeScale = maxSizeScale;
         this.maxSize = maxSize;
+        this.filter = filter;
     }
 
     @Override
@@ -39,7 +42,7 @@ public class MobIconOverlay extends AbstractMinimapOverlay {
 
         assert minecraft.level != null;
         for (Entity e : minecraft.level.entitiesForRendering()) {
-            if (e instanceof LivingEntity le) {
+            if (e instanceof LivingEntity le && filter.test(le)) {
                 //TODO: filtering settings
                 stack.pushPose();
                 Vec3 pointVec = new Vec3(e.getX(), e.getY(), e.getZ()).subtract(center);
