@@ -69,8 +69,8 @@ public class ChunkLoadStrategy extends AbstractChunkUpdateStrategy<SurfaceDataPa
                         data.heightmap[i] = j;
                         data.blockid[i] = parent.getOrRegisterBlockState(block);
                         data.biomeid[i] = parent.getOrRegisterBiome(biomeRegistry.getKey(chunk
-                            .getNoiseBiome(x >> 2, data.heightmap[i] >> 2, z >> 2)));
-                        //                        data.biomeid[i] = data.getOrRegisterResourceLocation(biomeRegistry.getKey(level.getBiome(blockPos)));
+                            .getNoiseBiome(x >> 2, data.heightmap[i] >> 2, z >> 2)
+                        ));
                         data.blocklight[i] = (byte) light.getLightValue(blockPos.setY(data.heightmap[i] + 1));
                         break;
                     }
@@ -88,8 +88,8 @@ public class ChunkLoadStrategy extends AbstractChunkUpdateStrategy<SurfaceDataPa
                 ));
                 data.blockid[i] = parent.getOrRegisterBlockState(top);
                 data.biomeid[i] = parent.getOrRegisterBiome(biomeRegistry.getKey(chunk
-                    .getNoiseBiome(x >> 2, data.heightmap[i] >> 2, z >> 2)));
-                //                data.biomeid[i] = data.getOrRegisterResourceLocation(biomeRegistry.getKey(level.getBiome(blockPos)));
+                    .getNoiseBiome(x >> 2, data.heightmap[i] >> 2, z >> 2)
+                ));
                 data.blocklight[i] = (byte) light.getLightValue(blockPos.setY(data.heightmap[i] + 1));
 
                 if (top.getBlock().equals(Blocks.WATER)) {
@@ -103,9 +103,6 @@ public class ChunkLoadStrategy extends AbstractChunkUpdateStrategy<SurfaceDataPa
             }
         }
 
-        // update south heightmap
-        //        UpdateNorthHeightmapStrategy.UPDATE_EVENT.invoker().onUpdate(parent.south(), data.heightmap);
-        //        UpdateSouthHeightmapStrategy.UPDATE_EVENT.invoker().onUpdate(parent.north(), data.heightmap);
         parent.north().get().invalidateDerivitives();
         parent.south().get().invalidateDerivitives();
 
