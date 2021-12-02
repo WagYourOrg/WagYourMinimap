@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: Build Release
+name: Build Release V2
 
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the master branch
@@ -8,73 +8,40 @@ on:
   release:
     types: [created]
 
-
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  build-1_17:
-    # The type of runner that the job will run on
-    runs-on: ubuntu-latest
-    # Steps represent a sequence of tasks that will be executed as part of the job
-    steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
+  build_1_18:
+    uses: wagyourtail/jsmacros/.github/workflows/releasebuild.yml@main-1.18
+    with:
+      branch: main-1.18
+      java_version: 17
 
-      - name: Set up JDK 16
-        uses: actions/setup-java@v2
-        with:
-          distribution: 'adopt'
-          java-version: '16'
+  build_1_17:
+    uses: wagyourtail/jsmacros/.github/workflows/releasebuild.yml@main-1.18
+    with:
+      branch: backport-1.17.1
+      java_version: 16
 
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
+  deploy_1_18:
+    uses: wagyourtail/jsmacros/.github/workflows/releasedeploy.yml@main-1.18
+    with:
+      branch: main-1.18
+      cf_data_fabric: 73250:1.18.1,2:Java 17,68441:Fabric
+      cf_data_forge: 73250:1.18.1,2:Java 17,7498:Forge
+    secrets:
+      CF_API_KEY: ${{ secrets.CF_API_KEY }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    needs:
+      - build_1_18
+      - deploy_1_17
 
-      - name: Build with Gradle
-        run: ./gradlew build
-
-      - uses: actions/upload-artifact@v2
-        with:
-          name: fabric-artifacts
-          path: ./fabric/build/libs/**/*
-
-      - uses: actions/upload-artifact@v2
-        with:
-          name: forge-artifacts
-          path: ./forge/build/libs/**/*
-
-      - uses: actions/github-script@v2
-        id: forgefname
-        with:
-          result-encoding: string
-          script: |
-            const fs = require("fs")
-            const fname = fs.readdirSync("./forge/build/libs/").filter(e => !e.endsWith("dev.jar") && !e.endsWith("sources.jar") && e.endsWith(".jar"))[0].replace(".jar", "");
-            const newName = fname.split("-").splice(1, 0, "forge").join("-");
-            fs.renameSync(`./forge/build/libs/${fname}.jar`, `./forge/build/libs/${newName}.jar`);
-            return newName;
-
-
-      - name: Upload to release
-        uses: JasonEtco/upload-to-release@master
-        with:
-          args: ./forge/build/libs/${{ steps.forgefname.outputs.result }}.jar application/jar
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - uses: actions/github-script@v2
-        id: fabricfname
-        with:
-          result-encoding: string
-          script: |
-            const fs = require("fs")
-            const fname = fs.readdirSync("./fabric/build/libs/").filter(e => !e.endsWith("dev.jar") && !e.endsWith("sources.jar") && e.endsWith(".jar"))[0].replace(".jar", "");
-            const newName = fname.split("-").splice(1, 0, "fabric").join("-");
-            fs.renameSync(`./fabric/build/libs/${fname}.jar`, `./fabric/build/libs/${newName}.jar`);
-            return newName;
-
-      - name: Upload to release
-        uses: JasonEtco/upload-to-release@master
-        with:
-          args: ./fabric/build/libs/${{ steps.fabricfname.outputs.result }}.jar application/jar
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  deploy_1_17:
+    uses: wagyourtail/jsmacros/.github/workflows/releasedeploy.yml@main-1.18
+    with:
+      branch: backport-1.17.1
+      cf_data_fabric: 73242:1.17.1,2:Java 16,68441:Fabric
+      cf_data_forge: 73242:1.17.1,2:Java 16,7498:Forge
+    secrets:
+      CF_API_KEY: ${{ secrets.CF_API_KEY }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    needs:
+      - build_1_17
