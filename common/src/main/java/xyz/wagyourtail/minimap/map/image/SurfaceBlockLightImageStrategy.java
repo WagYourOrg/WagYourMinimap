@@ -1,6 +1,7 @@
 package xyz.wagyourtail.minimap.map.image;
 
 import com.mojang.blaze3d.platform.NativeImage;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.world.level.Level;
 import xyz.wagyourtail.minimap.chunkdata.ChunkData;
@@ -9,16 +10,10 @@ import xyz.wagyourtail.minimap.chunkdata.parts.SurfaceDataPart;
 
 import java.awt.*;
 
-public class BlockLightImageStrategy extends AbstractImageStrategy {
-
+public record SurfaceBlockLightImageStrategy(boolean lightOverlayInNether) implements ImageStrategy {
+    private static final Minecraft minecraft = Minecraft.getInstance();
     private static final int TICKS_PER_DAY = 24000;
     private static final float HUE = 50F / 360F;
-
-    private final boolean lightOverlayInNether;
-
-    public BlockLightImageStrategy(boolean lightOverlayInNether) {
-        this.lightOverlayInNether = lightOverlayInNether;
-    }
 
     @Override
     public DynamicTexture load(ChunkLocation location, ChunkData key) {
@@ -37,6 +32,7 @@ public class BlockLightImageStrategy extends AbstractImageStrategy {
     }
 
     private int colorForLightLevel(byte lightLevel) {
+        //TODO: don't use awt color it's slow
         return Color.HSBtoRGB(HUE, 1F, lightLevel / 15F);
     }
 

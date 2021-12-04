@@ -5,7 +5,7 @@ import dev.architectury.event.EventFactory;
 import xyz.wagyourtail.minimap.chunkdata.ChunkData;
 import xyz.wagyourtail.minimap.chunkdata.ChunkLocation;
 import xyz.wagyourtail.minimap.chunkdata.parts.DataPart;
-import xyz.wagyourtail.minimap.chunkdata.updater.AbstractChunkUpdateStrategy;
+import xyz.wagyourtail.minimap.chunkdata.updater.AbstractChunkDataUpdater;
 import xyz.wagyourtail.minimap.map.MapServer;
 import xyz.wagyourtail.minimap.waypoint.Waypoint;
 
@@ -17,7 +17,7 @@ public class MinimapEvents {
     public static final Event<WaypointUpdated> WAYPOINT_UPDATED = EventFactory.createLoop();
 
     public interface ChunkUpdated {
-        void onChunkUpdate(ChunkLocation location, ChunkData chunkData, Class<? extends AbstractChunkUpdateStrategy> strategy, Class<? extends DataPart<?>> dataPart);
+        void onChunkUpdate(ChunkLocation location, ChunkData chunkData, Class<? extends AbstractChunkDataUpdater> strategy, Class<? extends DataPart<?>> dataPart);
 
     }
 

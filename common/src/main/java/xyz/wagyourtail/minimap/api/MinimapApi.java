@@ -6,7 +6,7 @@ import dev.architectury.platform.Platform;
 import xyz.wagyourtail.config.ConfigManager;
 import xyz.wagyourtail.minimap.api.config.MinimapConfig;
 import xyz.wagyourtail.minimap.chunkdata.cache.CacheManager;
-import xyz.wagyourtail.minimap.chunkdata.updater.AbstractChunkUpdateStrategy;
+import xyz.wagyourtail.minimap.chunkdata.updater.AbstractChunkDataUpdater;
 import xyz.wagyourtail.minimap.map.MapServer;
 
 import java.lang.reflect.InvocationTargetException;
@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public abstract class MinimapApi {
     public static final AtomicInteger saving = new AtomicInteger(0);
     protected static MinimapApi INSTANCE;
-    protected final Map<Class<? extends AbstractChunkUpdateStrategy>, AbstractChunkUpdateStrategy> chunkUpdateStrategies = new HashMap<>();
+    protected final Map<Class<? extends AbstractChunkDataUpdater>, AbstractChunkDataUpdater> chunkUpdateStrategies = new HashMap<>();
     public final CacheManager cacheManager = new CacheManager();
     public final Path configFolder = Platform.getConfigFolder().resolve("WagYourMinimap");
     public final Gson gson = new GsonBuilder().setPrettyPrinting().create();
@@ -35,7 +35,11 @@ public abstract class MinimapApi {
         return INSTANCE;
     }
 
-    public void registerChunkUpdateStrategy(Class<? extends AbstractChunkUpdateStrategy> chunkUpdateStrategy) {
+    public <T> T getChunkUpdateStrategy(Class<T> clazz) {
+        return (T) chunkUpdateStrategies.get(clazz);
+    }
+
+    public void registerChunkUpdateStrategy(Class<? extends AbstractChunkDataUpdater> chunkUpdateStrategy) {
         chunkUpdateStrategies.computeIfAbsent(chunkUpdateStrategy, (cus) -> {
             try {
                 return cus.getConstructor().newInstance();

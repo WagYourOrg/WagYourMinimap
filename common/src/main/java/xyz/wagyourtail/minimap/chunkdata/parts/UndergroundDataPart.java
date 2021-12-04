@@ -4,7 +4,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import xyz.wagyourtail.minimap.chunkdata.ChunkData;
-import xyz.wagyourtail.minimap.chunkdata.updater.UndergroundScanner;
+import xyz.wagyourtail.minimap.chunkdata.updater.UndergroundDataUpdater;
 import xyz.wagyourtail.minimap.map.MapServer;
 
 import java.nio.ByteBuffer;
@@ -29,13 +29,14 @@ public class UndergroundDataPart extends DataPart<UndergroundDataPart> {
     public UndergroundDataPart(ChunkData parent) {
         super(parent);
         MapServer.MapLevel level = parent.location.level();
-        this.sectionHeight = UndergroundScanner.sectionHeight;
+        this.sectionHeight = UndergroundDataUpdater.sectionHeight;
         data = new Data[(level.maxHeight() - level.minHeight()) / sectionHeight + 1];
     }
 
     @Override
-    public void mergeFrom(UndergroundDataPart other) {
+    public boolean mergeFrom(UndergroundDataPart other) {
         // unused
+        return false;
     }
 
     @Override
@@ -110,6 +111,6 @@ public class UndergroundDataPart extends DataPart<UndergroundDataPart> {
         return biomes.get(i - 1);
     }
 
-    public static record Data(int[] blockid, int[] heightmap, int[] lightmap, int[] biomeid) {}
+    public static record Data(int[] blockid, int[] heightmap, byte[] lightmap, int[] biomeid) {}
 
 }

@@ -9,16 +9,16 @@ import net.minecraft.client.renderer.texture.DynamicTexture;
 import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
 import xyz.wagyourtail.minimap.chunkdata.ChunkLocation;
 import xyz.wagyourtail.minimap.map.MapServer;
-import xyz.wagyourtail.minimap.map.image.AbstractImageStrategy;
-import xyz.wagyourtail.minimap.map.image.BlockLightImageStrategy;
+import xyz.wagyourtail.minimap.map.image.ImageStrategy;
+import xyz.wagyourtail.minimap.map.image.SurfaceBlockLightImageStrategy;
 import xyz.wagyourtail.minimap.map.image.VanillaMapImageStrategy;
 
 import java.util.concurrent.ExecutionException;
 
 public abstract class AbstractMapRenderer {
     public static final Minecraft minecraft = Minecraft.getInstance();
-    private AbstractImageStrategy[] rendererLayers = new AbstractImageStrategy[] {
-        new VanillaMapImageStrategy(), new BlockLightImageStrategy(false)
+    private ImageStrategy[] rendererLayers = new ImageStrategy[] {
+        new VanillaMapImageStrategy(), new SurfaceBlockLightImageStrategy(false)
     };
 
     public static void drawTexSideways(PoseStack matrixStack, float x, float y, float width, float height, float startU, float startV, float endU, float endV) {
@@ -57,11 +57,11 @@ public abstract class AbstractMapRenderer {
         BufferUploader.end(builder);
     }
 
-    public AbstractImageStrategy[] getRenderLayers() {
+    public ImageStrategy[] getRenderLayers() {
         return rendererLayers;
     }
 
-    public void setRenderLayers(AbstractImageStrategy... strategy) {
+    public void setRenderLayers(ImageStrategy... strategy) {
         this.rendererLayers = strategy;
     }
 
@@ -89,19 +89,21 @@ public abstract class AbstractMapRenderer {
     }
 
     private boolean drawChunk(PoseStack matrixStack, ChunkLocation chunk, float x, float y, float width, float height, float startU, float startV, float endU, float endV) {
-        for (AbstractImageStrategy rendererLayer : rendererLayers) {
+        boolean ret = false;
+        for (ImageStrategy rendererLayer : rendererLayers) {
             if (!rendererLayer.shouldRender()) {
                 continue;
             }
             if (!bindChunkTex(chunk, rendererLayer)) {
-                return false;
+                continue;
             }
+            ret = true;
             drawTex(matrixStack, x, y, width, height, startU, startV, endU, endV);
         }
-        return true;
+        return ret;
     }
 
-    private static boolean bindChunkTex(ChunkLocation chunkData, AbstractImageStrategy renderer) {
+    private static boolean bindChunkTex(ChunkLocation chunkData, ImageStrategy renderer) {
         try {
             DynamicTexture image = renderer.getImage(chunkData);
             if (image == null) {

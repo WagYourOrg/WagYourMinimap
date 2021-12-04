@@ -20,7 +20,7 @@ import xyz.wagyourtail.minimap.client.gui.screen.map.AbstractFullscreenOverlay;
 import xyz.wagyourtail.minimap.client.gui.screen.map.ScreenMapRenderer;
 import xyz.wagyourtail.minimap.client.gui.screen.widget.InteractMenu;
 import xyz.wagyourtail.minimap.client.gui.screen.widget.MenuButton;
-import xyz.wagyourtail.minimap.map.image.AbstractImageStrategy;
+import xyz.wagyourtail.minimap.map.image.ImageStrategy;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -139,7 +139,7 @@ public class MapScreen extends Screen {
                 .getConfig()
                 .get(MinimapClientConfig.class).fullscreenMapStyle.layers)
             .map(AbstractLayerOptions::compileLayer)
-            .toArray(AbstractImageStrategy[]::new));
+            .toArray(ImageStrategy[]::new));
         renderer.computeDimensions(width, height);
         renderer.moveCenter(minecraft.player.position());
 

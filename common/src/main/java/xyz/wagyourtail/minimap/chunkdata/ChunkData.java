@@ -189,27 +189,37 @@ public class ChunkData {
     }
 
     public <T> T computeDerivative(String key, Supplier<T> supplier) {
-        return (T) derivatives.compute(key, (k, v) -> {
+        return (T) Optional.ofNullable(derivatives.compute(key, (k, v) -> {
             if (v == null) {
-                v = new Derivative<>(false, supplier.get());
+                T t = supplier.get();
+                if (t == null) return null;
+                v = new Derivative<>(false, t);
             }
             if (v.old) {
+                T t = supplier.get();
+                if (t == null) return v;
                 v.old = false;
-                ((Derivative<T>) v).setContained(supplier.get());
+                ((Derivative<T>) v).setContained(t);
             }
             return v;
-        }).getContained();
+        })).map(Derivative::getContained).orElse(null);
     }
 
     public void markDirty() {
         changed = true;
-        invalidateDerivitives();
         MapServer.addToSaveQueue(this::save);
     }
 
-    public void invalidateDerivitives() {
-        for (Derivative<?> der : derivatives.values()) {
-            der.old = true;
+    /**
+     * invalidates derivitives whose keys start with the given prefixes
+     *
+     * @param prefixes
+     */
+    public void invalidateDerivitives(Set<String> prefixes) {
+        for (Map.Entry<String, Derivative<?>> der : derivatives.entrySet()) {
+            if (prefixes.stream().anyMatch(e -> e.contains(der.getKey()))) {
+                der.getValue().old = true;
+            }
         }
     }
 

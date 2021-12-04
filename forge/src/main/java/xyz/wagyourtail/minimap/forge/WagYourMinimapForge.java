@@ -13,8 +13,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import xyz.wagyourtail.minimap.WagYourMinimap;
-import xyz.wagyourtail.minimap.chunkdata.updater.BlockUpdateStrategy;
-import xyz.wagyourtail.minimap.chunkdata.updater.ChunkLoadStrategy;
+import xyz.wagyourtail.minimap.chunkdata.updater.AbstractChunkDataUpdater;
 import xyz.wagyourtail.minimap.client.WagYourMinimapClient;
 import xyz.wagyourtail.minimap.client.gui.screen.SettingsScreen;
 import xyz.wagyourtail.minimap.client.world.InGameWaypointRenderer;
@@ -37,12 +36,12 @@ public class WagYourMinimapForge {
 
     @SubscribeEvent
     public void onBlockUpdate(BlockEvent block) {
-        BlockUpdateStrategy.BLOCK_UPDATE_EVENT.invoker().onBlockUpdate(block.getPos(), (Level) block.getWorld());
+        AbstractChunkDataUpdater.BLOCK_UPDATE.invoker().onBlockUpdate(block.getPos(), (Level) block.getWorld());
     }
 
     @SubscribeEvent
     public void onChunkLoad(ChunkEvent.Load load) {
-        ChunkLoadStrategy.LOAD.invoker().onLoadChunk(load.getChunk(), (Level) load.getWorld());
+        AbstractChunkDataUpdater.CHUNK_LOAD.invoker().onLoadChunk(load.getChunk(), (Level) load.getWorld());
     }
 
     @SubscribeEvent

@@ -2,7 +2,7 @@ package xyz.wagyourtail.minimap.client.gui;
 
 import xyz.wagyourtail.minimap.client.gui.hud.map.AbstractMinimapRenderer;
 import xyz.wagyourtail.minimap.client.gui.hud.overlay.AbstractMinimapOverlay;
-import xyz.wagyourtail.minimap.map.image.AbstractImageStrategy;
+import xyz.wagyourtail.minimap.map.image.ImageStrategy;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +10,7 @@ import java.util.List;
 public class MapRendererBuilder<T extends AbstractMinimapRenderer> {
 
     private final T mapRenderer;
-    private final List<AbstractImageStrategy> renderLayers = new ArrayList<>();
+    private final List<ImageStrategy> renderLayers = new ArrayList<>();
     private final List<AbstractMinimapOverlay> overlays = new ArrayList<>();
 
 
@@ -22,7 +22,7 @@ public class MapRendererBuilder<T extends AbstractMinimapRenderer> {
         return new MapRendererBuilder<>(mapRenderer);
     }
 
-    public MapRendererBuilder<T> addRenderLayer(AbstractImageStrategy renderLayer) {
+    public MapRendererBuilder<T> addRenderLayer(ImageStrategy renderLayer) {
         renderLayers.add(renderLayer);
         return this;
     }
@@ -37,7 +37,7 @@ public class MapRendererBuilder<T extends AbstractMinimapRenderer> {
     }
 
     public T build() {
-        mapRenderer.setRenderLayers(renderLayers.toArray(AbstractImageStrategy[]::new));
+        mapRenderer.setRenderLayers(renderLayers.toArray(ImageStrategy[]::new));
         mapRenderer.setOverlays(overlays.toArray(AbstractMinimapOverlay[]::new));
         return mapRenderer;
     }

@@ -45,7 +45,7 @@ public class SurfaceDataPart extends DataPart<SurfaceDataPart> {
     }
 
     @Override
-    public void mergeFrom(SurfaceDataPart other) {
+    public boolean mergeFrom(SurfaceDataPart other) {
         if (other.parent.updateTime >= this.parent.updateTime) {
             this.parent.updateTime = other.parent.updateTime;
             this.parent.changed = true;
@@ -82,7 +82,9 @@ public class SurfaceDataPart extends DataPart<SurfaceDataPart> {
             if (changed) {
                 parent.markDirty();
             }
+            return changed;
         }
+        return false;
     }
 
     @Override

@@ -2,10 +2,7 @@ package xyz.wagyourtail.minimap.api.client.config.style;
 
 import xyz.wagyourtail.config.field.Setting;
 import xyz.wagyourtail.minimap.api.client.MinimapClientEvents;
-import xyz.wagyourtail.minimap.api.client.config.layers.AbstractLayerOptions;
-import xyz.wagyourtail.minimap.api.client.config.layers.AccurateMapLayer;
-import xyz.wagyourtail.minimap.api.client.config.layers.LightLayer;
-import xyz.wagyourtail.minimap.api.client.config.layers.VanillaMapLayer;
+import xyz.wagyourtail.minimap.api.client.config.layers.*;
 import xyz.wagyourtail.minimap.api.client.config.overlay.AbstractOverlaySettings;
 import xyz.wagyourtail.minimap.api.client.config.overlay.ArrowOverlaySettings;
 import xyz.wagyourtail.minimap.api.client.config.overlay.MobIconOverlaySettings;
@@ -17,10 +14,7 @@ import xyz.wagyourtail.minimap.client.gui.hud.map.WaypointOverlay;
 import xyz.wagyourtail.minimap.client.gui.hud.overlay.AbstractMinimapOverlay;
 import xyz.wagyourtail.minimap.client.gui.hud.overlay.MobIconOverlay;
 import xyz.wagyourtail.minimap.client.gui.hud.overlay.PlayerArrowOverlay;
-import xyz.wagyourtail.minimap.map.image.AbstractImageStrategy;
-import xyz.wagyourtail.minimap.map.image.AccurateMapImageStrategy;
-import xyz.wagyourtail.minimap.map.image.BlockLightImageStrategy;
-import xyz.wagyourtail.minimap.map.image.VanillaMapImageStrategy;
+import xyz.wagyourtail.minimap.map.image.*;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
@@ -35,7 +29,7 @@ public abstract class AbstractMinimapStyle<T extends AbstractMinimapRenderer> {
 
     public Map<Class<? extends AbstractMinimapOverlay>, Class<? extends AbstractOverlaySettings>> availableOverlays = new ConcurrentHashMap<>();
 
-    public Map<Class<? extends AbstractImageStrategy>, Class<? extends AbstractLayerOptions>> availableLayers = new ConcurrentHashMap<>();
+    public Map<Class<? extends ImageStrategy>, Class<? extends AbstractLayerOptions>> availableLayers = new ConcurrentHashMap<>();
 
     @Setting(value = "gui.wagyourminimap.settings.style.overlay", options = "overlayOptions", setter = "setOverlays")
     public AbstractOverlaySettings<?>[] overlays;
@@ -49,12 +43,15 @@ public abstract class AbstractMinimapStyle<T extends AbstractMinimapRenderer> {
     protected AbstractMinimapStyle(boolean rotate) {
         this.rotate = rotate;
         // default layers
-        layers = new AbstractLayerOptions[] {new VanillaMapLayer(), new LightLayer()};
+        layers = new AbstractLayerOptions[] {new VanillaMapLayer(), new LightLayer(), new UndergroundVanillaMapLayer(), new UndergroundAccurateMapLayer()};
 
         //layer register
         availableLayers.put(VanillaMapImageStrategy.class, VanillaMapLayer.class);
         availableLayers.put(AccurateMapImageStrategy.class, AccurateMapLayer.class);
-        availableLayers.put(BlockLightImageStrategy.class, LightLayer.class);
+        availableLayers.put(SurfaceBlockLightImageStrategy.class, LightLayer.class);
+        availableLayers.put(UndergroundVanillaImageStrategy.class, UndergroundVanillaMapLayer.class);
+        availableLayers.put(UndergroundAccurateImageStrategy.class, UndergroundAccurateMapLayer.class);
+        availableLayers.put(UndergroundBlockLightImageStrategy.class, UndergroundLightLayer.class);
 
         //overlay register
         availableOverlays.put(PlayerArrowOverlay.class, ArrowOverlaySettings.class);
@@ -83,7 +80,7 @@ public abstract class AbstractMinimapStyle<T extends AbstractMinimapRenderer> {
         this.layers = layers;
         InGameHud.getRenderer().setRenderLayers(Arrays.stream(layers)
             .map(AbstractLayerOptions::compileLayer)
-            .toArray(AbstractImageStrategy[]::new));
+            .toArray(ImageStrategy[]::new));
     }
 
     public T compileMapRenderer() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {

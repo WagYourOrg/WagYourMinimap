@@ -11,40 +11,53 @@ import net.minecraft.world.level.chunk.ChunkStatus;
 import net.minecraft.world.level.lighting.LayerLightEventListener;
 import xyz.wagyourtail.minimap.api.MinimapApi;
 import xyz.wagyourtail.minimap.chunkdata.ChunkData;
+import xyz.wagyourtail.minimap.chunkdata.ChunkLocation;
 import xyz.wagyourtail.minimap.chunkdata.parts.SurfaceDataPart;
 import xyz.wagyourtail.minimap.chunkdata.parts.UndergroundDataPart;
 import xyz.wagyourtail.minimap.map.MapServer;
+import xyz.wagyourtail.minimap.map.image.UndergroundVanillaImageStrategy;
 
-public class UndergroundScanner extends AbstractChunkUpdateStrategy<UndergroundDataPart> {
+import java.util.Set;
+
+public class UndergroundDataUpdater extends AbstractChunkDataUpdater<UndergroundDataPart> {
     public static int sectionHeight = 4;
 
+
+    public UndergroundDataUpdater() {
+        super(Set.of(UndergroundVanillaImageStrategy.class.getCanonicalName()));
+    }
+
     @Override
-    protected void registerEventListener() {
-//        BlockUpdateStrategy.BLOCK_UPDATE_EVENT.register((pos, level) -> {
-//            if (level != mc.level) {
-//                return;
-//            }
-//            MapServer.MapLevel mapLevel = MinimapApi.getInstance().getMapServer().getCurrentLevel();
-//            ChunkAccess chunk = level.getChunk(pos.getX() >> 4, pos.getZ() >> 4, ChunkStatus.FULL, false);
-//            if (chunk == null) {
-//                return;
-//            }
-//            updateChunk(
-//                getChunkLocation(mapLevel, chunk.getPos()),
-//                (loc, parent, oldData) -> {
-//                    if (oldData == null || oldData.sectionHeight != sectionHeight) {
-//                        return oldData;
-//                    }
-//                    for (int y = pos.getY() / sectionHeight; y < oldData.data.length; y++) {
-//                        if (oldData.data[y] != null) {
-//                            if (oldData.data[y].heightmap()[SurfaceDataPart.blockPosToIndex(pos)] > pos.getY()) break;
-//                            scanPart(level, chunk, parent, oldData, y);
-//                        }
-//                    }
-//                    return oldData;
-//                }
-//            );
-//        });
+    public void onBlockUpdate(BlockPos pos, Level level) {
+        if (level != mc.level) {
+            return;
+        }
+        MapServer.MapLevel mapLevel = MinimapApi.getInstance().getMapServer().getCurrentLevel();
+        ChunkAccess chunk = level.getChunk(pos.getX() >> 4, pos.getZ() >> 4, ChunkStatus.FULL, false);
+        if (chunk == null) {
+            return;
+        }
+        updateChunk(
+            getChunkLocation(mapLevel, chunk.getPos()),
+            (loc, parent, oldData) -> {
+                //TODO: yCol updater like in SurfaceDataUpdater
+                if (oldData == null || oldData.sectionHeight != sectionHeight) {
+                    return oldData;
+                }
+                for (int y = (pos.getY() + level.dimensionType().minY()) / sectionHeight; y < oldData.data.length; y++) {
+                    if (oldData.data[y] != null) {
+                        if (oldData.data[y].heightmap()[SurfaceDataPart.blockPosToIndex(pos)] > pos.getY()) break;
+                        scanPart(level, chunk, parent, oldData, y);
+                    }
+                }
+                return oldData;
+            }
+        );
+    }
+
+    @Override
+    public void onLoadChunk(ChunkAccess chunk, Level level) {
+        //NOPE
     }
 
     @Override
@@ -66,15 +79,16 @@ public class UndergroundScanner extends AbstractChunkUpdateStrategy<UndergroundD
 
         UndergroundDataPart.Data d = data.data[sectionY];
         if (d == null) {
-            d = new UndergroundDataPart.Data(new int[256], new int[256], new int[256], new int[256]);
+            d = new UndergroundDataPart.Data(new int[256], new int[256], new byte[256], new int[256]);
             data.data[sectionY] = d;
         }
 
         int[] blockid = d.blockid();
         int[] heightmap = d.heightmap();
         int[] biomeid = d.biomeid();
-        int[] lightmap = d.lightmap();
+        byte[] lightmap = d.lightmap();
 
+        int minHeight = level.dimensionType().minY();
 
         for (int i = 0; i < 256; ++i) {
             int x = (i >> 4) % 16;
@@ -82,22 +96,23 @@ public class UndergroundScanner extends AbstractChunkUpdateStrategy<UndergroundD
             blockPos.set((pos.x << 4) + x, 0, (pos.z << 4) + z);
             boolean air = false;
             for (int y = sectionMax; y >= sectionMin; --y) {
-                if (chunk.getBlockState(blockPos.setY(y)).isAir()) {
+                BlockState state = chunk.getBlockState(blockPos.setY(y + minHeight));
+                if (state.isAir() || !state.getFluidState().isEmpty()) {
                     air = true;
                     break;
                 }
             }
             if (air) {
                 int y = blockPos.getY();
-                while (y > chunk.getMinBuildHeight()) {
+                while (y > minHeight) {
                     BlockState state = chunk.getBlockState(blockPos.setY(--y));
                     if (!state.isAir()) {
                         blockid[i] = data.getOrRegisterBlockState(state);
                         heightmap[i] = y;
-                        biomeid[i] = data.getOrRegisterBiome(biomeRegistry.getKey(chunk
-                            .getNoiseBiome(x >> 2, y >> 2, z >> 2)
+                        biomeid[i] = data.getOrRegisterBiome(biomeRegistry.getKey(
+                            chunk.getNoiseBiome(x >> 2, y >> 2, z >> 2)
                         ));
-                        lightmap[i] = light.getLightValue(blockPos.setY(y + 1));
+                        lightmap[i] = (byte) light.getLightValue(blockPos.setY(y + 1));
                         break;
                     }
                 }
@@ -110,7 +125,7 @@ public class UndergroundScanner extends AbstractChunkUpdateStrategy<UndergroundD
 
         }
 
-        parent.invalidateDerivitives();
+        parent.invalidateDerivitives(derivitivesToInvalidate);
         return data;
     }
 
@@ -120,6 +135,16 @@ public class UndergroundScanner extends AbstractChunkUpdateStrategy<UndergroundD
             getChunkLocation(mapLevel, chunk.getPos()),
             (loc, parent, oldData) -> scanPart(level, chunk, parent, oldData, sectionY)
         );
+    }
+
+    public void scan(Level level, ChunkLocation location, int sectionY) {
+        ChunkAccess chunk = level.getChunk(location.getChunkX(), location.getChunkZ(), ChunkStatus.FULL, false);
+        if (chunk != null) {
+            updateChunk(
+                location,
+                (loc, parent, oldData) -> scanPart(level, chunk, parent, oldData, sectionY)
+            );
+        }
     }
 
 }

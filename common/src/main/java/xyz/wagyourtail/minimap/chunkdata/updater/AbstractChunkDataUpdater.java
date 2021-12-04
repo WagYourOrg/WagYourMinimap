@@ -1,5 +1,7 @@
 package xyz.wagyourtail.minimap.chunkdata.updater;
 
+import dev.architectury.event.Event;
+import dev.architectury.event.EventFactory;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
@@ -11,14 +13,25 @@ import xyz.wagyourtail.minimap.chunkdata.ChunkLocation;
 import xyz.wagyourtail.minimap.chunkdata.parts.DataPart;
 import xyz.wagyourtail.minimap.map.MapServer;
 
-public abstract class AbstractChunkUpdateStrategy<T extends DataPart<T>> {
-    protected static final Minecraft mc = Minecraft.getInstance();
+import java.util.HashSet;
+import java.util.Set;
 
-    public AbstractChunkUpdateStrategy() {
+public abstract class AbstractChunkDataUpdater<T extends DataPart<T>> implements ChunkLoadEvent, BlockUpdateEvent {
+    protected static final Minecraft mc = Minecraft.getInstance();
+    public static final Event<ChunkLoadEvent> CHUNK_LOAD = EventFactory.createLoop();
+    public static final Event<BlockUpdateEvent> BLOCK_UPDATE = EventFactory.createLoop();
+
+    public final Set<String> derivitivesToInvalidate = new HashSet<>();
+
+    public AbstractChunkDataUpdater(Set<String> derivitivesToInvalidate) {
         registerEventListener();
+        this.derivitivesToInvalidate.addAll(derivitivesToInvalidate);
     }
 
-    protected abstract void registerEventListener();
+    protected void registerEventListener() {
+        CHUNK_LOAD.register(this);
+        BLOCK_UPDATE.register(this);
+    }
 
     protected static LayerLightEventListener getBlockLightLayer(Level level) {
         return level.getLightEngine().getLayerListener(LightLayer.BLOCK);
@@ -42,7 +55,7 @@ public abstract class AbstractChunkUpdateStrategy<T extends DataPart<T>> {
         return ChunkLocation.locationForChunkPos(level, pos);
     }
 
-    public interface ChunkUpdateListener<T extends DataPart<T>> {
+    public static interface ChunkUpdateListener<T extends DataPart<T>> {
         T onChunkUpdate(ChunkLocation location, ChunkData data, T oldData);
 
     }

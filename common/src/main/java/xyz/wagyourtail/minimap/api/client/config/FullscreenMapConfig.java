@@ -9,9 +9,9 @@ import xyz.wagyourtail.minimap.api.client.config.layers.LightLayer;
 import xyz.wagyourtail.minimap.api.client.config.layers.VanillaMapLayer;
 import xyz.wagyourtail.minimap.api.client.config.overlay.fullscreen.*;
 import xyz.wagyourtail.minimap.client.gui.screen.map.*;
-import xyz.wagyourtail.minimap.map.image.AbstractImageStrategy;
+import xyz.wagyourtail.minimap.map.image.ImageStrategy;
 import xyz.wagyourtail.minimap.map.image.AccurateMapImageStrategy;
-import xyz.wagyourtail.minimap.map.image.BlockLightImageStrategy;
+import xyz.wagyourtail.minimap.map.image.SurfaceBlockLightImageStrategy;
 import xyz.wagyourtail.minimap.map.image.VanillaMapImageStrategy;
 
 import java.util.Arrays;
@@ -21,7 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @SettingsContainer("gui.wagyourminimap.settings.fullscreen_map")
 public class FullscreenMapConfig {
-    public Map<Class<? extends AbstractImageStrategy>, Class<? extends AbstractLayerOptions>> availableLayers = new ConcurrentHashMap<>();
+    public Map<Class<? extends ImageStrategy>, Class<? extends AbstractLayerOptions>> availableLayers = new ConcurrentHashMap<>();
 
     public Map<Class<? extends AbstractFullscreenOverlay>, Class<? extends AbstractFullscreenOverlaySettings>> availableOverlays = new ConcurrentHashMap<>();
 
@@ -41,7 +41,7 @@ public class FullscreenMapConfig {
 
         availableLayers.put(VanillaMapImageStrategy.class, VanillaMapLayer.class);
         availableLayers.put(AccurateMapImageStrategy.class, AccurateMapLayer.class);
-        availableLayers.put(BlockLightImageStrategy.class, LightLayer.class);
+        availableLayers.put(SurfaceBlockLightImageStrategy.class, LightLayer.class);
 
         availableOverlays.put(DataOverlay.class, DataOverlaySettings.class);
         availableOverlays.put(PlayerIconOverlay.class, PlayerIconSettings.class);
@@ -66,7 +66,7 @@ public class FullscreenMapConfig {
         try {
             MinimapClientApi.getInstance().screen.renderer.setRenderLayers(Arrays.stream(layers)
                 .map(AbstractLayerOptions::compileLayer)
-                .toArray(AbstractImageStrategy[]::new));
+                .toArray(ImageStrategy[]::new));
         } catch (NullPointerException ignored) {
         }
     }

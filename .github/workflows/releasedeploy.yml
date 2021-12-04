@@ -64,7 +64,7 @@ jobs:
         uses: itsmeow/curseforge-upload@v3
         with:
           token: ${{ secrets.CF_API_KEY }}
-          project_id: 403185
+          project_id: 551897
           game_endpoint: minecraft
           file_path: ./${{ steps.fabric_release.outputs.result }}
           changelog: See the github release for changes.
@@ -78,7 +78,7 @@ jobs:
         uses: itsmeow/curseforge-upload@v3
         with:
           token: ${{ secrets.CF_API_KEY }}
-          project_id: 403185
+          project_id: 551897
           game_endpoint: minecraft
           file_path: ./${{ steps.forge_release.outputs.result }}
           changelog: See the github release for changes.

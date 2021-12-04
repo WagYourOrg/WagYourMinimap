@@ -2,13 +2,13 @@ package xyz.wagyourtail.minimap.map.image;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.LightLayer;
-import xyz.wagyourtail.minimap.map.image.colors.VanillaBlockColors;
+import xyz.wagyourtail.minimap.map.image.colors.AccurateBlockColors;
 import xyz.wagyourtail.minimap.map.image.imager.UndergroundImager;
 
-public class UndergroundVanillaImageStrategy extends VanillaBlockColors implements UndergroundImager {
+public class UndergroundAccurateImageStrategy extends AccurateBlockColors implements UndergroundImager {
     protected final int lightLevel;
 
-    public UndergroundVanillaImageStrategy(int lightLevel) {
+    public UndergroundAccurateImageStrategy(int lightLevel) {
         this.lightLevel = lightLevel;
     }
 
@@ -19,5 +19,4 @@ public class UndergroundVanillaImageStrategy extends VanillaBlockColors implemen
         int light = UndergroundImager.minecraft.level.getLightEngine().getLayerListener(LightLayer.SKY).getLightValue(new BlockPos(UndergroundImager.minecraft.player.getPosition(0)));
         return light < this.lightLevel;
     }
-
 }

@@ -1,6 +1,7 @@
 package xyz.wagyourtail.minimap.map.image;
 
 import com.mojang.blaze3d.platform.NativeImage;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
@@ -9,7 +10,11 @@ import xyz.wagyourtail.minimap.chunkdata.ChunkData;
 import xyz.wagyourtail.minimap.chunkdata.ChunkLocation;
 import xyz.wagyourtail.minimap.chunkdata.parts.SurfaceDataPart;
 
-public class BiomeStrategy extends AbstractImageStrategy {
+public class BiomeStrategy implements ImageStrategy {
+    protected static final Minecraft minecraft = Minecraft.getInstance();
+
+
+    //TODO: finish, fix, and test
     @Override
     public DynamicTexture load(ChunkLocation location, ChunkData data) {
         SurfaceDataPart surface = data.getData(SurfaceDataPart.class).orElse(null);
