@@ -1,6 +1,7 @@
 package xyz.wagyourtail.minimap.client.gui.hud.map;
 
 import xyz.wagyourtail.config.field.SettingsContainer;
+import xyz.wagyourtail.minimap.client.gui.hud.overlay.rotate.NorthIconOverlay;
 
 import java.util.Set;
 

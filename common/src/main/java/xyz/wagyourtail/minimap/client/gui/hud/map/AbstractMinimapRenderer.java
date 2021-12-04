@@ -21,6 +21,7 @@ import xyz.wagyourtail.minimap.client.gui.hud.overlay.AbstractMinimapOverlay;
 import xyz.wagyourtail.minimap.client.gui.hud.overlay.MobIconOverlay;
 import xyz.wagyourtail.minimap.client.gui.hud.overlay.PlayerArrowOverlay;
 import xyz.wagyourtail.minimap.client.gui.hud.overlay.WaypointOverlay;
+import xyz.wagyourtail.minimap.client.gui.hud.overlay.rotate.NorthIconOverlay;
 import xyz.wagyourtail.minimap.map.image.ImageStrategy;
 import xyz.wagyourtail.minimap.map.image.UndergroundAccurateImageStrategy;
 import xyz.wagyourtail.minimap.map.image.UndergroundBlockLightImageStrategy;
@@ -57,6 +58,9 @@ public abstract class AbstractMinimapRenderer extends AbstractMapRenderer {
         this.scaleBy = scaleBy;
         this.hasStencil = hasStencil;
         this.availableOverlays.addAll(overlays);
+        if (rotate) {
+            this.availableOverlays.add(NorthIconOverlay.class);
+        }
         MinimapClientEvents.AVAILABLE_MINIMAP_OPTIONS.invoker().onOptions(this, availableLayers, availableOverlays);
 
         this.overlays = getDefaultOverlays().toArray(new AbstractMinimapOverlay[0]);
@@ -345,7 +349,15 @@ public abstract class AbstractMinimapRenderer extends AbstractMapRenderer {
     }
 
     public List<AbstractMinimapOverlay> getDefaultOverlays() {
-        return List.of(new PlayerArrowOverlay(this), new WaypointOverlay(this), new MobIconOverlay(this));
+        List<AbstractMinimapOverlay> overlays = new ArrayList<>(List.of(
+            new PlayerArrowOverlay(this),
+            new WaypointOverlay(this),
+            new MobIconOverlay(this)
+        ));
+        if (rotate) {
+            overlays.add(new NorthIconOverlay(this));
+        }
+        return overlays;
     }
 
 

@@ -5,6 +5,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
+import xyz.wagyourtail.config.field.SettingsContainer;
 import xyz.wagyourtail.minimap.WagYourMinimap;
 import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
 import xyz.wagyourtail.minimap.api.client.config.MinimapClientConfig;
@@ -12,6 +13,7 @@ import xyz.wagyourtail.minimap.client.gui.AbstractMapRenderer;
 import xyz.wagyourtail.minimap.client.gui.hud.map.AbstractMinimapRenderer;
 import xyz.wagyourtail.minimap.client.gui.hud.overlay.AbstractMinimapOverlay;
 
+@SettingsContainer("gui.wagyourminimap.settings.overlay.north_icon")
 public class NorthIconOverlay extends AbstractMinimapOverlay {
     private static final ResourceLocation north_tex = new ResourceLocation(
         WagYourMinimap.MOD_ID,
