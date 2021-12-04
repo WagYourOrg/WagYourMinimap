@@ -52,8 +52,4 @@ public class WagYourMinimapForge {
             renderEvent.getStartNanos()
         );
     }
-
-    @SubscribeEvent
-    public void onPlayerDeath()
-
 }
