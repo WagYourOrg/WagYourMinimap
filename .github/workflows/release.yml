@@ -10,19 +10,19 @@ on:
 
 jobs:
   build_1_18:
-    uses: wagyourtail/jsmacros/.github/workflows/releasebuild.yml@main-1.18
+    uses: wagyourtail/wagyourminimap/.github/workflows/releasebuild.yml@main-1.18
     with:
       branch: main-1.18
       java_version: 17
 
   build_1_17:
-    uses: wagyourtail/jsmacros/.github/workflows/releasebuild.yml@main-1.18
+    uses: wagyourtail/wagyourminimap/.github/workflows/releasebuild.yml@main-1.18
     with:
       branch: backport-1.17.1
       java_version: 16
 
   deploy_1_18:
-    uses: wagyourtail/jsmacros/.github/workflows/releasedeploy.yml@main-1.18
+    uses: wagyourtail/wagyourminimap/.github/workflows/releasedeploy.yml@main-1.18
     with:
       branch: main-1.18
       cf_data_fabric: 73250:1.18.1,2:Java 17,68441:Fabric
@@ -35,7 +35,7 @@ jobs:
       - deploy_1_17
 
   deploy_1_17:
-    uses: wagyourtail/jsmacros/.github/workflows/releasedeploy.yml@main-1.18
+    uses: wagyourtail/wagyourminimap/.github/workflows/releasedeploy.yml@main-1.18
     with:
       branch: backport-1.17.1
       cf_data_fabric: 73242:1.17.1,2:Java 16,68441:Fabric
