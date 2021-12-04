@@ -118,7 +118,7 @@ public class UndergroundDataUpdater extends AbstractChunkDataUpdater<Underground
                 }
             } else {
                 blockid[i] = 0;
-                heightmap[i] = sectionMax;
+                heightmap[i] = sectionMax + minHeight;
                 biomeid[i] = 0;
                 lightmap[i] = 0;
             }
