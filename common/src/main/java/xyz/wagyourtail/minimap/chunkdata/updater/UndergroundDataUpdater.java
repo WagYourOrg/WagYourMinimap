@@ -44,7 +44,7 @@ public class UndergroundDataUpdater extends AbstractChunkDataUpdater<Underground
                 if (oldData == null || oldData.sectionHeight != sectionHeight) {
                     return oldData;
                 }
-                for (int y = (pos.getY() + level.dimensionType().minY()) / sectionHeight; y < oldData.data.length; y++) {
+                for (int y = (pos.getY() - level.dimensionType().minY()) / sectionHeight; y < oldData.data.length; y++) {
                     if (oldData.data[y] != null) {
                         if (oldData.data[y].heightmap()[SurfaceDataPart.blockPosToIndex(pos)] > pos.getY()) break;
                         scanPart(level, chunk, parent, oldData, y);
@@ -95,8 +95,8 @@ public class UndergroundDataUpdater extends AbstractChunkDataUpdater<Underground
             int z = i % 16;
             blockPos.set((pos.x << 4) + x, 0, (pos.z << 4) + z);
             boolean air = false;
-            for (int y = sectionMax; y >= sectionMin; --y) {
-                BlockState state = chunk.getBlockState(blockPos.setY(y + minHeight));
+            for (int y = sectionMax + minHeight; y >= sectionMin + minHeight; --y) {
+                BlockState state = chunk.getBlockState(blockPos.setY(y));
                 if (state.isAir() || !state.getFluidState().isEmpty()) {
                     air = true;
                     break;
