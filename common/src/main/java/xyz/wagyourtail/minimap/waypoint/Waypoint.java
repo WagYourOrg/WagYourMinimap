@@ -21,7 +21,8 @@ public class Waypoint {
         "textures/waypoint.png"
     );
     private static final Map<String, ResourceLocation> waypoint_tex = new HashMap<>(Map.of(
-        "default", default_waypoint_tex
+        "default", default_waypoint_tex,
+        "skull", new ResourceLocation(WagYourMinimap.MOD_ID, "textures/waypoint_skull.png")
     ));
     private final Map<Double, BlockPos> posForCoordScale = new HashMap<>();
     public final double coordScale;

@@ -53,4 +53,7 @@ public class WagYourMinimapForge {
         );
     }
 
+    @SubscribeEvent
+    public void onPlayerDeath()
+
 }

@@ -1,12 +1,19 @@
 package xyz.wagyourtail.minimap.client;
 
+import com.google.gson.JsonObject;
 import com.mojang.blaze3d.platform.InputConstants;
+import dev.architectury.event.Event;
+import dev.architectury.event.EventFactory;
 import dev.architectury.event.events.client.ClientGuiEvent;
 import dev.architectury.event.events.client.ClientPlayerEvent;
 import dev.architectury.event.events.client.ClientTickEvent;
 import dev.architectury.registry.client.keymappings.KeyMappingRegistry;
 import net.minecraft.client.KeyMapping;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 import xyz.wagyourtail.minimap.WagYourMinimap;
 import xyz.wagyourtail.minimap.api.MinimapApi;
 import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
@@ -19,8 +26,13 @@ import xyz.wagyourtail.minimap.client.gui.hud.InGameHud;
 import xyz.wagyourtail.minimap.client.gui.screen.WaypointEditScreen;
 import xyz.wagyourtail.minimap.client.world.InGameWaypointRenderer;
 import xyz.wagyourtail.minimap.map.MapServer;
+import xyz.wagyourtail.minimap.waypoint.Waypoint;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class WagYourMinimapClient extends WagYourMinimap {
+    protected static final Minecraft minecraft = Minecraft.getInstance();
     private static final KeyMapping key_openmap = new KeyMapping(
         "key.wagyourminimap.openmap",
         InputConstants.KEY_M,
@@ -131,6 +143,31 @@ public class WagYourMinimapClient extends WagYourMinimap {
                 e.printStackTrace();
             }
         }));
-    }
+        ClientPlayerEvent.CLIENT_PLAYER_RESPAWN.register((oldP, newP) -> {
+            if (oldP.getHealth() <= 0) {
+                DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yy/MM/dd HH:mm:ss");
+                LocalDateTime now = LocalDateTime.now();
+                String[] dims = new String[] {MinimapApi.getInstance().getMapServer().getCurrentLevel().level_slug()};
+                MinimapApi.getInstance().getMapServer().waypoints.forceAddWaypoint(
+                new Waypoint(
+                    oldP.level.dimensionType().coordinateScale(),
+                    oldP.getBlockX(),
+                    oldP.getBlockY(),
+                    oldP.getBlockZ(),
+                    (byte) 0xFF,
+                    (byte) 0xFF,
+                    (byte) 0xFF,
+                    "Death @ " + dtf.format(now),
+                    new String[] {"deaths"},
+                    dims,
+                    new JsonObject(),
+                    "skull",
+                    true,
+                    false
+                    )
+                );
+            }
+        });
 
+    }
 }

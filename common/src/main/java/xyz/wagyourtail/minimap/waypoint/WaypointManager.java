@@ -98,6 +98,13 @@ public class WaypointManager {
         saveWaypoints();
     }
 
+    public synchronized void forceAddWaypoint(Waypoint waypoint) {
+        MinimapEvents.WAYPOINT_ADDED.invoker().onWaypoint(waypoint);
+        waypointList.remove(waypoint);
+        waypointList.add(waypoint);
+        saveWaypoints();
+    }
+
     public void saveWaypoints() {
         MapServer.addToSaveQueue(() -> {
             synchronized (this) {
