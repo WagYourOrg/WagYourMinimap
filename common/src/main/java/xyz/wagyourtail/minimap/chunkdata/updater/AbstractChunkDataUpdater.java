@@ -21,8 +21,8 @@ import java.util.concurrent.TimeUnit;
 
 public abstract class AbstractChunkDataUpdater<T extends DataPart<T>> implements ChunkLoadEvent, BlockUpdateEvent {
     private static final ThreadPoolExecutor data_pool = new ThreadPoolExecutor(
-        1,
-        1,
+        4,
+        4,
         0L,
         TimeUnit.NANOSECONDS,
         new LinkedBlockingQueue<>()
@@ -52,8 +52,18 @@ public abstract class AbstractChunkDataUpdater<T extends DataPart<T>> implements
 //        synchronized (location.level()) {
             data_pool.execute(() -> {
                 ChunkData chunkData = location.get();
-                chunkData.computeData(getType(), (old) -> newChunkDataCreator.onChunkUpdate(location, chunkData, old));
-                MinimapEvents.CHUNK_UPDATED.invoker().onChunkUpdate(location, chunkData, this.getClass(), getType());
+                synchronized (chunkData) {
+                    chunkData.computeData(
+                        getType(),
+                        (old) -> newChunkDataCreator.onChunkUpdate(location, chunkData, old)
+                    );
+                    MinimapEvents.CHUNK_UPDATED.invoker().onChunkUpdate(
+                        location,
+                        chunkData,
+                        this.getClass(),
+                        getType()
+                    );
+                }
             });
 //        }
     }
