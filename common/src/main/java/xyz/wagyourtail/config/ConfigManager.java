@@ -97,20 +97,24 @@ public class ConfigManager {
 
     public void saveConfig() {
         synchronized (configPath) {
-            configPath.getParent().toFile().mkdirs();
-            synchronized (configRegistry) {
-                try {
-                    for (Map.Entry<Class<?>, Object> config : config.entrySet()) {
-                        rawConfig.add(
-                            configRegistry.get(config.getKey()),
-                            SettingContainerSerializer.serialize(config.getValue())
-                        );
+            try {
+                Files.createDirectories(configPath.getParent());
+                synchronized (configRegistry) {
+                    try {
+                        for (Map.Entry<Class<?>, Object> config : config.entrySet()) {
+                            rawConfig.add(
+                                configRegistry.get(config.getKey()),
+                                SettingContainerSerializer.serialize(config.getValue())
+                            );
+                        }
+                        Files.writeString(configPath, gson.toJson(rawConfig));
+                    } catch (IOException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+                        throw new RuntimeException(e);
                     }
-                    Files.writeString(configPath, gson.toJson(rawConfig));
-                } catch (IOException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-                    throw new RuntimeException(e);
+                    dirty = false;
                 }
-                dirty = false;
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
         }
     }
