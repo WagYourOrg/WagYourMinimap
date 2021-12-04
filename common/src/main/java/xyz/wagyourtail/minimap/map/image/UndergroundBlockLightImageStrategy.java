@@ -6,6 +6,9 @@ import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.LightLayer;
+import xyz.wagyourtail.config.field.IntRange;
+import xyz.wagyourtail.config.field.Setting;
+import xyz.wagyourtail.config.field.SettingsContainer;
 import xyz.wagyourtail.minimap.chunkdata.ChunkData;
 import xyz.wagyourtail.minimap.chunkdata.ChunkLocation;
 import xyz.wagyourtail.minimap.chunkdata.parts.UndergroundDataPart;
@@ -14,16 +17,15 @@ import xyz.wagyourtail.minimap.chunkdata.updater.UndergroundDataUpdater;
 import java.awt.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
+@SettingsContainer("gui.wagyourminimap.setting.layers.underground.light")
 public class UndergroundBlockLightImageStrategy implements ImageStrategy {
     protected static final Minecraft minecraft = Minecraft.getInstance();
     private static final float HUE = 50F / 360F;
     private final AtomicInteger lastY = new AtomicInteger(0);
 
-    protected final int lightLevel;
-
-    public UndergroundBlockLightImageStrategy(int lightLevel) {
-        this.lightLevel = lightLevel;
-    }
+    @Setting("gui.wagyourminimap.setting.layers.underground.light_level")
+    @IntRange(from = 1, to = 16)
+    public int lightLevel = 8;
 
     @Override
     public DynamicTexture load(ChunkLocation location, ChunkData data) {

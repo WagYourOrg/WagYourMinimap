@@ -265,11 +265,11 @@ public class ArrayScreen<T, U> extends Screen implements EnabledSettingList.Entr
             } else if (setting.fieldType.componentType().isArray()) {
                 throw new RuntimeException("NON Object List not yet implemented");
             } else {
-                enabledEntries.children().add(new EnabledSettingList.EnabledSettingEntry<>(
+                enabledEntries.children().add(new EnabledSettingList.EnabledSettingEntry<T>(
                     minecraft,
                     this,
                     enabledEntries,
-                    ((Class<T>) option.option).getConstructor().newInstance(),
+                    setting.construct((Class<T>) option.option),
                     new TranslatableComponent(((Class<T>) option.option).getAnnotation(SettingsContainer.class)
                         .value())
                 ));

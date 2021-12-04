@@ -140,7 +140,7 @@ public class SettingContainerSerializer {
             List<Object> array = new ArrayList<>();
             for (JsonElement e : arr) {
                 try {
-                    array.add(deserializeArrayField(e, arrElementClass));
+                    array.add(deserializeArrayField(e, arrElementClass, field));
                 } catch (Throwable ex) {
                     ex.printStackTrace();
                 }
@@ -154,7 +154,7 @@ public class SettingContainerSerializer {
                     new HashMap<>();
             for (Map.Entry<String, JsonElement> entry : map.entrySet()) {
                 try {
-                    mapObj.put(entry.getKey(), deserializeArrayField(entry.getValue(), field.setting.elementType()));
+                    mapObj.put(entry.getKey(), deserializeArrayField(entry.getValue(), field.setting.elementType(), field));
                 } catch (Throwable e) {
                     e.printStackTrace();
                 }
@@ -168,7 +168,7 @@ public class SettingContainerSerializer {
                     new HashSet<>();
                 for (JsonElement jsonElement : arr) {
                     try {
-                        set.add(deserializeArrayField(jsonElement, field.setting.elementType()));
+                        set.add(deserializeArrayField(jsonElement, field.setting.elementType(), field));
                     } catch (Throwable e) {
                         e.printStackTrace();
                     }
@@ -180,7 +180,7 @@ public class SettingContainerSerializer {
                     new ArrayList<>();
                 for (JsonElement jsonElement : arr) {
                     try {
-                        list.add(deserializeArrayField(jsonElement, field.setting.elementType()));
+                        list.add(deserializeArrayField(jsonElement, field.setting.elementType(), field));
                     } catch (Throwable e) {
                         e.printStackTrace();
                     }
@@ -190,8 +190,7 @@ public class SettingContainerSerializer {
             }
         } else {
             JsonObject obj = element.getAsJsonObject();
-            Class<?> objClass = Class.forName(obj.get("type").getAsString());
-            T objContainer = (T) objClass.getConstructor().newInstance();
+            T objContainer = (T) field.construct(Class.forName(obj.get("type").getAsString()));
             setField(field, objContainer);
             deserializeInternal(obj.getAsJsonObject("value"), objContainer);
         }
@@ -205,7 +204,7 @@ public class SettingContainerSerializer {
         }
     }
 
-    private static <T> T deserializeArrayField(JsonElement element, Class<T> fieldClass) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+    private static <T> T deserializeArrayField(JsonElement element, Class<T> fieldClass, SettingField<?> field) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         if (fieldClass.equals(char.class) || fieldClass.equals(Character.class)) {
             return (T) (Character) element.getAsCharacter();
         } else if (fieldClass.equals(boolean.class) || fieldClass.equals(Boolean.class)) {
@@ -222,14 +221,14 @@ public class SettingContainerSerializer {
             List<Object> array = new ArrayList<>();
             for (int i = 0; i < arr.size(); ++i) {
                 try {
-                    array.add(deserializeArrayField(arr.get(i), arrElementClass));
+                    array.add(deserializeArrayField(arr.get(i), arrElementClass, field));
                 } catch (ClassNotFoundException ignored) {
                 }
             }
             return (T) array.toArray((Object[]) Array.newInstance(arrElementClass, 0));
         } else {
             JsonObject obj = element.getAsJsonObject();
-            T instance = (T) Class.forName(obj.get("type").getAsString()).getConstructor().newInstance();
+            T instance = (T) field.construct(Class.forName(obj.get("type").getAsString()));
             deserializeInternal(obj.getAsJsonObject("value"), instance);
             return instance;
         }

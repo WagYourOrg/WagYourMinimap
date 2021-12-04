@@ -66,6 +66,7 @@ public class ConfigManager {
                     dirty = true;
                     return configClass.getConstructor().newInstance();
                 } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+                    System.err.println("Failed to create new instance of " + configClass.getName());
                     throw new RuntimeException(e);
                 }
             }

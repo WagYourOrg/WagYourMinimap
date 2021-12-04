@@ -2,12 +2,14 @@ package xyz.wagyourtail.minimap.client.gui.screen.map;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.core.Registry;
+import xyz.wagyourtail.config.field.SettingsContainer;
 import xyz.wagyourtail.minimap.api.MinimapApi;
 import xyz.wagyourtail.minimap.chunkdata.ChunkData;
 import xyz.wagyourtail.minimap.chunkdata.ChunkLocation;
 import xyz.wagyourtail.minimap.chunkdata.parts.SurfaceDataPart;
 import xyz.wagyourtail.minimap.map.MapServer;
 
+@SettingsContainer("gui.wagyourminimap.settings.overlay.data")
 public class DataOverlay extends AbstractFullscreenOverlay {
     public DataOverlay(ScreenMapRenderer parent) {
         super(parent);

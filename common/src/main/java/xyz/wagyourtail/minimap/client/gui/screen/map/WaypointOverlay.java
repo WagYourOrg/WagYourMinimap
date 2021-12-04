@@ -3,12 +3,14 @@ package xyz.wagyourtail.minimap.client.gui.screen.map;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.core.BlockPos;
+import xyz.wagyourtail.config.field.SettingsContainer;
 import xyz.wagyourtail.minimap.api.MinimapApi;
 import xyz.wagyourtail.minimap.client.gui.AbstractMapRenderer;
 import xyz.wagyourtail.minimap.waypoint.Waypoint;
 
 import java.util.Set;
 
+@SettingsContainer("gui.wagyourminimap.settings.overlay.waypoint")
 public class WaypointOverlay extends AbstractFullscreenOverlay {
 
     public WaypointOverlay(ScreenMapRenderer parent) {

@@ -4,16 +4,22 @@ import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.world.level.Level;
+import xyz.wagyourtail.config.field.Setting;
+import xyz.wagyourtail.config.field.SettingsContainer;
 import xyz.wagyourtail.minimap.chunkdata.ChunkData;
 import xyz.wagyourtail.minimap.chunkdata.ChunkLocation;
 import xyz.wagyourtail.minimap.chunkdata.parts.SurfaceDataPart;
 
 import java.awt.*;
 
-public record SurfaceBlockLightImageStrategy(boolean lightOverlayInNether) implements ImageStrategy {
+@SettingsContainer("gui.wagyourminimap.setting.layers.light")
+public class SurfaceBlockLightImageStrategy implements ImageStrategy {
     private static final Minecraft minecraft = Minecraft.getInstance();
     private static final int TICKS_PER_DAY = 24000;
     private static final float HUE = 50F / 360F;
+
+    @Setting(value = "gui.wagyourminimap.setting.layers.light.nether")
+    public boolean nether = false;
 
     @Override
     public DynamicTexture load(ChunkLocation location, ChunkData key) {
@@ -39,7 +45,7 @@ public record SurfaceBlockLightImageStrategy(boolean lightOverlayInNether) imple
     @Override
     public boolean shouldRender() {
         assert minecraft.level != null;
-        if (minecraft.level.dimension().equals(Level.NETHER) && !lightOverlayInNether) {
+        if (minecraft.level.dimension().equals(Level.NETHER) && !nether) {
             return false;
         }
         long time = minecraft.level.getDayTime() % TICKS_PER_DAY;

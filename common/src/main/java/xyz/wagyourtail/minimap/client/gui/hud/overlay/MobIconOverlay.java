@@ -3,36 +3,57 @@ package xyz.wagyourtail.minimap.client.gui.hud.overlay;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
+import xyz.wagyourtail.config.field.DoubleRange;
+import xyz.wagyourtail.config.field.IntRange;
+import xyz.wagyourtail.config.field.Setting;
+import xyz.wagyourtail.config.field.SettingsContainer;
 import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
 import xyz.wagyourtail.minimap.api.client.config.MinimapClientConfig;
 import xyz.wagyourtail.minimap.client.gui.hud.map.AbstractMinimapRenderer;
-import xyz.wagyourtail.minimap.client.gui.hud.overlay.mobicons.AbstractEntityRenderer;
-import xyz.wagyourtail.minimap.client.gui.hud.overlay.mobicons.JSONEntityRenderer;
-import xyz.wagyourtail.minimap.client.gui.hud.overlay.mobicons.VanillaEntityRenderer;
+import xyz.wagyourtail.minimap.client.gui.hud.overlay.mobicons.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Predicate;
+import java.util.*;
 
+@SettingsContainer("gui.wagyourminimap.settings.overlay.mob_icon")
 public class MobIconOverlay extends AbstractMinimapOverlay {
     public static final List<AbstractEntityRenderer<?>> availableMobIconRenderers = new ArrayList<>(List.of(
         new JSONEntityRenderer(),
         new VanillaEntityRenderer()
     ));
-    public final float maxSizeScale;
-    public final int maxSize;
-    public final int fadeHeightDistance;
-    public final Predicate<LivingEntity> filter;
 
-    public MobIconOverlay(AbstractMinimapRenderer parent, float maxSizeScale, int maxSize, Predicate<LivingEntity> filter, boolean players, int fadeHeightDistance) {
+    public static final Set<Class<? extends AbstractMobIconFilter>> mobFilters = new HashSet<>(Set.of(
+        HostileMobFilter.class,
+        HostileAndNeutral.class,
+        AllMobsFilter.class,
+        CustomFilter.class
+    ));
+
+    @Setting(value = "gui.wagyourminimap.settings.overlay.mob_icon.max_scale")
+    @DoubleRange(from = 0.0, to = 1.0, steps = 100)
+    public double maxScale = .07;
+
+    @Setting(value = "gui.wagyourminimap.settings.overlay.mob_icon.max_size")
+    @IntRange(from = 0, to = 100)
+    public int maxSize = 10;
+
+    @Setting(value = "gui.wagyourminimap.settings.overlay.mob_icon.filter", options = "getMobFilters")
+    public AbstractMobIconFilter filter = new HostileMobFilter();
+
+    @Setting(value = "gui.wagyourminimap.settings.overlay.mob_icon.show_players")
+    public boolean showPlayers = true;
+
+    @Setting(value = "gui.wagyourminimap.settings.overlay.mob_icon.y_fade_distance")
+    @IntRange(from = 0, to = 4096, stepVal = 8)
+    public int yFadeDistance = 50;
+
+    public MobIconOverlay(AbstractMinimapRenderer parent) {
         super(parent);
-        this.maxSizeScale = maxSizeScale;
-        this.maxSize = maxSize;
-        this.filter = players ? filter.or(e -> e instanceof Player) : filter;
-        this.fadeHeightDistance = fadeHeightDistance;
+    }
+
+    public void setFilterSettings(AbstractMobIconFilter settings) {
+
     }
 
     @Override
@@ -41,7 +62,7 @@ public class MobIconOverlay extends AbstractMinimapOverlay {
         int chunkDiam = chunkRadius * 2 - 1;
         float chunkScale = maxLength / ((float) chunkDiam - 1);
 
-        float iconSize = Math.min(maxSizeScale * maxLength, maxSize);
+        float iconSize = (float) Math.min(maxScale * maxLength, maxSize);
 
         assert minecraft.level != null;
         for (Entity e : minecraft.level.entitiesForRendering()) {
@@ -66,7 +87,7 @@ public class MobIconOverlay extends AbstractMinimapOverlay {
                     maxLength / 2 + pointVec.z * chunkScale / 16f,
                     0
                 );
-                renderEntity(stack, le, iconSize, pointVec.y / fadeHeightDistance);
+                renderEntity(stack, le, iconSize, pointVec.y / yFadeDistance);
                 stack.popPose();
             }
         }
@@ -86,6 +107,10 @@ public class MobIconOverlay extends AbstractMinimapOverlay {
             return true;
         }
         return false;
+    }
+
+    public Collection<Class<? extends AbstractMobIconFilter>> getMobFilters() {
+        return mobFilters;
     }
 
 }

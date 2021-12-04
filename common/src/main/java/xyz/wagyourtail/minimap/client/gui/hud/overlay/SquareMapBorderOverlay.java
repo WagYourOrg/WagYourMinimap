@@ -5,10 +5,12 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
+import xyz.wagyourtail.config.field.SettingsContainer;
 import xyz.wagyourtail.minimap.WagYourMinimap;
 import xyz.wagyourtail.minimap.client.gui.AbstractMapRenderer;
 import xyz.wagyourtail.minimap.client.gui.hud.map.AbstractMinimapRenderer;
 
+@SettingsContainer("gui.wagyourminimap.settings.overlay.map_border")
 public class SquareMapBorderOverlay extends AbstractMinimapOverlay {
     private static final ResourceLocation map_corner = new ResourceLocation(
         WagYourMinimap.MOD_ID,

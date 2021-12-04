@@ -2,10 +2,26 @@ package xyz.wagyourtail.minimap.client.gui.screen.map;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.world.phys.Vec3;
+import xyz.wagyourtail.config.field.Setting;
+import xyz.wagyourtail.config.field.SettingsContainer;
 import xyz.wagyourtail.minimap.client.gui.AbstractMapRenderer;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+
+@SettingsContainer("gui.wagyourminimap.settings.fullscreen_map")
 public class ScreenMapRenderer extends AbstractMapRenderer {
 
+    public Set<Class<? extends AbstractFullscreenOverlay>> availableOverlays = new HashSet<>(Set.of(
+        DataOverlay.class,
+        WaypointOverlay.class,
+        PlayerIconOverlay.class,
+        ScaleOverlay.class
+    ));
+
+    @Setting(value = "gui.wagyourminimap.settings.style.overlays", options = "overlayOptions", setter = "setOverlays", constructor = "constructOverlay")
     public AbstractFullscreenOverlay[] overlays = new AbstractFullscreenOverlay[] {
         new PlayerIconOverlay(this), new WaypointOverlay(this), new DataOverlay(this)
     };
@@ -17,6 +33,10 @@ public class ScreenMapRenderer extends AbstractMapRenderer {
     public int chunkX, chunkZ, chunkXDiam, chunkZDiam;
     public float topX, topZ;
     public float blockX, blockZ, endBlockX, endBlockZ, offsetX, offsetZ;
+
+    public ScreenMapRenderer() {
+        super(Set.of());
+    }
 
     public void changeZoom(int radius) {
         this.blockRadius = Math.max(16, radius);
@@ -175,6 +195,14 @@ public class ScreenMapRenderer extends AbstractMapRenderer {
 
     public void setOverlays(AbstractFullscreenOverlay... overlays) {
         this.overlays = overlays;
+    }
+
+    public Collection<Class<? extends AbstractFullscreenOverlay>> overlayOptions() {
+        return availableOverlays;
+    }
+
+    public AbstractFullscreenOverlay constructOverlay(Class<? extends AbstractFullscreenOverlay> clazz) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        return clazz.getConstructor(ScreenMapRenderer.class).newInstance(this);
     }
 
 }

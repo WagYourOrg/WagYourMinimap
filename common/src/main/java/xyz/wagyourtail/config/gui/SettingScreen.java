@@ -51,6 +51,7 @@ public class SettingScreen extends Screen {
 
     @Override
     public void onClose() {
+        assert minecraft != null;
         minecraft.setScreen(parent);
     }
 
@@ -128,6 +129,7 @@ public class SettingScreen extends Screen {
                     new TranslatableComponent(setting.getType().getAnnotation(SettingsContainer.class).value()),
                     (btn) -> {
                         try {
+                            assert minecraft != null;
                             minecraft.setScreen(new SettingScreen(new TranslatableComponent(setting.getType()
                                 .getAnnotation(SettingsContainer.class)
                                 .value()), this, setting.get(settingContainer)));
@@ -350,9 +352,9 @@ public class SettingScreen extends Screen {
                             .value())),
                     (btn) -> {
                         try {
-                            ((SettingField) settingField).set(settings.get((
+                            ((SettingField) settingField).set(settingField.construct(settings.get((
                                 settings.indexOf(settingField.get().getClass()) + 1
-                            ) % settings.size()).getConstructor().newInstance());
+                            ) % settings.size())));
                             btn.setMessage(title.copy()
                                 .append(" ")
                                 .append(new TranslatableComponent(settingField.get()

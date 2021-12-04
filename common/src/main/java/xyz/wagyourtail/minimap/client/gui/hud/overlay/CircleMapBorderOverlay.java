@@ -7,9 +7,11 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
+import xyz.wagyourtail.config.field.SettingsContainer;
 import xyz.wagyourtail.minimap.WagYourMinimap;
 import xyz.wagyourtail.minimap.client.gui.hud.map.AbstractMinimapRenderer;
 
+@SettingsContainer("gui.wagyourminimap.settings.overlay.map_border")
 public class CircleMapBorderOverlay extends AbstractMinimapOverlay {
     private static final ResourceLocation border = new ResourceLocation(
         WagYourMinimap.MOD_ID,

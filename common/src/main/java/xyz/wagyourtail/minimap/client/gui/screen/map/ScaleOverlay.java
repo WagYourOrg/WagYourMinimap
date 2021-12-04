@@ -5,7 +5,9 @@ import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Matrix4f;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.renderer.GameRenderer;
+import xyz.wagyourtail.config.field.SettingsContainer;
 
+@SettingsContainer("gui.wagyourminimap.settings.overlay.scale")
 public class ScaleOverlay extends AbstractFullscreenOverlay {
     public ScaleOverlay(ScreenMapRenderer parent) {
         super(parent);

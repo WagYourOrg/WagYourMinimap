@@ -1,5 +1,6 @@
 package xyz.wagyourtail.minimap.client.gui.hud.map;
 
+import com.google.common.collect.Sets;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Vector3f;
@@ -9,24 +10,56 @@ import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL11;
+import xyz.wagyourtail.config.field.Setting;
 import xyz.wagyourtail.minimap.ModLoaderSpecific;
 import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
+import xyz.wagyourtail.minimap.api.client.MinimapClientEvents;
 import xyz.wagyourtail.minimap.api.client.config.MinimapClientConfig;
 import xyz.wagyourtail.minimap.client.gui.AbstractMapRenderer;
 import xyz.wagyourtail.minimap.client.gui.hud.InGameHud;
 import xyz.wagyourtail.minimap.client.gui.hud.overlay.AbstractMinimapOverlay;
+import xyz.wagyourtail.minimap.client.gui.hud.overlay.MobIconOverlay;
+import xyz.wagyourtail.minimap.client.gui.hud.overlay.PlayerArrowOverlay;
+import xyz.wagyourtail.minimap.client.gui.hud.overlay.WaypointOverlay;
+import xyz.wagyourtail.minimap.map.image.ImageStrategy;
+import xyz.wagyourtail.minimap.map.image.UndergroundAccurateImageStrategy;
+import xyz.wagyourtail.minimap.map.image.UndergroundBlockLightImageStrategy;
+import xyz.wagyourtail.minimap.map.image.UndergroundVanillaImageStrategy;
+
+import java.lang.reflect.InvocationTargetException;
+import java.util.*;
 
 public abstract class AbstractMinimapRenderer extends AbstractMapRenderer {
     public final boolean rotate;
     public final float scaleBy;
     public final boolean hasStencil;
     public boolean fullscreen_toggle;
-    public AbstractMinimapOverlay[] overlays = new AbstractMinimapOverlay[0];
 
-    protected AbstractMinimapRenderer(boolean rotate, float scaleBy, boolean hasStencil) {
+    @Setting(value = "gui.wagyourminimap.settings.style.overlay", options = "overlayOptions", setter = "setOverlays", constructor = "constructOverlay")
+    public AbstractMinimapOverlay[] overlays;
+
+    public final Set<Class<? extends AbstractMinimapOverlay>> availableOverlays = new HashSet<>(Set.of(
+        PlayerArrowOverlay.class,
+        WaypointOverlay.class,
+        MobIconOverlay.class
+    ));
+
+    protected AbstractMinimapRenderer(boolean rotate, float scaleBy, boolean hasStencil, Set<Class<? extends ImageStrategy>> layers, Set<Class<? extends AbstractMinimapOverlay>> overlays) {
+        super(Sets.union(
+            Set.of(
+                UndergroundVanillaImageStrategy.class,
+                UndergroundAccurateImageStrategy.class,
+                UndergroundBlockLightImageStrategy.class
+            ),
+            layers
+        ));
         this.rotate = rotate;
         this.scaleBy = scaleBy;
         this.hasStencil = hasStencil;
+        this.availableOverlays.addAll(overlays);
+        MinimapClientEvents.AVAILABLE_MINIMAP_OPTIONS.invoker().onOptions(this, availableLayers, availableOverlays);
+
+        this.overlays = getDefaultOverlays().toArray(new AbstractMinimapOverlay[0]);
     }
 
     public void setOverlays(AbstractMinimapOverlay... overlays) {
@@ -296,5 +329,24 @@ public abstract class AbstractMinimapRenderer extends AbstractMapRenderer {
     }
 
     public abstract float getScaleForVecToBorder(Vec3 in, int chunkRadius, float maxLength);
+
+    public Collection<Class<? extends AbstractMinimapOverlay>> overlayOptions() {
+        return availableOverlays;
+    }
+
+    public AbstractMinimapOverlay constructOverlay(Class<? extends AbstractMinimapOverlay> overlayClass) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        return overlayClass.getConstructor(AbstractMinimapRenderer.class).newInstance(this);
+    }
+    @Override
+    public List<ImageStrategy> getDefaultLayers() {
+        List<ImageStrategy> sup = new ArrayList<>(super.getDefaultLayers());
+        sup.addAll(List.of(new UndergroundVanillaImageStrategy(), new UndergroundBlockLightImageStrategy()));
+        return sup;
+    }
+
+    public List<AbstractMinimapOverlay> getDefaultOverlays() {
+        return List.of(new PlayerArrowOverlay(this), new WaypointOverlay(this), new MobIconOverlay(this));
+    }
+
 
 }

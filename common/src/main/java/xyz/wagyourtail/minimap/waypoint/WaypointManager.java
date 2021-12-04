@@ -18,7 +18,7 @@ public class WaypointManager {
     private static final Set<WaypointFilter> filters = new HashSet<>(Set.of(
         new EnabledFilter(),
         new DimensionFilter(),
-        new DistanceFilter(1000)
+        new DistanceFilter()
     ));
     private static Predicate<Waypoint> compiledFilter;
 

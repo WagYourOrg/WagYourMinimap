@@ -13,6 +13,7 @@ public class SettingField<T> {
     private final Method getter;
     private final Method setter;
     private final Method options;
+    private final Method constructor;
     public final Class<T> fieldType;
     public final Setting setting;
     public final IntRange intRange;
@@ -47,6 +48,11 @@ public class SettingField<T> {
         } else {
             options = null;
         }
+        if (!setting.constructor().equals("")) {
+            constructor = parent.getClass().getMethod(setting.constructor(), Class.class);
+        } else {
+            constructor = null;
+        }
     }
 
     public boolean enabled() throws InvocationTargetException, IllegalAccessException {
@@ -79,6 +85,14 @@ public class SettingField<T> {
             return Arrays.asList((Object[]) fieldType.getDeclaredMethod("values").invoke(null));
         }
         return null;
+    }
+
+    public <U> U construct(Class<U> clazz) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException, InstantiationException {
+        if (constructor != null) {
+            return (U) constructor.invoke(parent, clazz);
+        } else {
+            return clazz.getConstructor().newInstance();
+        }
     }
 
     public Object getRawParent() {

@@ -6,20 +6,35 @@ import com.mojang.math.Matrix4f;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.texture.DynamicTexture;
+import xyz.wagyourtail.config.field.Setting;
 import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
 import xyz.wagyourtail.minimap.chunkdata.ChunkLocation;
 import xyz.wagyourtail.minimap.map.MapServer;
-import xyz.wagyourtail.minimap.map.image.ImageStrategy;
-import xyz.wagyourtail.minimap.map.image.SurfaceBlockLightImageStrategy;
-import xyz.wagyourtail.minimap.map.image.VanillaMapImageStrategy;
+import xyz.wagyourtail.minimap.map.image.*;
 
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 public abstract class AbstractMapRenderer {
     public static final Minecraft minecraft = Minecraft.getInstance();
-    private ImageStrategy[] rendererLayers = new ImageStrategy[] {
-        new VanillaMapImageStrategy(), new SurfaceBlockLightImageStrategy(false)
-    };
+
+    public final Set<Class<? extends ImageStrategy>> availableLayers = new HashSet<>(Set.of(
+        VanillaMapImageStrategy.class,
+        AccurateMapImageStrategy.class,
+        SurfaceBlockLightImageStrategy.class
+    ));
+
+    @Setting(value = "gui.wagyourminimap.settings.style.layers", options = "layerOptions", setter = "setRenderLayers")
+    public ImageStrategy[] rendererLayers;
+
+    public AbstractMapRenderer(Set<Class<? extends ImageStrategy>> layers) {
+        availableLayers.addAll(layers);
+
+        this.rendererLayers = getDefaultLayers().toArray(new ImageStrategy[0]);
+    }
 
     public static void drawTexSideways(PoseStack matrixStack, float x, float y, float width, float height, float startU, float startV, float endU, float endV) {
         Matrix4f matrix = matrixStack.last().pose();
@@ -55,10 +70,6 @@ public abstract class AbstractMapRenderer {
         builder.vertex(matrix, x, y, 0).uv(startU, startV).color(r, g, b, a).endVertex();
         builder.end();
         BufferUploader.end(builder);
-    }
-
-    public ImageStrategy[] getRenderLayers() {
-        return rendererLayers;
     }
 
     public void setRenderLayers(ImageStrategy... strategy) {
@@ -158,6 +169,14 @@ public abstract class AbstractMapRenderer {
             }
         }
         rect(matrixStack, x, y, scale, scale);
+    }
+
+    public Collection<Class<? extends ImageStrategy>> layerOptions() {
+        return availableLayers;
+    }
+
+    public List<ImageStrategy> getDefaultLayers() {
+        return List.of(new VanillaMapImageStrategy(), new SurfaceBlockLightImageStrategy());
     }
 
 }

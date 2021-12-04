@@ -35,6 +35,11 @@ public @interface Setting {
     String enabled() default "";
 
     /**
+     * @return name of function (Class -&gt; Instance) for constructing new instances if this field has class options, defaults to {@code getConstructor().newInstance()}
+     */
+    String constructor() default "";
+
+    /**
      * @return duplicate option boolean (only relevant for Array type)
      */
     boolean allowDuplicateOption() default false;
