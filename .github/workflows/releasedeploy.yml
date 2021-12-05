@@ -71,7 +71,7 @@ jobs:
           display_name: ${{ steps.fname.outputs.result }}
           game_versions: ${{ inputs.cf_data_fabric }}
           release_type: release
-          relations: modmenu:optionalDependency
+          relations: modmenu:optionalDependency,architectury-fabric:requiredDependency
 
       - name: Upload Forge To Curseforge
         if: ${{ steps.forge_release.outputs.result != 'false' }}
@@ -85,3 +85,4 @@ jobs:
           display_name: ${{ steps.fname.outputs.result }}
           game_versions: ${{ inputs.cf_data_forge }}
           release_type: release
+          relations: architectury-forge:requiredDependency

@@ -32,12 +32,21 @@ public abstract class MixinRenderTarget implements IRenderTarget {
     public boolean stencilEnabled = false;
 
     @Redirect(method = "createBuffers",
-        at = @At(value = "INVOKE",
-            target = "Lcom/mojang/blaze3d/platform/GlStateManager;_texImage2D(IIIIIIIILjava/nio/IntBuffer;)V"),
-        slice = @Slice(from = @At(value = "FIELD",
-            target = "Lcom/mojang/blaze3d/pipeline/RenderTarget;useDepth:Z",
-            ordinal = 0),
-            to = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/pipeline/RenderTarget;setFilterMode(I)V")))
+        at = @At(
+            value = "INVOKE",
+            target = "Lcom/mojang/blaze3d/platform/GlStateManager;_texImage2D(IIIIIIIILjava/nio/IntBuffer;)V"
+        ),
+        slice = @Slice(
+            from = @At(value = "FIELD",
+                target = "Lcom/mojang/blaze3d/pipeline/RenderTarget;useDepth:Z",
+                ordinal = 0
+            ),
+            to = @At(
+                value = "INVOKE",
+                target = "Lcom/mojang/blaze3d/pipeline/RenderTarget;setFilterMode(I)V"
+            )
+        )
+    )
     public void onTexImage2D(int i, int j, int k, int l, int m, int n, int o, int p, IntBuffer intBuffer) {
         if (stencilEnabled) {
             GlStateManager._texImage2D(3553, 0, 36013, this.width, this.height, 0, 34041, 36269, null);
@@ -46,24 +55,37 @@ public abstract class MixinRenderTarget implements IRenderTarget {
         }
     }
 
-    @Inject(method = "createBuffers",
-        at = @At(value = "INVOKE",
+    @Inject(
+        method = "createBuffers",
+        at = @At(
+            value = "INVOKE",
             target = "Lcom/mojang/blaze3d/platform/GlStateManager;_glFramebufferTexture2D(IIIII)V",
-            shift = At.Shift.AFTER),
-        slice = @Slice(from = @At(value = "FIELD",
-            target = "Lcom/mojang/blaze3d/pipeline/RenderTarget;useDepth:Z",
-            ordinal = 1),
-            to = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/pipeline/RenderTarget;checkStatus()V")))
+            shift = At.Shift.AFTER
+        ),
+        slice = @Slice(
+            from = @At(
+                value = "FIELD",
+                target = "Lcom/mojang/blaze3d/pipeline/RenderTarget;useDepth:Z",
+                ordinal = 1
+            ),
+            to = @At(
+                value = "INVOKE",
+                target = "Lcom/mojang/blaze3d/pipeline/RenderTarget;checkStatus()V"
+            )
+        )
+    )
     public void onFramebufferTexture2D(int width, int height, boolean clearError, CallbackInfo ci) {
         if (stencilEnabled) {
             GlStateManager._glFramebufferTexture2D(36160, 36128, 3553, this.depthBufferId, 0);
         }
     }
 
+    @Unique
     @Override
     public boolean isStencilEnabled() {
         return stencilEnabled;
     }
+
 
     @Override
     public void enableStencil() {
