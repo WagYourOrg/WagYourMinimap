@@ -3,6 +3,9 @@ package xyz.wagyourtail.minimap.fabric.mixins.events;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.Minecraft;
+import org.lwjgl.opengl.ARBFramebufferObject;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL30;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -15,7 +18,7 @@ import xyz.wagyourtail.minimap.fabric.IRenderTarget;
 
 import java.nio.IntBuffer;
 
-@Mixin(RenderTarget.class)
+@Mixin(value = RenderTarget.class, priority = 999)
 public abstract class MixinRenderTarget implements IRenderTarget {
 
     @Shadow
@@ -34,7 +37,8 @@ public abstract class MixinRenderTarget implements IRenderTarget {
     @Redirect(method = "createBuffers",
         at = @At(
             value = "INVOKE",
-            target = "Lcom/mojang/blaze3d/platform/GlStateManager;_texImage2D(IIIIIIIILjava/nio/IntBuffer;)V"
+            target = "Lcom/mojang/blaze3d/platform/GlStateManager;_texImage2D(IIIIIIIILjava/nio/IntBuffer;)V",
+            remap = false
         ),
         slice = @Slice(
             from = @At(value = "FIELD",
@@ -49,18 +53,27 @@ public abstract class MixinRenderTarget implements IRenderTarget {
     )
     public void onTexImage2D(int i, int j, int k, int l, int m, int n, int o, int p, IntBuffer intBuffer) {
         if (stencilEnabled) {
-            GlStateManager._texImage2D(3553, 0, 36013, this.width, this.height, 0, 34041, 36269, null);
+            GlStateManager._texImage2D(
+                GL11.GL_TEXTURE_2D, 0,
+                ARBFramebufferObject.GL_DEPTH24_STENCIL8,
+                this.width,
+                this.height,
+                0,
+                ARBFramebufferObject.GL_DEPTH_STENCIL,
+                GL30.GL_UNSIGNED_INT_24_8,
+                null
+            );
         } else {
             GlStateManager._texImage2D(i, j, k, l, m, n, o, p, intBuffer);
         }
     }
 
-    @Inject(
+    @Redirect(
         method = "createBuffers",
         at = @At(
             value = "INVOKE",
             target = "Lcom/mojang/blaze3d/platform/GlStateManager;_glFramebufferTexture2D(IIIII)V",
-            shift = At.Shift.AFTER
+            remap = false
         ),
         slice = @Slice(
             from = @At(
@@ -74,9 +87,17 @@ public abstract class MixinRenderTarget implements IRenderTarget {
             )
         )
     )
-    public void onFramebufferTexture2D(int width, int height, boolean clearError, CallbackInfo ci) {
+    public void onFramebufferTexture2D(int i, int j, int k, int l, int m) {
         if (stencilEnabled) {
-            GlStateManager._glFramebufferTexture2D(36160, 36128, 3553, this.depthBufferId, 0);
+            GlStateManager._glFramebufferTexture2D(
+                i,
+                GL30.GL_DEPTH_STENCIL_ATTACHMENT,
+                GL11.GL_TEXTURE_2D,
+                this.depthBufferId,
+                0
+            );
+        } else {
+            GlStateManager._glFramebufferTexture2D(i, j, k, l, m);
         }
     }
 
