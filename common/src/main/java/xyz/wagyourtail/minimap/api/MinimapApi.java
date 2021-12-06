@@ -3,6 +3,7 @@ package xyz.wagyourtail.minimap.api;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import dev.architectury.platform.Platform;
+import net.minecraft.world.level.Level;
 import xyz.wagyourtail.config.ConfigManager;
 import xyz.wagyourtail.minimap.api.config.MinimapConfig;
 import xyz.wagyourtail.minimap.chunkdata.cache.CacheManager;

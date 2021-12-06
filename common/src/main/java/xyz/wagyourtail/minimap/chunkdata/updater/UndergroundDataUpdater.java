@@ -29,10 +29,7 @@ public class UndergroundDataUpdater extends AbstractChunkDataUpdater<Underground
 
     @Override
     public void onBlockUpdate(BlockPos pos, Level level) {
-        if (level != mc.level) {
-            return;
-        }
-        MapServer.MapLevel mapLevel = MinimapApi.getInstance().getMapServer().getCurrentLevel();
+        MapServer.MapLevel mapLevel = MinimapApi.getInstance().getMapServer().getLevelFor(level);
         ChunkAccess chunk = level.getChunk(pos.getX() >> 4, pos.getZ() >> 4, ChunkStatus.FULL, false);
         if (chunk == null) {
             return;
@@ -130,7 +127,7 @@ public class UndergroundDataUpdater extends AbstractChunkDataUpdater<Underground
     }
 
     public void scan(Level level, ChunkAccess chunk, int sectionY) {
-        MapServer.MapLevel mapLevel = MinimapApi.getInstance().getMapServer().getCurrentLevel();
+        MapServer.MapLevel mapLevel = MinimapApi.getInstance().getMapServer().getLevelFor(level);
         updateChunk(
             getChunkLocation(mapLevel, chunk.getPos()),
             (loc, parent, oldData) -> scanPart(level, chunk, parent, oldData, sectionY)

@@ -147,7 +147,7 @@ public class WagYourMinimapClient extends WagYourMinimap {
             if (oldP.getHealth() <= 0) {
                 DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yy/MM/dd HH:mm:ss");
                 LocalDateTime now = LocalDateTime.now();
-                String[] dims = new String[] {MinimapApi.getInstance().getMapServer().getCurrentLevel().level_slug()};
+                String[] dims = new String[] {MinimapApi.getInstance().getMapServer().getLevelFor(oldP.level).level_slug()};
                 MinimapApi.getInstance().getMapServer().waypoints.forceAddWaypoint(
                 new Waypoint(
                     oldP.level.dimensionType().coordinateScale(),

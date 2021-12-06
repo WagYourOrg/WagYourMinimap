@@ -16,7 +16,7 @@ public class DimensionFilter extends WaypointFilter {
         if (level == null) {
             return false;
         }
-        String levelname = MinimapApi.getInstance().getMapServer().currentLevelNameSupplier.get();
+        String levelname = MinimapApi.getInstance().getMapServer().levelNameSupplier.get();
         return Arrays.asList(waypoint.levels).contains(levelname);
     }
 

@@ -77,7 +77,8 @@ public abstract class AbstractMapRenderer {
     }
 
     protected ChunkLocation getChunk(int chunkX, int chunkZ) {
-        MapServer.MapLevel level = MinimapClientApi.getInstance().getMapServer().getCurrentLevel();
+        assert minecraft.level != null;
+        MapServer.MapLevel level = MinimapClientApi.getInstance().getMapServer().getLevelFor(minecraft.level);
         if (level == null) {
             return null;
         }

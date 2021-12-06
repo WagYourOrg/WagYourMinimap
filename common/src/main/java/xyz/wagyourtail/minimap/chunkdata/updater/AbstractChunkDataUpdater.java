@@ -27,8 +27,6 @@ public abstract class AbstractChunkDataUpdater<T extends DataPart<T>> implements
         TimeUnit.NANOSECONDS,
         new LinkedBlockingQueue<>()
     );
-
-    protected static final Minecraft mc = Minecraft.getInstance();
     public static final Event<ChunkLoadEvent> CHUNK_LOAD = EventFactory.createLoop();
     public static final Event<BlockUpdateEvent> BLOCK_UPDATE = EventFactory.createLoop();
 

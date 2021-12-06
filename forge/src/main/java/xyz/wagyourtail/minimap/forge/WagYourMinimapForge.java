@@ -11,12 +11,14 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLDedicatedServerSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import xyz.wagyourtail.minimap.WagYourMinimap;
 import xyz.wagyourtail.minimap.chunkdata.updater.AbstractChunkDataUpdater;
 import xyz.wagyourtail.minimap.client.WagYourMinimapClient;
 import xyz.wagyourtail.minimap.client.gui.screen.SettingsScreen;
 import xyz.wagyourtail.minimap.client.world.InGameWaypointRenderer;
+import xyz.wagyourtail.minimap.server.WagYourMinimapServer;
 
 @Mod(WagYourMinimap.MOD_ID)
 public class WagYourMinimapForge {
@@ -32,6 +34,10 @@ public class WagYourMinimapForge {
             ConfigGuiHandler.ConfigGuiFactory.class,
             () -> new ConfigGuiHandler.ConfigGuiFactory((mc, parent) -> new SettingsScreen(parent))
         );
+    }
+
+    public void onServerInit(FMLDedicatedServerSetupEvent setup) {
+        WagYourMinimapServer.init();
     }
 
     @SubscribeEvent

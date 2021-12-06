@@ -30,10 +30,7 @@ public class SurfaceDataUpdater extends AbstractChunkDataUpdater<SurfaceDataPart
 
     @Override
     public void onLoadChunk(ChunkAccess chunk, Level level) {
-        if (level != mc.level) {
-            return;
-        }
-        MapServer.MapLevel mapLevel = MinimapApi.getInstance().getMapServer().getCurrentLevel();
+        MapServer.MapLevel mapLevel = MinimapApi.getInstance().getMapServer().getLevelFor(level);
         ChunkPos pos = chunk.getPos();
         updateChunk(
             getChunkLocation(mapLevel, pos),
@@ -43,10 +40,7 @@ public class SurfaceDataUpdater extends AbstractChunkDataUpdater<SurfaceDataPart
 
     @Override
     public void onBlockUpdate(BlockPos pos, Level level) {
-        if (level != mc.level) {
-            return;
-        }
-        MapServer.MapLevel mapLevel = MinimapApi.getInstance().getMapServer().getCurrentLevel();
+        MapServer.MapLevel mapLevel = MinimapApi.getInstance().getMapServer().getLevelFor(level);
         ChunkAccess chunk = level.getChunk(pos.getX() >> 4, pos.getZ() >> 4, ChunkStatus.FULL, false);
         if (chunk == null) {
             return;
