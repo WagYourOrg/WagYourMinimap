@@ -54,6 +54,9 @@ public class MinimapClientConfig {
     @Setting(value = "gui.wagyourminimap.settings.show_waypoints")
     public boolean showWaypoints = true;
 
+    @Setting(value = "gui.wagyourminimap.settings.show_minimap")
+    public boolean showMinimap = true;
+
     @Setting(value = "gui.wagyourminimap.settings.waypoint_beam")
     public boolean showWaypointBeam = true;
 

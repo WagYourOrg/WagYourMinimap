@@ -19,6 +19,7 @@
     "gui.wagyourminimap.settings.square_rot_style": "Square (rotate)",
     "gui.wagyourminimap.settings.circle_norot_style": "Circle (no rotate)",
     "gui.wagyourminimap.settings.circle_rot_style": "Circle (rotate)",
+    "gou.wagyourminimap.settings.show_minimap": "Show Minimap",
     "gui.wagyourminimap.settings.show_waypoints": "Waypoints",
     "gui.wagyourminimap.settings.waypoint_beam": "Waypoint Beam",
     "gui.wagyourminimap.settings.chunk_radius": "Minimap Chunk Radius:",
@@ -86,5 +87,6 @@
     "key.wagyourminimap.new_waypoint": "Create Waypoint",
     "key.wagyourminimap.fullscreen_minimap": "Fullscreen Minimap",
     "key.wagyourminimap.zoom_in": "Zoom In",
-    "key.wagyourminimap.zoom_out": "Zoom Out"
+    "key.wagyourminimap.zoom_out": "Zoom Out",
+    "key.wagyourminimap.hide_minimap": "Hide Minimap"
 }

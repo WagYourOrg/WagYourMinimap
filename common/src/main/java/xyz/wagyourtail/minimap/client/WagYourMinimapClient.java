@@ -63,10 +63,20 @@ public class WagYourMinimapClient extends WagYourMinimap {
         "WagYourMinimap"
     );
 
+    private static final KeyMapping key_hide_minimap = new KeyMapping(
+        "key.wagyourminimap.hide_minimap",
+        InputConstants.UNKNOWN.getValue(),
+        "WagYourMinimap"
+    );
+
     public static void init() {
         KeyMappingRegistry.register(key_openmap);
         KeyMappingRegistry.register(key_fullscreen_minimap);
         KeyMappingRegistry.register(key_new_waypoint);
+        KeyMappingRegistry.register(key_zoom_in);
+        KeyMappingRegistry.register(key_zoom_out);
+        KeyMappingRegistry.register(key_hide_minimap);
+
         //client api getInstance first so we establish the instance as a ClientApi.
         MinimapClientApi.getInstance();
 
@@ -77,7 +87,9 @@ public class WagYourMinimapClient extends WagYourMinimap {
 
         ClientGuiEvent.RENDER_HUD.register((matrix, delta) -> {
             try {
-                InGameHud.render(matrix, delta);
+                if (MinimapApi.getInstance().getConfig().get(MinimapClientConfig.class).showMinimap) {
+                    InGameHud.render(matrix, delta);
+                }
             } catch (Throwable t) {
                 t.printStackTrace();
             }
@@ -109,6 +121,10 @@ public class WagYourMinimapClient extends WagYourMinimap {
                 }
                 MinimapApi.getInstance().getConfig().get(MinimapClientConfig.class).setChunkRadius(rad);
             }
+            if (key_hide_minimap.consumeClick()) {
+                MinimapApi.getInstance().getConfig().get(MinimapClientConfig.class).showMinimap = !MinimapApi.getInstance().getConfig().get(MinimapClientConfig.class).showMinimap;
+                MinimapApi.getInstance().getConfig().saveConfig();
+            }
         });
         ClientPlayerEvent.CLIENT_PLAYER_QUIT.register((player) -> {
             LOGGER.info("exiting {}", MinimapClientApi.getInstance().getMapServer());
@@ -129,7 +145,9 @@ public class WagYourMinimapClient extends WagYourMinimap {
         });
         InGameWaypointRenderer.RENDER_LAST.register((stack, partial, finish) -> {
             try {
-                InGameWaypointRenderer.onRender(stack, partial, finish);
+                if (MinimapApi.getInstance().getConfig().get(MinimapClientConfig.class).showWaypoints) {
+                    InGameWaypointRenderer.onRender(stack, partial, finish);
+                }
             } catch (Throwable t) {
                 t.printStackTrace();
             }

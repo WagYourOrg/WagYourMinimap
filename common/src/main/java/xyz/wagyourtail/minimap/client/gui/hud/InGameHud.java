@@ -7,7 +7,7 @@ import xyz.wagyourtail.minimap.client.gui.hud.map.AbstractMinimapRenderer;
 
 public class InGameHud {
     protected static AbstractMinimapRenderer renderer;
-    protected final Minecraft client = Minecraft.getInstance();
+    public static boolean shouldRender;
 
     public static AbstractMinimapRenderer getRenderer() {
         return renderer;
