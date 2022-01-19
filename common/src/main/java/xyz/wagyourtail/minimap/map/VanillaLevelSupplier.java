@@ -16,12 +16,7 @@ public class VanillaLevelSupplier extends LevelSupplier {
     }
 
     @Override
-    public String get() {
-        assert mc.level != null;
-        return getLevelName(mc.level);
-    }
-
-    public static String getLevelName(Level level) {
+    public String getLevelName(Level level) {
         return getLevelName(level.dimension());
     }
 

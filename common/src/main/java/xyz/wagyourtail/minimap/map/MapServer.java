@@ -49,7 +49,7 @@ public class MapServer {
 
     public MapLevel getLevelFor(Level level) {
         assert level != null;
-        return getLevelFor(levelNameSupplier.get(), level.dimensionType());
+        return getLevelFor(levelNameSupplier.getLevelName(level), level.dimensionType());
     }
 
     public synchronized MapLevel getLevelFor(String name, DimensionType dimType) {
