@@ -27,10 +27,8 @@ public class InGameWaypointRenderer {
     public static void onRender(PoseStack stack, float partialTicks, long finishTimeNano) {
         stack.pushPose();
         Vec3 center = mc.gameRenderer.getMainCamera().getPosition();
-        RenderSystem.disableDepthTest();
         boolean showBeam = MinimapClientApi.getInstance().getConfig().get(MinimapClientConfig.class).showWaypointBeam;
         for (Waypoint visibleWaypoint : MinimapClientApi.getInstance().getMapServer().waypoints.getVisibleWaypoints()) {
-            stack.pushPose();
             //move center to waypoint
             BlockPos pos = visibleWaypoint.posForCoordScale(mc.level.dimensionType().coordinateScale());
             Vec3 offset = new Vec3(pos.getX() + .5f, pos.getY() + .5f, pos.getZ() + .5f).subtract(center);
@@ -42,22 +40,28 @@ public class InGameWaypointRenderer {
             // this is a bit of a hack, but it works.
             // this warping is more apparent as the FOV increases
             // if you want to see how worse it really is, try making it statically set to 20 and quake pro
-            double factor = WARP_COMPENSATION_Y_FACTOR / 180d * Math.abs(Mth.wrapDegrees(
-                mc.gameRenderer.getMainCamera().getYRot() + yRot)) +
-                WARP_COMPENSATION_X_FACTOR / 180d * Math.abs(mc.gameRenderer.getMainCamera().getXRot() - xRot) + 20;
+            double factor =
+                WARP_COMPENSATION_Y_FACTOR / 180d * Math.abs(Mth.wrapDegrees(mc.gameRenderer.getMainCamera().getYRot() + yRot)) +
+                WARP_COMPENSATION_X_FACTOR / 180d * Math.abs(mc.gameRenderer.getMainCamera().getXRot() - xRot) +
+                20;
             Vec3 normalized_offset = offset.normalize().multiply(factor, factor, factor);
-            stack.translate(normalized_offset.x, normalized_offset.y, normalized_offset.z);
             double distance = offset.distanceTo(Vec3.ZERO);
 
+
+            // render waypoint beam at it's actual location in the world
             if (showBeam && distance < 256) {
                 stack.pushPose();
+                RenderSystem.enableDepthTest();
+                stack.translate(offset.x, offset.y, offset.z);
                 renderWaypointBeam(stack, center, xRot, yRot, visibleWaypoint, distance);
                 stack.popPose();
             }
 
+            // render waypoint relative to the player so infinite distance works
             stack.pushPose();
+            RenderSystem.disableDepthTest();
+            stack.translate(normalized_offset.x, normalized_offset.y, normalized_offset.z);
             renderWaypointIcon(stack, offset, xRot, yRot, visibleWaypoint, distance);
-            stack.popPose();
             stack.popPose();
         }
         RenderSystem.enableDepthTest();
@@ -97,18 +101,21 @@ public class InGameWaypointRenderer {
             stack.last().pose(),
             buffer,
             true,
-            0x20000000,
+            0x30000000,
             0xF000F0
         );
         buffer.endBatch();
     }
 
     public static void renderWaypointBeam(PoseStack stack, Vec3 offset, float xRot, float yRot, Waypoint waypoint, double distance) {
+        // face player
         stack.mulPose(Vector3f.YP.rotationDegrees(yRot));
-        //        stack.mulPose(Vector3f.XP.rotationDegrees(xRot));
         stack.mulPose(Vector3f.ZP.rotationDegrees(180));
-        float scale = (float) Math.max(.0675, -distance / 50f * .0625 + .125f);
-        stack.scale(scale, scale, scale);
+
+//        float scale = (float) Math.max(.0675, -distance / 50f * .0625 + .125f);
+//        stack.scale(scale, scale, scale);
+
+        // rendering code
         Matrix4f matrix = stack.last().pose();
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
         RenderSystem.enableBlend();
@@ -120,11 +127,11 @@ public class InGameWaypointRenderer {
         float b = (waypoint.colB & 0xFF) / 255f;
         builder.vertex(matrix, 0, 2048, 0).color(r, g, b, 0.75f).endVertex();
         builder.vertex(matrix, 0, -2048, 0).color(r, g, b, 0.75f).endVertex();
-        builder.vertex(matrix, -14, -2048, 0).color(r, g, b, 0.0f).endVertex();
-        builder.vertex(matrix, -14, 2048, 0).color(r, g, b, 0.0f).endVertex();
+        builder.vertex(matrix, -.5f, -2048, 0).color(r, g, b, 0.0f).endVertex();
+        builder.vertex(matrix, -.5f, 2048, 0).color(r, g, b, 0.0f).endVertex();
         builder.vertex(matrix, 0, 2048, 0).color(r, g, b, 0.75f).endVertex();
-        builder.vertex(matrix, 14, 2048, 0).color(r, g, b, 0.0f).endVertex();
-        builder.vertex(matrix, 14, -2048, 0).color(r, g, b, 0.0f).endVertex();
+        builder.vertex(matrix, .5f, 2048, 0).color(r, g, b, 0.0f).endVertex();
+        builder.vertex(matrix, .5f, -2048, 0).color(r, g, b, 0.0f).endVertex();
         builder.vertex(matrix, 0, -2048, 0).color(r, g, b, 0.75f).endVertex();
         builder.end();
         BufferUploader.end(builder);

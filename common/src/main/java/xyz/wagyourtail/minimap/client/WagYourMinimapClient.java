@@ -162,28 +162,36 @@ public class WagYourMinimapClient extends WagYourMinimap {
             }
         }));
         ClientPlayerEvent.CLIENT_PLAYER_RESPAWN.register((oldP, newP) -> {
-            if (oldP.getHealth() <= 0) {
-                DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yy/MM/dd HH:mm:ss");
-                LocalDateTime now = LocalDateTime.now();
-                String[] dims = new String[] {MinimapApi.getInstance().getMapServer().getLevelFor(oldP.level).level_slug()};
-                MinimapApi.getInstance().getMapServer().waypoints.forceAddWaypoint(
-                new Waypoint(
-                    oldP.level.dimensionType().coordinateScale(),
-                    oldP.getBlockX(),
-                    oldP.getBlockY(),
-                    oldP.getBlockZ(),
-                    (byte) 0xFF,
-                    (byte) 0xFF,
-                    (byte) 0xFF,
-                    "Death @ " + dtf.format(now),
-                    new String[] {"deaths"},
-                    dims,
-                    new JsonObject(),
-                    "skull",
-                    true,
-                    false
-                    )
-                );
+            try {
+                if (oldP != null && oldP.getHealth() <= 0) {
+                    DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yy/MM/dd HH:mm:ss");
+                    LocalDateTime now = LocalDateTime.now();
+                    String[] dims = new String[] {
+                        MinimapApi.getInstance()
+                            .getMapServer()
+                            .getLevelFor(oldP.level).level_slug()
+                    };
+                    MinimapApi.getInstance().getMapServer().waypoints.forceAddWaypoint(
+                        new Waypoint(
+                            oldP.level.dimensionType().coordinateScale(),
+                            oldP.getBlockX(),
+                            oldP.getBlockY(),
+                            oldP.getBlockZ(),
+                            (byte) 0xFF,
+                            (byte) 0xFF,
+                            (byte) 0xFF,
+                            "Death @ " + dtf.format(now),
+                            new String[] {"deaths"},
+                            dims,
+                            new JsonObject(),
+                            "skull",
+                            true,
+                            false
+                        )
+                    );
+                }
+            } catch (Throwable t) {
+                t.printStackTrace();
             }
         });
 

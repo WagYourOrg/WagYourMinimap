@@ -58,7 +58,7 @@ public class WaypointOverlay extends AbstractMinimapOverlay {
                 maxLength / 2 + pointVec.z * chunkScale / 16f,
                 0
             );
-            stack.scale(.0025f * maxLength, .0025f * maxLength, 1);
+            stack.scale(.004f * maxLength, .004f * maxLength, 1);
             if (scale < 1) {
                 stack.mulPose(Vector3f.ZN.rotation((float) Math.atan2(pointVec.x, pointVec.z)));
                 RenderSystem.setShaderTexture(0, waypoint_arrow_tex);
@@ -66,7 +66,7 @@ public class WaypointOverlay extends AbstractMinimapOverlay {
                 RenderSystem.setShaderTexture(0, point.getIcon());
             }
             int abgr = 0xFF000000 | point.colB & 0xFF << 0x10 | point.colG & 0xFF << 0x8 | point.colR & 0xFF;
-            AbstractMapRenderer.drawTexCol(stack, -10, -10, 20, 20, 1, 1, 0, 0, abgr);
+            AbstractMapRenderer.drawTexCol(stack, -10, -10, 20, 20, 0, 0, 1, 1, abgr);
             if (scale >= 1) {
                 minecraft.font.draw(stack, point.name, -minecraft.font.width(point.name) / 2f, 10, 0xFFFFFF);
             }
