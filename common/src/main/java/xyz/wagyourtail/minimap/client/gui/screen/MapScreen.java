@@ -1,5 +1,6 @@
 package xyz.wagyourtail.minimap.client.gui.screen;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Matrix4f;
@@ -14,6 +15,7 @@ import xyz.wagyourtail.minimap.WagYourMinimap;
 import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
 import xyz.wagyourtail.minimap.api.client.MinimapClientEvents;
 import xyz.wagyourtail.minimap.api.client.config.MinimapClientConfig;
+import xyz.wagyourtail.minimap.client.gui.hud.overlay.mobicons.AbstractEntityRenderer;
 import xyz.wagyourtail.minimap.client.gui.screen.map.ScreenMapRenderer;
 import xyz.wagyourtail.minimap.client.gui.screen.widget.InteractMenu;
 import xyz.wagyourtail.minimap.client.gui.screen.widget.MenuButton;
@@ -39,9 +41,15 @@ public class MapScreen extends Screen {
         "textures/gui/menu.png"
     );
 
+    public static int SELECT_REGION_BORDER_COLOR = 0xFFFF0000;
+    public static int SELECT_REGION_COLOR = 0x4FFF0000;
+
     private int menuHeight;
     public ScreenMapRenderer renderer;
     public InteractMenu interact;
+
+    private double dragStartX, dragStartY;
+    private double dragEndX, dragEndY;
 
     public MapScreen() {
         super(new TranslatableComponent("gui.wagyourminimap.title"));
@@ -49,16 +57,14 @@ public class MapScreen extends Screen {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        dragStartX = mouseX;
+        dragStartY = mouseY;
+        dragEndX = mouseX;
+        dragEndY = mouseY;
         boolean consumed = super.mouseClicked(mouseX, mouseY, button);
         if (interact != null) {
             interact.remove();
             interact = null;
-        }
-        if (!consumed && button == 1) {
-            float x = (float) (renderer.topX + renderer.xDiam * mouseX / width);
-            float z = (float) (renderer.topZ + renderer.zDiam * mouseY / height);
-
-            interact = new InteractMenu(this, x, z, mouseX, mouseY);
         }
         return true;
     }
@@ -67,6 +73,8 @@ public class MapScreen extends Screen {
     public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
         boolean consumed = super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
         if (button == 1) {
+            dragEndX = mouseX;
+            dragEndY = mouseY;
             return true;
         }
         if (!consumed) {
@@ -77,6 +85,20 @@ public class MapScreen extends Screen {
             ));
         }
         return true;
+    }
+
+    @Override
+    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        boolean consumed = super.mouseReleased(mouseX, mouseY, button);
+        if (!consumed && button == 1) {
+            float sX = (float) (renderer.topX + renderer.xDiam * dragStartX / width);
+            float sZ = (float) (renderer.topZ + renderer.zDiam * dragStartY / height);
+            float eX = (float) (renderer.topX + renderer.xDiam * mouseX / width);
+            float eZ = (float) (renderer.topZ + renderer.zDiam * mouseY / height);
+            interact = new InteractMenu(this, dragStartX, dragStartY, mouseX, mouseY, sX, sZ, eX, eZ);
+            return true;
+        }
+        return consumed;
     }
 
     @Override
@@ -92,8 +114,15 @@ public class MapScreen extends Screen {
     public void render(PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
         renderBackground(poseStack);
 
-
         renderer.renderMinimap(poseStack, mouseX, mouseY);
+
+        if (dragStartX != dragEndX && dragStartY != dragEndY) {
+            fill(poseStack, (int) dragStartX, (int) dragStartY, (int) dragEndX, (int) dragEndY, SELECT_REGION_COLOR);
+            fill(poseStack, (int) dragStartX, (int) dragStartY + 1, (int) dragStartX + 1, (int) dragEndY + 1, SELECT_REGION_BORDER_COLOR);
+            fill(poseStack, (int) dragStartX, (int) dragStartY, (int) dragEndX, (int) dragStartY + 1, SELECT_REGION_BORDER_COLOR);
+            fill(poseStack, (int) dragEndX, (int) dragStartY + 1, (int) dragEndX + 1, (int) dragEndY + 1, SELECT_REGION_BORDER_COLOR);
+            fill(poseStack, (int) dragStartX, (int) dragEndY, (int) dragEndX, (int) dragEndY + 1, SELECT_REGION_BORDER_COLOR);
+        }
 
         if (interact != null) {
             interact.render(poseStack, mouseX, mouseY, partialTicks);

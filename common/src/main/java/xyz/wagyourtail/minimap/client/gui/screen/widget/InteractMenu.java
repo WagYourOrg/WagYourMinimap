@@ -29,38 +29,47 @@ public class InteractMenu extends GuiComponent implements Widget {
     protected static final Minecraft minecraft = Minecraft.getInstance();
     public static int backround_color = 0xFF3F3F74;
     public final MapScreen parent;
-    public final float x, z;
-    public final double topX, topY;
+    public final double startX, startY, endX, endY;
+    public final float startXBlock, startZBlock, endXBlock, endZBlock;
     public final List<Waypoint> waypoints;
     public final Map<String, List<InteractMenuButton>> buttons = new LinkedHashMap<>();
     public int totalBtns = 0;
 
-    public InteractMenu(MapScreen parent, float x, float z, double mouseX, double mouseY) {
+    public InteractMenu(MapScreen parent, double startX, double startY, double endX, double endY, float startXBlock, float startZBlock, float endXBlock, float endZBlock) {
         this.parent = parent;
-        this.x = x;
-        this.z = z;
-        this.topX = mouseX;
-        this.topY = mouseY;
-        this.waypoints = waypointsNearPos((int) x, (int) z);
+        this.startX = startX;
+        this.startY = startY;
+        this.endX = endX;
+        this.endY = endY;
+        this.startXBlock = startXBlock;
+        this.startZBlock = startZBlock;
+        this.endXBlock = endXBlock;
+        this.endZBlock = endZBlock;
+        this.waypoints = waypointsInOrNear();
         this.init();
     }
 
     private void init() {
         assert minecraft.level != null;
         MapServer.MapLevel level = MinimapApi.getInstance().getMapServer().getLevelFor(minecraft.level);
-        int y = 0;
-        if (level != null) {
-            ChunkData chunk = ChunkLocation.locationForChunkPos(level, (int) x >> 4, (int) z >> 4).get();
-            if (chunk != null) {
-                SurfaceDataPart surface = chunk.getData(SurfaceDataPart.class).orElse(null);
-                if (surface != null) {
-                    y = surface.heightmap[SurfaceDataPart.blockPosToIndex((int) x, (int) z)];
+        if (startX == endX && startY == endY) {
+            int y = 0;
+            if (level != null) {
+                ChunkData chunk = ChunkLocation.locationForChunkPos(level, (int) startXBlock >> 4, (int) startZBlock >> 4).get();
+                if (chunk != null) {
+                    SurfaceDataPart surface = chunk.getData(SurfaceDataPart.class).orElse(null);
+                    if (surface != null) {
+                        y = surface.heightmap[SurfaceDataPart.blockPosToIndex((int) startXBlock, (int) startZBlock)];
+                    }
                 }
             }
+
+            Vec3 pos = new Vec3(startXBlock, y, startZBlock);
+            buttons.put(I18n.get("gui.wagyourminimap.general") + ": ", buttonsForPos(pos));
+        } else {
+            buttons.put(I18n.get("gui.wagyourminimap.general") + ": ", buttonsForRegion(new Vec3(startXBlock, 0, startZBlock), new Vec3(endXBlock, 0, endZBlock)));
         }
 
-        Vec3 pos = new Vec3(x, y, z);
-        buttons.put(I18n.get("gui.wagyourminimap.general") + ": ", buttonsForPos(pos));
 
         for (Waypoint waypoint : waypoints) {
             buttons.put(I18n.get("gui.wagyourminimap.waypoint") + ": " + waypoint.name, buttonsForWaypoint(waypoint));
@@ -68,8 +77,8 @@ public class InteractMenu extends GuiComponent implements Widget {
 
         MinimapClientEvents.FULLSCREEN_INTERACT_MENU.invoker().onPopulate(this);
 
-        int leftX = (int) topX;
-        int currentTopY = (int) topY;
+        int leftX = (int) endX;
+        int currentTopY = (int) endY;
 
         for (Map.Entry<String, List<InteractMenuButton>> group : buttons.entrySet()) {
             currentTopY += 6;
@@ -104,6 +113,19 @@ public class InteractMenu extends GuiComponent implements Widget {
         return buttons;
     }
 
+    private  List<InteractMenuButton> buttonsForRegion(Vec3 start, Vec3 end) {
+        List<InteractMenuButton> buttons = new ArrayList<>();
+        buttons.add(new InteractMenuButton(
+            new TranslatableComponent("gui.wagyourminimap.delete_all_waypoints"),
+            (btn) -> {
+                for (Waypoint waypoint : waypoints) {
+                    MinimapApi.getInstance().getMapServer().waypoints.removeWaypoint(waypoint);
+                }
+            })
+        );
+        return buttons;
+    }
+
     private List<InteractMenuButton> buttonsForWaypoint(Waypoint point) {
         List<InteractMenuButton> buttons = new ArrayList<>();
         buttons.add(new InteractMenuButton(
@@ -130,29 +152,51 @@ public class InteractMenu extends GuiComponent implements Widget {
         return buttons;
     }
 
-    private List<Waypoint> waypointsNearPos(int x, int z) {
-        float rad = 10f * 16f / parent.renderer.chunkWidth;
-        double coordScale = minecraft.level.dimensionType().coordinateScale();
-        return MinimapApi.getInstance().getMapServer().waypoints.getAllWaypoints().stream().filter(e -> {
-            BlockPos pos = e.posForCoordScale(coordScale);
-            return new Vec3(pos.getX(), 0, pos.getZ()).distanceTo(new Vec3(x, 0, z)) <= rad;
-        }).collect(Collectors.toList());
+    private List<Waypoint> waypointsInOrNear() {
+        if (startX == endX && startY == endY) {
+            float rad = 10f * 16f / parent.renderer.chunkWidth;
+            double coordScale = minecraft.level.dimensionType().coordinateScale();
+            return MinimapApi.getInstance().getMapServer().waypoints.getAllWaypoints().stream().filter(e -> {
+                BlockPos pos = e.posForCoordScale(coordScale);
+                return new Vec3(pos.getX(), 0, pos.getZ()).distanceTo(new Vec3(startXBlock, 0, startZBlock)) <= rad;
+            }).collect(Collectors.toList());
+        } else {
+            return MinimapApi.getInstance().getMapServer().waypoints.getAllWaypoints().stream().filter(e -> {
+                BlockPos pos = e.posForCoordScale(minecraft.level.dimensionType().coordinateScale());
+                float x1, x2, z1, z2;
+                if (startXBlock < endXBlock) {
+                    x1 = startXBlock;
+                    x2 = endXBlock;
+                } else {
+                    x1 = endXBlock;
+                    x2 = startXBlock;
+                }
+                if (startZBlock < endZBlock) {
+                    z1 = startZBlock;
+                    z2 = endZBlock;
+                } else {
+                    z1 = endZBlock;
+                    z2 = startZBlock;
+                }
+                return pos.getX() >= x1 && pos.getX() <= x2 && pos.getZ() >= z1 && pos.getZ() <= z2;
+            }).collect(Collectors.toList());
+        }
     }
 
     @Override
     public void render(PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
         fill(
             poseStack,
-            (int) topX - 2,
-            (int) topY - 2,
-            (int) topX + 102,
-            (int) topY + totalBtns * InteractMenuButton.btnHeight + buttons.size() * 6 + 2,
+            (int) endX - 2,
+            (int) endY - 2,
+            (int) endX + 102,
+            (int) endY + totalBtns * InteractMenuButton.btnHeight + buttons.size() * 6 + 2,
             backround_color
         );
-        int currentY = (int) topY;
+        int currentY = (int) endY;
         for (Map.Entry<String, List<InteractMenuButton>> group : buttons.entrySet()) {
             poseStack.pushPose();
-            poseStack.translate(topX + 50, currentY, 0);
+            poseStack.translate(endX + 50, currentY, 0);
             poseStack.scale(.6f, .6f, 1);
             drawCenteredString(poseStack, minecraft.font, group.getKey(), 0, 0, 0x639BFF);
             poseStack.popPose();

@@ -69,6 +69,7 @@
     "gui.wagyourminimap.waypoint": "Waypoint",
     "gui.wagyourminimap.edit_waypoint": "Edit Waypoint",
     "gui.wagyourminimap.delete_waypoint": "Delete Waypoint",
+    "gui.wagyourminimap.delete_all_waypoints": "Delete All Waypoints",
     "gui.wagyourminimap.settings.waypoint_filters": "Waypoint Filters",
     "gui.wagyourminimap.settings.waypoint_filter.dimension": "Dimension",
     "gui.wagyourminimap.settings.waypoint_filter.group": "Group",
