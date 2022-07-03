@@ -35,7 +35,7 @@ public class ScreenMapRenderer extends AbstractMapRenderer {
     public float blockX, blockZ, endBlockX, endBlockZ, offsetX, offsetZ;
 
     public ScreenMapRenderer() {
-        super(Set.of());
+        super();
     }
 
     public void changeZoom(int radius) {

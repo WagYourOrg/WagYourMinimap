@@ -8,7 +8,7 @@ import xyz.wagyourtail.config.field.SettingsContainer;
 import xyz.wagyourtail.minimap.map.image.colors.VanillaBlockColors;
 import xyz.wagyourtail.minimap.map.image.imager.UndergroundImager;
 
-@SettingsContainer("gui.wagyourminimap.setting.layers.underground.vanilla")
+@SettingsContainer("gui.wagyourminimap.setting.layers.vanilla_map")
 public class UndergroundVanillaImageStrategy extends VanillaBlockColors implements UndergroundImager {
 
     @Setting("gui.wagyourminimap.setting.layers.underground.light_level")

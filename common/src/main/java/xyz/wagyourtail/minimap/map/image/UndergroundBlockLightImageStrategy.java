@@ -17,7 +17,7 @@ import xyz.wagyourtail.minimap.chunkdata.updater.UndergroundDataUpdater;
 import java.awt.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-@SettingsContainer("gui.wagyourminimap.setting.layers.underground.light")
+@SettingsContainer("gui.wagyourminimap.setting.layers.light")
 public class UndergroundBlockLightImageStrategy implements ImageStrategy {
     protected static final Minecraft minecraft = Minecraft.getInstance();
     private static final float HUE = 50F / 360F;

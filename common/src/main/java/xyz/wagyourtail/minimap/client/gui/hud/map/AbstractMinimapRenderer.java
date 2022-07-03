@@ -1,6 +1,5 @@
 package xyz.wagyourtail.minimap.client.gui.hud.map;
 
-import com.google.common.collect.Sets;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Vector3f;
@@ -15,6 +14,7 @@ import xyz.wagyourtail.minimap.ModLoaderSpecific;
 import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
 import xyz.wagyourtail.minimap.api.client.MinimapClientEvents;
 import xyz.wagyourtail.minimap.api.client.config.MinimapClientConfig;
+import xyz.wagyourtail.minimap.chunkdata.ChunkLocation;
 import xyz.wagyourtail.minimap.client.gui.AbstractMapRenderer;
 import xyz.wagyourtail.minimap.client.gui.hud.InGameHud;
 import xyz.wagyourtail.minimap.client.gui.hud.overlay.AbstractMinimapOverlay;
@@ -22,10 +22,7 @@ import xyz.wagyourtail.minimap.client.gui.hud.overlay.MobIconOverlay;
 import xyz.wagyourtail.minimap.client.gui.hud.overlay.PlayerArrowOverlay;
 import xyz.wagyourtail.minimap.client.gui.hud.overlay.WaypointOverlay;
 import xyz.wagyourtail.minimap.client.gui.hud.overlay.rotate.NorthIconOverlay;
-import xyz.wagyourtail.minimap.map.image.ImageStrategy;
-import xyz.wagyourtail.minimap.map.image.UndergroundAccurateImageStrategy;
-import xyz.wagyourtail.minimap.map.image.UndergroundBlockLightImageStrategy;
-import xyz.wagyourtail.minimap.map.image.UndergroundVanillaImageStrategy;
+import xyz.wagyourtail.minimap.map.image.*;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
@@ -36,8 +33,10 @@ public abstract class AbstractMinimapRenderer extends AbstractMapRenderer {
     public final boolean hasStencil;
     public boolean fullscreen_toggle;
 
-    @Setting(value = "gui.wagyourminimap.settings.style.overlay", options = "overlayOptions", setter = "setOverlays", constructor = "constructOverlay")
-    public AbstractMinimapOverlay[] overlays;
+
+    public static final Set<Class<? extends ImageStrategy>> undergroundLayerOptions = new HashSet<>(Set.of(UndergroundVanillaImageStrategy.class, UndergroundAccurateImageStrategy.class, NullImageStrategy.class));
+
+    public static final Set<Class<? extends ImageStrategy>> undergroundLayerOptionsExtra = new HashSet<>(Set.of(UndergroundBlockLightImageStrategy.class));
 
     public final Set<Class<? extends AbstractMinimapOverlay>> availableOverlays = new HashSet<>(Set.of(
         PlayerArrowOverlay.class,
@@ -45,29 +44,41 @@ public abstract class AbstractMinimapRenderer extends AbstractMapRenderer {
         MobIconOverlay.class
     ));
 
-    protected AbstractMinimapRenderer(boolean rotate, float scaleBy, boolean hasStencil, Set<Class<? extends ImageStrategy>> layers, Set<Class<? extends AbstractMinimapOverlay>> overlays) {
-        super(Sets.union(
-            Set.of(
-                UndergroundVanillaImageStrategy.class,
-                UndergroundAccurateImageStrategy.class,
-                UndergroundBlockLightImageStrategy.class
-            ),
-            layers
-        ));
+    @Setting(value = "gui.wagyourminimap.settings.style.underground_layer", options = "undergroundLayers", setter = "setUndergroundLayer")
+    public ImageStrategy undergroundLayer;
+
+    @Setting(value = "gui.wagyourminimap.settings.style.underground_layer_extra", options = "undergroundLayerExtra", setter = "setUndergroundLayerExtra")
+    public ImageStrategy[] undergroundLayerExtra;
+
+    @Setting(value = "gui.wagyourminimap.settings.style.overlay", options = "overlayOptions", setter = "setOverlays", constructor = "constructOverlay")
+    public AbstractMinimapOverlay[] overlays;
+
+
+    protected AbstractMinimapRenderer(boolean rotate, float scaleBy, boolean hasStencil) {
+        super();
         this.rotate = rotate;
         this.scaleBy = scaleBy;
         this.hasStencil = hasStencil;
-        this.availableOverlays.addAll(overlays);
         if (rotate) {
-            this.availableOverlays.add(NorthIconOverlay.class);
+            availableOverlays.add(NorthIconOverlay.class);
         }
         MinimapClientEvents.AVAILABLE_MINIMAP_OPTIONS.invoker().onOptions(this, availableLayers, availableOverlays);
 
         this.overlays = getDefaultOverlays().toArray(new AbstractMinimapOverlay[0]);
+        this.undergroundLayer = new UndergroundVanillaImageStrategy();
+        this.undergroundLayerExtra = new ImageStrategy[]{new UndergroundBlockLightImageStrategy()};
     }
 
     public void setOverlays(AbstractMinimapOverlay... overlays) {
         this.overlays = overlays;
+    }
+
+    public void setUndergroundLayer(ImageStrategy undergroundLayer) {
+        this.undergroundLayer = undergroundLayer;
+    }
+
+    public void setUndergroundLayerExtra(ImageStrategy... undergroundLayerExtra) {
+        this.undergroundLayerExtra = undergroundLayerExtra;
     }
 
     public void render(PoseStack matrixStack, float tickDelta) {
@@ -124,6 +135,17 @@ public abstract class AbstractMinimapRenderer extends AbstractMapRenderer {
             new TextComponent(String.format("%.2f %.2f %.2f", player_pos.x, player_pos.y, player_pos.z))
         );
         matrixStack.popPose();
+    }
+
+    @Override
+    protected boolean drawChunk(PoseStack matrixStack, ChunkLocation chunk, float x, float y, float width, float height, float startU, float startV, float endU, float endV) {
+        boolean ret = super.drawChunk(matrixStack, chunk, x, y, width, height, startU, startV, endU, endV);
+        ret = drawLayer(matrixStack, chunk, x, y, width, height, startU, startV, endU, endV, undergroundLayer) || ret;
+        for (ImageStrategy rendererLayer : undergroundLayerExtra) {
+            ret = drawLayer(matrixStack, chunk, x, y, width, height, startU, startV, endU, endV, rendererLayer) || ret;
+            continue;
+        }
+        return ret;
     }
 
     protected void renderMinimap(PoseStack matrixStack, @NotNull Vec3 center, float maxLength, @NotNull Vec3 player_pos, float player_rot) {
@@ -338,14 +360,16 @@ public abstract class AbstractMinimapRenderer extends AbstractMapRenderer {
         return availableOverlays;
     }
 
+    public Collection<Class<? extends ImageStrategy>> undergroundLayers() {
+        return undergroundLayerOptions;
+    }
+
+    public Collection<Class<? extends ImageStrategy>> undergroundLayerExtra() {
+        return undergroundLayerOptionsExtra;
+    }
+
     public AbstractMinimapOverlay constructOverlay(Class<? extends AbstractMinimapOverlay> overlayClass) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         return overlayClass.getConstructor(AbstractMinimapRenderer.class).newInstance(this);
-    }
-    @Override
-    public List<ImageStrategy> getDefaultLayers() {
-        List<ImageStrategy> sup = new ArrayList<>(super.getDefaultLayers());
-        sup.addAll(List.of(new UndergroundVanillaImageStrategy(), new UndergroundBlockLightImageStrategy()));
-        return sup;
     }
 
     public List<AbstractMinimapOverlay> getDefaultOverlays() {

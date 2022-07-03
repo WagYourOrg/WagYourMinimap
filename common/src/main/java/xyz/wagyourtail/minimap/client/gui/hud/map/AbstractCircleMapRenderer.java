@@ -1,6 +1,5 @@
 package xyz.wagyourtail.minimap.client.gui.hud.map;
 
-import com.google.common.collect.Sets;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Matrix4f;
@@ -8,17 +7,15 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.world.phys.Vec3;
 import xyz.wagyourtail.minimap.client.gui.hud.overlay.AbstractMinimapOverlay;
 import xyz.wagyourtail.minimap.client.gui.hud.overlay.CircleMapBorderOverlay;
-import xyz.wagyourtail.minimap.client.gui.hud.overlay.SquareMapBorderOverlay;
-import xyz.wagyourtail.minimap.map.image.ImageStrategy;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 public abstract class AbstractCircleMapRenderer extends AbstractMinimapRenderer {
 
-    protected AbstractCircleMapRenderer(boolean rotate, Set<Class<? extends ImageStrategy>> layers, Set<Class<? extends AbstractMinimapOverlay>> overlays) {
-        super(rotate, 1, true, layers, Sets.union(Set.of(CircleMapBorderOverlay.class), overlays));
+    protected AbstractCircleMapRenderer(boolean rotate) {
+        super(rotate, 1, true);
+        this.availableOverlays.add(CircleMapBorderOverlay.class);
     }
 
     @Override

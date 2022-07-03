@@ -1,21 +1,19 @@
 package xyz.wagyourtail.minimap.client.gui.hud.map;
 
-import com.google.common.collect.Sets;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.world.phys.Vec3;
 import xyz.wagyourtail.minimap.client.gui.hud.overlay.AbstractMinimapOverlay;
 import xyz.wagyourtail.minimap.client.gui.hud.overlay.SquareMapBorderOverlay;
-import xyz.wagyourtail.minimap.map.image.ImageStrategy;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 public abstract class AbstractSquareMapRenderer extends AbstractMinimapRenderer {
     private static final float sqrt_2 = (float) Math.sqrt(2);
 
-    protected AbstractSquareMapRenderer(boolean rotate, Set<Class<? extends ImageStrategy>> layers, Set<Class<? extends AbstractMinimapOverlay>> overlays) {
-        super(rotate, rotate ? sqrt_2 : 1, rotate, layers, Sets.union(Set.of(SquareMapBorderOverlay.class), overlays));
+    protected AbstractSquareMapRenderer(boolean rotate) {
+        super(rotate, rotate ? sqrt_2 : 1, rotate);
+        this.availableOverlays.add(SquareMapBorderOverlay.class);
     }
 
 

@@ -8,7 +8,7 @@ import xyz.wagyourtail.config.field.SettingsContainer;
 import xyz.wagyourtail.minimap.map.image.colors.AccurateBlockColors;
 import xyz.wagyourtail.minimap.map.image.imager.UndergroundImager;
 
-@SettingsContainer("gui.wagyourminimap.setting.layers.underground.accurate")
+@SettingsContainer("gui.wagyourminimap.setting.layers.accurate_color")
 public class UndergroundAccurateImageStrategy extends AccurateBlockColors implements UndergroundImager {
 
     @Setting("gui.wagyourminimap.setting.layers.underground.light_level")

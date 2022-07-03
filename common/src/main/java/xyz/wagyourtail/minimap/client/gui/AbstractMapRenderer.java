@@ -21,18 +21,24 @@ import java.util.concurrent.ExecutionException;
 public abstract class AbstractMapRenderer {
     public static final Minecraft minecraft = Minecraft.getInstance();
 
-    public final Set<Class<? extends ImageStrategy>> availableLayers = new HashSet<>(Set.of(
-        VanillaMapImageStrategy.class,
-        AccurateMapImageStrategy.class,
+    public static final Set<Class<? extends ImageStrategy>> availableLayers = new HashSet<>(Set.of(
         SurfaceBlockLightImageStrategy.class
     ));
+
+    public static final Set<Class<? extends ImageStrategy>> baseLayers = new HashSet<>(Set.of(
+        VanillaMapImageStrategy.class,
+        AccurateMapImageStrategy.class
+    ));
+
+    @Setting(value = "gui.wagyourminimap.settings.style.base_layer", options = "baseLayerOptions", setter = "setBaseLayer")
+    public ImageStrategy baseLayer;
 
     @Setting(value = "gui.wagyourminimap.settings.style.layers", options = "layerOptions", setter = "setRenderLayers")
     public ImageStrategy[] rendererLayers;
 
-    public AbstractMapRenderer(Set<Class<? extends ImageStrategy>> layers) {
-        availableLayers.addAll(layers);
 
+    public AbstractMapRenderer() {
+        baseLayer = new VanillaMapImageStrategy();
         this.rendererLayers = getDefaultLayers().toArray(new ImageStrategy[0]);
     }
 
@@ -76,6 +82,10 @@ public abstract class AbstractMapRenderer {
         this.rendererLayers = strategy;
     }
 
+    public void setBaseLayer(ImageStrategy strategy) {
+        this.baseLayer = strategy;
+    }
+
     protected ChunkLocation getChunk(int chunkX, int chunkZ) {
         assert minecraft.level != null;
         MapServer.MapLevel level = MinimapClientApi.getInstance().getMapServer().getLevelFor(minecraft.level);
@@ -100,19 +110,23 @@ public abstract class AbstractMapRenderer {
         rect(stack, x, y, scaledScaleX, scaledScaleZ);
     }
 
-    private boolean drawChunk(PoseStack matrixStack, ChunkLocation chunk, float x, float y, float width, float height, float startU, float startV, float endU, float endV) {
-        boolean ret = false;
+    protected boolean drawChunk(PoseStack matrixStack, ChunkLocation chunk, float x, float y, float width, float height, float startU, float startV, float endU, float endV) {
+        boolean ret = drawLayer(matrixStack, chunk, x, y, width, height, startU, startV, endU, endV, baseLayer);
         for (ImageStrategy rendererLayer : rendererLayers) {
-            if (!rendererLayer.shouldRender()) {
-                continue;
-            }
-            if (!bindChunkTex(chunk, rendererLayer)) {
-                continue;
-            }
-            ret = true;
-            drawTex(matrixStack, x, y, width, height, startU, startV, endU, endV);
+            ret = drawLayer(matrixStack, chunk, x, y, width, height, startU, startV, endU, endV, rendererLayer) || ret;
         }
         return ret;
+    }
+
+    protected boolean drawLayer(PoseStack matrixStack, ChunkLocation chunk, float x, float y, float width, float height, float startU, float startV, float endU, float endV, ImageStrategy rendererLayer) {
+        if (!rendererLayer.shouldRender()) {
+            return false;
+        }
+        if (!bindChunkTex(chunk, rendererLayer)) {
+            return false;
+        }
+        drawTex(matrixStack, x, y, width, height, startU, startV, endU, endV);
+        return true;
     }
 
     private static boolean bindChunkTex(ChunkLocation chunkData, ImageStrategy renderer) {
@@ -176,8 +190,11 @@ public abstract class AbstractMapRenderer {
         return availableLayers;
     }
 
-    public List<ImageStrategy> getDefaultLayers() {
-        return List.of(new VanillaMapImageStrategy(), new SurfaceBlockLightImageStrategy());
+    public Collection<Class<? extends ImageStrategy>> baseLayerOptions() {
+        return baseLayers;
     }
 
+    public List<ImageStrategy> getDefaultLayers() {
+        return List.of(new SurfaceBlockLightImageStrategy());
+    }
 }

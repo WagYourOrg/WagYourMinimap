@@ -22,6 +22,9 @@ repositories {
         name = 'Quilt'
         url = 'https://maven.quiltmc.org/repository/release'
     }
+    maven {
+        url "https://maven.terraformersmc.com/releases/"
+    }
 }
 
 dependencies {
@@ -34,7 +37,7 @@ dependencies {
     shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
 
 
-    modApi "com.terraformersmc:modmenu:v2.0.2+1.17.2035ad2"
+    modApi "com.terraformersmc:modmenu:2.0.2"
 }
 
 processResources {
