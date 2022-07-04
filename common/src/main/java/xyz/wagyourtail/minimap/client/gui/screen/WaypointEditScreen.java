@@ -15,6 +15,7 @@ import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.level.Level;
 import xyz.wagyourtail.config.gui.widgets.NamedEditBox;
 import xyz.wagyourtail.minimap.api.MinimapApi;
+import xyz.wagyourtail.minimap.client.gui.screen.widget.ColorButton;
 import xyz.wagyourtail.minimap.waypoint.Waypoint;
 
 import java.awt.*;
@@ -33,6 +34,7 @@ public class WaypointEditScreen extends Screen {
     protected EditBox posY;
     protected EditBox posZ;
     protected EditBox color;
+    protected ColorButton colorSelector;
     protected EditBox groups;
     protected EditBox dims;
     protected EditBox extra;
@@ -93,6 +95,7 @@ public class WaypointEditScreen extends Screen {
             MinimapApi.getInstance().getMapServer().waypoints.removeWaypoint(prev_point);
             MinimapApi.getInstance().getMapServer().waypoints.addWaypoint(compileWaypoint());
         }
+        assert minecraft != null;
         minecraft.setScreen(parent);
     }
 
@@ -185,9 +188,23 @@ public class WaypointEditScreen extends Screen {
         color.setValue(
             zeroPad(Integer.toHexString(prev_point.colR & 255)) + zeroPad(Integer.toHexString(prev_point.colG & 255)) +
                 zeroPad(Integer.toHexString(prev_point.colB & 255)));
-
+        int prevPointColor = ((prev_point.colR & 255) << 16) | ((prev_point.colG & 255) << 8) | (prev_point.colB & 255);
         int gradientHeight = Math.max(Math.min(100, height - h - 155), 0);
-        //TODO: finish and use ColorButton (gradient color picker)
+        colorSelector = addRenderableWidget(new ColorButton(width / 2 - 200, h + 50, 400, gradientHeight - 10, prevPointColor, color -> {
+            int r = (color >> 16) & 255;
+            int g = (color >> 8) & 255;
+            int b = color & 255;
+            this.color.setResponder(null);
+            this.color.setValue(zeroPad(Integer.toHexString(r)) + zeroPad(Integer.toHexString(g)) + zeroPad(Integer.toHexString(b)));
+            this.color.setResponder(s -> {
+                int col = s.isEmpty() ? 0 : Integer.parseInt(s, 16);
+                colorSelector.setCurrentColor(col);
+            });
+        }));
+        color.setResponder(s -> {
+            int col = s.isEmpty() ? 0 : Integer.parseInt(s, 16);
+            colorSelector.setCurrentColor(col);
+        });
 
         groups = addRenderableWidget(new NamedEditBox(
             font,
