@@ -45,8 +45,7 @@ public class UndergroundBlockLightImageStrategy implements ImageStrategy {
     }
 
     private int colorForLightLevel(byte lightLevel) {
-        //TODO: don't use awt color it's slow
-        return Color.HSBtoRGB(HUE, 1F, lightLevel / 15F);
+        return SurfaceBlockLightImageStrategy.HSBtoRGB2(HUE, 1F, lightLevel / 15F);
     }
 
     @Override
