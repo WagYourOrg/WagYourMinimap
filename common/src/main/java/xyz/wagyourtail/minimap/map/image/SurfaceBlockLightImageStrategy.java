@@ -38,8 +38,7 @@ public class SurfaceBlockLightImageStrategy implements ImageStrategy {
     }
 
     private int colorForLightLevel(byte lightLevel) {
-        //TODO: don't use awt color it's slow
-        return Color.HSBtoRGB(HUE, 1F, lightLevel / 15F);
+        return HSBtoRGB2(HUE, 1F, lightLevel / 15F);
     }
 
     @Override
@@ -50,6 +49,15 @@ public class SurfaceBlockLightImageStrategy implements ImageStrategy {
         }
         long time = minecraft.level.getDayTime() % TICKS_PER_DAY;
         return time > TICKS_PER_DAY / 2;
+    }
+
+    public static int HSBtoRGB2(float h, float s, float b) {
+        return 0xFF000000 | (f(h, s, b, 5) << 16) | (f(h, s, b, 3) << 8) | f(h, s, b, 1);
+    }
+
+    private static int f(float h, float s, float b, float n) {
+        float v = (n + h * 6) % 6;
+        return (int) (b * (1 - s * Math.max(0, Math.min(Math.min(v, 4 - v), 1))) * 255);
     }
 
 }
