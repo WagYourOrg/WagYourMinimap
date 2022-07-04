@@ -25,6 +25,7 @@ public class ArrayScreen<T, U> extends Screen implements EnabledSettingList.Entr
     private EnabledSettingList<T> enabledEntries;
     private DisabledSettingList<U> availableEntries;
 
+    private Button doneButton;
     protected ArrayScreen(Component component, Screen parent, SettingField<T[]> setting) {
         super(component);
         this.parent = parent;
@@ -175,6 +176,15 @@ public class ArrayScreen<T, U> extends Screen implements EnabledSettingList.Entr
         } catch (InvocationTargetException | IllegalAccessException | NoSuchMethodException e) {
             e.printStackTrace();
         }
+
+        doneButton = addRenderableWidget(new Button(
+            this.width / 2 + 5,
+            this.height - 30,
+            200,
+            20,
+            new TranslatableComponent("gui.wagyourconfig.done"),
+            (btn) -> onClose()
+        ));
     }
 
     @Override

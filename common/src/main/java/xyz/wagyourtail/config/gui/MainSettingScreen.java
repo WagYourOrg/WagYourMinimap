@@ -22,6 +22,7 @@ public class MainSettingScreen extends Screen {
     private final Class[] configs;
     private Button backButton;
     private Button forwardButton;
+    private Button doneButton;
 
     protected MainSettingScreen(Component title, Screen parent, ConfigManager config) {
         super(title);
@@ -70,7 +71,23 @@ public class MainSettingScreen extends Screen {
             }
         ));
 
+
+        doneButton = addRenderableWidget(new Button(
+            this.width / 2 + 5,
+            this.height - 30,
+            200,
+            20,
+            new TranslatableComponent("gui.wagyourconfig.done"),
+            (btn) -> onClose()
+        ));
+
         drawPage(0);
+        int buttonsPerPage = height / 30 * 2;
+        int pages = configs.length / buttonsPerPage;
+        if (pages == 0) {
+            backButton.visible = false;
+            forwardButton.visible = false;
+        }
     }
 
     public void drawPage(int page) {

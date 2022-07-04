@@ -31,7 +31,7 @@ public class SettingScreen extends Screen {
     private final List<Runnable> enabledListeners = new ArrayList<>();
     private Button backButton;
     private Button forwardButton;
-
+    private Button doneButton;
     public SettingScreen(Component title, Screen parent, Object container) {
         super(title);
         this.parent = parent;
@@ -78,7 +78,22 @@ public class SettingScreen extends Screen {
             (btn) -> drawPage(currentPage.incrementAndGet())
         ));
 
+        doneButton = addRenderableWidget(new Button(
+            this.width / 2 + 5,
+            this.height - 30,
+            200,
+            20,
+            new TranslatableComponent("gui.wagyourconfig.done"),
+            (btn) -> onClose()
+        ));
+
         drawPage(0);
+        int buttonsPerPage = height / 30 * 2;
+        int pages = settings.length / buttonsPerPage;
+        if (pages == 0) {
+            backButton.visible = false;
+            forwardButton.visible = false;
+        }
     }
 
     public void drawPage(int page) {

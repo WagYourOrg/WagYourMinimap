@@ -7,6 +7,7 @@
     "gui.wagyourconfig.unavailable": "unavailable",
     "gui.wagyourconfig.addentry": "Entry Name",
     "gui.wagyourconfig.submit": "Submit",
+    "gui.wagyourconfig.done": "Done",
 
     "gui.wagyourminimap.settings": "WagYourMinimap Config",
     "gui.wagyourminimap.settings.client": "Client",
