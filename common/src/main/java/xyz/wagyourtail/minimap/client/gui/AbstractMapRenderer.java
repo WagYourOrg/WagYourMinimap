@@ -49,11 +49,11 @@ public abstract class AbstractMapRenderer {
         RenderSystem.defaultBlendFunc();
         RenderSystem.enableTexture();
         BufferBuilder builder = Tesselator.getInstance().getBuilder();
-        builder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
-        builder.vertex(matrix, x, y + height, 0).uv(startU, endV).endVertex();
-        builder.vertex(matrix, x + width, y + height, 0).uv(startU, startV).endVertex();
-        builder.vertex(matrix, x + width, y, 0).uv(endU, startV).endVertex();
+        builder.begin(VertexFormat.Mode.TRIANGLE_STRIP, DefaultVertexFormat.POSITION_TEX);
         builder.vertex(matrix, x, y, 0).uv(endU, endV).endVertex();
+        builder.vertex(matrix, x, y + height, 0).uv(startU, endV).endVertex();
+        builder.vertex(matrix, x + width, y, 0).uv(endU, startV).endVertex();
+        builder.vertex(matrix, x + width, y + height, 0).uv(startU, startV).endVertex();
         builder.end();
         BufferUploader.end(builder);
     }
@@ -69,11 +69,11 @@ public abstract class AbstractMapRenderer {
         float b = (abgrTint >> 0x10 & 0xFF) / 255f;
         float g = (abgrTint >> 0x08 & 0xFF) / 255f;
         float r = (abgrTint & 0xFF) / 255f;
-        builder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
-        builder.vertex(matrix, x, y + height, 0).uv(startU, endV).color(r, g, b, a).endVertex();
-        builder.vertex(matrix, x + width, y + height, 0).uv(endU, endV).color(r, g, b, a).endVertex();
-        builder.vertex(matrix, x + width, y, 0).uv(endU, startV).color(r, g, b, a).endVertex();
+        builder.begin(VertexFormat.Mode.TRIANGLE_STRIP, DefaultVertexFormat.POSITION_TEX_COLOR);
         builder.vertex(matrix, x, y, 0).uv(startU, startV).color(r, g, b, a).endVertex();
+        builder.vertex(matrix, x, y + height, 0).uv(startU, endV).color(r, g, b, a).endVertex();
+        builder.vertex(matrix, x + width, y, 0).uv(endU, startV).color(r, g, b, a).endVertex();
+        builder.vertex(matrix, x + width, y + height, 0).uv(endU, endV).color(r, g, b, a).endVertex();
         builder.end();
         BufferUploader.end(builder);
     }
@@ -150,11 +150,11 @@ public abstract class AbstractMapRenderer {
         RenderSystem.defaultBlendFunc();
         RenderSystem.enableTexture();
         BufferBuilder builder = Tesselator.getInstance().getBuilder();
-        builder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
-        builder.vertex(matrix, x, y + height, 0).uv(startU, endV).endVertex();
-        builder.vertex(matrix, x + width, y + height, 0).uv(endU, endV).endVertex();
-        builder.vertex(matrix, x + width, y, 0).uv(endU, startV).endVertex();
+        builder.begin(VertexFormat.Mode.TRIANGLE_STRIP, DefaultVertexFormat.POSITION_TEX);
         builder.vertex(matrix, x, y, 0).uv(startU, startV).endVertex();
+        builder.vertex(matrix, x, y + height, 0).uv(startU, endV).endVertex();
+        builder.vertex(matrix, x + width, y, 0).uv(endU, startV).endVertex();
+        builder.vertex(matrix, x + width, y + height, 0).uv(endU, endV).endVertex();
         builder.end();
         BufferUploader.end(builder);
     }
@@ -166,11 +166,11 @@ public abstract class AbstractMapRenderer {
         RenderSystem.defaultBlendFunc();
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
         BufferBuilder builder = Tesselator.getInstance().getBuilder();
-        builder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-        builder.vertex(matrix, x, y + height, 0).color(0, 0, 0, 1f).endVertex();
-        builder.vertex(matrix, x + width, y + height, 0).color(0, 0, 0, 1f).endVertex();
-        builder.vertex(matrix, x + width, y, 0).color(0, 0, 0, 1f).endVertex();
+        builder.begin(VertexFormat.Mode.TRIANGLE_STRIP, DefaultVertexFormat.POSITION_COLOR);
         builder.vertex(matrix, x, y, 0).color(0, 0, 0, 1f).endVertex();
+        builder.vertex(matrix, x, y + height, 0).color(0, 0, 0, 1f).endVertex();
+        builder.vertex(matrix, x + width, y, 0).color(0, 0, 0, 1f).endVertex();
+        builder.vertex(matrix, x + width, y + height, 0).color(0, 0, 0, 1f).endVertex();
         builder.end();
         BufferUploader.end(builder);
         RenderSystem.enableTexture();
