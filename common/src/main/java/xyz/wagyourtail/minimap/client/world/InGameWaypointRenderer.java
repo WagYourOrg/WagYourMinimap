@@ -11,7 +11,6 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
 import xyz.wagyourtail.minimap.api.client.config.MinimapClientConfig;
@@ -43,9 +42,10 @@ public class InGameWaypointRenderer {
             // this warping is more apparent as the FOV increases
             // if you want to see how worse it really is, try making it statically set to 20 and quake pro
             double factor =
-                WARP_COMPENSATION_Y_FACTOR / 180d * Math.abs(Mth.wrapDegrees(mc.gameRenderer.getMainCamera().getYRot() + yRot)) +
-                WARP_COMPENSATION_X_FACTOR / 180d * Math.abs(mc.gameRenderer.getMainCamera().getXRot() - xRot) +
-                20;
+                WARP_COMPENSATION_Y_FACTOR / 180d * Math.abs(Mth.wrapDegrees(
+                    mc.gameRenderer.getMainCamera().getYRot() + yRot)) +
+                    WARP_COMPENSATION_X_FACTOR / 180d * Math.abs(mc.gameRenderer.getMainCamera().getXRot() - xRot) +
+                    20;
             Vec3 normalized_offset = offset.normalize().multiply(factor, factor, factor);
             double distance = offset.distanceTo(Vec3.ZERO);
 
@@ -114,8 +114,8 @@ public class InGameWaypointRenderer {
         stack.mulPose(Vector3f.YP.rotationDegrees(yRot));
         stack.mulPose(Vector3f.ZP.rotationDegrees(180));
 
-//        float scale = (float) Math.max(.0675, -distance / 50f * .0625 + .125f);
-//        stack.scale(scale, scale, scale);
+        //        float scale = (float) Math.max(.0675, -distance / 50f * .0625 + .125f);
+        //        stack.scale(scale, scale, scale);
 
         // rendering code
         Matrix4f matrix = stack.last().pose();

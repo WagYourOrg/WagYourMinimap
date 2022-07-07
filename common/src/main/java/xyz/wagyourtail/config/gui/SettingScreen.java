@@ -32,6 +32,7 @@ public class SettingScreen extends Screen {
     private Button backButton;
     private Button forwardButton;
     private Button doneButton;
+
     public SettingScreen(Component title, Screen parent, Object container) {
         super(title);
         this.parent = parent;
@@ -382,7 +383,8 @@ public class SettingScreen extends Screen {
                                     Setting.class) || (
                                     Modifier.isFinal(e.getModifiers()) && e.isAnnotationPresent(SettingsContainer.class)
                                 ));
-                        } catch (InvocationTargetException | IllegalAccessException | NoSuchMethodException | InstantiationException e) {
+                        } catch (InvocationTargetException | IllegalAccessException | NoSuchMethodException |
+                                 InstantiationException e) {
                             e.printStackTrace();
                         }
                     }

@@ -10,5 +10,7 @@ import java.nio.ByteBuffer;
 @Mixin(BufferUploader.class)
 public interface BufferUploaderAccessor {
     @Invoker("_end")
-    static void invoke_End(ByteBuffer buffer, VertexFormat.Mode mode, VertexFormat format, int vertexCount, VertexFormat.IndexType indexType, int indexCount, boolean sequentialIndex) {}
+    static void invoke_End(ByteBuffer buffer, VertexFormat.Mode mode, VertexFormat format, int vertexCount, VertexFormat.IndexType indexType, int indexCount, boolean sequentialIndex) {
+    }
+
 }

@@ -23,9 +23,10 @@ public class ServerCacher extends AbstractCacher {
     @Override
     public ChunkData loadChunk(ChunkLocation location) {
         // check if integrated server and cancel
-        if (minecraft.isLocalServer()) return null;
+        if (minecraft.isLocalServer()) {
+            return null;
+        }
         // send loadChunk request packet
-
 
 
         //todo: finish

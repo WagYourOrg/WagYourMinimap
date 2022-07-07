@@ -1,6 +1,5 @@
 package xyz.wagyourtail.minimap.client.gui.screen;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Matrix4f;
@@ -15,7 +14,6 @@ import xyz.wagyourtail.minimap.WagYourMinimap;
 import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
 import xyz.wagyourtail.minimap.api.client.MinimapClientEvents;
 import xyz.wagyourtail.minimap.api.client.config.MinimapClientConfig;
-import xyz.wagyourtail.minimap.client.gui.hud.overlay.mobicons.AbstractEntityRenderer;
 import xyz.wagyourtail.minimap.client.gui.screen.map.ScreenMapRenderer;
 import xyz.wagyourtail.minimap.client.gui.screen.widget.InteractMenu;
 import xyz.wagyourtail.minimap.client.gui.screen.widget.MenuButton;
@@ -45,11 +43,10 @@ public class MapScreen extends Screen {
     public static int SELECT_REGION_COLOR = 0x4FFF0000;
 
     private int menuHeight;
-    public ScreenMapRenderer renderer;
-    public InteractMenu interact;
-
     private double dragStartX, dragStartY;
     private double dragEndX, dragEndY;
+    public ScreenMapRenderer renderer;
+    public InteractMenu interact;
 
     public MapScreen() {
         super(new TranslatableComponent("gui.wagyourminimap.title"));
@@ -67,6 +64,20 @@ public class MapScreen extends Screen {
             interact = null;
         }
         return true;
+    }
+
+    @Override
+    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        boolean consumed = super.mouseReleased(mouseX, mouseY, button);
+        if (!consumed && button == 1) {
+            float sX = (float) (renderer.topX + renderer.xDiam * dragStartX / width);
+            float sZ = (float) (renderer.topZ + renderer.zDiam * dragStartY / height);
+            float eX = (float) (renderer.topX + renderer.xDiam * mouseX / width);
+            float eZ = (float) (renderer.topZ + renderer.zDiam * mouseY / height);
+            interact = new InteractMenu(this, dragStartX, dragStartY, mouseX, mouseY, sX, sZ, eX, eZ);
+            return true;
+        }
+        return consumed;
     }
 
     @Override
@@ -88,20 +99,6 @@ public class MapScreen extends Screen {
     }
 
     @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        boolean consumed = super.mouseReleased(mouseX, mouseY, button);
-        if (!consumed && button == 1) {
-            float sX = (float) (renderer.topX + renderer.xDiam * dragStartX / width);
-            float sZ = (float) (renderer.topZ + renderer.zDiam * dragStartY / height);
-            float eX = (float) (renderer.topX + renderer.xDiam * mouseX / width);
-            float eZ = (float) (renderer.topZ + renderer.zDiam * mouseY / height);
-            interact = new InteractMenu(this, dragStartX, dragStartY, mouseX, mouseY, sX, sZ, eX, eZ);
-            return true;
-        }
-        return consumed;
-    }
-
-    @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
         boolean consumed = super.mouseScrolled(mouseX, mouseY, delta);
         if (!consumed) {
@@ -118,10 +115,38 @@ public class MapScreen extends Screen {
 
         if (dragStartX != dragEndX && dragStartY != dragEndY) {
             fill(poseStack, (int) dragStartX, (int) dragStartY, (int) dragEndX, (int) dragEndY, SELECT_REGION_COLOR);
-            fill(poseStack, (int) dragStartX, (int) dragStartY + 1, (int) dragStartX + 1, (int) dragEndY + 1, SELECT_REGION_BORDER_COLOR);
-            fill(poseStack, (int) dragStartX, (int) dragStartY, (int) dragEndX, (int) dragStartY + 1, SELECT_REGION_BORDER_COLOR);
-            fill(poseStack, (int) dragEndX, (int) dragStartY + 1, (int) dragEndX + 1, (int) dragEndY + 1, SELECT_REGION_BORDER_COLOR);
-            fill(poseStack, (int) dragStartX, (int) dragEndY, (int) dragEndX, (int) dragEndY + 1, SELECT_REGION_BORDER_COLOR);
+            fill(
+                poseStack,
+                (int) dragStartX,
+                (int) dragStartY + 1,
+                (int) dragStartX + 1,
+                (int) dragEndY + 1,
+                SELECT_REGION_BORDER_COLOR
+            );
+            fill(
+                poseStack,
+                (int) dragStartX,
+                (int) dragStartY,
+                (int) dragEndX,
+                (int) dragStartY + 1,
+                SELECT_REGION_BORDER_COLOR
+            );
+            fill(
+                poseStack,
+                (int) dragEndX,
+                (int) dragStartY + 1,
+                (int) dragEndX + 1,
+                (int) dragEndY + 1,
+                SELECT_REGION_BORDER_COLOR
+            );
+            fill(
+                poseStack,
+                (int) dragStartX,
+                (int) dragEndY,
+                (int) dragEndX,
+                (int) dragEndY + 1,
+                SELECT_REGION_BORDER_COLOR
+            );
         }
 
         if (interact != null) {

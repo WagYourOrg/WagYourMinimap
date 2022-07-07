@@ -12,17 +12,16 @@ import java.util.function.Predicate;
 
 @SettingsContainer("gui.wagyourminimap.settings.mob_icon.filter.custom")
 public class CustomFilter extends AbstractMobIconFilter {
-    private Predicate<LivingEntity> compiled = compileFilter();
-
     private final List<EntityType<?>> miscLiving = List.of(
         EntityType.VILLAGER,
         EntityType.IRON_GOLEM,
         EntityType.SNOW_GOLEM
     );
-
-    @Setting(value = "gui.wagyourminimap.settings.mob_icon.filter.custom.mobs", options = "getMobOptions", setter = "setMobs")
+    @Setting(value = "gui.wagyourminimap.settings.mob_icon.filter.custom.mobs",
+        options = "getMobOptions",
+        setter = "setMobs")
     public String[] mobs = new String[0];
-
+    private Predicate<LivingEntity> compiled = compileFilter();
 
     public List<String> getMobOptions() {
         return Registry.ENTITY_TYPE.entrySet().stream().filter(e ->

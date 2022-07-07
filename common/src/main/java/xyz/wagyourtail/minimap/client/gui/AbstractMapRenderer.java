@@ -1,7 +1,6 @@
 package xyz.wagyourtail.minimap.client.gui;
 
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.platform.GlConst;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.mojang.datafixers.util.Pair;
@@ -9,13 +8,15 @@ import com.mojang.math.Matrix4f;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.texture.DynamicTexture;
-import org.lwjgl.opengl.*;
 import xyz.wagyourtail.config.field.Setting;
 import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
 import xyz.wagyourtail.minimap.chunkdata.ChunkLocation;
 import xyz.wagyourtail.minimap.common.mixins.BufferUploaderAccessor;
 import xyz.wagyourtail.minimap.map.MapServer;
-import xyz.wagyourtail.minimap.map.image.*;
+import xyz.wagyourtail.minimap.map.image.AccurateMapImageStrategy;
+import xyz.wagyourtail.minimap.map.image.ImageStrategy;
+import xyz.wagyourtail.minimap.map.image.SurfaceBlockLightImageStrategy;
+import xyz.wagyourtail.minimap.map.image.VanillaMapImageStrategy;
 
 import java.nio.ByteBuffer;
 import java.util.Collection;
@@ -23,8 +24,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
-
-import static org.lwjgl.opengl.GL13.GL_COMBINE;
 
 public abstract class AbstractMapRenderer {
     public static final Minecraft minecraft = Minecraft.getInstance();
@@ -50,6 +49,10 @@ public abstract class AbstractMapRenderer {
     public AbstractMapRenderer() {
         baseLayer = new VanillaMapImageStrategy();
         this.rendererLayers = getDefaultLayers().toArray(new ImageStrategy[0]);
+    }
+
+    public List<ImageStrategy> getDefaultLayers() {
+        return List.of(new SurfaceBlockLightImageStrategy());
     }
 
     public static void drawTexSideways(PoseStack matrixStack, float x, float y, float width, float height, float startU, float startV, float endU, float endV) {
@@ -88,6 +91,31 @@ public abstract class AbstractMapRenderer {
         BufferUploader.end(builder);
     }
 
+    private static DynamicTexture getChunkTex(ChunkLocation chunk, ImageStrategy renderer) {
+        try {
+            return renderer.getImage(chunk);
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static void drawTex(PoseStack matrixStack, float x, float y, float width, float height, float startU, float startV, float endU, float endV) {
+        Matrix4f matrix = matrixStack.last().pose();
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
+        RenderSystem.enableTexture();
+        BufferBuilder builder = Tesselator.getInstance().getBuilder();
+        builder.begin(VertexFormat.Mode.TRIANGLE_STRIP, DefaultVertexFormat.POSITION_TEX);
+        builder.vertex(matrix, x, y, 0).uv(startU, startV).endVertex();
+        builder.vertex(matrix, x, y + height, 0).uv(startU, endV).endVertex();
+        builder.vertex(matrix, x + width, y, 0).uv(endU, startV).endVertex();
+        builder.vertex(matrix, x + width, y + height, 0).uv(endU, endV).endVertex();
+        builder.end();
+        BufferUploader.end(builder);
+    }
+
     public void setRenderLayers(ImageStrategy... strategy) {
         this.rendererLayers = strategy;
     }
@@ -120,65 +148,16 @@ public abstract class AbstractMapRenderer {
         rect(stack, x, y, scaledScaleX, scaledScaleZ);
     }
 
+    protected boolean drawChunk(PoseStack matrixStack, ChunkLocation chunk, float x, float y, float width, float height, float startU, float startV, float endU, float endV) {
+        return drawChunkBatchTex(matrixStack, x, y, width, height, startU, startV, endU, endV, chunk, getLayers());
+    }
+
     public List<ImageStrategy> getLayers() {
         List<ImageStrategy> a = Lists.newArrayList(baseLayer);
         if (rendererLayers != null) {
             a.addAll(List.of(rendererLayers));
         }
         return a;
-    }
-
-    protected boolean drawChunk(PoseStack matrixStack, ChunkLocation chunk, float x, float y, float width, float height, float startU, float startV, float endU, float endV) {
-        return drawChunkBatchTex(matrixStack, x, y, width, height, startU, startV, endU, endV, chunk, getLayers());
-    }
-
-    protected boolean bindLayer(ChunkLocation chunk, ImageStrategy layer, int index) {
-        if (!layer.shouldRender()) {
-            return false;
-        }
-        if (!bindChunkTex(chunk, layer, index)) {
-            return false;
-        }
-        return true;
-    }
-
-    private static DynamicTexture getChunkTex(ChunkLocation chunk, ImageStrategy renderer) {
-        try {
-            return renderer.getImage(chunk);
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    private static boolean bindChunkTex(ChunkLocation chunkData, ImageStrategy renderer, int index) {
-        try {
-            DynamicTexture image = renderer.getImage(chunkData);
-            if (image == null) {
-                return false;
-            }
-            RenderSystem.setShaderTexture(index, image.getId());
-            return true;
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
-    public static void drawTex(PoseStack matrixStack, float x, float y, float width, float height, float startU, float startV, float endU, float endV) {
-        Matrix4f matrix = matrixStack.last().pose();
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.enableTexture();
-        BufferBuilder builder = Tesselator.getInstance().getBuilder();
-        builder.begin(VertexFormat.Mode.TRIANGLE_STRIP, DefaultVertexFormat.POSITION_TEX);
-        builder.vertex(matrix, x, y, 0).uv(startU, startV).endVertex();
-        builder.vertex(matrix, x, y + height, 0).uv(startU, endV).endVertex();
-        builder.vertex(matrix, x + width, y, 0).uv(endU, startV).endVertex();
-        builder.vertex(matrix, x + width, y + height, 0).uv(endU, endV).endVertex();
-        builder.end();
-        BufferUploader.end(builder);
     }
 
     public boolean drawChunkBatchTex(PoseStack matrixStack, float x, float y, float width, float height, float startU, float startV, float endU, float endV, ChunkLocation chunk, List<ImageStrategy> layers) {
@@ -218,6 +197,30 @@ public abstract class AbstractMapRenderer {
         return ret;
     }
 
+    protected boolean bindLayer(ChunkLocation chunk, ImageStrategy layer, int index) {
+        if (!layer.shouldRender()) {
+            return false;
+        }
+        if (!bindChunkTex(chunk, layer, index)) {
+            return false;
+        }
+        return true;
+    }
+
+    private static boolean bindChunkTex(ChunkLocation chunkData, ImageStrategy renderer, int index) {
+        try {
+            DynamicTexture image = renderer.getImage(chunkData);
+            if (image == null) {
+                return false;
+            }
+            RenderSystem.setShaderTexture(index, image.getId());
+            return true;
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
     public void rect(PoseStack matrixStack, float x, float y, float width, float height) {
         Matrix4f matrix = matrixStack.last().pose();
         RenderSystem.enableBlend();
@@ -251,10 +254,6 @@ public abstract class AbstractMapRenderer {
 
     public Collection<Class<? extends ImageStrategy>> baseLayerOptions() {
         return baseLayers;
-    }
-
-    public List<ImageStrategy> getDefaultLayers() {
-        return List.of(new SurfaceBlockLightImageStrategy());
     }
 
 }

@@ -77,7 +77,8 @@ public class ChunkData {
                         className
                     ));
                     data.put(clazz, dp = clazz.getConstructor(ChunkData.class).newInstance(this));
-                } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
+                } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException |
+                         InstantiationException | IllegalAccessException e) {
                     System.out.println("Failed to deserialize data part: " + className);
                     // discard unknown data
                     buffer.get(new byte[buffer.getInt()]);
@@ -192,12 +193,16 @@ public class ChunkData {
         return (T) Optional.ofNullable(derivatives.compute(key, (k, v) -> {
             if (v == null) {
                 T t = supplier.get();
-                if (t == null) return null;
+                if (t == null) {
+                    return null;
+                }
                 v = new Derivative<>(false, t);
             }
             if (v.old) {
                 T t = supplier.get();
-                if (t == null) return v;
+                if (t == null) {
+                    return v;
+                }
                 v.old = false;
                 ((Derivative<T>) v).setContained(t);
             }
@@ -208,19 +213,6 @@ public class ChunkData {
     public void markDirty() {
         changed = true;
         MapServer.addToSaveQueue(this::save);
-    }
-
-    /**
-     * invalidates derivitives whose keys start with the given prefixes
-     *
-     * @param prefixes
-     */
-    public void invalidateDerivitives(Set<String> prefixes) {
-        for (Map.Entry<String, Derivative<?>> der : derivatives.entrySet()) {
-            if (prefixes.stream().anyMatch(e -> e.contains(der.getKey()))) {
-                der.getValue().old = true;
-            }
-        }
     }
 
     public void save() {
@@ -303,6 +295,19 @@ public class ChunkData {
                 throw new RuntimeException("Error while remapping biomes [" +
                     oldBiomes.stream().map(ResourceLocation::toString).collect(Collectors.joining(", ")) + "] -> [" +
                     biomes.stream().map(ResourceLocation::toString).collect(Collectors.joining(", ")) + "]", e);
+            }
+        }
+    }
+
+    /**
+     * invalidates derivitives whose keys start with the given prefixes
+     *
+     * @param prefixes
+     */
+    public void invalidateDerivitives(Set<String> prefixes) {
+        for (Map.Entry<String, Derivative<?>> der : derivatives.entrySet()) {
+            if (prefixes.stream().anyMatch(e -> e.contains(der.getKey()))) {
+                der.getValue().old = true;
             }
         }
     }

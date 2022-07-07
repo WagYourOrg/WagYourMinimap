@@ -6,7 +6,7 @@ name: Build Release V2
 # events but only for the master branch
 on:
   release:
-    types: [created]
+    types: [ created ]
 
 jobs:
   build_1_18:

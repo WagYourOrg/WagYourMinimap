@@ -3,7 +3,6 @@ package xyz.wagyourtail.minimap.api;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import dev.architectury.platform.Platform;
-import net.minecraft.world.level.Level;
 import xyz.wagyourtail.config.ConfigManager;
 import xyz.wagyourtail.minimap.api.config.MinimapConfig;
 import xyz.wagyourtail.minimap.chunkdata.cache.CacheManager;
@@ -44,7 +43,8 @@ public abstract class MinimapApi {
         chunkUpdateStrategies.computeIfAbsent(chunkUpdateStrategy, (cus) -> {
             try {
                 return cus.getConstructor().newInstance();
-            } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+            } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
+                     NoSuchMethodException e) {
                 throw new RuntimeException(e);
             }
         });

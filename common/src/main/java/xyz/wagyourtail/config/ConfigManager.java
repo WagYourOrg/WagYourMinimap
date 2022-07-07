@@ -65,7 +65,8 @@ public class ConfigManager {
                 try {
                     dirty = true;
                     return configClass.getConstructor().newInstance();
-                } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+                } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
+                         NoSuchMethodException e) {
                     System.err.println("Failed to create new instance of " + configClass.getName());
                     throw new RuntimeException(e);
                 }
@@ -73,7 +74,8 @@ public class ConfigManager {
             try {
                 return SettingContainerSerializer.deserialze(rawConfig.get(configRegistry.get(configClass))
                     .getAsJsonObject(), configClass);
-            } catch (InvocationTargetException | NoSuchMethodException | InstantiationException | IllegalAccessException e) {
+            } catch (InvocationTargetException | NoSuchMethodException | InstantiationException |
+                     IllegalAccessException e) {
                 throw new RuntimeException(e);
             }
         }
@@ -109,7 +111,8 @@ public class ConfigManager {
                             );
                         }
                         Files.writeString(configPath, gson.toJson(rawConfig));
-                    } catch (IOException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+                    } catch (IOException | IllegalAccessException | InvocationTargetException |
+                             NoSuchMethodException e) {
                         throw new RuntimeException(e);
                     }
                     dirty = false;

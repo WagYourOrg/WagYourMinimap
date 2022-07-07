@@ -27,7 +27,8 @@ public abstract class AccurateBlockColors extends BlockColors {
         return grassColorCache.computeIfAbsent(new BsBiome(block, biome), (bsb) -> {
             int mask = getBlockColor(block, pos);
             int grass = biome.getGrassColor(0, 0);
-            return (((grass >> 16) & 0xFF) * (mask >> 16 & 0xFF) / 255 << 16) | (((grass >> 8) & 0xFF) * (mask >> 8 & 0xFF) / 255 << 8) | ((grass & 0xFF) * (mask & 0xFF) / 255);
+            return (((grass >> 16) & 0xFF) * (mask >> 16 & 0xFF) / 255 << 16) |
+                (((grass >> 8) & 0xFF) * (mask >> 8 & 0xFF) / 255 << 8) | ((grass & 0xFF) * (mask & 0xFF) / 255);
         });
     }
 
@@ -43,7 +44,8 @@ public abstract class AccurateBlockColors extends BlockColors {
             int maskR = (int) (((mask >> 16) & 0xFF) * .9f);
             int maskG = (int) (((mask >> 8) & 0xFF) * .9f);
             int maskB = (int) ((mask & 0xFF) * .9f);
-            return (((leaves >> 16) & 0xFF) * (maskR & 0xFF) / 255 << 16) | (((leaves >> 8) & 0xFF) * (maskG & 0xFF) / 255 << 8) | ((leaves & 0xFF) * maskB / 255);
+            return (((leaves >> 16) & 0xFF) * (maskR & 0xFF) / 255 << 16) |
+                (((leaves >> 8) & 0xFF) * (maskG & 0xFF) / 255 << 8) | ((leaves & 0xFF) * maskB / 255);
         });
     }
 
@@ -54,14 +56,24 @@ public abstract class AccurateBlockColors extends BlockColors {
             ResourceLocation blockLocation = Registry.BLOCK.getKey(bs.getBlock());
             try {
                 // try for top texture
-                ResourceLocation imageLocation = new ResourceLocation(blockLocation.getNamespace(), "textures/block/" + blockLocation.getPath() + "_top.png");
+                ResourceLocation imageLocation = new ResourceLocation(
+                    blockLocation.getNamespace(),
+                    "textures/block/" + blockLocation.getPath() + "_top.png"
+                );
                 try (InputStream stream = minecraft.getResourceManager().getResource(imageLocation).getInputStream()) {
                     image = NativeImage.read(stream);
                 } catch (IOException ignored) {
 
                     // no top texture, do default texture
-                    imageLocation = new ResourceLocation(blockLocation.getNamespace(), "textures/block/" + blockLocation.getPath() + ".png");
-                    try (InputStream stream = minecraft.getResourceManager().getResource(imageLocation).getInputStream()) {
+                    imageLocation = new ResourceLocation(
+                        blockLocation.getNamespace(),
+                        "textures/block/" + blockLocation.getPath() + ".png"
+                    );
+                    try (
+                        InputStream stream = minecraft.getResourceManager()
+                            .getResource(imageLocation)
+                            .getInputStream()
+                    ) {
                         image = NativeImage.read(stream);
                     } catch (IOException ignored2) {
                         // no texture, fall back to material color
@@ -102,6 +114,7 @@ public abstract class AccurateBlockColors extends BlockColors {
         });
     }
 
-    public record BsBiome(BlockState block, Biome biome) { }
+    public record BsBiome(BlockState block, Biome biome) {
+    }
 
 }

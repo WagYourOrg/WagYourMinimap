@@ -24,6 +24,17 @@ public interface UndergroundImager extends IBlockColors {
     AtomicInteger lastY = new AtomicInteger(0);
 
     @Override
+    default String getDerivitiveKey() {
+        lastY.set(Mth.clamp(
+            (minecraft.cameraEntity.getBlockY() - minecraft.level.dimensionType().minY()) /
+                UndergroundDataUpdater.sectionHeight,
+            0,
+            minecraft.level.dimensionType().height() / UndergroundDataUpdater.sectionHeight
+        ));
+        return IBlockColors.super.getDerivitiveKey() + "$" + lastY;
+    }
+
+    @Override
     default DynamicTexture load(ChunkLocation location, ChunkData data) {
         Level level = minecraft.level;
         if (level == null || minecraft.cameraEntity == null) {
@@ -102,9 +113,4 @@ public interface UndergroundImager extends IBlockColors {
         }
     }
 
-    @Override
-    default String getDerivitiveKey() {
-        lastY.set(Mth.clamp((minecraft.cameraEntity.getBlockY() - minecraft.level.dimensionType().minY()) / UndergroundDataUpdater.sectionHeight, 0, minecraft.level.dimensionType().height() / UndergroundDataUpdater.sectionHeight));
-        return IBlockColors.super.getDerivitiveKey() + "$" + lastY;
-    }
 }

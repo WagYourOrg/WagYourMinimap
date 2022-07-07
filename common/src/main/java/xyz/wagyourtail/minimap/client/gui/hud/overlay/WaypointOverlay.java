@@ -14,7 +14,6 @@ import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
 import xyz.wagyourtail.minimap.api.client.config.MinimapClientConfig;
 import xyz.wagyourtail.minimap.client.gui.AbstractMapRenderer;
 import xyz.wagyourtail.minimap.client.gui.hud.map.AbstractMinimapRenderer;
-import xyz.wagyourtail.minimap.client.gui.hud.overlay.AbstractMinimapOverlay;
 import xyz.wagyourtail.minimap.waypoint.Waypoint;
 
 import java.util.Set;

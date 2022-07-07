@@ -21,7 +21,10 @@ public class ScreenMapRenderer extends AbstractMapRenderer {
         ScaleOverlay.class
     ));
 
-    @Setting(value = "gui.wagyourminimap.settings.style.overlays", options = "overlayOptions", setter = "setOverlays", constructor = "constructOverlay")
+    @Setting(value = "gui.wagyourminimap.settings.style.overlays",
+        options = "overlayOptions",
+        setter = "setOverlays",
+        constructor = "constructOverlay")
     public AbstractFullscreenOverlay[] overlays = new AbstractFullscreenOverlay[] {
         new PlayerIconOverlay(this), new WaypointOverlay(this), new DataOverlay(this)
     };

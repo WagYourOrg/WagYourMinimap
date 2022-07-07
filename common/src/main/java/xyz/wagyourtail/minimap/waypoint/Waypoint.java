@@ -311,7 +311,9 @@ public class Waypoint {
     }
 
     public ResourceLocation setIcon(String name, @Nullable ResourceLocation tex) {
-        if (name.equals("default")) throw new AssertionError("can't set default icon");
+        if (name.equals("default")) {
+            throw new AssertionError("can't set default icon");
+        }
         if (tex == null) {
             return waypoint_tex.remove(name);
         }

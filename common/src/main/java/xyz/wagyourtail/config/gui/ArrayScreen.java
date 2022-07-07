@@ -26,6 +26,7 @@ public class ArrayScreen<T, U> extends Screen implements EnabledSettingList.Entr
     private DisabledSettingList<U> availableEntries;
 
     private Button doneButton;
+
     protected ArrayScreen(Component component, Screen parent, SettingField<T[]> setting) {
         super(component);
         this.parent = parent;
@@ -284,7 +285,8 @@ public class ArrayScreen<T, U> extends Screen implements EnabledSettingList.Entr
                         .value())
                 ));
             }
-        } catch (InvocationTargetException | IllegalAccessException | NoSuchMethodException | InstantiationException e) {
+        } catch (InvocationTargetException | IllegalAccessException | NoSuchMethodException |
+                 InstantiationException e) {
             e.printStackTrace();
         }
     }

@@ -14,19 +14,20 @@ import xyz.wagyourtail.minimap.chunkdata.ChunkLocation;
 import xyz.wagyourtail.minimap.chunkdata.parts.UndergroundDataPart;
 import xyz.wagyourtail.minimap.chunkdata.updater.UndergroundDataUpdater;
 
-import java.awt.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @SettingsContainer("gui.wagyourminimap.setting.layers.light")
 public class UndergroundBlockLightImageStrategy implements ImageStrategy {
-    protected static final Minecraft minecraft = Minecraft.getInstance();
     private static final float HUE = 50F / 360F;
     private static final int[] HSB_TO_RGB_PRECACHE = new int[0x10];
+    protected static final Minecraft minecraft = Minecraft.getInstance();
+
     static {
         for (int i = 0; i < 16; i++) {
             HSB_TO_RGB_PRECACHE[i] = SurfaceBlockLightImageStrategy.HSBtoRGB2(HUE, 1F, i / 15F);
         }
     }
+
     private final AtomicInteger lastY = new AtomicInteger(0);
 
     @Setting("gui.wagyourminimap.setting.layers.underground.light_level")
@@ -34,8 +35,21 @@ public class UndergroundBlockLightImageStrategy implements ImageStrategy {
     public int lightLevel = 8;
 
     @Override
+    public String getDerivitiveKey() {
+        lastY.set(Mth.clamp(
+            (minecraft.cameraEntity.getBlockY() - minecraft.level.dimensionType().minY()) /
+                UndergroundDataUpdater.sectionHeight,
+            0,
+            minecraft.level.dimensionType().height() / UndergroundDataUpdater.sectionHeight
+        ));
+        return ImageStrategy.super.getDerivitiveKey() + "$" + lastY;
+    }
+
+    @Override
     public DynamicTexture load(ChunkLocation location, ChunkData data) {
-        UndergroundDataPart.Data underground = data.getData(UndergroundDataPart.class).map(e -> e.data[lastY.get()]).orElse(null);
+        UndergroundDataPart.Data underground = data.getData(UndergroundDataPart.class)
+            .map(e -> e.data[lastY.get()])
+            .orElse(null);
         if (underground == null) {
             return null;
         }
@@ -58,14 +72,9 @@ public class UndergroundBlockLightImageStrategy implements ImageStrategy {
     public boolean shouldRender() {
         assert minecraft.level != null;
         assert minecraft.player != null;
-        int light = minecraft.level.getLightEngine().getLayerListener(LightLayer.SKY).getLightValue(new BlockPos(minecraft.player.getPosition(0)));
+        int light = minecraft.level.getLightEngine().getLayerListener(LightLayer.SKY).getLightValue(new BlockPos(
+            minecraft.player.getPosition(0)));
         return light < this.lightLevel;
-    }
-
-    @Override
-    public String getDerivitiveKey() {
-        lastY.set(Mth.clamp((minecraft.cameraEntity.getBlockY() - minecraft.level.dimensionType().minY()) / UndergroundDataUpdater.sectionHeight, 0, minecraft.level.dimensionType().height() / UndergroundDataUpdater.sectionHeight));
-        return ImageStrategy.super.getDerivitiveKey() + "$" + lastY;
     }
 
 }

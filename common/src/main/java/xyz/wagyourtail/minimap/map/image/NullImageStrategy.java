@@ -9,13 +9,13 @@ import xyz.wagyourtail.minimap.chunkdata.ChunkLocation;
 public class NullImageStrategy implements ImageStrategy {
 
     @Override
-    public boolean shouldRender() {
-        return false;
+    public DynamicTexture load(ChunkLocation location, ChunkData data) {
+        return null;
     }
 
     @Override
-    public DynamicTexture load(ChunkLocation location, ChunkData data) {
-        return null;
+    public boolean shouldRender() {
+        return false;
     }
 
 }

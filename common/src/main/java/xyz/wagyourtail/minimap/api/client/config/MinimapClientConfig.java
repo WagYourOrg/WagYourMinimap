@@ -48,7 +48,9 @@ public class MinimapClientConfig {
     @Setting(value = "gui.wagyourminimap.settings.minimap_style", options = "mapStyles", setter = "setMinimapStyle")
     public AbstractMinimapRenderer minimapRenderer;
 
-    @Setting(value = "gui.wagyourminimap.settings.waypoint_filters", options = "waypointFilters", setter = "setWaypointFilter")
+    @Setting(value = "gui.wagyourminimap.settings.waypoint_filters",
+        options = "waypointFilters",
+        setter = "setWaypointFilter")
     public WaypointFilter[] waypointFilters;
 
     @Setting(value = "gui.wagyourminimap.settings.show_waypoints")

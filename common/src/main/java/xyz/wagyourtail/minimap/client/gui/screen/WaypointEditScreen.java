@@ -190,17 +190,25 @@ public class WaypointEditScreen extends Screen {
                 zeroPad(Integer.toHexString(prev_point.colB & 255)));
         int prevPointColor = ((prev_point.colR & 255) << 16) | ((prev_point.colG & 255) << 8) | (prev_point.colB & 255);
         int gradientHeight = Math.max(Math.min(100, height - h - 155), 0);
-        colorSelector = addRenderableWidget(new ColorButton(width / 2 - 200, h + 50, 400, gradientHeight - 10, prevPointColor, color -> {
-            int r = (color >> 16) & 255;
-            int g = (color >> 8) & 255;
-            int b = color & 255;
-            this.color.setResponder(null);
-            this.color.setValue(zeroPad(Integer.toHexString(r)) + zeroPad(Integer.toHexString(g)) + zeroPad(Integer.toHexString(b)));
-            this.color.setResponder(s -> {
-                int col = s.isEmpty() ? 0 : Integer.parseInt(s, 16);
-                colorSelector.setCurrentColor(col);
-            });
-        }));
+        colorSelector = addRenderableWidget(new ColorButton(
+            width / 2 - 200,
+            h + 50,
+            400,
+            gradientHeight - 10,
+            prevPointColor,
+            color -> {
+                int r = (color >> 16) & 255;
+                int g = (color >> 8) & 255;
+                int b = color & 255;
+                this.color.setResponder(null);
+                this.color.setValue(zeroPad(Integer.toHexString(r)) + zeroPad(Integer.toHexString(g)) +
+                    zeroPad(Integer.toHexString(b)));
+                this.color.setResponder(s -> {
+                    int col = s.isEmpty() ? 0 : Integer.parseInt(s, 16);
+                    colorSelector.setCurrentColor(col);
+                });
+            }
+        ));
         color.setResponder(s -> {
             int col = s.isEmpty() ? 0 : Integer.parseInt(s, 16);
             colorSelector.setCurrentColor(col);

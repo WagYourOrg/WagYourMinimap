@@ -41,25 +41,18 @@ public class UndergroundDataUpdater extends AbstractChunkDataUpdater<Underground
                 if (oldData == null || oldData.sectionHeight != sectionHeight) {
                     return oldData;
                 }
-                for (int y = (pos.getY() - level.dimensionType().minY()) / sectionHeight; y < oldData.data.length; y++) {
+                for (int y = (pos.getY() - level.dimensionType().minY()) / sectionHeight;
+                     y < oldData.data.length; y++) {
                     if (oldData.data[y] != null) {
-                        if (oldData.data[y].heightmap()[SurfaceDataPart.blockPosToIndex(pos)] > pos.getY()) break;
+                        if (oldData.data[y].heightmap()[SurfaceDataPart.blockPosToIndex(pos)] > pos.getY()) {
+                            break;
+                        }
                         scanPart(level, chunk, parent, oldData, y);
                     }
                 }
                 return oldData;
             }
         );
-    }
-
-    @Override
-    public void onLoadChunk(ChunkAccess chunk, Level level) {
-        //NOPE
-    }
-
-    @Override
-    public Class<UndergroundDataPart> getType() {
-        return UndergroundDataPart.class;
     }
 
     UndergroundDataPart scanPart(Level level, ChunkAccess chunk, ChunkData parent, UndergroundDataPart data, int sectionY) {
@@ -124,6 +117,16 @@ public class UndergroundDataUpdater extends AbstractChunkDataUpdater<Underground
 
         parent.invalidateDerivitives(derivitivesToInvalidate);
         return data;
+    }
+
+    @Override
+    public void onLoadChunk(ChunkAccess chunk, Level level) {
+        //NOPE
+    }
+
+    @Override
+    public Class<UndergroundDataPart> getType() {
+        return UndergroundDataPart.class;
     }
 
     public void scan(Level level, ChunkAccess chunk, int sectionY) {

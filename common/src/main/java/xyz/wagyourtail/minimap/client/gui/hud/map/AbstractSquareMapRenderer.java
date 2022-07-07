@@ -16,6 +16,14 @@ public abstract class AbstractSquareMapRenderer extends AbstractMinimapRenderer 
         this.availableOverlays.add(SquareMapBorderOverlay.class);
     }
 
+    @Override
+    public List<AbstractMinimapOverlay> getDefaultOverlays() {
+        List<AbstractMinimapOverlay> list = new ArrayList<>(List.of(
+            new SquareMapBorderOverlay(this)
+        ));
+        list.addAll(super.getDefaultOverlays());
+        return list;
+    }
 
     @Override
     public void drawStencil(PoseStack stack, float maxLength) {
@@ -25,15 +33,6 @@ public abstract class AbstractSquareMapRenderer extends AbstractMinimapRenderer 
     @Override
     public float getScaleForVecToBorder(Vec3 in, int chunkRadius, float maxLength) {
         return ((chunkRadius - 1) * 16f) / (float) Math.max(Math.abs(in.x), Math.abs(in.z));
-    }
-
-    @Override
-    public List<AbstractMinimapOverlay> getDefaultOverlays() {
-        List<AbstractMinimapOverlay> list = new ArrayList<>(List.of(
-            new SquareMapBorderOverlay(this)
-        ));
-        list.addAll(super.getDefaultOverlays());
-        return list;
     }
 
 }

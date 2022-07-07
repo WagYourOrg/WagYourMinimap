@@ -22,10 +22,10 @@ public interface ImageStrategy {
         return this.getClass().getCanonicalName();
     }
 
+    DynamicTexture load(ChunkLocation location, ChunkData data);
+
     default boolean shouldRender() {
         return true;
     }
-
-    DynamicTexture load(ChunkLocation location, ChunkData data);
 
 }

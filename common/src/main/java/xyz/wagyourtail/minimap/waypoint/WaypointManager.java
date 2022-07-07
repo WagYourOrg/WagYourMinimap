@@ -44,7 +44,8 @@ public class WaypointManager {
         filters.addAll(Arrays.stream(filter).map(e -> {
             try {
                 return e.getConstructor().newInstance();
-            } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException ex) {
+            } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
+                     NoSuchMethodException ex) {
                 ex.printStackTrace();
             }
             return null;
@@ -98,13 +99,6 @@ public class WaypointManager {
         saveWaypoints();
     }
 
-    public synchronized void forceAddWaypoint(Waypoint waypoint) {
-        MinimapEvents.WAYPOINT_ADDED.invoker().onWaypoint(waypoint);
-        waypointList.remove(waypoint);
-        waypointList.add(waypoint);
-        saveWaypoints();
-    }
-
     public void saveWaypoints() {
         MapServer.addToSaveQueue(() -> {
             synchronized (this) {
@@ -114,6 +108,13 @@ public class WaypointManager {
                 );
             }
         });
+    }
+
+    public synchronized void forceAddWaypoint(Waypoint waypoint) {
+        MinimapEvents.WAYPOINT_ADDED.invoker().onWaypoint(waypoint);
+        waypointList.remove(waypoint);
+        waypointList.add(waypoint);
+        saveWaypoints();
     }
 
     public synchronized void removeWaypoint(Waypoint waypoint) {

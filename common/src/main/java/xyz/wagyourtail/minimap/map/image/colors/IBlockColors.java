@@ -9,11 +9,17 @@ import xyz.wagyourtail.minimap.map.image.ImageStrategy;
 
 public interface IBlockColors extends ImageStrategy {
     boolean isWater(Block block);
+
     boolean isGrass(Block block);
+
     boolean isLeaves(Block block);
+
     int getWaterColor(BlockState block, BlockPos pos, @Nullable Biome biome);
+
     int getGrassColor(BlockState block, BlockPos pos, @Nullable Biome biome);
+
     int getLeavesColor(BlockState block, BlockPos pos, @Nullable Biome biome);
+
     int getBlockColor(BlockState block, BlockPos pos);
 
     default int colorCombine(int colorA, int colorB, float aRatio) {
@@ -42,4 +48,5 @@ public interface IBlockColors extends ImageStrategy {
         }
         return (color & 0xFF000000) | red << 0x10 | green << 0x8 | blue;
     }
+
 }

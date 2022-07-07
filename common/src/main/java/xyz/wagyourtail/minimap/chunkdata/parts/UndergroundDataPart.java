@@ -111,6 +111,7 @@ public class UndergroundDataPart extends DataPart<UndergroundDataPart> {
         return biomes.get(i - 1);
     }
 
-    public static record Data(int[] blockid, int[] heightmap, byte[] lightmap, int[] biomeid) {}
+    public static record Data(int[] blockid, int[] heightmap, byte[] lightmap, int[] biomeid) {
+    }
 
 }

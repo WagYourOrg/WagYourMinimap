@@ -8,13 +8,11 @@
     "gui.wagyourconfig.addentry": "Entry Name",
     "gui.wagyourconfig.submit": "Submit",
     "gui.wagyourconfig.done": "Done",
-
     "gui.wagyourminimap.settings": "WagYourMinimap Config",
     "gui.wagyourminimap.settings.client": "Client",
     "gui.wagyourminimap.settings.common": "Common",
     "gui.wagyourminimap.settings.per_server": "Per Server",
     "gui.wagyourminimap.settings.per_server.tp_command": "Teleport Command",
-
     "gui.wagyourminimap.settings.minimap_scale": "Minimap Scale:",
     "gui.wagyourminimap.settings.map_location": "Map Location",
     "gui.wagyourminimap.settings.minimap_style": "Map Style:",
@@ -28,20 +26,17 @@
     "gui.wagyourminimap.settings.chunk_radius": "Minimap Chunk Radius:",
     "gui.wagyourminimap.settings.style.overlay": "Overlay",
     "gui.wagyourminimap.settings.overlay.scale": "Scale",
-
     "gui.wagyourminimap.settings.style.layers": "Layers",
     "gui.wagyourminimap.settings.style.underground_layer": "Underground Layer: ",
     "gui.wagyourminimap.settings.style.underground_layer_extra": "Underground Layer Extras",
-    "gui.wagyourminimap.settings.style.base_layer":  "Base Layer: ",
+    "gui.wagyourminimap.settings.style.base_layer": "Base Layer: ",
     "gui.wagyourminimap.setting.layers.none": "None",
     "gui.wagyourminimap.setting.layers.vanilla_map": "Vanilla Colored",
     "gui.wagyourminimap.setting.layers.accurate_color": "Accurate Colored",
     "gui.wagyourminimap.setting.layers.light": "Light",
     "gui.wagyourminimap.setting.layers.underground.light_level": "Sky Light Level: ",
-
     "gui.wagyourminimap.settings.fullscreen_map": "Fullscreen Map",
     "gui.wagyourminimap.settings.style.overlays": "Overlays",
-
     "gui.wagyourminimap.settings.overlay.data": "Data",
     "gui.wagyourminimap.settings.overlay.player_icons": "Player Icons",
     "gui.wagyourminimap.settings.overlay.waypoint": "Waypoint",
@@ -52,15 +47,12 @@
     "gui.wagyourminimap.settings.overlay.mob_icon.max_size": "Max Size",
     "gui.wagyourminimap.settings.overlay.mob_icon.filter": "Mob Filter: ",
     "gui.wagyourminimap.settings.overlay.mob_icon.show_players": "Show Players",
-
     "gui.wagyourminimap.settings.mob_icon.filter.all": "All",
     "gui.wagyourminimap.settings.mob_icon.filter.hostile": "Hostile",
     "gui.wagyourminimap.settings.mob_icon.filter.hostile_neutral": "Hostile + Neutral",
     "gui.wagyourminimap.settings.mob_icon.filter.custom": "Custom",
     "gui.wagyourminimap.settings.mob_icon.filter.custom.mobs": "Mobs",
-
     "gui.wagyourminimap.settings.player_arrow": "Player Arrow",
-
     "gui.wagyourminimap.general": "General",
     "gui.wagyourminimap.create_waypoint": "Create Waypoint",
     "gui.wagyourminimap.teleport_to": "Teleport To",
@@ -80,7 +72,6 @@
     "gui.wagyourminimap.edit_waypoint": "Edit Waypoint",
     "gui.wagyourminimap.delete_waypoint": "Delete Waypoint",
     "gui.wagyourminimap.delete_all_waypoints": "Delete All Waypoints",
-
     "gui.wagyourminimap.settings.waypoint_filters": "Waypoint Filters",
     "gui.wagyourminimap.settings.waypoint_filter.dimension": "Dimension",
     "gui.wagyourminimap.settings.waypoint_filter.group": "Group",
@@ -88,14 +79,12 @@
     "gui.wagyourminimap.settings.waypoint_filter.distance": "Distance",
     "gui.wagyourminimap.settings.distancefilter": "Max distance: ",
     "gui.wagyourminimap.settings.groupfilter.groups": "Select Groups",
-
     "gui.wagyourminimap.waypoints.add": "Add Waypoint",
     "gui.wagyourminimap.waypoints.edit": "Edit Waypoint",
     "gui.wagyourminimap.waypoints.delete": "Delete Waypoint",
     "gui.wagyourminimap.waypoints.teleport": "Teleport To",
     "gui.wagyourminimap.waypoints.reload": "Reload",
     "gui.wagyourminimap.waypoints.enable": "Toggle Visible",
-
     "gui.wagyourminimap.close": "Close",
     "key.wagyourminimap.openmap": "Open Map",
     "key.wagyourminimap.new_waypoint": "Create Waypoint",

@@ -55,7 +55,11 @@ public class InteractMenu extends GuiComponent implements Widget {
         if (startX == endX && startY == endY) {
             int y = 0;
             if (level != null) {
-                ChunkData chunk = ChunkLocation.locationForChunkPos(level, (int) startXBlock >> 4, (int) startZBlock >> 4).get();
+                ChunkData chunk = ChunkLocation.locationForChunkPos(
+                    level,
+                    (int) startXBlock >> 4,
+                    (int) startZBlock >> 4
+                ).get();
                 if (chunk != null) {
                     SurfaceDataPart surface = chunk.getData(SurfaceDataPart.class).orElse(null);
                     if (surface != null) {
@@ -67,7 +71,10 @@ public class InteractMenu extends GuiComponent implements Widget {
             Vec3 pos = new Vec3(startXBlock, y, startZBlock);
             buttons.put(I18n.get("gui.wagyourminimap.general") + ": ", buttonsForPos(pos));
         } else {
-            buttons.put(I18n.get("gui.wagyourminimap.general") + ": ", buttonsForRegion(new Vec3(startXBlock, 0, startZBlock), new Vec3(endXBlock, 0, endZBlock)));
+            buttons.put(
+                I18n.get("gui.wagyourminimap.general") + ": ",
+                buttonsForRegion(new Vec3(startXBlock, 0, startZBlock), new Vec3(endXBlock, 0, endZBlock))
+            );
         }
 
 
@@ -113,15 +120,16 @@ public class InteractMenu extends GuiComponent implements Widget {
         return buttons;
     }
 
-    private  List<InteractMenuButton> buttonsForRegion(Vec3 start, Vec3 end) {
+    private List<InteractMenuButton> buttonsForRegion(Vec3 start, Vec3 end) {
         List<InteractMenuButton> buttons = new ArrayList<>();
         buttons.add(new InteractMenuButton(
-            new TranslatableComponent("gui.wagyourminimap.delete_all_waypoints"),
-            (btn) -> {
-                for (Waypoint waypoint : waypoints) {
-                    MinimapApi.getInstance().getMapServer().waypoints.removeWaypoint(waypoint);
+                new TranslatableComponent("gui.wagyourminimap.delete_all_waypoints"),
+                (btn) -> {
+                    for (Waypoint waypoint : waypoints) {
+                        MinimapApi.getInstance().getMapServer().waypoints.removeWaypoint(waypoint);
+                    }
                 }
-            })
+            )
         );
         return buttons;
     }

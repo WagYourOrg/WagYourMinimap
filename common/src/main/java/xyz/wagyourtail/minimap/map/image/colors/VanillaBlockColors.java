@@ -14,8 +14,12 @@ public abstract class VanillaBlockColors extends BlockColors {
     protected static final Map<Biome, Integer> foliageCache = new ConcurrentHashMap<>();
 
     @Override
-    public int getBlockColor(BlockState block, BlockPos pos) {
-        return block.getMapColor(Minecraft.getInstance().level, pos).col;
+    public int getGrassColor(BlockState block, BlockPos pos, @Nullable Biome biome) {
+        if (biome == null) {
+            return getBlockColor(block, pos);
+        } else {
+            return grassCache.computeIfAbsent(biome, b -> b.getGrassColor(0, 0));
+        }
     }
 
     @Override
@@ -27,11 +31,8 @@ public abstract class VanillaBlockColors extends BlockColors {
     }
 
     @Override
-    public int getGrassColor(BlockState block, BlockPos pos, @Nullable Biome biome) {
-        if (biome == null) {
-            return getBlockColor(block, pos);
-        } else {
-            return grassCache.computeIfAbsent(biome, b -> b.getGrassColor(0, 0));
-        }
+    public int getBlockColor(BlockState block, BlockPos pos) {
+        return block.getMapColor(Minecraft.getInstance().level, pos).col;
     }
+
 }

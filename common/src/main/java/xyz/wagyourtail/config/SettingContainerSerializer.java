@@ -154,7 +154,10 @@ public class SettingContainerSerializer {
                     new HashMap<>();
             for (Map.Entry<String, JsonElement> entry : map.entrySet()) {
                 try {
-                    mapObj.put(entry.getKey(), deserializeArrayField(entry.getValue(), field.setting.elementType(), field));
+                    mapObj.put(
+                        entry.getKey(),
+                        deserializeArrayField(entry.getValue(), field.setting.elementType(), field)
+                    );
                 } catch (Throwable e) {
                     e.printStackTrace();
                 }

@@ -2,18 +2,13 @@ package xyz.wagyourtail.minimap.client;
 
 import com.google.gson.JsonObject;
 import com.mojang.blaze3d.platform.InputConstants;
-import dev.architectury.event.Event;
-import dev.architectury.event.EventFactory;
 import dev.architectury.event.events.client.ClientGuiEvent;
 import dev.architectury.event.events.client.ClientPlayerEvent;
 import dev.architectury.event.events.client.ClientTickEvent;
 import dev.architectury.registry.client.keymappings.KeyMappingRegistry;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.Level;
 import xyz.wagyourtail.minimap.WagYourMinimap;
 import xyz.wagyourtail.minimap.api.MinimapApi;
 import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
@@ -32,42 +27,37 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class WagYourMinimapClient extends WagYourMinimap {
-    protected static final Minecraft minecraft = Minecraft.getInstance();
     private static final KeyMapping key_openmap = new KeyMapping(
         "key.wagyourminimap.openmap",
         InputConstants.KEY_M,
         "WagYourMinimap"
     );
-
     private static final KeyMapping key_fullscreen_minimap = new KeyMapping(
         "key.wagyourminimap.fullscreen_minimap",
         InputConstants.KEY_N,
         "WagYourMinimap"
     );
-
     private static final KeyMapping key_new_waypoint = new KeyMapping(
         "key.wagyourminimap.new_waypoint",
         InputConstants.KEY_B,
         "WagYourMinimap"
     );
-
     private static final KeyMapping key_zoom_in = new KeyMapping(
         "key.wagyourminimap.zoom_in",
         InputConstants.KEY_EQUALS,
         "WagYourMinimap"
     );
-
     private static final KeyMapping key_zoom_out = new KeyMapping(
         "key.wagyourminimap.zoom_out",
         InputConstants.KEY_MINUS,
         "WagYourMinimap"
     );
-
     private static final KeyMapping key_hide_minimap = new KeyMapping(
         "key.wagyourminimap.hide_minimap",
         InputConstants.UNKNOWN.getValue(),
         "WagYourMinimap"
     );
+    protected static final Minecraft minecraft = Minecraft.getInstance();
 
     public static void init() {
         KeyMappingRegistry.register(key_openmap);
@@ -122,7 +112,10 @@ public class WagYourMinimapClient extends WagYourMinimap {
                 MinimapApi.getInstance().getConfig().get(MinimapClientConfig.class).setChunkRadius(rad);
             }
             if (key_hide_minimap.consumeClick()) {
-                MinimapApi.getInstance().getConfig().get(MinimapClientConfig.class).showMinimap = !MinimapApi.getInstance().getConfig().get(MinimapClientConfig.class).showMinimap;
+                MinimapApi.getInstance()
+                    .getConfig()
+                    .get(MinimapClientConfig.class).showMinimap = !MinimapApi.getInstance().getConfig().get(
+                    MinimapClientConfig.class).showMinimap;
                 MinimapApi.getInstance().getConfig().saveConfig();
             }
         });
@@ -196,4 +189,5 @@ public class WagYourMinimapClient extends WagYourMinimap {
         });
 
     }
+
 }

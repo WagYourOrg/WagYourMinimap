@@ -2,7 +2,6 @@ package xyz.wagyourtail.minimap.chunkdata.updater;
 
 import dev.architectury.event.Event;
 import dev.architectury.event.EventFactory;
-import net.minecraft.client.Minecraft;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
@@ -47,23 +46,23 @@ public abstract class AbstractChunkDataUpdater<T extends DataPart<T>> implements
     }
 
     protected void updateChunk(ChunkLocation location, ChunkUpdateListener<T> newChunkDataCreator) {
-//        synchronized (location.level()) {
-            data_pool.execute(() -> {
-                ChunkData chunkData = location.get();
-                synchronized (chunkData) {
-                    chunkData.computeData(
-                        getType(),
-                        (old) -> newChunkDataCreator.onChunkUpdate(location, chunkData, old)
-                    );
-                    MinimapEvents.CHUNK_UPDATED.invoker().onChunkUpdate(
-                        location,
-                        chunkData,
-                        this.getClass(),
-                        getType()
-                    );
-                }
-            });
-//        }
+        //        synchronized (location.level()) {
+        data_pool.execute(() -> {
+            ChunkData chunkData = location.get();
+            synchronized (chunkData) {
+                chunkData.computeData(
+                    getType(),
+                    (old) -> newChunkDataCreator.onChunkUpdate(location, chunkData, old)
+                );
+                MinimapEvents.CHUNK_UPDATED.invoker().onChunkUpdate(
+                    location,
+                    chunkData,
+                    this.getClass(),
+                    getType()
+                );
+            }
+        });
+        //        }
     }
 
     public abstract Class<T> getType();

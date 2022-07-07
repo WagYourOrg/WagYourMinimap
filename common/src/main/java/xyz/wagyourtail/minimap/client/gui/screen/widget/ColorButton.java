@@ -38,46 +38,6 @@ public class ColorButton extends AbstractWidget {
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (mouseX < x || mouseX > x + width || mouseY < y || mouseY > y + height) {
-            return false;
-        }
-        if (button == 0) {
-            adjustColor(mouseX, mouseY);
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
-        if (mouseX < x || mouseX > x + width || mouseY < y || mouseY > y + height) {
-            return false;
-        }
-        if (button == 0) {
-            adjustColor(mouseX, mouseY);
-            return true;
-        }
-        return false;
-    }
-
-    private void adjustColor(double mouseX, double mouseY) {
-        mouseX -= x;
-        mouseY -= y;
-        mouseX = Mth.clamp(mouseX, 0, width);
-        mouseY = Mth.clamp(mouseY, 0, height);
-        if (mouseX <= width - 30) {
-            h = (float) mouseX / (width - 30);
-            s = 1;
-            v = 1 - (float) mouseY / height;
-            colorSelected.accept(Color.HSBtoRGB(h, s, v));
-        } else if (mouseX >= width - 20) {
-            s = 1f - (float) mouseY / height;
-            colorSelected.accept(Color.HSBtoRGB(h, s, v));
-        }
-    }
-
-    @Override
     public void renderButton(PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
         RenderSystem.disableTexture();
         RenderSystem.enableBlend();
@@ -130,10 +90,14 @@ public class ColorButton extends AbstractWidget {
         float colFullSatBlue = (colFullSat & 255) / 255f;
         float colorNoSat = Math.max(Math.max(colFullSatRed, colFullSatGreen), colFullSatBlue);
 
-        bufferBuilder.vertex(x + w * 6 + 10, y, 0).color(colFullSatRed, colFullSatGreen, colFullSatBlue, 1f).endVertex();
+        bufferBuilder.vertex(x + w * 6 + 10, y, 0)
+            .color(colFullSatRed, colFullSatGreen, colFullSatBlue, 1f)
+            .endVertex();
         bufferBuilder.vertex(x + w * 6 + 10, y + height, 0).color(colorNoSat, colorNoSat, colorNoSat, 1f).endVertex();
         bufferBuilder.vertex(x + w * 6 + 30, y + height, 0).color(colorNoSat, colorNoSat, colorNoSat, 1f).endVertex();
-        bufferBuilder.vertex(x + w * 6 + 30, y, 0).color(colFullSatRed, colFullSatGreen, colFullSatBlue, 1f).endVertex();
+        bufferBuilder.vertex(x + w * 6 + 30, y, 0)
+            .color(colFullSatRed, colFullSatGreen, colFullSatBlue, 1f)
+            .endVertex();
 
         // draw location in saturation
         float h = height * (1f - s);
@@ -162,6 +126,46 @@ public class ColorButton extends AbstractWidget {
         tesselator.end();
         RenderSystem.disableBlend();
         RenderSystem.enableTexture();
+    }
+
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (mouseX < x || mouseX > x + width || mouseY < y || mouseY > y + height) {
+            return false;
+        }
+        if (button == 0) {
+            adjustColor(mouseX, mouseY);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
+        if (mouseX < x || mouseX > x + width || mouseY < y || mouseY > y + height) {
+            return false;
+        }
+        if (button == 0) {
+            adjustColor(mouseX, mouseY);
+            return true;
+        }
+        return false;
+    }
+
+    private void adjustColor(double mouseX, double mouseY) {
+        mouseX -= x;
+        mouseY -= y;
+        mouseX = Mth.clamp(mouseX, 0, width);
+        mouseY = Mth.clamp(mouseY, 0, height);
+        if (mouseX <= width - 30) {
+            h = (float) mouseX / (width - 30);
+            s = 1;
+            v = 1 - (float) mouseY / height;
+            colorSelected.accept(Color.HSBtoRGB(h, s, v));
+        } else if (mouseX >= width - 20) {
+            s = 1f - (float) mouseY / height;
+            colorSelected.accept(Color.HSBtoRGB(h, s, v));
+        }
     }
 
     @Override

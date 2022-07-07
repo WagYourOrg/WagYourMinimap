@@ -14,7 +14,6 @@ import xyz.wagyourtail.minimap.ModLoaderSpecific;
 import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
 import xyz.wagyourtail.minimap.api.client.MinimapClientEvents;
 import xyz.wagyourtail.minimap.api.client.config.MinimapClientConfig;
-import xyz.wagyourtail.minimap.chunkdata.ChunkLocation;
 import xyz.wagyourtail.minimap.client.gui.AbstractMapRenderer;
 import xyz.wagyourtail.minimap.client.gui.hud.InGameHud;
 import xyz.wagyourtail.minimap.client.gui.hud.overlay.AbstractMinimapOverlay;
@@ -28,29 +27,36 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 public abstract class AbstractMinimapRenderer extends AbstractMapRenderer {
+    public static final Set<Class<? extends ImageStrategy>> undergroundLayerOptions = new HashSet<>(Set.of(
+        UndergroundVanillaImageStrategy.class,
+        UndergroundAccurateImageStrategy.class,
+        NullImageStrategy.class
+    ));
+    public static final Set<Class<? extends ImageStrategy>> undergroundLayerOptionsExtra = new HashSet<>(Set.of(
+        UndergroundBlockLightImageStrategy.class));
     public final boolean rotate;
     public final float scaleBy;
     public final boolean hasStencil;
-    public boolean fullscreen_toggle;
-
-
-    public static final Set<Class<? extends ImageStrategy>> undergroundLayerOptions = new HashSet<>(Set.of(UndergroundVanillaImageStrategy.class, UndergroundAccurateImageStrategy.class, NullImageStrategy.class));
-
-    public static final Set<Class<? extends ImageStrategy>> undergroundLayerOptionsExtra = new HashSet<>(Set.of(UndergroundBlockLightImageStrategy.class));
-
     public final Set<Class<? extends AbstractMinimapOverlay>> availableOverlays = new HashSet<>(Set.of(
         PlayerArrowOverlay.class,
         WaypointOverlay.class,
         MobIconOverlay.class
     ));
-
-    @Setting(value = "gui.wagyourminimap.settings.style.underground_layer", options = "undergroundLayers", setter = "setUndergroundLayer")
+    public boolean fullscreen_toggle;
+    @Setting(value = "gui.wagyourminimap.settings.style.underground_layer",
+        options = "undergroundLayers",
+        setter = "setUndergroundLayer")
     public ImageStrategy undergroundLayer;
 
-    @Setting(value = "gui.wagyourminimap.settings.style.underground_layer_extra", options = "undergroundLayerExtra", setter = "setUndergroundLayerExtra")
+    @Setting(value = "gui.wagyourminimap.settings.style.underground_layer_extra",
+        options = "undergroundLayerExtra",
+        setter = "setUndergroundLayerExtra")
     public ImageStrategy[] undergroundLayerExtra;
 
-    @Setting(value = "gui.wagyourminimap.settings.style.overlay", options = "overlayOptions", setter = "setOverlays", constructor = "constructOverlay")
+    @Setting(value = "gui.wagyourminimap.settings.style.overlay",
+        options = "overlayOptions",
+        setter = "setOverlays",
+        constructor = "constructOverlay")
     public AbstractMinimapOverlay[] overlays;
 
 
@@ -66,7 +72,19 @@ public abstract class AbstractMinimapRenderer extends AbstractMapRenderer {
 
         this.overlays = getDefaultOverlays().toArray(new AbstractMinimapOverlay[0]);
         this.undergroundLayer = new UndergroundVanillaImageStrategy();
-        this.undergroundLayerExtra = new ImageStrategy[]{new UndergroundBlockLightImageStrategy()};
+        this.undergroundLayerExtra = new ImageStrategy[] {new UndergroundBlockLightImageStrategy()};
+    }
+
+    public List<AbstractMinimapOverlay> getDefaultOverlays() {
+        List<AbstractMinimapOverlay> overlays = new ArrayList<>(List.of(
+            new PlayerArrowOverlay(this),
+            new WaypointOverlay(this),
+            new MobIconOverlay(this)
+        ));
+        if (rotate) {
+            overlays.add(new NorthIconOverlay(this));
+        }
+        return overlays;
     }
 
     public void setOverlays(AbstractMinimapOverlay... overlays) {
@@ -135,14 +153,6 @@ public abstract class AbstractMinimapRenderer extends AbstractMapRenderer {
             new TextComponent(String.format("%.2f %.2f %.2f", player_pos.x, player_pos.y, player_pos.z))
         );
         matrixStack.popPose();
-    }
-
-    @Override
-    public List<ImageStrategy> getLayers() {
-        List<ImageStrategy> layers = super.getLayers();
-        layers.add(undergroundLayer);
-        layers.addAll(List.of(undergroundLayerExtra));
-        return layers;
     }
 
     protected void renderMinimap(PoseStack matrixStack, @NotNull Vec3 center, float maxLength, @NotNull Vec3 player_pos, float player_rot) {
@@ -351,6 +361,14 @@ public abstract class AbstractMinimapRenderer extends AbstractMapRenderer {
         }
     }
 
+    @Override
+    public List<ImageStrategy> getLayers() {
+        List<ImageStrategy> layers = super.getLayers();
+        layers.add(undergroundLayer);
+        layers.addAll(List.of(undergroundLayerExtra));
+        return layers;
+    }
+
     public abstract float getScaleForVecToBorder(Vec3 in, int chunkRadius, float maxLength);
 
     public Collection<Class<? extends AbstractMinimapOverlay>> overlayOptions() {
@@ -367,18 +385,6 @@ public abstract class AbstractMinimapRenderer extends AbstractMapRenderer {
 
     public AbstractMinimapOverlay constructOverlay(Class<? extends AbstractMinimapOverlay> overlayClass) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         return overlayClass.getConstructor(AbstractMinimapRenderer.class).newInstance(this);
-    }
-
-    public List<AbstractMinimapOverlay> getDefaultOverlays() {
-        List<AbstractMinimapOverlay> overlays = new ArrayList<>(List.of(
-            new PlayerArrowOverlay(this),
-            new WaypointOverlay(this),
-            new MobIconOverlay(this)
-        ));
-        if (rotate) {
-            overlays.add(new NorthIconOverlay(this));
-        }
-        return overlays;
     }
 
 

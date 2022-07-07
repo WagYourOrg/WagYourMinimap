@@ -19,6 +19,15 @@ public abstract class AbstractCircleMapRenderer extends AbstractMinimapRenderer 
     }
 
     @Override
+    public List<AbstractMinimapOverlay> getDefaultOverlays() {
+        List<AbstractMinimapOverlay> list = new ArrayList<>(List.of(
+            new CircleMapBorderOverlay(this)
+        ));
+        list.addAll(super.getDefaultOverlays());
+        return list;
+    }
+
+    @Override
     public void drawStencil(PoseStack stack, float maxLength) {
         circle(stack, maxLength / 2, maxLength / 2, maxLength / 2, 50);
     }
@@ -52,15 +61,6 @@ public abstract class AbstractCircleMapRenderer extends AbstractMinimapRenderer 
         builder.end();
         BufferUploader.end(builder);
         matrixStack.popPose();
-    }
-
-    @Override
-    public List<AbstractMinimapOverlay> getDefaultOverlays() {
-        List<AbstractMinimapOverlay> list = new ArrayList<>(List.of(
-            new CircleMapBorderOverlay(this)
-        ));
-        list.addAll(super.getDefaultOverlays());
-        return list;
     }
 
 }

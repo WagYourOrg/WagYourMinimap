@@ -50,4 +50,5 @@ public abstract class BlockColors implements IBlockColors, ImageStrategy {
         }
         return waterCache.computeIfAbsent(biome, Biome::getWaterColor);
     }
+
 }
