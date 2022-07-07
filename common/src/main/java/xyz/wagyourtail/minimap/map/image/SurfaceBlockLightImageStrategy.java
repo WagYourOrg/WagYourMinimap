@@ -17,6 +17,12 @@ public class SurfaceBlockLightImageStrategy implements ImageStrategy {
     private static final Minecraft minecraft = Minecraft.getInstance();
     private static final int TICKS_PER_DAY = 24000;
     private static final float HUE = 50F / 360F;
+    private static final int[] HSB_TO_RGB_PRECACHE = new int[0x10];
+    static {
+        for (int i = 0; i < 16; i++) {
+            HSB_TO_RGB_PRECACHE[i] = SurfaceBlockLightImageStrategy.HSBtoRGB2(HUE, 1F, i / 15F);
+        }
+    }
 
     @Setting(value = "gui.wagyourminimap.setting.layers.light.nether")
     public boolean nether = false;
@@ -38,7 +44,7 @@ public class SurfaceBlockLightImageStrategy implements ImageStrategy {
     }
 
     private int colorForLightLevel(byte lightLevel) {
-        return HSBtoRGB2(HUE, 1F, lightLevel / 15F);
+        return HSB_TO_RGB_PRECACHE[lightLevel & 0xF];
     }
 
     @Override

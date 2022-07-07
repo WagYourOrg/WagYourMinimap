@@ -9,6 +9,12 @@ architectury {
     forge()
 }
 
+loom {
+    forge {
+        mixinConfigs "wagyourminimapcommon.mixins.json"
+    }
+}
+
 configurations {
     common
     shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.

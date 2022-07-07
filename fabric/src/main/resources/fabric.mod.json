@@ -23,6 +23,7 @@
         ]
     },
     "mixins": [
+        "wagyourminimapcommon.mixins.json",
         "wagyourminimapfabric.mixins.json"
     ],
     "depends": {

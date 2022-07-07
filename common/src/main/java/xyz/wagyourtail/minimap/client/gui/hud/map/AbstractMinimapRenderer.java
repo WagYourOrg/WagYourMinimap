@@ -138,14 +138,11 @@ public abstract class AbstractMinimapRenderer extends AbstractMapRenderer {
     }
 
     @Override
-    protected boolean drawChunk(PoseStack matrixStack, ChunkLocation chunk, float x, float y, float width, float height, float startU, float startV, float endU, float endV) {
-        boolean ret = super.drawChunk(matrixStack, chunk, x, y, width, height, startU, startV, endU, endV);
-        ret = drawLayer(matrixStack, chunk, x, y, width, height, startU, startV, endU, endV, undergroundLayer) || ret;
-        for (ImageStrategy rendererLayer : undergroundLayerExtra) {
-            ret = drawLayer(matrixStack, chunk, x, y, width, height, startU, startV, endU, endV, rendererLayer) || ret;
-            continue;
-        }
-        return ret;
+    public List<ImageStrategy> getLayers() {
+        List<ImageStrategy> layers = super.getLayers();
+        layers.add(undergroundLayer);
+        layers.addAll(List.of(undergroundLayerExtra));
+        return layers;
     }
 
     protected void renderMinimap(PoseStack matrixStack, @NotNull Vec3 center, float maxLength, @NotNull Vec3 player_pos, float player_rot) {

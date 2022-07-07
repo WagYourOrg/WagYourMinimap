@@ -21,6 +21,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class UndergroundBlockLightImageStrategy implements ImageStrategy {
     protected static final Minecraft minecraft = Minecraft.getInstance();
     private static final float HUE = 50F / 360F;
+    private static final int[] HSB_TO_RGB_PRECACHE = new int[0x10];
+    static {
+        for (int i = 0; i < 16; i++) {
+            HSB_TO_RGB_PRECACHE[i] = SurfaceBlockLightImageStrategy.HSBtoRGB2(HUE, 1F, i / 15F);
+        }
+    }
     private final AtomicInteger lastY = new AtomicInteger(0);
 
     @Setting("gui.wagyourminimap.setting.layers.underground.light_level")
@@ -45,7 +51,7 @@ public class UndergroundBlockLightImageStrategy implements ImageStrategy {
     }
 
     private int colorForLightLevel(byte lightLevel) {
-        return SurfaceBlockLightImageStrategy.HSBtoRGB2(HUE, 1F, lightLevel / 15F);
+        return HSB_TO_RGB_PRECACHE[lightLevel & 0xF];
     }
 
     @Override
