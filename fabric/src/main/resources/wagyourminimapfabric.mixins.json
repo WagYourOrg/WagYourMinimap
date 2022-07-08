@@ -3,6 +3,7 @@
     "package": "xyz.wagyourtail.minimap.fabric.mixins",
     "compatibilityLevel": "JAVA_16",
     "client": [
+        "events.ClientSuggestionProviderMixin",
         "events.MixinPostChain",
         "events.MixinRenderTarget"
     ],

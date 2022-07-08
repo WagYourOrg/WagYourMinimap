@@ -2,12 +2,19 @@ package xyz.wagyourtail.minimap.client;
 
 import com.google.gson.JsonObject;
 import com.mojang.blaze3d.platform.InputConstants;
+import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.builder.ArgumentBuilder;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import dev.architectury.event.Event;
+import dev.architectury.event.EventFactory;
 import dev.architectury.event.events.client.ClientGuiEvent;
 import dev.architectury.event.events.client.ClientPlayerEvent;
 import dev.architectury.event.events.client.ClientTickEvent;
 import dev.architectury.registry.client.keymappings.KeyMappingRegistry;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.commands.CommandSource;
+import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.core.BlockPos;
 import xyz.wagyourtail.minimap.WagYourMinimap;
 import xyz.wagyourtail.minimap.api.MinimapApi;
@@ -27,6 +34,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class WagYourMinimapClient extends WagYourMinimap {
+    public static final Event<ClientCommandRegistrationEvent<?>> CLIENT_COMMAND_REGISTRATION_EVENT = EventFactory.createLoop();
+
     private static final KeyMapping key_openmap = new KeyMapping(
         "key.wagyourminimap.openmap",
         InputConstants.KEY_M,
@@ -74,6 +83,8 @@ public class WagYourMinimapClient extends WagYourMinimap {
         MinimapApi.getInstance().cacheManager.addCacherBefore(new InMemoryCacher(), ZipCacher.class);
         MinimapApi.getInstance().registerChunkUpdateStrategy(SurfaceDataUpdater.class);
         MinimapApi.getInstance().registerChunkUpdateStrategy(UndergroundDataUpdater.class);
+
+
 
         ClientGuiEvent.RENDER_HUD.register((matrix, delta) -> {
             try {
@@ -187,7 +198,13 @@ public class WagYourMinimapClient extends WagYourMinimap {
                 t.printStackTrace();
             }
         });
-
+        CLIENT_COMMAND_REGISTRATION_EVENT.register(d -> {
+            LiteralArgumentBuilder arg = MinimapClientApi.getInstance().getConfig().createSettingsCommand().getCommandTree("minimap");
+            d.register(arg);
+        });
     }
 
+    public interface ClientCommandRegistrationEvent<T extends SharedSuggestionProvider> {
+        void register(CommandDispatcher<T> dispatcher);
+    }
 }

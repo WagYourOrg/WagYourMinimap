@@ -159,7 +159,7 @@ public class SettingScreen extends Screen {
         try {
             AbstractWidget element;
             AbstractWidget[] settingButton = new AbstractWidget[] {null};
-            SettingField<?> settingField = new SettingField<>(settingContainer, setting);
+            SettingField<?> settingField = new SettingField<>(() -> settingContainer, setting);
 
             //boolean
             if (settingField.fieldType.equals(boolean.class) || settingField.fieldType.equals(Boolean.class)) {

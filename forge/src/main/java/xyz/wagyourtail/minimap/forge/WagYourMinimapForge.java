@@ -1,8 +1,10 @@
 package xyz.wagyourtail.minimap.forge;
 
+import com.mojang.brigadier.CommandDispatcher;
 import dev.architectury.platform.forge.EventBuses;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.client.ConfigGuiHandler;
+import net.minecraftforge.client.event.RegisterClientCommandsEvent;
 import net.minecraftforge.client.event.RenderLevelLastEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.BlockEvent;
@@ -57,6 +59,11 @@ public class WagYourMinimapForge {
             renderEvent.getPartialTick(),
             renderEvent.getStartNanos()
         );
+    }
+
+    @SubscribeEvent
+    public void onClientCommand(RegisterClientCommandsEvent clientCommandsEvent) {
+        WagYourMinimapClient.CLIENT_COMMAND_REGISTRATION_EVENT.invoker().register((CommandDispatcher) clientCommandsEvent.getDispatcher());
     }
 
 }

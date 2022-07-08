@@ -30,7 +30,7 @@ public class SettingContainerSerializer {
                 serializedSettings.add(
                     field.getName(),
                     serializeSettingsField(setting.useFunctionsToSerialize() ?
-                        new SettingField<>(settingContainer, field).get() :
+                        new SettingField<>(() -> settingContainer, field).get() :
                         field.get(settingContainer))
                 );
                 //pure subsettings class
@@ -93,7 +93,7 @@ public class SettingContainerSerializer {
                     if (obj.has(field.getName())) {
                         deserializeField(
                             obj.get(field.getName()),
-                            new SettingField<>(settingsContainer, field)
+                            new SettingField<>(() -> settingsContainer, field)
                         );
                     }
                 } else if (Modifier.isFinal(field.getModifiers()) && field.getType().isAnnotationPresent(

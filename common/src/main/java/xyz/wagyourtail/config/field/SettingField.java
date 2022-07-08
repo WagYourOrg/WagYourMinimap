@@ -5,9 +5,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.function.Supplier;
 
 public class SettingField<T> {
-    private final Object parent;
+    private final SupplierThrows<Object> parent;
     private final Field field;
     private final Method enabled;
     private final Method getter;
@@ -19,7 +20,7 @@ public class SettingField<T> {
     public final IntRange intRange;
     public final DoubleRange doubleRange;
 
-    public SettingField(Object parent, Field field) throws NoSuchMethodException {
+    public SettingField(SupplierThrows<Object> parent, Field field) throws NoSuchMethodException {
         this.parent = parent;
         this.field = field;
         setting = field.getAnnotation(Setting.class);
@@ -29,27 +30,27 @@ public class SettingField<T> {
         intRange = field.getAnnotation(IntRange.class);
         doubleRange = field.getAnnotation(DoubleRange.class);
         if (!setting.enabled().equals("")) {
-            enabled = parent.getClass().getMethod(setting.enabled());
+            enabled = field.getDeclaringClass().getMethod(setting.enabled());
         } else {
             enabled = null;
         }
         if (!setting.getter().equals("")) {
-            getter = parent.getClass().getMethod(setting.getter());
+            getter = field.getDeclaringClass().getMethod(setting.getter());
         } else {
             getter = null;
         }
         if (!setting.setter().equals("")) {
-            setter = parent.getClass().getMethod(setting.setter(), fieldType);
+            setter = field.getDeclaringClass().getMethod(setting.setter(), fieldType);
         } else {
             setter = null;
         }
         if (!setting.options().equals("")) {
-            options = parent.getClass().getMethod(setting.options());
+            options = field.getDeclaringClass().getMethod(setting.options());
         } else {
             options = null;
         }
         if (!setting.constructor().equals("")) {
-            constructor = parent.getClass().getMethod(setting.constructor(), Class.class);
+            constructor = field.getDeclaringClass().getMethod(setting.constructor(), Class.class);
         } else {
             constructor = null;
         }
@@ -57,29 +58,29 @@ public class SettingField<T> {
 
     public boolean enabled() throws InvocationTargetException, IllegalAccessException {
         if (enabled != null) {
-            return (boolean) enabled.invoke(parent);
+            return (boolean) enabled.invoke(parent.get());
         }
         return true;
     }
 
     public T get() throws InvocationTargetException, IllegalAccessException {
         if (getter != null) {
-            return (T) getter.invoke(parent);
+            return (T) getter.invoke(parent.get());
         }
-        return (T) field.get(parent);
+        return (T) field.get(parent.get());
     }
 
     public void set(T value) throws InvocationTargetException, IllegalAccessException {
         if (setter != null) {
-            setter.invoke(parent, value);
+            setter.invoke(parent.get(), value);
         } else {
-            field.set(parent, value);
+            field.set(parent.get(), value);
         }
     }
 
     public Collection<?> options() throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         if (options != null) {
-            return (Collection<?>) options.invoke(parent);
+            return (Collection<?>) options.invoke(parent.get());
         }
         if (fieldType.isEnum()) {
             return Arrays.asList((Object[]) fieldType.getDeclaredMethod("values").invoke(null));
@@ -89,18 +90,23 @@ public class SettingField<T> {
 
     public <U> U construct(Class<U> clazz) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException, InstantiationException {
         if (constructor != null) {
-            return (U) constructor.invoke(parent, clazz);
+            return (U) constructor.invoke(parent.get(), clazz);
         } else {
             return clazz.getConstructor().newInstance();
         }
     }
 
-    public Object getRawParent() {
-        return parent;
+    public Object getRawParent() throws InvocationTargetException, IllegalAccessException {
+        return parent.get();
     }
 
     public Field getRawField() {
         return field;
     }
 
+
+    @FunctionalInterface
+    public interface SupplierThrows<T> {
+        T get() throws InvocationTargetException, IllegalAccessException;
+    }
 }

@@ -4,6 +4,9 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.mojang.brigadier.builder.ArgumentBuilder;
+import net.minecraft.commands.CommandSource;
+import xyz.wagyourtail.config.command.SettingCommand;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -129,4 +132,7 @@ public class ConfigManager {
         }
     }
 
+    public <S extends CommandSource> SettingCommand<S> createSettingsCommand() {
+        return new SettingCommand<>(this);
+    }
 }
