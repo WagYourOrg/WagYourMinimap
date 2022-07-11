@@ -111,7 +111,11 @@ public class MainSettingScreen extends Screen {
                     20,
                     title,
                     (btn) -> {
-                        minecraft.setScreen(new SettingScreen(title, this, config.get(configs[finalI])));
+                        try {
+                            minecraft.setScreen(new SettingScreen(title, this, config, config.get(configs[finalI])));
+                        } catch (NoSuchMethodException e) {
+                            e.printStackTrace();
+                        }
                     }
                 )));
             } else {
@@ -122,7 +126,11 @@ public class MainSettingScreen extends Screen {
                     20,
                     title,
                     (btn) -> {
-                        minecraft.setScreen(new SettingScreen(title, this, config.get(configs[finalI])));
+                        try {
+                            minecraft.setScreen(new SettingScreen(title, this, config, config.get(configs[finalI])));
+                        } catch (NoSuchMethodException e) {
+                            e.printStackTrace();
+                        }
                     }
                 )));
             }

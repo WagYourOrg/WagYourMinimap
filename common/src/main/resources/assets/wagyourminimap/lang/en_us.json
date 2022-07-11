@@ -27,7 +27,7 @@
     "gui.wagyourminimap.settings.style.overlay": "Overlay",
     "gui.wagyourminimap.settings.overlay.scale": "Scale",
     "gui.wagyourminimap.settings.style.layers": "Layers",
-    "gui.wagyourminimap.settings.style.underground_layer": "Underground Layer: ",
+    "gui.wagyourminimap.settings.style.underground_layer": "Underground: ",
     "gui.wagyourminimap.settings.style.underground_layer_extra": "Underground Layer Extras",
     "gui.wagyourminimap.settings.style.base_layer": "Base Layer: ",
     "gui.wagyourminimap.setting.layers.none": "None",

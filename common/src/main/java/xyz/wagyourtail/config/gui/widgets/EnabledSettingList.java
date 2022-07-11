@@ -15,6 +15,7 @@ import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
+import xyz.wagyourtail.config.ConfigManager;
 import xyz.wagyourtail.config.field.Setting;
 import xyz.wagyourtail.config.field.SettingsContainer;
 import xyz.wagyourtail.config.gui.ArrayScreen;
@@ -26,10 +27,12 @@ import java.util.Arrays;
 public class EnabledSettingList<T> extends ObjectSelectionList<EnabledSettingList.EnabledSettingEntry<T>> {
 
     private final Component title = new TranslatableComponent("gui.wagyourconfig.enabled");
+    private final ConfigManager config;
 
-    public EnabledSettingList(Minecraft minecraft, int i, int j) {
+    public EnabledSettingList(Minecraft minecraft, int i, int j, ConfigManager config) {
         super(minecraft, i, j, 32, j - 55 + 4, 36);
         this.centerListVertically = false;
+        this.config = config;
         this.setRenderHeader(true, 13);
     }
 
@@ -183,13 +186,18 @@ public class EnabledSettingList<T> extends ObjectSelectionList<EnabledSettingLis
             if (d > parent.getRowWidth() - 40 && e > 6 && e < 26 && d < parent.getRowWidth() - 20 && hasSubSettings) {
                 minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
                 ((ArrayScreen<T, T>) parentScreen).applyValue();
-                minecraft.setScreen(new SettingScreen(
-                    new TranslatableComponent(option.getClass()
-                        .getAnnotation(SettingsContainer.class)
-                        .value()),
-                    (Screen) parentScreen,
-                    option
-                ));
+                try {
+                    minecraft.setScreen(new SettingScreen(
+                        new TranslatableComponent(option.getClass()
+                            .getAnnotation(SettingsContainer.class)
+                            .value()),
+                        (Screen) parentScreen,
+                        parent.config,
+                        option
+                    ));
+                } catch (NoSuchMethodException ex) {
+                    ex.printStackTrace();
+                }
                 return true;
             }
             return false;

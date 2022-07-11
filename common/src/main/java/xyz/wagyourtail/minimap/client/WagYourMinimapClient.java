@@ -199,8 +199,11 @@ public class WagYourMinimapClient extends WagYourMinimap {
             }
         });
         CLIENT_COMMAND_REGISTRATION_EVENT.register(d -> {
-            LiteralArgumentBuilder arg = MinimapClientApi.getInstance().getConfig().createSettingsCommand().getCommandTree("minimap");
-            d.register(arg);
+            try {
+                d.register((LiteralArgumentBuilder) MinimapClientApi.getInstance().getConfig().createSettingsCommand().getCommandTree("minimap"));
+            } catch (NoSuchMethodException e) {
+                throw new RuntimeException(e);
+            }
         });
     }
 

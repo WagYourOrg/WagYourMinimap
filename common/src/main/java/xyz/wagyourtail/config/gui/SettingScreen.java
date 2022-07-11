@@ -10,9 +10,12 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.util.Mth;
+import xyz.wagyourtail.config.ConfigManager;
+import xyz.wagyourtail.config.Or;
 import xyz.wagyourtail.config.field.Setting;
 import xyz.wagyourtail.config.field.SettingField;
 import xyz.wagyourtail.config.field.SettingsContainer;
+import xyz.wagyourtail.config.field.SettingsContainerField;
 import xyz.wagyourtail.config.gui.widgets.Checkbox;
 import xyz.wagyourtail.config.gui.widgets.NamedEditBox;
 import xyz.wagyourtail.config.gui.widgets.Slider;
@@ -25,22 +28,21 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class SettingScreen extends Screen {
     private final Screen parent;
+    private final ConfigManager config;
     private final Object settingContainer;
-    private final Field[] settings;
+    private final List<Or<SettingField<?>, SettingsContainerField<Object>>> settings;
     private final List<AbstractWidget> pageButtons = new ArrayList<>();
     private final List<Runnable> enabledListeners = new ArrayList<>();
     private Button backButton;
     private Button forwardButton;
     private Button doneButton;
 
-    public SettingScreen(Component title, Screen parent, Object container) {
+    public SettingScreen(Component title, Screen parent, ConfigManager config, Object container) throws NoSuchMethodException {
         super(title);
         this.parent = parent;
         this.settingContainer = container;
-        settings = Arrays.stream(settingContainer.getClass().getFields()).filter(e ->
-            e.isAnnotationPresent(Setting.class) || (
-                Modifier.isFinal(e.getModifiers()) && e.getType().isAnnotationPresent(SettingsContainer.class)
-            )).toArray(Field[]::new);
+        this.config = config;
+        settings = SettingField.getSettingsFor(config, container.getClass(), () -> container);
     }
 
     @Override
@@ -90,7 +92,7 @@ public class SettingScreen extends Screen {
 
         drawPage(0);
         int buttonsPerPage = height / 30 * 2;
-        int pages = settings.length / buttonsPerPage;
+        int pages = settings.size() / buttonsPerPage;
         if (pages == 0) {
             backButton.visible = false;
             forwardButton.visible = false;
@@ -103,16 +105,16 @@ public class SettingScreen extends Screen {
         enabledListeners.clear();
         int height = this.height - 50 - 30;
         int buttonsPerPage = height / 30 * 2;
-        int pages = settings.length / buttonsPerPage;
+        int pages = settings.size() / buttonsPerPage;
         int start = Mth.clamp(page, 0, pages) * buttonsPerPage;
-        for (int i = start; i < start + buttonsPerPage && i < settings.length; ++i) {
+        for (int i = start; i < start + buttonsPerPage && i < settings.size(); ++i) {
             if (i % 2 == 0) {
                 for (AbstractWidget abstractWidget : compileSetting(
                     this.width / 2 - 210,
                     50 + (i / 2) * 30,
                     205,
                     20,
-                    settings[i]
+                    settings.get(i)
                 )) {
                     pageButtons.add(addRenderableWidget(abstractWidget));
                 }
@@ -122,7 +124,7 @@ public class SettingScreen extends Screen {
                     50 + (i / 2) * 30,
                     205,
                     20,
-                    settings[i]
+                    settings.get(i)
                 )) {
                     pageButtons.add(addRenderableWidget(abstractWidget));
                 }
@@ -132,24 +134,23 @@ public class SettingScreen extends Screen {
         forwardButton.active = page < pages;
     }
 
-    public AbstractWidget[] compileSetting(int x, int y, int width, int height, Field setting) {
+    public AbstractWidget[] compileSetting(int x, int y, int width, int height, Or<SettingField<?>, SettingsContainerField<Object>> setting) {
         // pure subsetting
-        if (Modifier.isFinal(setting.getModifiers()) &&
-            setting.getType().isAnnotationPresent(SettingsContainer.class)) {
+        if (setting.u() != null) {
             return new AbstractWidget[] {
                 new Button(
                     x,
                     y,
                     width,
                     height,
-                    new TranslatableComponent(setting.getType().getAnnotation(SettingsContainer.class).value()),
+                    new TranslatableComponent(setting.u().type.getAnnotation(SettingsContainer.class).value()),
                     (btn) -> {
                         try {
                             assert minecraft != null;
-                            minecraft.setScreen(new SettingScreen(new TranslatableComponent(setting.getType()
+                            minecraft.setScreen(new SettingScreen(new TranslatableComponent(setting.u().type
                                 .getAnnotation(SettingsContainer.class)
-                                .value()), this, setting.get(settingContainer)));
-                        } catch (IllegalAccessException e) {
+                                .value()), this, config, setting.u().get()));
+                        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
                             e.printStackTrace();
                         }
                     }
@@ -159,7 +160,7 @@ public class SettingScreen extends Screen {
         try {
             AbstractWidget element;
             AbstractWidget[] settingButton = new AbstractWidget[] {null};
-            SettingField<?> settingField = new SettingField<>(() -> settingContainer, setting);
+            SettingField<?> settingField = setting.t();
 
             //boolean
             if (settingField.fieldType.equals(boolean.class) || settingField.fieldType.equals(Boolean.class)) {
@@ -340,6 +341,7 @@ public class SettingScreen extends Screen {
                         minecraft.setScreen(new ArrayScreen<>(
                             new TranslatableComponent(settingField.setting.value()),
                             this,
+                            config,
                             (SettingField<Object[]>) settingField
                         ));
                     }
@@ -401,8 +403,8 @@ public class SettingScreen extends Screen {
                             minecraft.setScreen(new SettingScreen(new TranslatableComponent(
                                 settingVal.getClass()
                                     .getAnnotation(SettingsContainer.class)
-                                    .value()), this, settingVal));
-                        } catch (InvocationTargetException | IllegalAccessException e) {
+                                    .value()), this, config, settingVal));
+                        } catch (InvocationTargetException | IllegalAccessException | NoSuchMethodException e) {
                             e.printStackTrace();
                         }
                     }

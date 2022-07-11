@@ -1,6 +1,9 @@
 package xyz.wagyourtail.config.command;
 
-import com.mojang.brigadier.arguments.*;
+import com.mojang.brigadier.arguments.BoolArgumentType;
+import com.mojang.brigadier.arguments.DoubleArgumentType;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
+import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
@@ -11,20 +14,20 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import xyz.wagyourtail.config.ConfigManager;
+import xyz.wagyourtail.config.Or;
 import xyz.wagyourtail.config.field.Setting;
 import xyz.wagyourtail.config.field.SettingField;
 import xyz.wagyourtail.config.field.SettingsContainer;
+import xyz.wagyourtail.config.field.SettingsContainerField;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.BiFunction;
-import java.util.stream.Collectors;
 
+@SuppressWarnings({"unchecked", "generic"})
 public class SettingCommand<S extends CommandSource> {
     public final ConfigManager configManager;
 
@@ -32,7 +35,7 @@ public class SettingCommand<S extends CommandSource> {
         this.configManager = configManager;
     }
 
-    public LiteralArgumentBuilder<S> getCommandTree(String baseCommand) {
+    public LiteralArgumentBuilder<S> getCommandTree(String baseCommand) throws NoSuchMethodException {
         LiteralArgumentBuilder<S> root = LiteralArgumentBuilder.literal(baseCommand);
         for (Class<?> config : configManager.getRegisteredConfigs()) {
             root.then(getCommandTree(config));
@@ -40,20 +43,18 @@ public class SettingCommand<S extends CommandSource> {
         return root;
     }
 
-    public ArgumentBuilder<S, ?> getCommandTree(Class<?> config) {
+    public ArgumentBuilder<S, ?> getCommandTree(Class<?> config) throws NoSuchMethodException {
         SettingsContainer s = config.getAnnotation(SettingsContainer.class);
         ArgumentBuilder<S, ?> root = LiteralArgumentBuilder.literal(translationKeyToCommand(s.value()));
-        for (Field field : config.getDeclaredFields()) {
+        List<Or<SettingField<?>, SettingsContainerField<Object>>> fields = SettingField.getSettingsFor(configManager, config, () -> configManager.get(config));
+        for (Or<SettingField<?>, SettingsContainerField<Object>> field : fields) {
             try {
-                if (field.isAnnotationPresent(Setting.class)) {
-                    root.then(getCommandTree(new SettingField<>(() -> configManager.get(config), field), () -> {
-                    }));
-                } else if (Modifier.isFinal(field.getModifiers()) &&
-                    field.isAnnotationPresent(SettingsContainer.class)) {
-                    root.then(LiteralArgumentBuilder.<S>literal(translationKeyToCommand(field.getAnnotation(
-                            SettingsContainer.class).value()))
-                        .then(getSubCommandBuilder(field.getType(), () -> field.get(configManager.get(config)), () -> {
-                        })));
+                if (field.t() != null) {
+                        root.then(getCommandTree(field.t(), () -> {
+                        }));
+                } else if (field.u() != null) {
+                    root.then(LiteralArgumentBuilder.<S>literal(translationKeyToCommand(field.u().get().getClass().getAnnotation(SettingsContainer.class).value()))
+                        .then(getSubCommandBuilder(field.u().type, field.u(), () -> {})));
                 }
             } catch (UnsupportedOperationException e) {
                 e.printStackTrace();
@@ -71,7 +72,7 @@ public class SettingCommand<S extends CommandSource> {
 
     public ArgumentBuilder<S, ?> getCommandTree(SettingField<?> field, Runnable preExecute) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         ArgumentBuilder<S, ?> fieldArg = LiteralArgumentBuilder.literal(translationKeyToCommand(field.setting.value()));
-        if (field.setting.elementType().isArray()) {
+        if (field.fieldType.isArray()) {
             getCommandTreeForArray((SettingField) field, fieldArg, preExecute);
         } else if (field.setting.elementType().isAssignableFrom(Collection.class)) {
             throw new UnsupportedOperationException("Collection types are not supported yet");
@@ -255,25 +256,27 @@ public class SettingCommand<S extends CommandSource> {
         }
     }
 
-    public ArgumentBuilder<S, ?> getSubCommandBuilder(Class<?> setting, SettingField.SupplierThrows parentGetter, Runnable preExecute) {
+    public ArgumentBuilder<S, ?> getSubCommandBuilder(Class<?> setting, SettingField.SupplierThrows parentGetter, Runnable preExecute) throws NoSuchMethodException {
         SettingsContainer s = setting.getAnnotation(SettingsContainer.class);
         ArgumentBuilder<S, ?> root = LiteralArgumentBuilder.literal(translationKeyToCommand(s.value()));
-        for (Field field : setting.getDeclaredFields()) {
+        List<Or<SettingField<?>, SettingsContainerField<Object>>> fields = SettingField.getSettingsFor(configManager, setting, parentGetter);
+        for (Or<SettingField<?>, SettingsContainerField<Object>> field : fields) {
             try {
-                if (field.isAnnotationPresent(Setting.class)) {
-                    root.then(getCommandTree(new SettingField<>(parentGetter, field), preExecute));
-                } else if (Modifier.isFinal(field.getModifiers()) &&
-                    field.isAnnotationPresent(SettingsContainer.class)) {
-                    root.then(LiteralArgumentBuilder.<S>literal(translationKeyToCommand(field.getAnnotation(
-                        SettingsContainer.class).value())).then(getSubCommandBuilder(field.getType(), () -> {
-                        try {
-                            return field.get(parentGetter.get());
-                        } catch (IllegalAccessException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }, preExecute)));
+                if (field.t() != null) {
+                    root.then(getCommandTree(field.t(), preExecute));
+                } else if (field.u() != null) {
+                    root.then(LiteralArgumentBuilder.<S>literal(translationKeyToCommand(field.u().type.getAnnotation(SettingsContainer.class).value()))
+                        .then(getSubCommandBuilder(field.u().type, field.u(), () -> {})));
                 }
             } catch (UnsupportedOperationException e) {
+                e.printStackTrace();
+            } catch (IllegalArgumentException e) {
+                System.err.println("Error while creating command tree for " + setting.getName());
+                if (field.t() != null) {
+                    System.err.println("Field: " + field.t().getRawField());
+                } else if (field.u() != null) {
+                    System.err.println("Field: " + field.u().field);
+                }
                 e.printStackTrace();
             } catch (Exception e) {
                 throw new RuntimeException(e);

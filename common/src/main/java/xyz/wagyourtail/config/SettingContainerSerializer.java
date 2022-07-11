@@ -7,6 +7,7 @@ import com.google.gson.JsonPrimitive;
 import xyz.wagyourtail.config.field.Setting;
 import xyz.wagyourtail.config.field.SettingField;
 import xyz.wagyourtail.config.field.SettingsContainer;
+import xyz.wagyourtail.config.field.SettingsContainerField;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
@@ -21,22 +22,25 @@ public class SettingContainerSerializer {
 
     public static JsonObject serialize(Object settingContainer) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException {
         JsonObject serializedSettings = new JsonObject();
-        Class<?> settings = settingContainer.getClass();
-        Field[] fields = settings.getFields();
-        for (Field field : fields) {
-            //setting field
-            if (field.isAnnotationPresent(Setting.class)) {
-                Setting setting = field.getAnnotation(Setting.class);
+        List<Or<SettingField<?>, SettingsContainerField<Object>>> fields = SettingField.getSettingForSkipInsert(
+            settingContainer.getClass(),
+            () -> settingContainer
+        );
+        for (Or<SettingField<?>, SettingsContainerField<Object>> field : fields) {
+            if (field.t() != null) {
                 serializedSettings.add(
-                    field.getName(),
-                    serializeSettingsField(setting.useFunctionsToSerialize() ?
-                        new SettingField<>(() -> settingContainer, field).get() :
-                        field.get(settingContainer))
+                    field.t().getRawField().getName(),
+                    serializeSettingsField(
+                        field.t().setting.useFunctionsToSerialize() ?
+                            field.t().get() :
+                            field.t().getRawField().get(settingContainer)
+                    )
                 );
-                //pure subsettings class
-            } else if (Modifier.isFinal(field.getModifiers()) &&
-                field.getType().isAnnotationPresent(SettingsContainer.class)) {
-                serializedSettings.add(field.getName(), serialize(field.get(settingContainer)));
+            } else if (field.u() != null) {
+                serializedSettings.add(
+                    field.u().field.getName(),
+                    serialize(field.u().get())
+                );
             }
         }
         return serializedSettings;
@@ -85,22 +89,17 @@ public class SettingContainerSerializer {
         return settings;
     }
 
-    private static <T> void deserializeInternal(JsonObject obj, T settingsContainer) {
-        Field[] fields = settingsContainer.getClass().getFields();
-        for (Field field : fields) {
+    private static <T> void deserializeInternal(JsonObject obj, T settingsContainer) throws NoSuchMethodException {
+        List<Or<SettingField<?>, SettingsContainerField<Object>>> fields = SettingField.getSettingForSkipInsert(settingsContainer.getClass(), () -> settingsContainer);
+        for (Or<SettingField<?>, SettingsContainerField<Object>> field : fields) {
             try {
-                if (field.isAnnotationPresent(Setting.class)) {
-                    if (obj.has(field.getName())) {
-                        deserializeField(
-                            obj.get(field.getName()),
-                            new SettingField<>(() -> settingsContainer, field)
-                        );
-                    }
-                } else if (Modifier.isFinal(field.getModifiers()) && field.getType().isAnnotationPresent(
-                    SettingsContainer.class)) {
-                    if (obj.has(field.getName())) {
-                        deserializeInternal(obj.get(field.getName()).getAsJsonObject(), field.get(settingsContainer));
-                    }
+                if (field.t() != null) {
+                    deserializeField(
+                        obj.get(field.t().getRawField().getName()),
+                        field.t()
+                    );
+                } else if (field.u() != null) {
+                    deserializeInternal(obj.get(field.u().field.getName()).getAsJsonObject(), field.u().get());
                 }
             } catch (Throwable t) {
                 t.printStackTrace();

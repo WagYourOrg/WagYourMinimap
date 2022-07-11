@@ -6,6 +6,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
+import xyz.wagyourtail.config.ConfigManager;
 import xyz.wagyourtail.config.field.SettingField;
 import xyz.wagyourtail.config.field.SettingsContainer;
 import xyz.wagyourtail.config.gui.widgets.DisabledSettingList;
@@ -21,16 +22,18 @@ import java.util.stream.Collectors;
 
 public class ArrayScreen<T, U> extends Screen implements EnabledSettingList.EntryController<T>, DisabledSettingList.EntryController<U> {
     private final Screen parent;
+    private final ConfigManager config;
     private final SettingField<T[]> setting;
     private EnabledSettingList<T> enabledEntries;
     private DisabledSettingList<U> availableEntries;
 
     private Button doneButton;
 
-    protected ArrayScreen(Component component, Screen parent, SettingField<T[]> setting) {
+    protected ArrayScreen(Component component, Screen parent, ConfigManager config, SettingField<T[]> setting) {
         super(component);
         this.parent = parent;
         this.setting = setting;
+        this.config = config;
     }
 
     @Override
@@ -68,7 +71,7 @@ public class ArrayScreen<T, U> extends Screen implements EnabledSettingList.Entr
     @Override
     protected void init() {
         super.init();
-        this.addWidget(enabledEntries = new EnabledSettingList<>(minecraft, width > 810 ? 400 : 200, this.height));
+        this.addWidget(enabledEntries = new EnabledSettingList<>(minecraft, width > 810 ? 400 : 200, this.height, config));
         this.enabledEntries.setLeftPos(this.width / 2 - 4 - this.enabledEntries.getRowWidth());
         try {
             this.enabledEntries.children().addAll(Arrays.stream(setting.get())

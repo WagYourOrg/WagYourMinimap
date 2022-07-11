@@ -1,8 +1,10 @@
 package xyz.wagyourtail.minimap.api.client.config;
 
+import xyz.wagyourtail.config.field.InsertInto;
 import xyz.wagyourtail.config.field.IntRange;
 import xyz.wagyourtail.config.field.Setting;
 import xyz.wagyourtail.config.field.SettingsContainer;
+import xyz.wagyourtail.minimap.api.config.MinimapConfig;
 import xyz.wagyourtail.minimap.client.gui.hud.InGameHud;
 import xyz.wagyourtail.minimap.client.gui.hud.map.*;
 import xyz.wagyourtail.minimap.client.gui.screen.map.ScreenMapRenderer;

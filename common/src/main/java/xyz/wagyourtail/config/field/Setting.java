@@ -62,5 +62,4 @@ public @interface Setting {
      * @return component type for Map Value and Collections
      */
     Class<?> elementType() default void.class;
-
 }

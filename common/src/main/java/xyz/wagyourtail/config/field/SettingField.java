@@ -1,10 +1,16 @@
 package xyz.wagyourtail.config.field;
 
+import xyz.wagyourtail.config.ConfigManager;
+import xyz.wagyourtail.config.Or;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.function.Supplier;
 
 public class SettingField<T> {
@@ -20,7 +26,7 @@ public class SettingField<T> {
     public final IntRange intRange;
     public final DoubleRange doubleRange;
 
-    public SettingField(SupplierThrows<Object> parent, Field field) throws NoSuchMethodException {
+    protected SettingField(SupplierThrows<Object> parent, Field field) throws NoSuchMethodException {
         this.parent = parent;
         this.field = field;
         setting = field.getAnnotation(Setting.class);
@@ -54,6 +60,81 @@ public class SettingField<T> {
         } else {
             constructor = null;
         }
+    }
+
+    public static List<Or<SettingField<?>, SettingsContainerField<Object>>> getSettingsFor(ConfigManager config, Class<?> parentClass, SupplierThrows<Object> parentSupplier) throws NoSuchMethodException {
+        List<Or<SettingField<?>, SettingsContainerField<Object>>> settings = new ArrayList<>();
+        Class<?> finalParentClass = parentClass;
+        for (Class<?> registeredConfig : config.getRegisteredConfigs()) {
+            Class<?> registeredConfigRealClass = registeredConfig;
+            do {
+                for (Field field : registeredConfig.getDeclaredFields()) {
+                    if (field.isAnnotationPresent(Setting.class) && field.isAnnotationPresent(InsertInto.class)) {
+                        if (Arrays.stream(field.getAnnotation(InsertInto.class).value()).anyMatch(e -> e.isAssignableFrom(
+                            finalParentClass))) {
+                            settings.add(new Or<>(new SettingField<>(() -> config.get(registeredConfigRealClass), field), null));
+                        }
+                    } else if (Modifier.isFinal(field.getModifiers()) && field.getType().isAnnotationPresent(SettingsContainer.class)) {
+                        settings.addAll(getSettingsFor(field.getType(), parentClass, () -> field.get(config.get(registeredConfigRealClass))));
+                        if (field.isAnnotationPresent(InsertInto.class)) {
+                            if (Arrays.stream(field.getAnnotation(InsertInto.class).value()).anyMatch(e -> e.isAssignableFrom(
+                                finalParentClass))) {
+                                settings.add(new Or<>(null, new SettingsContainerField<>(field, () -> field.get(config.get(registeredConfigRealClass)))));
+                            }
+                        }
+                    }
+                }
+            } while ((registeredConfig = registeredConfig.getSuperclass()) != Object.class);
+        }
+        do {
+            for (Field field : parentClass.getDeclaredFields()) {
+                if (field.isAnnotationPresent(Setting.class)) {
+                    settings.add(new Or<>(new SettingField<>(parentSupplier, field), null));
+                } else if (Modifier.isFinal(field.getModifiers()) && field.getType().isAnnotationPresent(SettingsContainer.class)) {
+                    settings.add(new Or<>(null, new SettingsContainerField<>(field, () -> field.get(parentSupplier.get()))));
+                }
+            }
+        } while ((parentClass = parentClass.getSuperclass()) != Object.class);
+
+        return settings;
+    }
+
+    private static List<Or<SettingField<?>, SettingsContainerField<Object>>> getSettingsFor(Class<?> current, Class<?> parentClass, SupplierThrows<Object> currentSupplier) throws NoSuchMethodException {
+        List<Or<SettingField<?>, SettingsContainerField<Object>>> settings = new ArrayList<>();
+        do {
+            for (Field field : current.getDeclaredFields()) {
+                if (field.isAnnotationPresent(Setting.class) && field.isAnnotationPresent(InsertInto.class)) {
+                    if (Arrays.stream(field.getAnnotation(InsertInto.class).value()).anyMatch(e -> e.isAssignableFrom(
+                        parentClass))) {
+                        settings.add(new Or<>(new SettingField<>(currentSupplier, field), null));
+                    }
+                } else if (Modifier.isFinal(field.getModifiers()) && field.getType().isAnnotationPresent(SettingsContainer.class)) {
+                    settings.addAll(getSettingsFor(field.getType(), parentClass, () -> field.get(currentSupplier.get())));
+                    if (field.isAnnotationPresent(InsertInto.class)) {
+                        if (Arrays.stream(field.getAnnotation(InsertInto.class).value()).anyMatch(e -> e.isAssignableFrom(
+                            parentClass))) {
+                            settings.add(new Or<>(null, new SettingsContainerField<>(field, () -> field.get(currentSupplier.get()))));
+                        }
+                    }
+                }
+            }
+        } while ((current = current.getSuperclass()) != Object.class);
+        return settings;
+    }
+
+    public static List<Or<SettingField<?>, SettingsContainerField<Object>>> getSettingForSkipInsert(Class<?> clazz, SupplierThrows<Object> parent) throws NoSuchMethodException {
+        List<Or<SettingField<?>, SettingsContainerField<Object>>> settings = new ArrayList<>();
+        Class<?> current = clazz;
+        do {
+            for (Field field : current.getDeclaredFields()) {
+                if (field.isAnnotationPresent(Setting.class)) {
+                    settings.add(new Or<>(new SettingField<>(parent, field), null));
+                } else if (Modifier.isFinal(field.getModifiers()) && field.getType().isAnnotationPresent(SettingsContainer.class)) {
+                    settings.add(new Or<>(null, new SettingsContainerField<>(field, () -> field.get(parent.get()))));
+                }
+            }
+        } while ((current = current.getSuperclass()) != Object.class);
+        return settings;
     }
 
     public boolean enabled() throws InvocationTargetException, IllegalAccessException {

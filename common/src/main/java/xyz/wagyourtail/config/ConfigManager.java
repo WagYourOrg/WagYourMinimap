@@ -24,7 +24,6 @@ public class ConfigManager {
     private final Map<Class<?>, Object> config = new HashMap<>();
     private JsonObject rawConfig;
     private boolean dirty = false;
-
     public ConfigManager(Path configPath) {
         this.configPath = configPath;
     }
