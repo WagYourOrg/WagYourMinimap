@@ -1,9 +1,6 @@
 package xyz.wagyourtail.config.command;
 
-import com.mojang.brigadier.arguments.BoolArgumentType;
-import com.mojang.brigadier.arguments.DoubleArgumentType;
-import com.mojang.brigadier.arguments.IntegerArgumentType;
-import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.arguments.*;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
@@ -20,10 +17,7 @@ import xyz.wagyourtail.config.field.SettingField;
 import xyz.wagyourtail.config.field.SettingsContainer;
 import xyz.wagyourtail.config.field.SettingsContainerField;
 
-import java.lang.reflect.Array;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Modifier;
+import java.lang.reflect.*;
 import java.util.*;
 import java.util.function.BiFunction;
 
@@ -70,7 +64,7 @@ public class SettingCommand<S extends CommandSource> {
         return parts[parts.length - 1];
     }
 
-    public ArgumentBuilder<S, ?> getCommandTree(SettingField<?> field, Runnable preExecute) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+    public ArgumentBuilder<S, ?> getCommandTree(SettingField<?> field, Runnable preExecute) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException, NoSuchFieldException, InstantiationException {
         ArgumentBuilder<S, ?> fieldArg = LiteralArgumentBuilder.literal(translationKeyToCommand(field.setting.value()));
         if (field.fieldType.isArray()) {
             getCommandTreeForArray((SettingField) field, fieldArg, preExecute);
@@ -84,53 +78,102 @@ public class SettingCommand<S extends CommandSource> {
         return fieldArg;
     }
 
-    public <T> void getCommandTreeForArray(SettingField<T[]> settingField, ArgumentBuilder<S, ?> fieldArg, Runnable preExecute) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        Collection<?> options = settingField.options();
-        fieldArg.executes(ctx -> {
-            preExecute.run();
-            try {
-                MutableComponent component = new TextComponent("Current value: ");
-                for (T thing : settingField.get()) {
-                    if (thing.getClass().isAnnotationPresent(SettingsContainer.class)) {
-                        component.append(new TranslatableComponent(thing.getClass().getAnnotation(SettingsContainer.class).value()));
-                    } else {
-                        component.append(new TextComponent(thing.toString()));
-                    }
-                    component.append(", ");
-                }
-                ctx.getSource().sendMessage(component, null);
-            } catch (InvocationTargetException | IllegalAccessException e) {
-                throw new RuntimeException(e);
-            }
-            return 1;
-        });
-        if (options != null) {
-            if (settingField.setting.allowDuplicateOption()) {
-                throw new UnsupportedOperationException("Duplicate option not supported yet");
+    public <T> void getCommandTreeForArray(SettingField<T[]> settingField, ArgumentBuilder<S, ?> fieldArg, Runnable preExecute) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException, NoSuchFieldException, InstantiationException {
+        if (settingField.brigadierOptionsOverride != null) {
+            Class<? extends ArgumentType> brigadierType = settingField.brigadierOptionsOverride.value();
+            String init = settingField.brigadierOptionsOverride.constructor();
+            ArgumentType t;
+            if (!Objects.equals(init, "<init>")) {
+                t = (ArgumentType) brigadierType.getDeclaredField(init).get(null);
             } else {
-                ArgumentBuilder<S, ?> enable = LiteralArgumentBuilder.literal("enable");
-                ArgumentBuilder<S, ?> disable = LiteralArgumentBuilder.literal("disable");
-                ArgumentBuilder<S, ?> subSetting = LiteralArgumentBuilder.literal("subsetting");
-                fieldArg.then(enable).then(disable).then(subSetting);
-                for (Object option : options) {
-                    if (option instanceof Class<?>) {
-                        subSetting.then(getSubCommandBuilder((Class<?>) option, () -> {
-                            Object arr = settingField.get();
-                            for (int i = 0; i < Array.getLength(arr); ++i) {
-                                if (Array.get(arr, i).getClass().equals(option)) {
-                                    return Array.get(arr, i);
-                                }
-                            }
-                            throw new RuntimeException("Option not found");
-                        }, () -> {
-                        }));
-                    } else {
-                        throw new UnsupportedOperationException("non class options are not supported yet");
-                    }
-                }
+                t = brigadierType.getDeclaredConstructor().newInstance();
             }
+            Method m = brigadierType.getMethod(settingField.brigadierOptionsOverride.getter(), CommandContext.class, String.class);
+            fieldArg.then(RequiredArgumentBuilder.argument("remove", t).executes(
+                ctx -> {
+                    preExecute.run();
+                    try {
+                        Object o = m.invoke(null, ctx, "remove");
+                        List<T> list = new ArrayList<>(Arrays.asList(settingField.get()));
+                        if (settingField.fieldType.getComponentType().equals(String.class)) {
+                            list.remove(o.toString());
+                        } else {
+                            list.remove(o);
+                        }
+                        settingField.set(list.toArray((T[]) Array.newInstance(settingField.fieldType.getComponentType(), list.size())));
+                    } catch (InvocationTargetException | IllegalAccessException e) {
+                        throw new RuntimeException(e);
+                    }
+                    return 1;
+                }
+            ));
+            fieldArg.then(RequiredArgumentBuilder.argument("add", t).executes(
+                ctx -> {
+                    preExecute.run();
+                    try {
+                        Object o = m.invoke(null, ctx, "add");
+                        List<T> list = new ArrayList<>(Arrays.asList(settingField.get()));
+                        if (settingField.fieldType.getComponentType().equals(String.class)) {
+                            list.add((T) o.toString());
+                        } else {
+                            list.add((T) o);
+                        }
+                        settingField.set(list.toArray((T[]) Array.newInstance(settingField.fieldType.getComponentType(), list.size())));
+                    } catch (InvocationTargetException | IllegalAccessException e) {
+                        throw new RuntimeException(e);
+                    }
+                    return 1;
+                }
+            ));
         } else {
-            throw new UnsupportedOperationException("no options not supported yet");
+            Collection<?> options = settingField.options();
+            fieldArg.executes(ctx -> {
+                preExecute.run();
+                try {
+                    MutableComponent component = new TextComponent("Current value: ");
+                    for (T thing : settingField.get()) {
+                        if (thing.getClass().isAnnotationPresent(SettingsContainer.class)) {
+                            component.append(new TranslatableComponent(thing.getClass().getAnnotation(SettingsContainer.class).value()));
+                        } else {
+                            component.append(new TextComponent(thing.toString()));
+                        }
+                        component.append(", ");
+                    }
+                    ctx.getSource().sendMessage(component, null);
+                } catch (InvocationTargetException | IllegalAccessException e) {
+                    throw new RuntimeException(e);
+                }
+                return 1;
+            });
+            if (options != null) {
+                if (settingField.setting.allowDuplicateOption()) {
+                    throw new UnsupportedOperationException("Duplicate option not supported yet");
+                } else {
+                    ArgumentBuilder<S, ?> enable = LiteralArgumentBuilder.literal("add");
+                    ArgumentBuilder<S, ?> disable = LiteralArgumentBuilder.literal("remove");
+                    ArgumentBuilder<S, ?> subSetting = LiteralArgumentBuilder.literal("subsetting");
+                    fieldArg.then(enable).then(disable).then(subSetting);
+                    for (Object option : options) {
+                        if (option instanceof Class<?>) {
+                            subSetting.then(getSubCommandBuilder((Class<?>) option, () -> {
+                                Object arr = settingField.get();
+                                for (int i = 0; i < Array.getLength(arr); ++i) {
+                                    if (Array.get(arr, i).getClass().equals(option)) {
+                                        return Array.get(arr, i);
+                                    }
+                                }
+                                throw new RuntimeException("Option not found");
+                            }, () -> {
+                            }));
+                        } else {
+                            throw new UnsupportedOperationException("non class options are not supported yet");
+                        }
+                    }
+                    //TODO: enabled/disabled
+                }
+            } else {
+                throw new UnsupportedOperationException("no options not supported yet");
+            }
         }
     }
 

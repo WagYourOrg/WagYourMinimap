@@ -25,6 +25,8 @@ public class SettingField<T> {
     public final Setting setting;
     public final IntRange intRange;
     public final DoubleRange doubleRange;
+    public final InsertInto insertInto;
+    public final BrigadierOptionsOverride brigadierOptionsOverride;
 
     protected SettingField(SupplierThrows<Object> parent, Field field) throws NoSuchMethodException {
         this.parent = parent;
@@ -35,6 +37,8 @@ public class SettingField<T> {
             (Class<T>) field.getType();
         intRange = field.getAnnotation(IntRange.class);
         doubleRange = field.getAnnotation(DoubleRange.class);
+        insertInto = field.getAnnotation(InsertInto.class);
+        brigadierOptionsOverride = field.getAnnotation(BrigadierOptionsOverride.class);
         if (!setting.enabled().equals("")) {
             enabled = field.getDeclaringClass().getMethod(setting.enabled());
         } else {

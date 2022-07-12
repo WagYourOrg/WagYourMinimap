@@ -1,9 +1,11 @@
 package xyz.wagyourtail.minimap.client.gui.hud.overlay.mobicons;
 
+import net.minecraft.commands.arguments.EntitySummonArgument;
 import net.minecraft.core.Registry;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobCategory;
+import xyz.wagyourtail.config.field.BrigadierOptionsOverride;
 import xyz.wagyourtail.config.field.Setting;
 import xyz.wagyourtail.config.field.SettingsContainer;
 
@@ -20,6 +22,7 @@ public class CustomFilter extends AbstractMobIconFilter {
     @Setting(value = "gui.wagyourminimap.settings.mob_icon.filter.custom.mobs",
         options = "getMobOptions",
         setter = "setMobs")
+    @BrigadierOptionsOverride(value = EntitySummonArgument.class, getter = "getSummonableEntity")
     public String[] mobs = new String[0];
     private Predicate<LivingEntity> compiled = compileFilter();
 
