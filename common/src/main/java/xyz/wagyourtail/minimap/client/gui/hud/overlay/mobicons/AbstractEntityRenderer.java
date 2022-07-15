@@ -67,13 +67,11 @@ public abstract class AbstractEntityRenderer<T extends LivingEntity> {
                 float scale = maxSize / yH;
                 for (Part<T> part : parts) {
                     if (part instanceof TexturedPart<T> tp) {
-                        builder.end();
-                        BufferUploader.end(builder);
+                        BufferUploader.drawWithShader(builder.end());
                         if (tp.bindTex(entity)) {
                             builder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR_TEX);
                             tp.render(matrix, builder, fadeDiff, diff, 0, scale, tp.texWidth, tp.texHeight);
-                            builder.end();
-                            BufferUploader.end(builder);
+                            BufferUploader.drawWithShader(builder.end());
                         }
                         prevTexed = true;
                         continue;
@@ -89,13 +87,11 @@ public abstract class AbstractEntityRenderer<T extends LivingEntity> {
                 float scale = maxSize / xW;
                 for (Part<T> part : parts) {
                     if (part instanceof TexturedPart<T> tp) {
-                        builder.end();
-                        BufferUploader.end(builder);
+                        BufferUploader.drawWithShader(builder.end());
                         if (tp.bindTex(entity)) {
                             builder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR_TEX);
                             tp.render(matrix, builder, fadeDiff, 0, diff, scale, tp.texWidth, tp.texHeight);
-                            builder.end();
-                            BufferUploader.end(builder);
+                            BufferUploader.drawWithShader(builder.end());
                         }
                         prevTexed = true;
                         continue;
@@ -108,8 +104,7 @@ public abstract class AbstractEntityRenderer<T extends LivingEntity> {
                 }
             }
             if (!prevTexed) {
-                builder.end();
-                BufferUploader.end(builder);
+                BufferUploader.drawWithShader(builder.end());
             }
         }
 

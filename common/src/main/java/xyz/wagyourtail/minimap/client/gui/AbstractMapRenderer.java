@@ -3,7 +3,6 @@ package xyz.wagyourtail.minimap.client.gui;
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
-import com.mojang.datafixers.util.Pair;
 import com.mojang.math.Matrix4f;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
@@ -18,7 +17,6 @@ import xyz.wagyourtail.minimap.map.image.ImageStrategy;
 import xyz.wagyourtail.minimap.map.image.SurfaceBlockLightImageStrategy;
 import xyz.wagyourtail.minimap.map.image.VanillaMapImageStrategy;
 
-import java.nio.ByteBuffer;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -67,8 +65,7 @@ public abstract class AbstractMapRenderer {
         builder.vertex(matrix, x, y + height, 0).uv(startU, endV).endVertex();
         builder.vertex(matrix, x + width, y, 0).uv(endU, startV).endVertex();
         builder.vertex(matrix, x + width, y + height, 0).uv(startU, startV).endVertex();
-        builder.end();
-        BufferUploader.end(builder);
+        BufferUploader.drawWithShader(builder.end());
     }
 
     public static void drawTexCol(PoseStack matrixStack, float x, float y, float width, float height, float startU, float startV, float endU, float endV, int abgrTint) {
@@ -87,8 +84,7 @@ public abstract class AbstractMapRenderer {
         builder.vertex(matrix, x, y + height, 0).uv(startU, endV).color(r, g, b, a).endVertex();
         builder.vertex(matrix, x + width, y, 0).uv(endU, startV).color(r, g, b, a).endVertex();
         builder.vertex(matrix, x + width, y + height, 0).uv(endU, endV).color(r, g, b, a).endVertex();
-        builder.end();
-        BufferUploader.end(builder);
+        BufferUploader.drawWithShader(builder.end());
     }
 
     private static DynamicTexture getChunkTex(ChunkLocation chunk, ImageStrategy renderer) {
@@ -112,8 +108,7 @@ public abstract class AbstractMapRenderer {
         builder.vertex(matrix, x, y + height, 0).uv(startU, endV).endVertex();
         builder.vertex(matrix, x + width, y, 0).uv(endU, startV).endVertex();
         builder.vertex(matrix, x + width, y + height, 0).uv(endU, endV).endVertex();
-        builder.end();
-        BufferUploader.end(builder);
+        BufferUploader.drawWithShader(builder.end());
     }
 
     public void setRenderLayers(ImageStrategy... strategy) {
@@ -173,26 +168,12 @@ public abstract class AbstractMapRenderer {
         builder.vertex(matrix, x, y + height, 0).uv(startU, endV).endVertex();
         builder.vertex(matrix, x + width, y, 0).uv(endU, startV).endVertex();
         builder.vertex(matrix, x + width, y + height, 0).uv(endU, endV).endVertex();
-        builder.end();
-        Pair<BufferBuilder.DrawState, ByteBuffer> p = builder.popNextBuffer();
-        if (RenderSystem.isOnRenderThreadOrInit()) {
-            BufferBuilder.DrawState drawStatex = p.getFirst();
-            for (ImageStrategy layer : layers) {
-                if (bindLayer(chunk, layer, 0)) {
-                    ret = true;
-                    BufferUploaderAccessor.invoke_End(
-                        p.getSecond(),
-                        drawStatex.mode(),
-                        drawStatex.format(),
-                        drawStatex.vertexCount(),
-                        drawStatex.indexType(),
-                        drawStatex.indexCount(),
-                        drawStatex.sequentialIndex()
-                    );
-                }
+        VertexBuffer vertexBuffer = BufferUploaderAccessor.doUpload(builder.end());
+        for (ImageStrategy layer : layers) {
+            if (bindLayer(chunk, layer, 0)) {
+                ret = true;
+                vertexBuffer.drawWithShader(RenderSystem.getModelViewMatrix(), RenderSystem.getProjectionMatrix(), RenderSystem.getShader());
             }
-        } else {
-            throw new AssertionError("not implemented");
         }
         return ret;
     }
@@ -233,8 +214,7 @@ public abstract class AbstractMapRenderer {
         builder.vertex(matrix, x, y + height, 0).color(0, 0, 0, 1f).endVertex();
         builder.vertex(matrix, x + width, y, 0).color(0, 0, 0, 1f).endVertex();
         builder.vertex(matrix, x + width, y + height, 0).color(0, 0, 0, 1f).endVertex();
-        builder.end();
-        BufferUploader.end(builder);
+        BufferUploader.drawWithShader(builder.end());
         RenderSystem.enableTexture();
         RenderSystem.disableBlend();
     }

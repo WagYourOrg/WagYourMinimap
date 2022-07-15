@@ -10,8 +10,6 @@ import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.level.Level;
 import xyz.wagyourtail.config.gui.widgets.NamedEditBox;
 import xyz.wagyourtail.minimap.api.MinimapApi;
@@ -44,7 +42,7 @@ public class WaypointEditScreen extends Screen {
     protected boolean canceled = false;
 
     public WaypointEditScreen(Screen parent, Waypoint prev_point) {
-        super(new TranslatableComponent("gui.wagyourminimap.waypoint_edit"));
+        super(Component.translatable("gui.wagyourminimap.waypoint_edit"));
         this.parent = parent;
         this.prev_point = prev_point;
     }
@@ -149,7 +147,7 @@ public class WaypointEditScreen extends Screen {
             h,
             400,
             20,
-            new TranslatableComponent("gui.wagyourminimap.name")
+            Component.translatable("gui.wagyourminimap.name")
         ));
         name.setValue(prev_point.name);
 
@@ -159,20 +157,20 @@ public class WaypointEditScreen extends Screen {
             h + 25,
             60,
             20,
-            new TranslatableComponent("gui.wagyourminimap.coord_scale")
+            Component.translatable("gui.wagyourminimap.coord_scale")
         ));
         coordScale.setFilter(s -> s.matches("-?\\d*.\\d*"));
         coordScale.setValue(Double.toString(prev_point.coordScale));
 
-        posX = addRenderableWidget(new NamedEditBox(font, width / 2 - 134, h + 25, 60, 20, new TextComponent("x")));
+        posX = addRenderableWidget(new NamedEditBox(font, width / 2 - 134, h + 25, 60, 20, Component.literal("x")));
         posX.setFilter(s -> s.matches("-?\\d*"));
         posX.setValue(Integer.toString(prev_point.posX));
 
-        posY = addRenderableWidget(new NamedEditBox(font, width / 2 - 68, h + 25, 60, 20, new TextComponent("y")));
+        posY = addRenderableWidget(new NamedEditBox(font, width / 2 - 68, h + 25, 60, 20, Component.literal("y")));
         posY.setFilter(s -> s.matches("-?\\d*"));
         posY.setValue(Integer.toString(prev_point.posY));
 
-        posZ = addRenderableWidget(new NamedEditBox(font, width / 2 - 2, h + 25, 60, 20, new TextComponent("z")));
+        posZ = addRenderableWidget(new NamedEditBox(font, width / 2 - 2, h + 25, 60, 20, Component.literal("z")));
         posZ.setFilter(s -> s.matches("-?\\d*"));
         posZ.setValue(Integer.toString(prev_point.posZ));
 
@@ -182,7 +180,7 @@ public class WaypointEditScreen extends Screen {
             h + 25,
             136,
             20,
-            new TranslatableComponent("gui.wagyourminimap.color")
+            Component.translatable("gui.wagyourminimap.color")
         ));
         color.setFilter((s) -> s.matches("[\\da-fA-F]{0,6}"));
         color.setValue(
@@ -220,7 +218,7 @@ public class WaypointEditScreen extends Screen {
             h + gradientHeight + 50,
             400,
             20,
-            new TranslatableComponent("gui.wagyourminimap.groups")
+            Component.translatable("gui.wagyourminimap.groups")
         ));
         groups.setMaxLength(Integer.MAX_VALUE);
         groups.setValue(String.join(", ", prev_point.groups));
@@ -231,7 +229,7 @@ public class WaypointEditScreen extends Screen {
             h + gradientHeight + 75,
             400,
             20,
-            new TranslatableComponent("gui.wagyourminimap.levels")
+            Component.translatable("gui.wagyourminimap.levels")
         ));
         dims.setMaxLength(Integer.MAX_VALUE);
         dims.setValue(String.join(", ", prev_point.levels));
@@ -242,7 +240,7 @@ public class WaypointEditScreen extends Screen {
             h + gradientHeight + 100,
             400,
             20,
-            new TranslatableComponent("gui.wagyourminimap.extra")
+            Component.translatable("gui.wagyourminimap.extra")
         ));
         extra.setMaxLength(Integer.MAX_VALUE);
         extra.setValue(gson.toJson(prev_point.extra));
@@ -252,7 +250,7 @@ public class WaypointEditScreen extends Screen {
             h + gradientHeight + 125,
             95,
             20,
-            new TranslatableComponent("gui.wagyourminimap.cancel"),
+            Component.translatable("gui.wagyourminimap.cancel"),
             (btn) -> {
                 canceled = true;
                 this.onClose();
@@ -264,7 +262,7 @@ public class WaypointEditScreen extends Screen {
             h + gradientHeight + 125,
             95,
             20,
-            new TranslatableComponent("gui.wagyourminimap.save"),
+            Component.translatable("gui.wagyourminimap.save"),
             (btn) -> {
                 this.onClose();
             }
@@ -272,11 +270,11 @@ public class WaypointEditScreen extends Screen {
 
         sideText = new ArrayList<>();
         if (width > 600) {
-            sideText.add(new TranslatableComponent("gui.wagyourminimap.player_pos"));
-            sideText.add(new TextComponent(minecraft.cameraEntity.blockPosition().toShortString()));
-            sideText.add(new TextComponent(""));
-            sideText.add(new TranslatableComponent("gui.wagyourminimap.dimensions_list").append(": "));
-            realDims.stream().sorted().forEach(e -> sideText.add(new TextComponent(e)));
+            sideText.add(Component.translatable("gui.wagyourminimap.player_pos"));
+            sideText.add(Component.literal(minecraft.cameraEntity.blockPosition().toShortString()));
+            sideText.add(Component.literal(""));
+            sideText.add(Component.translatable("gui.wagyourminimap.dimensions_list").append(": "));
+            realDims.stream().sorted().forEach(e -> sideText.add(Component.literal(e)));
         }
 
 

@@ -6,9 +6,11 @@ import com.mojang.math.Matrix4f;
 import com.mojang.math.Vector3f;
 import dev.architectury.event.Event;
 import dev.architectury.event.EventFactory;
+import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
@@ -24,9 +26,9 @@ public class InGameWaypointRenderer {
     public static final double WARP_COMPENSATION_X_FACTOR = 10;
 
 
-    public static void onRender(PoseStack stack, float partialTicks, long finishTimeNano) {
+    public static void onRender(PoseStack stack, Camera camera) {
         stack.pushPose();
-        Vec3 center = mc.gameRenderer.getMainCamera().getPosition();
+        Vec3 center = camera.getPosition();
         boolean showBeam = MinimapClientApi.getInstance().getConfig().get(MinimapClientConfig.class).showWaypointBeam;
         for (Waypoint visibleWaypoint : MinimapClientApi.getInstance().getMapServer().waypoints.getVisibleWaypoints()) {
             //move center to waypoint
@@ -111,6 +113,7 @@ public class InGameWaypointRenderer {
 
     public static void renderWaypointBeam(PoseStack stack, Vec3 offset, float xRot, float yRot, Waypoint waypoint, double distance) {
         // face player
+
         stack.mulPose(Vector3f.YP.rotationDegrees(yRot));
         stack.mulPose(Vector3f.ZP.rotationDegrees(180));
 
@@ -122,6 +125,7 @@ public class InGameWaypointRenderer {
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
+        RenderSystem.disableTexture();
         BufferBuilder builder = Tesselator.getInstance().getBuilder();
         builder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
         float r = (waypoint.colR & 0xFF) / 255f;
@@ -135,12 +139,11 @@ public class InGameWaypointRenderer {
         builder.vertex(matrix, .5f, 2048, 0).color(r, g, b, 0.0f).endVertex();
         builder.vertex(matrix, .5f, -2048, 0).color(r, g, b, 0.0f).endVertex();
         builder.vertex(matrix, 0, -2048, 0).color(r, g, b, 0.75f).endVertex();
-        builder.end();
-        BufferUploader.end(builder);
+        BufferUploader.drawWithShader(builder.end());
     }
 
     public interface RenderLastEvent {
-        void onRenderLast(PoseStack stack, float partialTicks, long finishTimeNano);
+        void onRenderLast(PoseStack stack, Camera camera);
 
     }
 

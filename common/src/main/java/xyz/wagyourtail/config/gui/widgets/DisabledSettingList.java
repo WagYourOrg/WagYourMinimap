@@ -10,14 +10,12 @@ import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 
 public class DisabledSettingList<T> extends ObjectSelectionList<DisabledSettingList.DisabledSettingEntry<T>> {
 
-    private final Component title = new TranslatableComponent("gui.wagyourconfig.available");
+    private final Component title = Component.translatable("gui.wagyourconfig.available");
 
 
     public DisabledSettingList(Minecraft minecraft, int i, int j) {
@@ -33,7 +31,7 @@ public class DisabledSettingList<T> extends ObjectSelectionList<DisabledSettingL
 
     @Override
     protected void renderHeader(PoseStack poseStack, int x, int y, Tesselator tessellator) {
-        Component component = (new TextComponent("")).append(this.title).withStyle(
+        Component component = (Component.literal("")).append(this.title).withStyle(
             ChatFormatting.UNDERLINE,
             ChatFormatting.BOLD
         );
@@ -76,7 +74,7 @@ public class DisabledSettingList<T> extends ObjectSelectionList<DisabledSettingL
 
         @Override
         public Component getNarration() {
-            return new TranslatableComponent("narrator.select", name);
+            return Component.translatable("narrator.select", name);
         }
 
         @Override

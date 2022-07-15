@@ -7,9 +7,8 @@ import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import xyz.wagyourtail.config.ConfigManager;
 import xyz.wagyourtail.config.Or;
 import xyz.wagyourtail.config.field.Setting;
@@ -17,8 +16,10 @@ import xyz.wagyourtail.config.field.SettingField;
 import xyz.wagyourtail.config.field.SettingsContainer;
 import xyz.wagyourtail.config.field.SettingsContainerField;
 
+import java.awt.*;
 import java.lang.reflect.*;
 import java.util.*;
+import java.util.List;
 import java.util.function.BiFunction;
 
 @SuppressWarnings({"unchecked", "generic"})
@@ -130,16 +131,16 @@ public class SettingCommand<S extends CommandSource> {
             fieldArg.executes(ctx -> {
                 preExecute.run();
                 try {
-                    MutableComponent component = new TextComponent("Current value: ");
+                    MutableComponent component = Component.literal("Current value: ");
                     for (T thing : settingField.get()) {
                         if (thing.getClass().isAnnotationPresent(SettingsContainer.class)) {
-                            component.append(new TranslatableComponent(thing.getClass().getAnnotation(SettingsContainer.class).value()));
+                            component.append(Component.translatable(thing.getClass().getAnnotation(SettingsContainer.class).value()));
                         } else {
-                            component.append(new TextComponent(thing.toString()));
+                            component.append(Component.literal(thing.toString()));
                         }
                         component.append(", ");
                     }
-                    ctx.getSource().sendMessage(component, null);
+                    ctx.getSource().sendSystemMessage(component);
                 } catch (InvocationTargetException | IllegalAccessException e) {
                     throw new RuntimeException(e);
                 }
@@ -183,9 +184,9 @@ public class SettingCommand<S extends CommandSource> {
             preExecute.run();
             try {
                 if (settingField.setting.elementType().isAnnotationPresent(SettingsContainer.class)) {
-                    ctx.getSource().sendMessage(new TextComponent("Current Setting: ").append(new TranslatableComponent(settingField.setting.elementType().getAnnotation(SettingsContainer.class).value())), null);
+                    ctx.getSource().sendSystemMessage(Component.literal("Current Setting: ").append(Component.translatable(settingField.setting.elementType().getAnnotation(SettingsContainer.class).value())));
                 } else {
-                    ctx.getSource().sendMessage(new TextComponent("Current Setting: ").append(settingField.get().toString()), null);
+                    ctx.getSource().sendSystemMessage(Component.literal("Current Setting: ").append(settingField.get().toString()));
                 }
             } catch (InvocationTargetException | IllegalAccessException e) {
                 throw new RuntimeException(e);
@@ -241,7 +242,7 @@ public class SettingCommand<S extends CommandSource> {
                 } catch (InvocationTargetException | IllegalAccessException e) {
                     throw new RuntimeException(e);
                 }
-                ctx.getSource().sendMessage(new TextComponent("Set " + settingField.setting.value() + " to " + getter.apply(ctx, "value")), null);
+                ctx.getSource().sendSystemMessage(Component.literal("Set " + settingField.setting.value() + " to " + getter.apply(ctx, "value")));
                 return 1;
             });
             fieldArg.then(set);
@@ -255,7 +256,7 @@ public class SettingCommand<S extends CommandSource> {
                                 Optional<Object> obj = (Optional) options.stream().filter(e -> e.toString().equals(ctx.getArgument("value", String.class))).findFirst();
                                 try {
                                     ((SettingField) settingField).set(obj.get());
-                                    ((CommandSource) ctx.getSource()).sendMessage(new TextComponent("Set " + settingField.setting.value() + " to " + obj.get()), null);
+                                    ((CommandSource) ctx.getSource()).sendSystemMessage(Component.literal("Set " + settingField.setting.value() + " to " + obj.get()));
                                 } catch (InvocationTargetException | IllegalAccessException e) {
                                     throw new RuntimeException(e);
                                 }
@@ -283,9 +284,9 @@ public class SettingCommand<S extends CommandSource> {
                                          InstantiationException e) {
                                     throw new RuntimeException(e);
                                 }
-                                ctx.getSource().sendMessage(new TextComponent("Set " + settingField.setting.value() +
-                                    " to ").append(new TranslatableComponent(((Class<?>) option).getAnnotation(
-                                    SettingsContainer.class).value())), null);
+                                ctx.getSource().sendSystemMessage(Component.literal("Set " + settingField.setting.value() +
+                                    " to ").append(Component.translatable(((Class<?>) option).getAnnotation(
+                                    SettingsContainer.class).value())));
                                 return 1;
                             }));
                         } else {

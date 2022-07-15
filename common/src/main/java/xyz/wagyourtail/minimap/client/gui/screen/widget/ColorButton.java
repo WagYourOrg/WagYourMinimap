@@ -5,7 +5,6 @@ import com.mojang.blaze3d.vertex.*;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.util.Mth;
 
 import java.awt.*;
@@ -20,7 +19,7 @@ public class ColorButton extends AbstractWidget {
     private float h, s, v;
 
     public ColorButton(int i, int j, int k, int l, int currentColor, Consumer<Integer> colorSelected) {
-        super(i, j, k, l, new TextComponent(""));
+        super(i, j, k, l, net.minecraft.network.chat.Component.literal(""));
         this.colorSelected = colorSelected;
         setCurrentColor(currentColor);
     }

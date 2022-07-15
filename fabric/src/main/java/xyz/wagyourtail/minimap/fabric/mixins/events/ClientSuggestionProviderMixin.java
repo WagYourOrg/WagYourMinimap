@@ -1,6 +1,6 @@
 package xyz.wagyourtail.minimap.fabric.mixins.events;
 
-import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
+import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.client.multiplayer.ClientSuggestionProvider;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.network.chat.Component;
@@ -11,7 +11,7 @@ import java.util.UUID;
 @Mixin(ClientSuggestionProvider.class)
 public abstract class ClientSuggestionProviderMixin implements CommandSource, FabricClientCommandSource {
     @Override
-    public void sendMessage(Component component, UUID senderUUID) {
+    public void sendSystemMessage(Component component) {
         sendFeedback(component);
     }
 

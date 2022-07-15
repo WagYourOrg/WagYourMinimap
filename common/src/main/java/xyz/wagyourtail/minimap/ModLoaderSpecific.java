@@ -1,15 +1,14 @@
 package xyz.wagyourtail.minimap;
 
-import dev.architectury.injectables.annotations.ExpectPlatform;
+import java.util.ServiceLoader;
 
-public class ModLoaderSpecific {
+public interface ModLoaderSpecific {
+    ModLoaderSpecific INSTANCE =  ServiceLoader.load(ModLoaderSpecific.class).findFirst().orElseThrow(() -> new IllegalStateException("No implementation of ModLoaderSpecific found"));
 
     /**
-     * enables the stencil framebuffer
+     * enables the stencil buffer
+     *
      */
-    @ExpectPlatform
-    public static void checkEnableStencil() {
-        throw new AssertionError();
-    }
+    void checkEnableStencil();
 
 }

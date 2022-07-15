@@ -54,8 +54,7 @@ public class CircleMapBorderOverlay extends AbstractMinimapOverlay {
             current_u += dU;
         }
         builder.vertex(matrix, maxLength, 0, 0).uv(0, 0).endVertex();
-        builder.end();
-        BufferUploader.end(builder);
+        BufferUploader.drawWithShader(builder.end());
         RenderSystem.disableBlend();
     }
 

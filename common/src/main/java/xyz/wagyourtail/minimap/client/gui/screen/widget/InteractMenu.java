@@ -6,7 +6,6 @@ import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.gui.components.Widget;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.phys.Vec3;
 import xyz.wagyourtail.minimap.api.MinimapApi;
 import xyz.wagyourtail.minimap.api.client.MinimapClientEvents;
@@ -102,13 +101,13 @@ public class InteractMenu extends GuiComponent implements Widget {
     private List<InteractMenuButton> buttonsForPos(Vec3 pos) {
         List<InteractMenuButton> buttons = new ArrayList<>();
         buttons.add(new InteractMenuButton(
-            new TranslatableComponent("gui.wagyourminimap.create_waypoint"),
+            net.minecraft.network.chat.Component.translatable("gui.wagyourminimap.create_waypoint"),
             (btn) -> minecraft.setScreen(WaypointEditScreen.createNewFromPos(parent, new BlockPos(pos).above()))
         ));
 
         buttons.add(new InteractMenuButton(
-            new TranslatableComponent("gui.wagyourminimap.teleport_to"),
-            (btn) -> parent.sendMessage(MinimapApi.getInstance()
+            net.minecraft.network.chat.Component.translatable("gui.wagyourminimap.teleport_to"),
+            (btn) -> minecraft.player.chat(MinimapApi.getInstance()
                 .getConfig()
                 .get(CurrentServerConfig.class)
                 .getTpCommand()
@@ -123,7 +122,7 @@ public class InteractMenu extends GuiComponent implements Widget {
     private List<InteractMenuButton> buttonsForRegion(Vec3 start, Vec3 end) {
         List<InteractMenuButton> buttons = new ArrayList<>();
         buttons.add(new InteractMenuButton(
-                new TranslatableComponent("gui.wagyourminimap.delete_all_waypoints"),
+                net.minecraft.network.chat.Component.translatable("gui.wagyourminimap.delete_all_waypoints"),
                 (btn) -> {
                     for (Waypoint waypoint : waypoints) {
                         MinimapApi.getInstance().getMapServer().waypoints.removeWaypoint(waypoint);
@@ -137,13 +136,13 @@ public class InteractMenu extends GuiComponent implements Widget {
     private List<InteractMenuButton> buttonsForWaypoint(Waypoint point) {
         List<InteractMenuButton> buttons = new ArrayList<>();
         buttons.add(new InteractMenuButton(
-            new TranslatableComponent("gui.wagyourminimap.edit_waypoint"),
+            net.minecraft.network.chat.Component.translatable("gui.wagyourminimap.edit_waypoint"),
             (btn) -> minecraft.setScreen(new WaypointEditScreen(parent, point))
         ));
 
-        buttons.add(new InteractMenuButton(new TranslatableComponent("gui.wagyourminimap.teleport_to"), (btn) -> {
+        buttons.add(new InteractMenuButton(net.minecraft.network.chat.Component.translatable("gui.wagyourminimap.teleport_to"), (btn) -> {
             BlockPos pos = point.posForCoordScale(minecraft.level.dimensionType().coordinateScale());
-            parent.sendMessage(MinimapApi.getInstance()
+            minecraft.player.chat(MinimapApi.getInstance()
                 .getConfig()
                 .get(CurrentServerConfig.class)
                 .getTpCommand()
@@ -154,7 +153,7 @@ public class InteractMenu extends GuiComponent implements Widget {
         }));
 
         buttons.add(new InteractMenuButton(
-            new TranslatableComponent("gui.wagyourminimap.delete_waypoint"),
+            net.minecraft.network.chat.Component.translatable("gui.wagyourminimap.delete_waypoint"),
             (btn) -> MinimapApi.getInstance().getMapServer().waypoints.removeWaypoint(point)
         ));
         return buttons;

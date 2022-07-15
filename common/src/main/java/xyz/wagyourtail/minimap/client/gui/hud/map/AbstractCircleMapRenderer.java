@@ -58,8 +58,7 @@ public abstract class AbstractCircleMapRenderer extends AbstractMinimapRenderer 
             currentAngle -= dAngle;
         }
         builder.vertex(matrix, radius, 0, 0).color(0f, 0f, 0f, 1f).endVertex();
-        builder.end();
-        BufferUploader.end(builder);
+        BufferUploader.drawWithShader(builder.end());
         matrixStack.popPose();
     }
 

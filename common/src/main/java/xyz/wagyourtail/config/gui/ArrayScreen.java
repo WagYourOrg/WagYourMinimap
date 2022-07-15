@@ -4,8 +4,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import xyz.wagyourtail.config.ConfigManager;
 import xyz.wagyourtail.config.field.SettingField;
 import xyz.wagyourtail.config.field.SettingsContainer;
@@ -81,8 +79,8 @@ public class ArrayScreen<T, U> extends Screen implements EnabledSettingList.Entr
                     enabledEntries,
                     e,
                     e.getClass().isAnnotationPresent(SettingsContainer.class) ?
-                        new TranslatableComponent(e.getClass().getAnnotation(SettingsContainer.class).value()) :
-                        new TextComponent(e.toString())
+                        Component.translatable(e.getClass().getAnnotation(SettingsContainer.class).value()) :
+                        Component.literal(e.toString())
                 ))
                 .collect(Collectors.toList()));
         } catch (InvocationTargetException | IllegalAccessException e) {
@@ -115,7 +113,7 @@ public class ArrayScreen<T, U> extends Screen implements EnabledSettingList.Entr
                         this,
                         availableEntries,
                         (U) e,
-                        new TextComponent(e)
+                        Component.literal(e)
                     )).collect(Collectors.toList()));
                 } else {
                     NamedEditBox box = this.addRenderableWidget(new NamedEditBox(
@@ -124,14 +122,14 @@ public class ArrayScreen<T, U> extends Screen implements EnabledSettingList.Entr
                         this.height / 2 - 20,
                         200,
                         20,
-                        new TranslatableComponent("gui.wagyourconfig.addentry")
+                        Component.translatable("gui.wagyourconfig.addentry")
                     ));
                     this.addRenderableWidget(new Button(
                         this.width / 2 + 4,
                         this.height / 2 + 4,
                         200,
                         20,
-                        new TranslatableComponent("gui.wagyourconfig.submit"),
+                        Component.translatable("gui.wagyourconfig.submit"),
                         (b) -> {
                             if (!setting.setting.allowDuplicateOption() && this.enabledEntries.children()
                                 .stream()
@@ -143,7 +141,7 @@ public class ArrayScreen<T, U> extends Screen implements EnabledSettingList.Entr
                                 this,
                                 enabledEntries,
                                 box.getValue(),
-                                new TextComponent(box.getValue())
+                                Component.literal(box.getValue())
                             ));
                         }
                     ));
@@ -171,7 +169,7 @@ public class ArrayScreen<T, U> extends Screen implements EnabledSettingList.Entr
                         this,
                         availableEntries,
                         (U) e,
-                        new TranslatableComponent(e.getAnnotation(SettingsContainer.class).value())
+                        Component.translatable(e.getAnnotation(SettingsContainer.class).value())
                     )).collect(Collectors.toList()));
                 } else {
                     throw new RuntimeException("NON Options Object List not yet implemented");
@@ -186,7 +184,7 @@ public class ArrayScreen<T, U> extends Screen implements EnabledSettingList.Entr
             this.height - 30,
             200,
             20,
-            new TranslatableComponent("gui.wagyourconfig.done"),
+            Component.translatable("gui.wagyourconfig.done"),
             (btn) -> onClose()
         ));
     }
@@ -242,7 +240,7 @@ public class ArrayScreen<T, U> extends Screen implements EnabledSettingList.Entr
                             this,
                             availableEntries,
                             (U) option.option.getClass(),
-                            new TranslatableComponent(option.option.getClass()
+                            Component.translatable(option.option.getClass()
                                 .getAnnotation(SettingsContainer.class)
                                 .value())
                         ));
@@ -272,7 +270,7 @@ public class ArrayScreen<T, U> extends Screen implements EnabledSettingList.Entr
                     this,
                     enabledEntries,
                     (T) option.option,
-                    new TextComponent(option.option.toString())
+                    Component.literal(option.option.toString())
                 ));
             } else if (setting.fieldType.componentType().isEnum()) {
                 throw new RuntimeException("NON Object List not yet implemented");
@@ -284,7 +282,7 @@ public class ArrayScreen<T, U> extends Screen implements EnabledSettingList.Entr
                     this,
                     enabledEntries,
                     setting.construct((Class<T>) option.option),
-                    new TranslatableComponent(((Class<T>) option.option).getAnnotation(SettingsContainer.class)
+                    Component.translatable(((Class<T>) option.option).getAnnotation(SettingsContainer.class)
                         .value())
                 ));
             }

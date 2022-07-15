@@ -7,8 +7,6 @@ import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.util.Mth;
 import xyz.wagyourtail.config.ConfigManager;
 import xyz.wagyourtail.config.Or;
@@ -68,7 +66,7 @@ public class SettingScreen extends Screen {
             this.height - 30,
             100,
             20,
-            new TranslatableComponent("gui.wagyourconfig.back"),
+            Component.translatable("gui.wagyourconfig.back"),
             (btn) -> drawPage(currentPage.decrementAndGet())
         ));
 
@@ -77,7 +75,7 @@ public class SettingScreen extends Screen {
             this.height - 30,
             100,
             20,
-            new TranslatableComponent("gui.wagyourconfig.forward"),
+            Component.translatable("gui.wagyourconfig.forward"),
             (btn) -> drawPage(currentPage.incrementAndGet())
         ));
 
@@ -86,7 +84,7 @@ public class SettingScreen extends Screen {
             this.height - 30,
             200,
             20,
-            new TranslatableComponent("gui.wagyourconfig.done"),
+            Component.translatable("gui.wagyourconfig.done"),
             (btn) -> onClose()
         ));
 
@@ -143,11 +141,11 @@ public class SettingScreen extends Screen {
                     y,
                     width,
                     height,
-                    new TranslatableComponent(setting.u().type.getAnnotation(SettingsContainer.class).value()),
+                    Component.translatable(setting.u().type.getAnnotation(SettingsContainer.class).value()),
                     (btn) -> {
                         try {
                             assert minecraft != null;
-                            minecraft.setScreen(new SettingScreen(new TranslatableComponent(setting.u().type
+                            minecraft.setScreen(new SettingScreen(Component.translatable(setting.u().type
                                 .getAnnotation(SettingsContainer.class)
                                 .value()), this, config, setting.u().get()));
                         } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
@@ -169,7 +167,7 @@ public class SettingScreen extends Screen {
                     y,
                     width,
                     height,
-                    new TranslatableComponent(settingField.setting.value()),
+                    Component.translatable(settingField.setting.value()),
                     (boolean) settingField.get(),
                     true,
                     (bl) -> {
@@ -193,7 +191,7 @@ public class SettingScreen extends Screen {
                         y,
                         width,
                         height,
-                        new TranslatableComponent(settingField.setting.value()),
+                        Component.translatable(settingField.setting.value()),
                         ((Number) settingField.get()).doubleValue(),
                         settingField.intRange.from(),
                         settingField.intRange.to(),
@@ -213,7 +211,7 @@ public class SettingScreen extends Screen {
                         y,
                         width,
                         height,
-                        new TranslatableComponent(settingField.setting.value()),
+                        Component.translatable(settingField.setting.value()),
                         ((Number) settingField.get()).doubleValue(),
                         settingField.doubleRange.from(),
                         settingField.doubleRange.to(),
@@ -233,7 +231,7 @@ public class SettingScreen extends Screen {
                         y,
                         width,
                         height,
-                        new TranslatableComponent(settingField.setting.value())
+                        Component.translatable(settingField.setting.value())
                     );
                     ((EditBox) element).setResponder((val) -> {
                         if (settingField.fieldType.equals(int.class) ||
@@ -271,7 +269,7 @@ public class SettingScreen extends Screen {
                 //string
             } else if (settingField.fieldType.equals(String.class)) {
                 if (settingField.options() != null) {
-                    MutableComponent title = new TranslatableComponent(settingField.setting.value());
+                    MutableComponent title = Component.translatable(settingField.setting.value());
                     List<String> settings = (List<String>) settingField.options().stream().toList();
                     element = new Button(
                         x,
@@ -296,7 +294,7 @@ public class SettingScreen extends Screen {
                         y,
                         width,
                         height,
-                        new TranslatableComponent(settingField.setting.value())
+                        Component.translatable(settingField.setting.value())
                     );
                     ((EditBox) element).setValue((String) settingField.get());
                     ((EditBox) element).setResponder((val) -> {
@@ -310,7 +308,7 @@ public class SettingScreen extends Screen {
 
                 //enum
             } else if (settingField.fieldType.isEnum()) {
-                MutableComponent title = new TranslatableComponent(settingField.setting.value());
+                MutableComponent title = Component.translatable(settingField.setting.value());
                 List<?> settings = settingField.options().stream().toList();
                 element = new Button(
                     x,
@@ -336,10 +334,10 @@ public class SettingScreen extends Screen {
                     y,
                     width,
                     height,
-                    new TranslatableComponent(settingField.setting.value()),
+                    Component.translatable(settingField.setting.value()),
                     (btn) -> {
                         minecraft.setScreen(new ArrayScreen<>(
-                            new TranslatableComponent(settingField.setting.value()),
+                            Component.translatable(settingField.setting.value()),
                             this,
                             config,
                             (SettingField<Object[]>) settingField
@@ -355,7 +353,7 @@ public class SettingScreen extends Screen {
 
                 //object
             } else {
-                MutableComponent title = new TranslatableComponent(settingField.setting.value());
+                MutableComponent title = Component.translatable(settingField.setting.value());
                 List<Class<?>> settings = (List<Class<?>>) settingField.options().stream().toList();
                 element = new Button(
                     x,
@@ -364,7 +362,7 @@ public class SettingScreen extends Screen {
                     height,
                     title.copy()
                         .append(" ")
-                        .append(new TranslatableComponent(settingField.get()
+                        .append(Component.translatable(settingField.get()
                             .getClass()
                             .getAnnotation(SettingsContainer.class)
                             .value())),
@@ -375,7 +373,7 @@ public class SettingScreen extends Screen {
                             ) % settings.size())));
                             btn.setMessage(title.copy()
                                 .append(" ")
-                                .append(new TranslatableComponent(settingField.get()
+                                .append(Component.translatable(settingField.get()
                                     .getClass()
                                     .getAnnotation(SettingsContainer.class)
                                     .value())));
@@ -396,12 +394,11 @@ public class SettingScreen extends Screen {
                     y,
                     height,
                     height,
-                    new TextComponent("⚙"),
+                    Component.literal("⚙"),
                     (btn) -> {
                         try {
                             Object settingVal = settingField.get();
-                            minecraft.setScreen(new SettingScreen(new TranslatableComponent(
-                                settingVal.getClass()
+                            minecraft.setScreen(new SettingScreen(Component.translatable(settingVal.getClass()
                                     .getAnnotation(SettingsContainer.class)
                                     .value()), this, config, settingVal));
                         } catch (InvocationTargetException | IllegalAccessException | NoSuchMethodException e) {

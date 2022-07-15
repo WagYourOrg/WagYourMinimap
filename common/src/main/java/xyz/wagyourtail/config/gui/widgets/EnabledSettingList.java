@@ -11,8 +11,6 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import xyz.wagyourtail.config.ConfigManager;
@@ -26,7 +24,7 @@ import java.util.Arrays;
 
 public class EnabledSettingList<T> extends ObjectSelectionList<EnabledSettingList.EnabledSettingEntry<T>> {
 
-    private final Component title = new TranslatableComponent("gui.wagyourconfig.enabled");
+    private final Component title = Component.translatable("gui.wagyourconfig.enabled");
     private final ConfigManager config;
 
     public EnabledSettingList(Minecraft minecraft, int i, int j, ConfigManager config) {
@@ -43,7 +41,7 @@ public class EnabledSettingList<T> extends ObjectSelectionList<EnabledSettingLis
 
     @Override
     protected void renderHeader(PoseStack poseStack, int x, int y, Tesselator tessellator) {
-        Component component = (new TextComponent("")).append(this.title).withStyle(
+        Component component = (Component.literal("")).append(this.title).withStyle(
             ChatFormatting.UNDERLINE,
             ChatFormatting.BOLD
         );
@@ -101,7 +99,7 @@ public class EnabledSettingList<T> extends ObjectSelectionList<EnabledSettingLis
 
         @Override
         public Component getNarration() {
-            return new TranslatableComponent("narrator.select", name);
+            return Component.translatable("narrator.select", name);
         }
 
         @Override
@@ -188,7 +186,7 @@ public class EnabledSettingList<T> extends ObjectSelectionList<EnabledSettingLis
                 ((ArrayScreen<T, T>) parentScreen).applyValue();
                 try {
                     minecraft.setScreen(new SettingScreen(
-                        new TranslatableComponent(option.getClass()
+                        Component.translatable(option.getClass()
                             .getAnnotation(SettingsContainer.class)
                             .value()),
                         (Screen) parentScreen,

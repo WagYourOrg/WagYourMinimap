@@ -1,14 +1,17 @@
 package xyz.wagyourtail.minimap.forge;
 
+import com.mojang.authlib.minecraft.client.MinecraftClient;
 import com.mojang.brigadier.CommandDispatcher;
 import dev.architectury.platform.forge.EventBuses;
+import net.minecraft.client.Minecraft;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.client.ConfigGuiHandler;
+import net.minecraftforge.client.ConfigScreenHandler;
 import net.minecraftforge.client.event.RegisterClientCommandsEvent;
 import net.minecraftforge.client.event.RenderLevelLastEvent;
+import net.minecraftforge.client.event.RenderLevelStageEvent;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.world.BlockEvent;
-import net.minecraftforge.event.world.ChunkEvent;
+import net.minecraftforge.event.level.BlockEvent;
+import net.minecraftforge.event.level.ChunkEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
@@ -33,8 +36,8 @@ public class WagYourMinimapForge {
     public void onClientInit(FMLClientSetupEvent setup) {
         WagYourMinimapClient.init();
         ModLoadingContext.get().registerExtensionPoint(
-            ConfigGuiHandler.ConfigGuiFactory.class,
-            () -> new ConfigGuiHandler.ConfigGuiFactory((mc, parent) -> new SettingsScreen(parent))
+            ConfigScreenHandler.ConfigScreenFactory.class,
+            () -> new ConfigScreenHandler.ConfigScreenFactory((mc, parent) -> new SettingsScreen(parent))
         );
     }
 
@@ -44,21 +47,22 @@ public class WagYourMinimapForge {
 
     @SubscribeEvent
     public void onBlockUpdate(BlockEvent block) {
-        AbstractChunkDataUpdater.BLOCK_UPDATE.invoker().onBlockUpdate(block.getPos(), (Level) block.getWorld());
+        AbstractChunkDataUpdater.BLOCK_UPDATE.invoker().onBlockUpdate(block.getPos(), (Level) block.getLevel());
     }
 
     @SubscribeEvent
     public void onChunkLoad(ChunkEvent.Load load) {
-        AbstractChunkDataUpdater.CHUNK_LOAD.invoker().onLoadChunk(load.getChunk(), (Level) load.getWorld());
+        AbstractChunkDataUpdater.CHUNK_LOAD.invoker().onLoadChunk(load.getChunk(), (Level) load.getLevel());
     }
 
     @SubscribeEvent
     public void onRenderLast(RenderLevelLastEvent renderEvent) {
-        InGameWaypointRenderer.RENDER_LAST.invoker().onRenderLast(
-            renderEvent.getPoseStack(),
-            renderEvent.getPartialTick(),
-            renderEvent.getStartNanos()
-        );
+//        if (renderEvent.getStage() == RenderLevelStageEvent.Stage.AFTER_WEATHER) {
+            InGameWaypointRenderer.RENDER_LAST.invoker().onRenderLast(
+                renderEvent.getPoseStack(),
+                Minecraft.getInstance().gameRenderer.getMainCamera()
+            );
+//        }
     }
 
     @SubscribeEvent

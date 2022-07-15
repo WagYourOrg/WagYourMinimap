@@ -5,7 +5,6 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.util.Mth;
 import xyz.wagyourtail.config.ConfigManager;
 import xyz.wagyourtail.config.field.SettingsContainer;
@@ -54,7 +53,7 @@ public class MainSettingScreen extends Screen {
             this.height - 30,
             100,
             20,
-            new TranslatableComponent("gui.wagyourconfig.back"),
+            Component.translatable("gui.wagyourconfig.back"),
             (btn) -> {
                 drawPage(currentPage.decrementAndGet());
             }
@@ -65,7 +64,7 @@ public class MainSettingScreen extends Screen {
             this.height - 30,
             100,
             20,
-            new TranslatableComponent("gui.wagyourconfig.forward"),
+            Component.translatable("gui.wagyourconfig.forward"),
             (btn) -> {
                 drawPage(currentPage.incrementAndGet());
             }
@@ -77,7 +76,7 @@ public class MainSettingScreen extends Screen {
             this.height - 30,
             200,
             20,
-            new TranslatableComponent("gui.wagyourconfig.done"),
+            Component.translatable("gui.wagyourconfig.done"),
             (btn) -> onClose()
         ));
 
@@ -99,7 +98,7 @@ public class MainSettingScreen extends Screen {
         int start = Mth.clamp(page, 0, pages) * buttonsPerPage;
         for (int i = start; i < start + buttonsPerPage && i < configs.length; ++i) {
             int finalI = i;
-            MutableComponent title = new TranslatableComponent(config.get(configs[i])
+            MutableComponent title = Component.translatable(config.get(configs[i])
                 .getClass()
                 .getAnnotation(SettingsContainer.class)
                 .value());

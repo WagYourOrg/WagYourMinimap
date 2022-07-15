@@ -5,7 +5,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Vector3f;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL11;
@@ -150,7 +149,7 @@ public abstract class AbstractMinimapRenderer extends AbstractMapRenderer {
             matrixStack,
             minimapSize,
             bottom,
-            new TextComponent(String.format("%.2f %.2f %.2f", player_pos.x, player_pos.y, player_pos.z))
+            Component.literal(String.format("%.2f %.2f %.2f", player_pos.x, player_pos.y, player_pos.z))
         );
         matrixStack.popPose();
     }
@@ -181,7 +180,7 @@ public abstract class AbstractMinimapRenderer extends AbstractMapRenderer {
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 
         if (hasStencil) {
-            ModLoaderSpecific.checkEnableStencil();
+            ModLoaderSpecific.INSTANCE.checkEnableStencil();
 
             GL11.glEnable(GL11.GL_STENCIL_TEST);
             RenderSystem.colorMask(false, false, false, false);

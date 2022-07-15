@@ -7,12 +7,13 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import org.jetbrains.annotations.Nullable;
 import xyz.wagyourtail.minimap.api.MinimapApi;
 import xyz.wagyourtail.minimap.client.gui.AbstractMapRenderer;
 import xyz.wagyourtail.minimap.client.gui.screen.WaypointListScreen;
 import xyz.wagyourtail.minimap.waypoint.Waypoint;
+
+import java.awt.*;
 
 public class WaypointList extends ObjectSelectionList<WaypointList.WaypointListEntry> {
     private final WaypointListScreen screen;
@@ -56,7 +57,7 @@ public class WaypointList extends ObjectSelectionList<WaypointList.WaypointListE
             this.screen = screen;
             this.point = point;
             this.mc = Minecraft.getInstance();
-            this.name = new TextComponent(point.name).withStyle(point.enabled ?
+            this.name = Component.literal(point.name).withStyle(point.enabled ?
                 new ChatFormatting[] {ChatFormatting.WHITE} :
                 new ChatFormatting[] {
                     ChatFormatting.GRAY, ChatFormatting.ITALIC
@@ -65,7 +66,7 @@ public class WaypointList extends ObjectSelectionList<WaypointList.WaypointListE
 
         @Override
         public Component getNarration() {
-            return TextComponent.EMPTY;
+            return Component.empty();
         }
 
         @Override
@@ -78,7 +79,7 @@ public class WaypointList extends ObjectSelectionList<WaypointList.WaypointListE
             Waypoint new_point = point.copyWithChangeEnabled(!point.enabled);
             MinimapApi.getInstance().getMapServer().waypoints.updateWaypoint(point, new_point);
             this.point = new_point;
-            this.name = new TextComponent(point.name).withStyle(point.enabled ?
+            this.name = Component.literal(point.name).withStyle(point.enabled ?
                 new ChatFormatting[] {ChatFormatting.WHITE} :
                 new ChatFormatting[] {
                     ChatFormatting.GRAY, ChatFormatting.ITALIC
