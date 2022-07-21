@@ -3,8 +3,6 @@ package xyz.wagyourtail.minimap.forge;
 import net.minecraft.client.Minecraft;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.network.chat.Component;
-import net.minecraftforge.client.ClientCommandSourceStack;
-import net.minecraftforge.common.extensions.IForgeCommandSourceStack;
 import xyz.wagyourtail.minimap.ModLoaderSpecific;
 
 public class ModLoaderSpecificImpl implements ModLoaderSpecific {
@@ -15,7 +13,7 @@ public class ModLoaderSpecificImpl implements ModLoaderSpecific {
 
     @Override
     public void clientCommandContextLog(SharedSuggestionProvider p, Component s) {
-        ((ClientCommandSourceStack) p).sendSuccess(s, true);
+        throw new UnsupportedOperationException("I haven't implemented client commands on forge < 1.18");
     }
 
 }

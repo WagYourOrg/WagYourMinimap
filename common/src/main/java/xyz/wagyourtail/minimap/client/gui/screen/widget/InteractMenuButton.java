@@ -41,7 +41,7 @@ public class InteractMenuButton extends AbstractButton {
             this.y,
             this.x + this.width,
             this.y + this.height,
-            this.isHovered ? hoverColor : color
+            this.isHovered() ? hoverColor : color
         );
         int j = this.active ? 16777215 : 10526880;
         drawCenteredString(

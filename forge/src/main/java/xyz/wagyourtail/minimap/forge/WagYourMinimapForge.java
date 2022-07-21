@@ -4,9 +4,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import dev.architectury.platform.forge.EventBuses;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.client.ConfigGuiHandler;
-import net.minecraftforge.client.event.RegisterClientCommandsEvent;
-import net.minecraftforge.client.event.RenderLevelLastEvent;
+import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.event.world.ChunkEvent;
@@ -16,6 +14,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLDedicatedServerSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fmlclient.ConfigGuiHandler;
 import xyz.wagyourtail.minimap.WagYourMinimap;
 import xyz.wagyourtail.minimap.chunkdata.updater.AbstractChunkDataUpdater;
 import xyz.wagyourtail.minimap.client.WagYourMinimapClient;
@@ -55,19 +54,10 @@ public class WagYourMinimapForge {
     }
 
     @SubscribeEvent
-    @SuppressWarnings("removal")
-    public void onRenderLast(RenderLevelLastEvent renderEvent) {
-//        if (renderEvent.getStage() == RenderLevelStageEvent.Stage.AFTER_WEATHER) {
-            InGameWaypointRenderer.RENDER_LAST.invoker().onRenderLast(
-                renderEvent.getPoseStack(),
+    public void onRenderLast(RenderWorldLastEvent renderEvent) {
+        InGameWaypointRenderer.RENDER_LAST.invoker().onRenderLast(
+            renderEvent.getMatrixStack(),
                 Minecraft.getInstance().gameRenderer.getMainCamera()
             );
-//        }
     }
-
-    @SubscribeEvent
-    public void onClientCommand(RegisterClientCommandsEvent clientCommandsEvent) {
-        WagYourMinimapClient.CLIENT_COMMAND_REGISTRATION_EVENT.invoker().register(clientCommandsEvent.getDispatcher());
-    }
-
 }

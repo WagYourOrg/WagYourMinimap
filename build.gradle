@@ -32,8 +32,8 @@ allprojects {
     version = rootProject.mod_version + "+" + rootProject.minecraft_version
     group = rootProject.maven_group
 
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
+    sourceCompatibility = JavaVersion.VERSION_16
+    targetCompatibility = JavaVersion.VERSION_16
 
     repositories {
         maven {
@@ -45,7 +45,7 @@ allprojects {
 
     tasks.withType(JavaCompile) {
         options.encoding = "UTF-8"
-        options.release = 17
+        options.release = 16
     }
 
     java {

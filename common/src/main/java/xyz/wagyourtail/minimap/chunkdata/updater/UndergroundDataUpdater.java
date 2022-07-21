@@ -106,7 +106,7 @@ public class UndergroundDataUpdater extends AbstractChunkDataUpdater<Underground
                         blockid[i] = data.getOrRegisterBlockState(state);
                         heightmap[i] = y;
                         biomeid[i] = data.getOrRegisterBiome(biomeRegistry.getKey(
-                            chunk.getNoiseBiome(x >> 2, y >> 2, z >> 2).value()
+                            chunk.getBiomes().getNoiseBiome(x >> 2, y >> 2, z >> 2)
                         ));
                         lightmap[i] = (byte) light.getLightValue(blockPos.setY(y + 1));
                         break;

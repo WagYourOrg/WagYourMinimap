@@ -36,7 +36,7 @@ public class MenuButton extends AbstractButton {
     @Override
     public void renderButton(PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        RenderSystem.setShaderTexture(0, isHovered ? button_base_active : button_base);
+        RenderSystem.setShaderTexture(0, isHovered() ? button_base_active : button_base);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
