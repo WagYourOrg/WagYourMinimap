@@ -5,13 +5,11 @@ import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
-import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import xyz.wagyourtail.config.ConfigManager;
 import xyz.wagyourtail.config.Or;
-import xyz.wagyourtail.config.field.Setting;
 import xyz.wagyourtail.config.field.SettingField;
 import xyz.wagyourtail.config.field.SettingsContainer;
 import xyz.wagyourtail.config.field.SettingsContainerField;
@@ -257,7 +255,7 @@ public class SettingCommand<S extends SharedSuggestionProvider> {
                                 Optional<Object> obj = (Optional) options.stream().filter(e -> e.toString().equals(ctx.getArgument("value", String.class))).findFirst();
                                 try {
                                     ((SettingField) settingField).set(obj.get());
-                                    ((CommandSource) ctx.getSource()).sendSystemMessage(Component.literal("Set " + settingField.setting.value() + " to " + obj.get()));
+                                    ModLoaderSpecific.INSTANCE.clientCommandContextLog((SharedSuggestionProvider) ctx.getSource(), Component.literal("Set " + settingField.setting.value() + " to " + obj.get()));
                                 } catch (InvocationTargetException | IllegalAccessException e) {
                                     throw new RuntimeException(e);
                                 }
