@@ -77,15 +77,12 @@ jobs:
         with:
           modrinth-id: v9tYpGRa
           modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
-          modrinth-dependencies: |
+          dependencies: |
             architectury-api | depends | *
             fabric-api | depends | *
 
           curseforge-id: 551897
           curseforge-token: ${{ secrets.CF_API_KEY }}
-          curseforge-dependencies: |
-            architectury-api | depends | *
-            fabric-api | depends | *
 
           name: ${{ steps.fabric_release.outputs.result }}
           version: ${{ steps.version_num.outputs.result }}-fabric
@@ -106,13 +103,11 @@ jobs:
         with:
           modrinth-id: v9tYpGRa
           modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
-          modrinth-dependencies: |
+          dependencies: |
             architectury-api | depends | *
 
           curseforge-id: 551897
           curseforge-token: ${{ secrets.CF_API_KEY }}
-          curseforge-dependencies: |
-            architectury-api | depends | *
 
           name: ${{ steps.forge_release.outputs.result }}
           version: ${{ steps.version_num.outputs.result }}-forge
