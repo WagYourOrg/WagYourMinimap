@@ -8,6 +8,7 @@ import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import xyz.wagyourtail.minimap.WagYourMinimap;
 import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
@@ -48,7 +49,7 @@ public class MapScreen extends Screen {
     public InteractMenu interact;
 
     public MapScreen() {
-        super(net.minecraft.network.chat.Component.translatable("gui.wagyourminimap.title"));
+        super(new TranslatableComponent("gui.wagyourminimap.title"));
     }
 
     private long clickStartTime = 0;
@@ -201,12 +202,12 @@ public class MapScreen extends Screen {
 
         List<MenuButton> buttonList = new ArrayList<>();
 
-        buttonList.add(new MenuButton(net.minecraft.network.chat.Component.translatable("gui.wagyourminimap.settings"), settings_tex, (btn) -> {
+        buttonList.add(new MenuButton(new TranslatableComponent("gui.wagyourminimap.settings"), settings_tex, (btn) -> {
             minecraft.setScreen(new SettingsScreen(this));
         }));
 
         buttonList.add(new MenuButton(
-            net.minecraft.network.chat.Component.translatable("gui.wagyourminimap.waypoints"),
+            new TranslatableComponent("gui.wagyourminimap.waypoints"),
             waypoint_tex,
             (btn) -> {
                 minecraft.setScreen(new WaypointListScreen(this));
@@ -239,7 +240,8 @@ public class MapScreen extends Screen {
         bufferBuilder.vertex(matrix, (float) (x1 + w), (float) (y1 + h), 0f).uv(maxU, maxV).endVertex();
         bufferBuilder.vertex(matrix, (float) (x1 + w), (float) y1, 0f).uv(maxU, minV).endVertex();
         bufferBuilder.vertex(matrix, (float) x1, (float) y1, 0f).uv(minU, minV).endVertex();
-        BufferUploader.drawWithShader(bufferBuilder.end());
+        bufferBuilder.end();
+        BufferUploader.end(bufferBuilder);
     }
 
 }

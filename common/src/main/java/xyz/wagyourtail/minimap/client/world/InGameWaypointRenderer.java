@@ -10,7 +10,6 @@ import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
@@ -122,7 +121,6 @@ public class InGameWaypointRenderer {
 
     public static void renderWaypointBeam(PoseStack stack, Vec3 offset, float xRot, float yRot, Waypoint waypoint, double distance) {
         // face player
-
         stack.mulPose(Vector3f.YP.rotationDegrees(yRot));
         stack.mulPose(Vector3f.ZP.rotationDegrees(180));
 
@@ -134,7 +132,6 @@ public class InGameWaypointRenderer {
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
-        RenderSystem.disableTexture();
         BufferBuilder builder = Tesselator.getInstance().getBuilder();
         builder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
         float r = (waypoint.colR & 0xFF) / 255f;
@@ -148,7 +145,8 @@ public class InGameWaypointRenderer {
         builder.vertex(matrix, .5f, 2048, 0).color(r, g, b, 0.0f).endVertex();
         builder.vertex(matrix, .5f, -2048, 0).color(r, g, b, 0.0f).endVertex();
         builder.vertex(matrix, 0, -2048, 0).color(r, g, b, 0.75f).endVertex();
-        BufferUploader.drawWithShader(builder.end());
+        builder.end();
+        BufferUploader.end(builder);
     }
 
     public interface RenderLastEvent {

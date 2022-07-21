@@ -77,7 +77,8 @@ public class ScaleOverlay extends AbstractFullscreenOverlay {
         bufferBuilder.vertex(matrix, maxX, maxY, 0.0F).color(g, h, j, f).endVertex();
         bufferBuilder.vertex(matrix, maxX, minY, 0.0F).color(g, h, j, f).endVertex();
         bufferBuilder.vertex(matrix, minX, minY, 0.0F).color(g, h, j, f).endVertex();
-        BufferUploader.drawWithShader(bufferBuilder.end());
+        bufferBuilder.end();
+        BufferUploader.end(bufferBuilder);
         RenderSystem.enableTexture();
         RenderSystem.disableBlend();
     }

@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.TranslatableComponent;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 import xyz.wagyourtail.minimap.api.MinimapApi;
@@ -22,7 +23,7 @@ public class WaypointListScreen extends Screen {
     private WaypointList waypointListWidget;
 
     protected WaypointListScreen(Screen parent) {
-        super(net.minecraft.network.chat.Component.translatable("gui.wagyourminimap.waypoints"));
+        super(new TranslatableComponent("gui.wagyourminimap.waypoints"));
         this.parent = parent;
     }
 
@@ -56,7 +57,7 @@ public class WaypointListScreen extends Screen {
             0,
             0,
             20,
-            net.minecraft.network.chat.Component.translatable("gui.wagyourminimap.waypoints.add"),
+            new TranslatableComponent("gui.wagyourminimap.waypoints.add"),
             (button) -> {
                 assert minecraft.player != null;
                 minecraft.setScreen(WaypointEditScreen.createNewFromPos(
@@ -64,9 +65,9 @@ public class WaypointListScreen extends Screen {
                     new BlockPos(minecraft.player.getPosition(0)).above()
                 ));
             }
-        ), new Button(0, 0, 0, 20, net.minecraft.network.chat.Component.translatable("gui.wagyourminimap.waypoints.reload"), (button) -> {
+        ), new Button(0, 0, 0, 20, new TranslatableComponent("gui.wagyourminimap.waypoints.reload"), (button) -> {
             refreshEntries();
-        }), new Button(0, 0, 0, 20, net.minecraft.network.chat.Component.translatable("gui.wagyourminimap.close"), (button) -> {
+        }), new Button(0, 0, 0, 20, new TranslatableComponent("gui.wagyourminimap.close"), (button) -> {
             onClose();
         })));
 
@@ -77,7 +78,7 @@ public class WaypointListScreen extends Screen {
                 0,
                 0,
                 20,
-                net.minecraft.network.chat.Component.translatable("gui.wagyourminimap.waypoints.edit"),
+                new TranslatableComponent("gui.wagyourminimap.waypoints.edit"),
                 (button) -> {
                     WaypointList.WaypointListEntry selected = getSelected();
                     if (selected != null) {
@@ -86,20 +87,20 @@ public class WaypointListScreen extends Screen {
                     }
                 }
             ),
-            new Button(0, 0, 0, 20, net.minecraft.network.chat.Component.translatable("gui.wagyourminimap.waypoints.delete"), (button) -> {
+            new Button(0, 0, 0, 20, new TranslatableComponent("gui.wagyourminimap.waypoints.delete"), (button) -> {
                 WaypointList.WaypointListEntry selected = getSelected();
                 if (selected != null) {
                     MinimapApi.getInstance().getMapServer().waypoints.removeWaypoint(selected.point);
                     refreshEntries();
                 }
             }),
-            new Button(0, 0, 0, 20, net.minecraft.network.chat.Component.translatable("gui.wagyourminimap.waypoints.enable"), (button) -> {
+            new Button(0, 0, 0, 20, new TranslatableComponent("gui.wagyourminimap.waypoints.enable"), (button) -> {
                 WaypointList.WaypointListEntry selected = getSelected();
                 if (selected != null) {
                     selected.toggleEnabled();
                 }
             }),
-            new Button(0, 0, 0, 20, net.minecraft.network.chat.Component.translatable("gui.wagyourminimap.waypoints.teleport"), (button) -> {
+            new Button(0, 0, 0, 20, new TranslatableComponent("gui.wagyourminimap.waypoints.teleport"), (button) -> {
                 WaypointList.WaypointListEntry selected = getSelected();
                 if (selected != null) {
                     assert minecraft != null;

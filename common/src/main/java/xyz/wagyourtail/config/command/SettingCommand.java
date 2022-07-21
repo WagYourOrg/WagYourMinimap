@@ -8,6 +8,8 @@ import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import xyz.wagyourtail.config.ConfigManager;
 import xyz.wagyourtail.config.Or;
 import xyz.wagyourtail.config.field.SettingField;
@@ -15,10 +17,8 @@ import xyz.wagyourtail.config.field.SettingsContainer;
 import xyz.wagyourtail.config.field.SettingsContainerField;
 import xyz.wagyourtail.minimap.ModLoaderSpecific;
 
-import java.awt.*;
 import java.lang.reflect.*;
 import java.util.*;
-import java.util.List;
 import java.util.function.BiFunction;
 
 @SuppressWarnings({"unchecked", "generic"})
@@ -137,12 +137,12 @@ public class SettingCommand<S extends SharedSuggestionProvider> {
             fieldArg.executes(ctx -> {
                 preExecute.run();
                 try {
-                    MutableComponent component = Component.literal("Current value: ");
+                    MutableComponent component = new TextComponent("Current value: ");
                     for (T thing : settingField.get()) {
                         if (thing.getClass().isAnnotationPresent(SettingsContainer.class)) {
-                            component.append(Component.translatable(thing.getClass().getAnnotation(SettingsContainer.class).value()));
+                            component.append(new TranslatableComponent(thing.getClass().getAnnotation(SettingsContainer.class).value()));
                         } else {
-                            component.append(Component.literal(thing.toString()));
+                            component.append(new TextComponent(thing.toString()));
                         }
                         component.append(", ");
                     }
@@ -190,9 +190,9 @@ public class SettingCommand<S extends SharedSuggestionProvider> {
             preExecute.run();
             try {
                 if (settingField.setting.elementType().isAnnotationPresent(SettingsContainer.class)) {
-                    ModLoaderSpecific.INSTANCE.clientCommandContextLog(ctx.getSource(), Component.literal("Current Setting: ").append(Component.translatable(settingField.setting.elementType().getAnnotation(SettingsContainer.class).value())));
+                    ModLoaderSpecific.INSTANCE.clientCommandContextLog(ctx.getSource(), new TextComponent("Current Setting: ").append(new TranslatableComponent(settingField.setting.elementType().getAnnotation(SettingsContainer.class).value())));
                 } else {
-                    ModLoaderSpecific.INSTANCE.clientCommandContextLog(ctx.getSource(), Component.literal("Current Setting: ").append(settingField.get().toString()));
+                    ModLoaderSpecific.INSTANCE.clientCommandContextLog(ctx.getSource(), new TextComponent("Current Setting: ").append(settingField.get().toString()));
                 }
             } catch (InvocationTargetException | IllegalAccessException e) {
                 throw new RuntimeException(e);
@@ -248,7 +248,7 @@ public class SettingCommand<S extends SharedSuggestionProvider> {
                 } catch (InvocationTargetException | IllegalAccessException e) {
                     throw new RuntimeException(e);
                 }
-                ModLoaderSpecific.INSTANCE.clientCommandContextLog(ctx.getSource(), Component.literal("Set " + settingField.setting.value() + " to " + getter.apply(ctx, "value")));
+                ModLoaderSpecific.INSTANCE.clientCommandContextLog(ctx.getSource(), new TextComponent("Set " + settingField.setting.value() + " to " + getter.apply(ctx, "value")));
                 return 1;
             });
             fieldArg.then(set);
@@ -262,7 +262,7 @@ public class SettingCommand<S extends SharedSuggestionProvider> {
                                 Optional<Object> obj = (Optional) options.stream().filter(e -> e.toString().equals(ctx.getArgument("value", String.class))).findFirst();
                                 try {
                                     ((SettingField) settingField).set(obj.get());
-                                    ModLoaderSpecific.INSTANCE.clientCommandContextLog((SharedSuggestionProvider) ctx.getSource(), Component.literal("Set " + settingField.setting.value() + " to " + obj.get()));
+                                    ModLoaderSpecific.INSTANCE.clientCommandContextLog((SharedSuggestionProvider) ctx.getSource(), new TextComponent("Set " + settingField.setting.value() + " to " + obj.get()));
                                 } catch (InvocationTargetException | IllegalAccessException e) {
                                     throw new RuntimeException(e);
                                 }
@@ -290,8 +290,8 @@ public class SettingCommand<S extends SharedSuggestionProvider> {
                                          InstantiationException e) {
                                     throw new RuntimeException(e);
                                 }
-                                ModLoaderSpecific.INSTANCE.clientCommandContextLog(ctx.getSource(), Component.literal("Set " + settingField.setting.value() +
-                                    " to ").append(Component.translatable(((Class<?>) option).getAnnotation(
+                                ModLoaderSpecific.INSTANCE.clientCommandContextLog(ctx.getSource(), new TextComponent("Set " + settingField.setting.value() +
+                                    " to ").append(new TranslatableComponent(((Class<?>) option).getAnnotation(
                                     SettingsContainer.class).value())));
                                 return 1;
                             }));

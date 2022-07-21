@@ -5,6 +5,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Vector3f;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL11;
@@ -149,7 +150,7 @@ public abstract class AbstractMinimapRenderer extends AbstractMapRenderer {
             matrixStack,
             minimapSize,
             bottom,
-            Component.literal(String.format("%.2f %.2f %.2f", player_pos.x, player_pos.y, player_pos.z))
+            new TextComponent(String.format("%.2f %.2f %.2f", player_pos.x, player_pos.y, player_pos.z))
         );
         matrixStack.popPose();
     }

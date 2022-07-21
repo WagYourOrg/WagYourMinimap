@@ -2,7 +2,7 @@ package xyz.wagyourtail.minimap.fabric;
 
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.DedicatedServerModInitializer;
-import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
+import net.fabricmc.fabric.api.client.command.v1.ClientCommandManager;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientChunkEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import xyz.wagyourtail.minimap.chunkdata.updater.AbstractChunkDataUpdater;
@@ -18,7 +18,7 @@ public class WagYourMinimapFabric implements ClientModInitializer, DedicatedServ
             .onLoadChunk(chunk, level));
         WorldRenderEvents.END.register((ctx) -> InGameWaypointRenderer.RENDER_LAST.invoker()
             .onRenderLast(ctx.matrixStack(), ctx.camera()));
-        ClientCommandRegistrationCallback.EVENT.register((d, a) -> WagYourMinimapClient.CLIENT_COMMAND_REGISTRATION_EVENT.invoker().register(d));
+        WagYourMinimapClient.CLIENT_COMMAND_REGISTRATION_EVENT.invoker().register(ClientCommandManager.DISPATCHER);
     }
 
     @Override

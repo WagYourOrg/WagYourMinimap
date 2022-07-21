@@ -35,7 +35,7 @@ dependencies {
     shadowCommon(project(path: ":common")) { transitive false }
 
 
-    modImplementation "com.terraformersmc:modmenu:4.0.5"
+    modImplementation "com.terraformersmc:modmenu:2.0.2"
 }
 
 processResources {

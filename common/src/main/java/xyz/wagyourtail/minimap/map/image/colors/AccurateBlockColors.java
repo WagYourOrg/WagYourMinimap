@@ -5,7 +5,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
@@ -13,7 +12,6 @@ import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class AccurateBlockColors extends BlockColors {
@@ -62,8 +60,7 @@ public abstract class AccurateBlockColors extends BlockColors {
                     blockLocation.getNamespace(),
                     "textures/block/" + blockLocation.getPath() + "_top.png"
                 );
-                Optional<Resource> top =  minecraft.getResourceManager().getResource(imageLocation);
-                try (InputStream stream =top.orElseThrow(IOException::new).open()) {
+                try (InputStream stream = minecraft.getResourceManager().getResource(imageLocation).getInputStream()) {
                     image = NativeImage.read(stream);
                 } catch (IOException ignored) {
 
@@ -75,7 +72,7 @@ public abstract class AccurateBlockColors extends BlockColors {
                     try (
                         InputStream stream = minecraft.getResourceManager()
                             .getResource(imageLocation)
-                            .orElseThrow(IOException::new).open()
+                            .getInputStream()
                     ) {
                         image = NativeImage.read(stream);
                     } catch (IOException ignored2) {

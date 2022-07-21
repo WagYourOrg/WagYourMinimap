@@ -2,7 +2,6 @@ package xyz.wagyourtail.minimap.client;
 
 import com.google.gson.JsonObject;
 import com.mojang.blaze3d.platform.InputConstants;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import dev.architectury.event.Event;
@@ -13,6 +12,7 @@ import dev.architectury.event.events.client.ClientTickEvent;
 import dev.architectury.registry.client.keymappings.KeyMappingRegistry;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.commands.CommandSource;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.core.BlockPos;
@@ -151,12 +151,6 @@ public class WagYourMinimapClient extends WagYourMinimap {
             }
         });
         InGameWaypointRenderer.RENDER_LAST.register((stack, camera) -> {
-
-            RenderSystem.enableBlend();
-            RenderSystem.enableTexture();
-            RenderSystem.defaultBlendFunc();
-            RenderSystem.enableTexture();
-            RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
             try {
                 if (MinimapApi.getInstance().getConfig().get(MinimapClientConfig.class).showWaypoints) {
                     InGameWaypointRenderer.onRender(stack, camera);
