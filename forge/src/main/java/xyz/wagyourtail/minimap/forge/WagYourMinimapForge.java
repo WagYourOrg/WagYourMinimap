@@ -41,6 +41,7 @@ public class WagYourMinimapForge {
         );
     }
 
+    @SubscribeEvent
     public void onServerInit(FMLDedicatedServerSetupEvent setup) {
         WagYourMinimapServer.init();
     }
