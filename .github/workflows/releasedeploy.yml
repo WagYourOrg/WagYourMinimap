@@ -4,16 +4,19 @@ on:
       branch:
         required: true
         type: string
-      cf_data_fabric:
-        required: false
+      game_vers:
+        required: true
         type: string
-      cf_data_forge:
-        required: false
+      java_vers:
+        required: true
+        type: string
+      GITHUB_REF:
+        required: true
         type: string
     secrets:
       CF_API_KEY:
         required: true
-      GITHUB_TOKEN:
+      MODRINTH_TOKEN:
         required: true
 
 jobs:
@@ -32,8 +35,7 @@ jobs:
           result-encoding: string
           script: |
             const fs = require("fs")
-            return fs.readdirSync("./").filter(e => !e.endsWith("dev.jar") && !e.endsWith("sources.jar") && !e.endsWith("shadow.jar") && e.endsWith(".jar") && e.includes("FABRIC"))[0] || false;
-
+            return fs.readdirSync("./").filter(e => !e.endsWith("dev.jar") && !e.endsWith("sources.jar") && !e.endsWith("shadow.jar") && e.endsWith(".jar") && e.includes("fabric"))[0] || false;
       - name: Upload Fabric to Git Release
         if: ${{ steps.fabric_release.outputs.result != 'false' }}
         uses: JasonEtco/upload-to-release@master
@@ -49,8 +51,7 @@ jobs:
           result-encoding: string
           script: |
             const fs = require("fs")
-            return fs.readdirSync("./").filter(e => !e.endsWith("dev.jar") && !e.endsWith("sources.jar") && !e.endsWith("shadow.jar") && e.endsWith(".jar") && e.includes("FORGE"))[0] || false;
-
+            return fs.readdirSync("./").filter(e => !e.endsWith("dev.jar") && !e.endsWith("sources.jar") && !e.endsWith("shadow.jar") && e.endsWith(".jar") && e.includes("forge"))[0] || false;
       - name: Upload Forge to Git Release
         if: ${{ steps.forge_release.outputs.result != 'false' }}
         uses: JasonEtco/upload-to-release@master
@@ -59,30 +60,69 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Upload Fabric To Curseforge
-        if: ${{ steps.fabric_release.outputs.result != 'false' }}
-        uses: itsmeow/curseforge-upload@v3
+      - name: Extract Version Number
+        uses: actions/github-script@v5
+        id: version_num
+        env:
+          GV: '${{ inputs.game_vers }}'
+          REF: '${{ inputs.GITHUB_REF }}'
         with:
-          token: ${{ secrets.CF_API_KEY }}
-          project_id: 551897
-          game_endpoint: minecraft
-          file_path: ./${{ steps.fabric_release.outputs.result }}
-          changelog: See the github release for changes.
-          display_name: ${{ steps.fname.outputs.result }}
-          game_versions: ${{ inputs.cf_data_fabric }}
-          release_type: release
-          relations: modmenu:optionalDependency,architectury-fabric:requiredDependency
+          result-encoding: string
+          script: |
+            return `${process.env.REF.replace(/\/?refs\/tags\//, '')}+${process.env.GV.split(/\s/)[0]}`
 
-      - name: Upload Forge To Curseforge
-        if: ${{ steps.forge_release.outputs.result != 'false' }}
-        uses: itsmeow/curseforge-upload@v3
+      - name: Run Publish Fabric
+        if: ${{ steps.fabric_release.outputs.result != 'false' }}
+        uses: Kir-Antipov/mc-publish@v2.1
         with:
-          token: ${{ secrets.CF_API_KEY }}
-          project_id: 551897
-          game_endpoint: minecraft
-          file_path: ./${{ steps.forge_release.outputs.result }}
-          changelog: See the github release for changes.
-          display_name: ${{ steps.fname.outputs.result }}
-          game_versions: ${{ inputs.cf_data_forge }}
-          release_type: release
-          relations: architectury-forge:requiredDependency
+          modrinth-id: v9tYpGRa
+          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+          modrinth-dependencies: |
+            architectury-api | depends | *
+            fabric-api | depends | *
+
+          curseforge-id: 551897
+          curseforge-token: ${{ secrets.CF_API_KEY }}
+          curseforge-dependencies: |
+            architectury-api | depends | *
+            fabric-api | depends | *
+
+          name: ${{ steps.fabric_release.outputs.result }}
+          version: ${{ steps.version_num.outputs.result }}-fabric
+
+          files: ./${{ steps.fabric_release.outputs.result }}
+          version-type: release
+
+          loaders: fabric
+          game-versions: ${{ inputs.game_vers }}
+
+          java: ${{ inputs.java_vers }}
+          retry-attempts: 5
+          retry-delay: 60000
+
+      - name: Run Publish Forge
+        if: ${{ steps.forge_release.outputs.result != 'false' }}
+        uses: Kir-Antipov/mc-publish@v2.1
+        with:
+          modrinth-id: v9tYpGRa
+          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+          modrinth-dependencies: |
+            architectury-api | depends | *
+
+          curseforge-id: 551897
+          curseforge-token: ${{ secrets.CF_API_KEY }}
+          curseforge-dependencies: |
+            architectury-api | depends | *
+
+          name: ${{ steps.forge_release.outputs.result }}
+          version: ${{ steps.version_num.outputs.result }}-forge
+
+          files: ./${{ steps.forge_release.outputs.result }}
+          version-type: release
+
+          loaders: forge
+          game-versions: ${{ inputs.game_vers }}
+
+          java: ${{ inputs.java_vers }}
+          retry-attempts: 5
+          retry-delay: 60000

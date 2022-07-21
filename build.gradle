@@ -36,6 +36,9 @@ allprojects {
     version = rootProject.mod_version
     group = rootProject.maven_group
 
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+
     repositories {
         // Add repositories to retrieve artifacts from in here.
         // You should only use this when depending on other mods because
@@ -61,18 +64,12 @@ allprojects {
 task fabricDist(type: Copy) {
     from new File(project(":fabric").buildDir, "libs")
     into new File(project.rootDir, "dist")
-    rename {
-        it.replace ".jar", "-fabric.jar"
-    }
 }
 
 
 task forgeDist(type: Copy) {
     from new File(project(":forge").buildDir, "libs")
     into new File(project.rootDir, "dist")
-    rename {
-        it.replace ".jar", "-forge.jar"
-    }
 }
 
 task clearDist(type: Delete) {

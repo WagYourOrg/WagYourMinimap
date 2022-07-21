@@ -9,39 +9,62 @@ on:
     types: [ created ]
 
 jobs:
-  build_1_18:
-    uses: wagyourtail/wagyourminimap/.github/workflows/releasebuild.yml@main-1.18
+  build_1_19:
+    uses: wagyourtail/wagyourminimap/.github/workflows/releasebuild.yml@main-1.19
     with:
-      branch: main-1.18
+      branch: main-1.19
+      java_version: 17
+
+  build_1_18:
+    uses: wagyourtail/wagyourminimap/.github/workflows/releasebuild.yml@main-1.19
+    with:
+      branch: backport-1.18.2
       java_version: 17
 
   build_1_17:
-    uses: wagyourtail/wagyourminimap/.github/workflows/releasebuild.yml@main-1.18
+    uses: wagyourtail/wagyourminimap/.github/workflows/releasebuild.yml@main-1.19
     with:
       branch: backport-1.17.1
-      java_version: 16
+      java_version: 17
 
-  deploy_1_18:
-    uses: wagyourtail/wagyourminimap/.github/workflows/releasedeploy.yml@main-1.18
+  deploy_1_19:
+    uses: wagyourtail/wagyourminimap/.github/workflows/releasedeploy.yml@main-1.19
     with:
-      branch: main-1.18
-      cf_data_fabric: 73250:1.18,2:Java 17,68441:Fabric
-      cf_data_forge: 73250:1.18,2:Java 17,7498:Forge
+      branch: main-1.19
+      game_vers: 1.19
+      java_vers: 17
+      GITHUB_REF: ${{ github.ref }}
     secrets:
       CF_API_KEY: ${{ secrets.CF_API_KEY }}
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
+    needs:
+      - build_1_19
+      - deploy_1_18
+
+  deploy_1_18:
+    uses: wagyourtail/wagyourminimap/.github/workflows/releasedeploy.yml@main-1.19
+    with:
+      branch: backport-1.18.2
+      game_vers: 1.18.2
+      java_vers: 17
+      GITHUB_REF: ${{ github.ref }}
+    secrets:
+      CF_API_KEY: ${{ secrets.CF_API_KEY }}
+      MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
     needs:
       - build_1_18
       - deploy_1_17
 
+
   deploy_1_17:
-    uses: wagyourtail/wagyourminimap/.github/workflows/releasedeploy.yml@main-1.18
+    uses: wagyourtail/wagyourminimap/.github/workflows/releasedeploy.yml@main-1.19
     with:
       branch: backport-1.17.1
-      cf_data_fabric: 73242:1.17.1,2:Java 16,68441:Fabric
-      cf_data_forge: 73242:1.17.1,2:Java 16,7498:Forge
+      game_vers: 1.17.1
+      java_vers: 16
+      GITHUB_REF: ${{ github.ref }}
     secrets:
       CF_API_KEY: ${{ secrets.CF_API_KEY }}
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
     needs:
       - build_1_17
