@@ -36,7 +36,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class WagYourMinimapClient extends WagYourMinimap {
-    public static final Event<ClientCommandRegistrationEvent<?>> CLIENT_COMMAND_REGISTRATION_EVENT = EventFactory.createLoop();
+    public static final Event<ClientCommandRegistrationEvent> CLIENT_COMMAND_REGISTRATION_EVENT = EventFactory.createLoop();
 
     private static final KeyMapping key_openmap = new KeyMapping(
         "key.wagyourminimap.openmap",
@@ -215,7 +215,7 @@ public class WagYourMinimapClient extends WagYourMinimap {
         });
     }
 
-    public interface ClientCommandRegistrationEvent<T extends SharedSuggestionProvider> {
-        void register(CommandDispatcher<T> dispatcher);
+    public interface ClientCommandRegistrationEvent {
+        void register(CommandDispatcher<? extends SharedSuggestionProvider> dispatcher);
     }
 }

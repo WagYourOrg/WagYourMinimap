@@ -15,6 +15,7 @@ import xyz.wagyourtail.config.field.Setting;
 import xyz.wagyourtail.config.field.SettingField;
 import xyz.wagyourtail.config.field.SettingsContainer;
 import xyz.wagyourtail.config.field.SettingsContainerField;
+import xyz.wagyourtail.minimap.ModLoaderSpecific;
 
 import java.awt.*;
 import java.lang.reflect.*;
@@ -23,7 +24,7 @@ import java.util.List;
 import java.util.function.BiFunction;
 
 @SuppressWarnings({"unchecked", "generic"})
-public class SettingCommand<S extends CommandSource> {
+public class SettingCommand<S extends SharedSuggestionProvider> {
     public final ConfigManager configManager;
 
     public SettingCommand(ConfigManager configManager) {
@@ -140,7 +141,7 @@ public class SettingCommand<S extends CommandSource> {
                         }
                         component.append(", ");
                     }
-                    ctx.getSource().sendSystemMessage(component);
+                    ModLoaderSpecific.INSTANCE.clientCommandContextLog(ctx.getSource(), component);
                 } catch (InvocationTargetException | IllegalAccessException e) {
                     throw new RuntimeException(e);
                 }
@@ -184,9 +185,9 @@ public class SettingCommand<S extends CommandSource> {
             preExecute.run();
             try {
                 if (settingField.setting.elementType().isAnnotationPresent(SettingsContainer.class)) {
-                    ctx.getSource().sendSystemMessage(Component.literal("Current Setting: ").append(Component.translatable(settingField.setting.elementType().getAnnotation(SettingsContainer.class).value())));
+                    ModLoaderSpecific.INSTANCE.clientCommandContextLog(ctx.getSource(), Component.literal("Current Setting: ").append(Component.translatable(settingField.setting.elementType().getAnnotation(SettingsContainer.class).value())));
                 } else {
-                    ctx.getSource().sendSystemMessage(Component.literal("Current Setting: ").append(settingField.get().toString()));
+                    ModLoaderSpecific.INSTANCE.clientCommandContextLog(ctx.getSource(), Component.literal("Current Setting: ").append(settingField.get().toString()));
                 }
             } catch (InvocationTargetException | IllegalAccessException e) {
                 throw new RuntimeException(e);
@@ -242,7 +243,7 @@ public class SettingCommand<S extends CommandSource> {
                 } catch (InvocationTargetException | IllegalAccessException e) {
                     throw new RuntimeException(e);
                 }
-                ctx.getSource().sendSystemMessage(Component.literal("Set " + settingField.setting.value() + " to " + getter.apply(ctx, "value")));
+                ModLoaderSpecific.INSTANCE.clientCommandContextLog(ctx.getSource(), Component.literal("Set " + settingField.setting.value() + " to " + getter.apply(ctx, "value")));
                 return 1;
             });
             fieldArg.then(set);
@@ -284,7 +285,7 @@ public class SettingCommand<S extends CommandSource> {
                                          InstantiationException e) {
                                     throw new RuntimeException(e);
                                 }
-                                ctx.getSource().sendSystemMessage(Component.literal("Set " + settingField.setting.value() +
+                                ModLoaderSpecific.INSTANCE.clientCommandContextLog(ctx.getSource(), Component.literal("Set " + settingField.setting.value() +
                                     " to ").append(Component.translatable(((Class<?>) option).getAnnotation(
                                     SettingsContainer.class).value())));
                                 return 1;

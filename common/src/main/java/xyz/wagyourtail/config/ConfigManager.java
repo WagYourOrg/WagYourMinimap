@@ -6,6 +6,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import net.minecraft.commands.CommandSource;
+import net.minecraft.commands.SharedSuggestionProvider;
 import xyz.wagyourtail.config.command.SettingCommand;
 
 import java.io.IOException;
@@ -131,7 +132,7 @@ public class ConfigManager {
         }
     }
 
-    public <S extends CommandSource> SettingCommand<S> createSettingsCommand() {
+    public <S extends SharedSuggestionProvider> SettingCommand<S> createSettingsCommand() {
         return new SettingCommand<>(this);
     }
 }

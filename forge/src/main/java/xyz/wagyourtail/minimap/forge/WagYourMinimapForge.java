@@ -67,7 +67,7 @@ public class WagYourMinimapForge {
 
     @SubscribeEvent
     public void onClientCommand(RegisterClientCommandsEvent clientCommandsEvent) {
-        WagYourMinimapClient.CLIENT_COMMAND_REGISTRATION_EVENT.invoker().register((CommandDispatcher) clientCommandsEvent.getDispatcher());
+        WagYourMinimapClient.CLIENT_COMMAND_REGISTRATION_EVENT.invoker().register(clientCommandsEvent.getDispatcher());
     }
 
 }

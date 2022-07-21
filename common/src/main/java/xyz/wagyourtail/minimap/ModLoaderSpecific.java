@@ -1,5 +1,8 @@
 package xyz.wagyourtail.minimap;
 
+import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.network.chat.Component;
+
 import java.util.ServiceLoader;
 
 public interface ModLoaderSpecific {
@@ -10,5 +13,7 @@ public interface ModLoaderSpecific {
      *
      */
     void checkEnableStencil();
+
+    void clientCommandContextLog(SharedSuggestionProvider p, Component s);
 
 }
