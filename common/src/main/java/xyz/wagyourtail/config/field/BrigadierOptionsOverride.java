@@ -12,5 +12,5 @@ import java.lang.annotation.Target;
 public @interface BrigadierOptionsOverride {
     Class<? extends ArgumentType> value();
     String constructor() default "<init>";
-    String getter();
+    String[] getter();
 }

@@ -88,12 +88,19 @@ public class SettingCommand<S extends SharedSuggestionProvider> {
             } else {
                 t = brigadierType.getDeclaredConstructor().newInstance();
             }
-            Method m = brigadierType.getMethod(settingField.brigadierOptionsOverride.getter(), CommandContext.class, String.class);
+            Method m = null;
+            for (String getter : settingField.brigadierOptionsOverride.getter()) {
+                try {
+                    m = brigadierType.getMethod(getter, CommandContext.class, String.class);
+                } catch (NoSuchMethodException ignored) {}
+            }
+            if (m == null) throw new NoSuchMethodException("No getter found: " + settingField.getRawField());
+            Method finalM = m;
             fieldArg.then(RequiredArgumentBuilder.argument("remove", t).executes(
                 ctx -> {
                     preExecute.run();
                     try {
-                        Object o = m.invoke(null, ctx, "remove");
+                        Object o = finalM.invoke(null, ctx, "remove");
                         List<T> list = new ArrayList<>(Arrays.asList(settingField.get()));
                         if (settingField.fieldType.getComponentType().equals(String.class)) {
                             list.remove(o.toString());
@@ -111,7 +118,7 @@ public class SettingCommand<S extends SharedSuggestionProvider> {
                 ctx -> {
                     preExecute.run();
                     try {
-                        Object o = m.invoke(null, ctx, "add");
+                        Object o = finalM.invoke(null, ctx, "add");
                         List<T> list = new ArrayList<>(Arrays.asList(settingField.get()));
                         if (settingField.fieldType.getComponentType().equals(String.class)) {
                             list.add((T) o.toString());
