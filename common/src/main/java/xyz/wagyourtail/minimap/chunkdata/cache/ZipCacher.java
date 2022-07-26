@@ -95,12 +95,14 @@ public class ZipCacher extends AbstractCacher {
 
     private synchronized void writeToZip(Path dataPath, Path blocksPath, Path biomesPath, ChunkData chunk) {
         try {
-            String blocks = chunk.serializeBlocks();
-            Files.writeString(blocksPath, blocks);
-            String biomes = chunk.serializeBiomes();
-            Files.writeString(biomesPath, biomes);
-            ByteBuffer data = chunk.serialize();
-            Files.write(dataPath, data.array());
+            synchronized (chunk) {
+                String blocks = chunk.serializeBlocks();
+                Files.writeString(blocksPath, blocks);
+                String biomes = chunk.serializeBiomes();
+                Files.writeString(biomesPath, biomes);
+                ByteBuffer data = chunk.serialize();
+                Files.write(dataPath, data.array());
+            }
         } catch (IOException ex) {
             ex.printStackTrace();
         }
