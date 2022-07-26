@@ -3,7 +3,8 @@
     "package": "xyz.wagyourtail.minimap.common.mixins",
     "compatibilityLevel": "JAVA_16",
     "client": [
-        "BufferUploaderAccessor"
+        "BufferUploaderAccessor",
+        "MixinClientChunkCache"
     ],
     "mixins": [
     ]

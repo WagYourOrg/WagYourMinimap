@@ -3,6 +3,8 @@ package xyz.wagyourtail.minimap.api;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import dev.architectury.platform.Platform;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import xyz.wagyourtail.config.ConfigManager;
 import xyz.wagyourtail.minimap.api.config.MinimapConfig;
 import xyz.wagyourtail.minimap.chunkdata.cache.CacheManager;
@@ -17,6 +19,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class MinimapApi {
     public static final AtomicInteger saving = new AtomicInteger(0);
+    public static final Logger LOGGER = LoggerFactory.getLogger(MinimapApi.class);
     protected static MinimapApi INSTANCE;
     protected final Map<Class<? extends AbstractChunkDataUpdater>, AbstractChunkDataUpdater> chunkUpdateStrategies = new HashMap<>();
     public final CacheManager cacheManager = new CacheManager();

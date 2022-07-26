@@ -9,8 +9,8 @@ import java.util.Map;
 import java.util.Set;
 
 public class SurfaceDataPart extends DataPart<SurfaceDataPart> {
+    private final int dataVersion = 1;
     public final int[] heightmap = new int[256];
-    public final byte[] blocklight = new byte[256];
     public final int[] blockid = new int[256];
     public final int[] biomeid = new int[256];
     public final int[] oceanFloorHeightmap = new int[256];
@@ -18,6 +18,10 @@ public class SurfaceDataPart extends DataPart<SurfaceDataPart> {
 
     public SurfaceDataPart(ChunkData parent) {
         super(parent);
+    }
+
+    public int getDataVersion() {
+        return dataVersion;
     }
 
     public static int blockPosToIndex(int posX, int posZ) {
@@ -56,10 +60,6 @@ public class SurfaceDataPart extends DataPart<SurfaceDataPart> {
                 changed = changed || newHeight != this.heightmap[i];
                 this.heightmap[i] = newHeight;
 
-                byte newLight = other.blocklight[i];
-                changed = changed || newLight != this.blocklight[i];
-                this.blocklight[i] = newLight;
-
                 int newBlockid = idmap.computeIfAbsent(
                     other.blockid[i],
                     k -> parent.getOrRegisterBlockState(other.parent.getBlockState(k))
@@ -88,22 +88,38 @@ public class SurfaceDataPart extends DataPart<SurfaceDataPart> {
     }
 
     @Override
-    public void deserialize(ByteBuffer buffer) {
-        for (int i = 0; i < 256; ++i) {
-            this.heightmap[i] = buffer.getInt();
-            this.blocklight[i] = buffer.get();
-            this.blockid[i] = buffer.getInt();
-            this.biomeid[i] = buffer.getInt();
-            this.oceanFloorHeightmap[i] = buffer.getInt();
-            this.oceanFloorBlockid[i] = buffer.getInt();
+    public void deserialize(ByteBuffer buffer, int size) {
+        int dataVersion = buffer.getInt();
+        if (dataVersion == 1 && getBytes() == size) {
+            for (int i = 0; i < 256; ++i) {
+                this.heightmap[i] = buffer.getInt();
+                this.blockid[i] = buffer.getInt();
+                this.biomeid[i] = buffer.getInt();
+                this.oceanFloorHeightmap[i] = buffer.getInt();
+                this.oceanFloorBlockid[i] = buffer.getInt();
+            }
+        } else if (size == Integer.BYTES * 256 * 5 + 256) {
+            buffer.position(buffer.position() - Integer.BYTES);
+            byte[] blocklight = new byte[256];
+            for (int i = 0; i < 256; ++i) {
+                this.heightmap[i] = buffer.getInt();
+                blocklight[i] = buffer.get();
+                this.blockid[i] = buffer.getInt();
+                this.biomeid[i] = buffer.getInt();
+                this.oceanFloorHeightmap[i] = buffer.getInt();
+                this.oceanFloorBlockid[i] = buffer.getInt();
+            }
+            parent.computeData(LightDataPart.class, (v) -> LightDataPart.fromSurfaceV0(parent, blocklight));
+        } else {
+            throw new IllegalArgumentException("Invalid surface data: " + dataVersion + " " + size);
         }
     }
 
     @Override
     public void serialize(ByteBuffer buffer) {
+        buffer.putInt(dataVersion);
         for (int i = 0; i < 256; ++i) {
             buffer.putInt(this.heightmap[i]);
-            buffer.put(this.blocklight[i]);
             buffer.putInt(this.blockid[i]);
             buffer.putInt(this.biomeid[i]);
             buffer.putInt(this.oceanFloorHeightmap[i]);
@@ -113,7 +129,7 @@ public class SurfaceDataPart extends DataPart<SurfaceDataPart> {
 
     @Override
     public int getBytes() {
-        return Integer.BYTES * 256 * 5 + 256;
+        return Integer.BYTES + Integer.BYTES * 256 * 5;
     }
 
     @Override

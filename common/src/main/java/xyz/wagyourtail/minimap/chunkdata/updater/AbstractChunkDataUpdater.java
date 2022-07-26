@@ -2,9 +2,14 @@ package xyz.wagyourtail.minimap.chunkdata.updater;
 
 import dev.architectury.event.Event;
 import dev.architectury.event.EventFactory;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.SectionPos;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
+import net.minecraft.world.level.chunk.ChunkAccess;
+import net.minecraft.world.level.chunk.ChunkSource;
+import net.minecraft.world.level.chunk.LightChunkGetter;
 import net.minecraft.world.level.lighting.LayerLightEventListener;
 import xyz.wagyourtail.minimap.api.MinimapEvents;
 import xyz.wagyourtail.minimap.chunkdata.ChunkData;
@@ -18,7 +23,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-public abstract class AbstractChunkDataUpdater<T extends DataPart<T>> implements ChunkLoadEvent, BlockUpdateEvent {
+public abstract class AbstractChunkDataUpdater<T extends DataPart<T>> implements ChunkLoadEvent, BlockUpdateEvent, LightLevelSetEvent {
     private static final ThreadPoolExecutor data_pool = new ThreadPoolExecutor(
         4,
         4,
@@ -28,6 +33,7 @@ public abstract class AbstractChunkDataUpdater<T extends DataPart<T>> implements
     );
     public static final Event<ChunkLoadEvent> CHUNK_LOAD = EventFactory.createLoop();
     public static final Event<BlockUpdateEvent> BLOCK_UPDATE = EventFactory.createLoop();
+    public static final Event<LightLevelSetEvent> LIGHT_LEVEL = EventFactory.createLoop();
 
     public final Set<String> derivitivesToInvalidate = new HashSet<>();
 
@@ -39,6 +45,7 @@ public abstract class AbstractChunkDataUpdater<T extends DataPart<T>> implements
     protected void registerEventListener() {
         CHUNK_LOAD.register(this);
         BLOCK_UPDATE.register(this);
+        LIGHT_LEVEL.register(this);
     }
 
     protected static LayerLightEventListener getBlockLightLayer(Level level) {
@@ -75,7 +82,16 @@ public abstract class AbstractChunkDataUpdater<T extends DataPart<T>> implements
         return ChunkLocation.locationForChunkPos(level, pos);
     }
 
-    public static interface ChunkUpdateListener<T extends DataPart<T>> {
+    @Override
+    public void onBlockUpdate(BlockPos pos, Level level) {}
+
+    @Override
+    public void onLoadChunk(ChunkAccess chunk, Level level) {}
+
+    @Override
+    public void onLightLevel(ChunkSource chunkGetter, SectionPos pos) {}
+
+    public interface ChunkUpdateListener<T extends DataPart<T>> {
         T onChunkUpdate(ChunkLocation location, ChunkData data, T oldData);
 
     }

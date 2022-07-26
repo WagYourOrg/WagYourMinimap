@@ -26,7 +26,6 @@ public class SurfaceDataUpdater extends AbstractChunkDataUpdater<SurfaceDataPart
 
     public SurfaceDataUpdater() {
         super(Set.of(
-            SurfaceBlockLightImageStrategy.class.getCanonicalName(),
             VanillaMapImageStrategy.class.getCanonicalName(),
             AccurateMapImageStrategy.class.getCanonicalName()
         ));
@@ -67,7 +66,6 @@ public class SurfaceDataUpdater extends AbstractChunkDataUpdater<SurfaceDataPart
                         data.biomeid[i] = parent.getOrRegisterBiome(biomeRegistry.getKey(chunk
                             .getNoiseBiome(x >> 2, data.heightmap[i] >> 2, z >> 2).value()
                         ));
-                        data.blocklight[i] = (byte) light.getLightValue(blockPos.setY(data.heightmap[i] + 1));
                         break;
                     }
                 }
@@ -86,7 +84,6 @@ public class SurfaceDataUpdater extends AbstractChunkDataUpdater<SurfaceDataPart
                 data.biomeid[i] = parent.getOrRegisterBiome(biomeRegistry.getKey(chunk
                     .getNoiseBiome(x >> 2, data.heightmap[i] >> 2, z >> 2).value()
                 ));
-                data.blocklight[i] = (byte) light.getLightValue(blockPos.setY(data.heightmap[i] + 1));
 
                 if (top.getBlock().equals(Blocks.WATER)) {
                     BlockState b = top;
@@ -126,7 +123,6 @@ public class SurfaceDataUpdater extends AbstractChunkDataUpdater<SurfaceDataPart
             getChunkLocation(mapLevel, pos.getX() >> 4, pos.getZ() >> 4),
             (location, parent, oldData) -> updateYCol(parent, oldData, chunk, mapLevel, level, pos)
         );
-        updateNeighborLighting(mapLevel, level, pos.getX() >> 4, pos.getZ() >> 4);
     }
 
     public SurfaceDataPart updateYCol(ChunkData parent, SurfaceDataPart data, ChunkAccess chunk, MapServer.MapLevel level, Level mclevel, BlockPos bp) {
@@ -173,47 +169,6 @@ public class SurfaceDataUpdater extends AbstractChunkDataUpdater<SurfaceDataPart
         }
         parent.markDirty();
         parent.invalidateDerivitives(derivitivesToInvalidate);
-        return data;
-    }
-
-    public void updateNeighborLighting(MapServer.MapLevel level, Level mclevel, int chunkX, int chunkZ) {
-        for (int i = chunkX - 1; i < chunkX + 2; ++i) {
-            for (int j = chunkZ - 1; j < chunkZ + 2; ++j) {
-                if (mclevel.hasChunk(i, j)) {
-                    ChunkAccess chunk = mclevel.getChunk(i, j, ChunkStatus.FULL, false);
-                    if (chunk == null) {
-                        continue;
-                    }
-                    //TODO: update lighting only function
-                    updateChunk(
-                        getChunkLocation(level, i, j),
-                        (location, parent, oldData) -> updateLighting(parent, oldData, chunk, level, mclevel)
-                    );
-                }
-            }
-        }
-    }
-
-    public SurfaceDataPart updateLighting(ChunkData parent, SurfaceDataPart data, ChunkAccess chunk, MapServer.MapLevel level, Level mclevel) {
-        if (data == null) {
-            return loadFromChunk(chunk, level, mclevel, parent, data);
-        }
-        data.parent.updateTime = System.currentTimeMillis();
-        ChunkPos pos = chunk.getPos();
-        //TODO: replace with chunk section stuff to not use a MutableBlockPos at all (see baritone), maybe not possible since we need light levels too
-        BlockPos.MutableBlockPos blockPos = new BlockPos.MutableBlockPos();
-        LayerLightEventListener light = getBlockLightLayer(mclevel);
-        for (int i = 0; i < 256; ++i) {
-            int x = (i >> 4) % 16;
-            int z = i % 16;
-            data.blocklight[i] = (byte) light.getLightValue(blockPos.set(
-                (pos.x << 4) + x,
-                data.heightmap[i] + 1,
-                (pos.z << 4) + z
-            ));
-        }
-        parent.markDirty();
-        parent.invalidateDerivitives(Set.of(SurfaceBlockLightImageStrategy.class.getCanonicalName()));
         return data;
     }
 

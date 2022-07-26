@@ -42,6 +42,7 @@ public class MinimapClientApi extends MinimapApi {
             }
             return multiplayerServer.ip.replace(":25565", "").replace(":", "_");
         }
+        LOGGER.warn("COULD NOT DETERMINE CURRENT SERVER NAME!");
         return "UNKNOWN_SERVER_NAME";
     }
 

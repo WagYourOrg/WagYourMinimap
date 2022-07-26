@@ -107,6 +107,18 @@ public class MapScreen extends Screen {
     }
 
     @Override
+    public boolean charTyped(char codePoint, int modifiers) {
+        if (codePoint == '-') {
+            renderer.changeZoom(renderer.blockRadius + 64);
+            return true;
+        } else if (codePoint == '=') {
+            renderer.changeZoom(renderer.blockRadius - 64);
+            return true;
+        }
+        return super.charTyped(codePoint, modifiers);
+    }
+
+    @Override
     public void render(PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
         renderBackground(poseStack);
 

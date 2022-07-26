@@ -12,6 +12,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import xyz.wagyourtail.minimap.api.MinimapApi;
 import xyz.wagyourtail.minimap.chunkdata.parts.DataPart;
+import xyz.wagyourtail.minimap.chunkdata.parts.SurfaceDataPart;
 import xyz.wagyourtail.minimap.map.MapServer;
 
 import java.lang.reflect.InvocationTargetException;
@@ -42,6 +43,7 @@ public class ChunkData {
      */
     public ChunkData(ChunkLocation location) {
         this.location = location;
+        data.put(SurfaceDataPart.class, new SurfaceDataPart(this));
     }
 
     /**
@@ -85,15 +87,12 @@ public class ChunkData {
                     continue;
                 }
                 int size = buffer.getInt();
-                if (dp.getBytes() != size) {
-                    try {
-                        throw new AssertionError("Invalid data size for " + this.getClass().getCanonicalName());
-                    } catch (AssertionError e) {
-                        e.printStackTrace();
-                        buffer.get(new byte[size]);
-                    }
-                } else {
-                    dp.deserialize(buffer);
+                int pos = buffer.position();
+                try {
+                    dp.deserialize(buffer, size);
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                    buffer.position(pos + size);
                 }
             }
         } catch (BufferUnderflowException e) {

@@ -18,9 +18,11 @@ public abstract class DataPart<T extends DataPart<?>> {
         this.parent = parent;
     }
 
+    public abstract int getDataVersion();
+
     public abstract boolean mergeFrom(T other);
 
-    public abstract void deserialize(ByteBuffer buffer);
+    public abstract void deserialize(ByteBuffer buffer, int size);
 
     public abstract void serialize(ByteBuffer buffer);
 

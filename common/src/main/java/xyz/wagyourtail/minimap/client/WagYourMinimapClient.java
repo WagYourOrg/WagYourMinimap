@@ -4,7 +4,6 @@ import com.google.gson.JsonObject;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import dev.architectury.event.Event;
 import dev.architectury.event.EventFactory;
@@ -15,7 +14,6 @@ import dev.architectury.registry.client.keymappings.KeyMappingRegistry;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.core.BlockPos;
 import xyz.wagyourtail.minimap.WagYourMinimap;
@@ -24,6 +22,7 @@ import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
 import xyz.wagyourtail.minimap.api.client.config.MinimapClientConfig;
 import xyz.wagyourtail.minimap.chunkdata.cache.InMemoryCacher;
 import xyz.wagyourtail.minimap.chunkdata.cache.ZipCacher;
+import xyz.wagyourtail.minimap.chunkdata.updater.LightDataUpdater;
 import xyz.wagyourtail.minimap.chunkdata.updater.SurfaceDataUpdater;
 import xyz.wagyourtail.minimap.chunkdata.updater.UndergroundDataUpdater;
 import xyz.wagyourtail.minimap.client.gui.hud.InGameHud;
@@ -85,6 +84,8 @@ public class WagYourMinimapClient extends WagYourMinimap {
         MinimapApi.getInstance().cacheManager.addCacherBefore(new InMemoryCacher(), ZipCacher.class);
         MinimapApi.getInstance().registerChunkUpdateStrategy(SurfaceDataUpdater.class);
         MinimapApi.getInstance().registerChunkUpdateStrategy(UndergroundDataUpdater.class);
+        MinimapApi.getInstance().registerChunkUpdateStrategy(LightDataUpdater.class);
+
 
 
 

@@ -22,8 +22,6 @@ public class UndergroundDataPart extends DataPart<UndergroundDataPart> {
     public final Data[] data;
 
     /**
-     * empty data
-     *
      * @param parent container
      */
     public UndergroundDataPart(ChunkData parent) {
@@ -34,13 +32,18 @@ public class UndergroundDataPart extends DataPart<UndergroundDataPart> {
     }
 
     @Override
+    public int getDataVersion() {
+        return 0;
+    }
+
+    @Override
     public boolean mergeFrom(UndergroundDataPart other) {
         // unused
         return false;
     }
 
     @Override
-    public void deserialize(ByteBuffer buffer) {
+    public void deserialize(ByteBuffer buffer, int size) {
         // unused
     }
 

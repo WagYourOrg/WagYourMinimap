@@ -8,6 +8,7 @@ import xyz.wagyourtail.config.field.Setting;
 import xyz.wagyourtail.config.field.SettingsContainer;
 import xyz.wagyourtail.minimap.chunkdata.ChunkData;
 import xyz.wagyourtail.minimap.chunkdata.ChunkLocation;
+import xyz.wagyourtail.minimap.chunkdata.parts.LightDataPart;
 import xyz.wagyourtail.minimap.chunkdata.parts.SurfaceDataPart;
 
 @SettingsContainer("gui.wagyourminimap.setting.layers.light")
@@ -37,7 +38,7 @@ public class SurfaceBlockLightImageStrategy implements ImageStrategy {
 
     @Override
     public DynamicTexture load(ChunkLocation location, ChunkData key) {
-        SurfaceDataPart surface = key.getData(SurfaceDataPart.class).orElse(null);
+        LightDataPart surface = key.getData(LightDataPart.class).orElse(null);
         if (surface == null) {
             return null;
         }

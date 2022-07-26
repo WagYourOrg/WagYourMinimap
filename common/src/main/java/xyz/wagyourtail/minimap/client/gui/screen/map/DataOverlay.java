@@ -6,6 +6,7 @@ import xyz.wagyourtail.config.field.SettingsContainer;
 import xyz.wagyourtail.minimap.api.MinimapApi;
 import xyz.wagyourtail.minimap.chunkdata.ChunkData;
 import xyz.wagyourtail.minimap.chunkdata.ChunkLocation;
+import xyz.wagyourtail.minimap.chunkdata.parts.LightDataPart;
 import xyz.wagyourtail.minimap.chunkdata.parts.SurfaceDataPart;
 import xyz.wagyourtail.minimap.map.MapServer;
 
@@ -36,7 +37,10 @@ public class DataOverlay extends AbstractFullscreenOverlay {
                     z
                 )]).getBlock()).toString();
                 biome = chunk.getBiome(surface.biomeid[SurfaceDataPart.blockPosToIndex(x, z)]).toString();
-                light = surface.blocklight[SurfaceDataPart.blockPosToIndex(x, z)];
+            }
+            LightDataPart lightData = chunk.getData(LightDataPart.class).orElse(null);
+            if (lightData != null) {
+                light = lightData.blocklight[SurfaceDataPart.blockPosToIndex(x, z)];
             }
         }
         minecraft.font.draw(stack, level.parent().server_slug, 50, 4, 0xFFFFFF);
