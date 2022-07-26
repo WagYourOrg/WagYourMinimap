@@ -102,7 +102,7 @@ public class WaypointListScreen extends Screen {
                 if (selected != null) {
                     assert minecraft != null;
                     BlockPos pos = selected.point.posForCoordScale(minecraft.level.dimensionType().coordinateScale());
-                    minecraft.player.chat(MinimapApi.getInstance()
+                    minecraft.player.command(MinimapApi.getInstance()
                         .getConfig()
                         .get(CurrentServerConfig.class)
                         .getTpCommand()

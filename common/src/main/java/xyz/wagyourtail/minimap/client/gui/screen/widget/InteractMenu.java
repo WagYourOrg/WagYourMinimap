@@ -107,7 +107,7 @@ public class InteractMenu extends GuiComponent implements Widget {
 
         buttons.add(new InteractMenuButton(
             net.minecraft.network.chat.Component.translatable("gui.wagyourminimap.teleport_to"),
-            (btn) -> minecraft.player.chat(MinimapApi.getInstance()
+            (btn) -> minecraft.player.command(MinimapApi.getInstance()
                 .getConfig()
                 .get(CurrentServerConfig.class)
                 .getTpCommand()
@@ -142,7 +142,7 @@ public class InteractMenu extends GuiComponent implements Widget {
 
         buttons.add(new InteractMenuButton(net.minecraft.network.chat.Component.translatable("gui.wagyourminimap.teleport_to"), (btn) -> {
             BlockPos pos = point.posForCoordScale(minecraft.level.dimensionType().coordinateScale());
-            minecraft.player.chat(MinimapApi.getInstance()
+            minecraft.player.command(MinimapApi.getInstance()
                 .getConfig()
                 .get(CurrentServerConfig.class)
                 .getTpCommand()
