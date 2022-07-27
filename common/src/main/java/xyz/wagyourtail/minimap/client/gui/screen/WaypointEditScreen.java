@@ -13,7 +13,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.Level;
 import xyz.wagyourtail.config.gui.widgets.NamedEditBox;
 import xyz.wagyourtail.minimap.api.MinimapApi;
-import xyz.wagyourtail.minimap.client.gui.screen.widget.ColorButton;
+import xyz.wagyourtail.config.gui.widgets.ColorButton;
 import xyz.wagyourtail.minimap.waypoint.Waypoint;
 
 import java.awt.*;

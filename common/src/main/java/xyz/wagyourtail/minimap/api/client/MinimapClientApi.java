@@ -46,4 +46,21 @@ public class MinimapClientApi extends MinimapApi {
         return "UNKNOWN_SERVER_NAME";
     }
 
+    public void sendTp(int x, int y, int z) {
+        assert mc.player != null;
+        String command = MinimapApi.getInstance()
+            .getConfig()
+            .get(CurrentServerConfig.class)
+            .getTpCommand()
+            .replace("%player", mc.player.getGameProfile().getName())
+            .replace("%x", Integer.toString(x))
+            .replace("%y", Integer.toString(y))
+            .replace("%z", Integer.toString(z));
+
+        if (command.startsWith("/")) {
+            command = command.substring(1);
+        }
+        mc.player.command(command);
+    }
+
 }

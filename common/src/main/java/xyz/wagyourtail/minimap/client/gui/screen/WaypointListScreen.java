@@ -6,6 +6,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import org.jetbrains.annotations.Nullable;
 import xyz.wagyourtail.minimap.api.MinimapApi;
+import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
 import xyz.wagyourtail.minimap.api.client.MinimapClientEvents;
 import xyz.wagyourtail.minimap.api.client.config.CurrentServerConfig;
 import xyz.wagyourtail.minimap.client.gui.screen.widget.WaypointList;
@@ -102,14 +103,7 @@ public class WaypointListScreen extends Screen {
                 if (selected != null) {
                     assert minecraft != null;
                     BlockPos pos = selected.point.posForCoordScale(minecraft.level.dimensionType().coordinateScale());
-                    minecraft.player.command(MinimapApi.getInstance()
-                        .getConfig()
-                        .get(CurrentServerConfig.class)
-                        .getTpCommand()
-                        .replace("%player", minecraft.player.getGameProfile().getName())
-                        .replace("%x", Integer.toString(pos.getX()))
-                        .replace("%y", Integer.toString(pos.getY()))
-                        .replace("%z", Integer.toString(pos.getZ())));
+                    MinimapClientApi.getInstance().sendTp(pos.getX(), pos.getY(), pos.getZ());
                 }
             })
         ));

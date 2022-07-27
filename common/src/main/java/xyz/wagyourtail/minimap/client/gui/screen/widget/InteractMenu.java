@@ -8,6 +8,7 @@ import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.Vec3;
 import xyz.wagyourtail.minimap.api.MinimapApi;
+import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
 import xyz.wagyourtail.minimap.api.client.MinimapClientEvents;
 import xyz.wagyourtail.minimap.api.client.config.CurrentServerConfig;
 import xyz.wagyourtail.minimap.chunkdata.ChunkData;
@@ -107,14 +108,7 @@ public class InteractMenu extends GuiComponent implements Widget {
 
         buttons.add(new InteractMenuButton(
             net.minecraft.network.chat.Component.translatable("gui.wagyourminimap.teleport_to"),
-            (btn) -> minecraft.player.command(MinimapApi.getInstance()
-                .getConfig()
-                .get(CurrentServerConfig.class)
-                .getTpCommand()
-                .replace("%player", minecraft.player.getGameProfile().getName())
-                .replace("%x", Integer.toString((int) pos.x))
-                .replace("%y", Integer.toString((int) pos.y + 1))
-                .replace("%z", Integer.toString((int) pos.z)))
+            (btn) -> MinimapClientApi.getInstance().sendTp((int) pos.x, (int) (pos.y + 1), (int) pos.z)
         ));
         return buttons;
     }
@@ -142,14 +136,7 @@ public class InteractMenu extends GuiComponent implements Widget {
 
         buttons.add(new InteractMenuButton(net.minecraft.network.chat.Component.translatable("gui.wagyourminimap.teleport_to"), (btn) -> {
             BlockPos pos = point.posForCoordScale(minecraft.level.dimensionType().coordinateScale());
-            minecraft.player.command(MinimapApi.getInstance()
-                .getConfig()
-                .get(CurrentServerConfig.class)
-                .getTpCommand()
-                .replace("%player", minecraft.player.getGameProfile().getName())
-                .replace("%x", Integer.toString(pos.getX()))
-                .replace("%y", Integer.toString(pos.getY()))
-                .replace("%z", Integer.toString(pos.getZ())));
+            MinimapClientApi.getInstance().sendTp(pos.getX(), pos.getY() + 1, pos.getZ());
         }));
 
         buttons.add(new InteractMenuButton(

@@ -4,8 +4,11 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Vector3f;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
+import xyz.wagyourtail.config.field.IntRange;
+import xyz.wagyourtail.config.field.Setting;
 import xyz.wagyourtail.config.field.SettingsContainer;
 import xyz.wagyourtail.minimap.WagYourMinimap;
 import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
@@ -19,6 +22,16 @@ public class PlayerArrowOverlay extends AbstractMinimapOverlay {
         WagYourMinimap.MOD_ID,
         "textures/player_arrow.png"
     );
+
+    @Setting(value = "gui.wagyourminimap.red")
+    @IntRange(from = 0, to = 255)
+    public int red = 0xFF;
+    @Setting(value = "gui.wagyourminimap.green")
+    @IntRange(from = 0, to = 255)
+    public int green = 0x00;
+    @Setting(value = "gui.wagyourminimap.blue")
+    @IntRange(from = 0, to = 255)
+    public int blue = 0x00;
 
     public PlayerArrowOverlay(AbstractMinimapRenderer parent) {
         super(parent);
@@ -42,7 +55,8 @@ public class PlayerArrowOverlay extends AbstractMinimapOverlay {
         stack.mulPose(Vector3f.ZP.rotationDegrees(player_rot));
         RenderSystem.setShaderTexture(0, player_icon_tex);
         float texSize = Math.max(maxLength / 20, 8);
-        AbstractMapRenderer.drawTexCol(stack, -texSize, -texSize, texSize * 2, texSize * 2, 1, 1, 0, 0, 0xFF0000FF);
+        int color =  (blue << 16) | (green << 8) | red;
+        AbstractMapRenderer.drawTexCol(stack, -texSize, -texSize, texSize * 2, texSize * 2, 1, 1, 0, 0, 0xFF000000 | color);
     }
 
 }

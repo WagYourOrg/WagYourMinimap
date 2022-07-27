@@ -1,4 +1,4 @@
-package xyz.wagyourtail.minimap.client.gui.screen.widget;
+package xyz.wagyourtail.config.gui.widgets;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
@@ -10,9 +10,6 @@ import net.minecraft.util.Mth;
 import java.awt.*;
 import java.util.function.Consumer;
 
-/**
- * unfinished
- */
 public class ColorButton extends AbstractWidget {
 
     private final Consumer<Integer> colorSelected;
