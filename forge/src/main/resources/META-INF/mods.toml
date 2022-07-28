@@ -1,5 +1,5 @@
 modLoader = "javafml"
-loaderVersion = "[35,)"
+loaderVersion = "[42,)"
 #issueTrackerURL = ""
 license = "MPL-2.0"
 
@@ -16,20 +16,20 @@ Minimap mod coded from scratch to not be ass.
 [[dependencies.wagyourminimap]]
 modId = "forge"
 mandatory = true
-versionRange = "[37,)"
+versionRange = "[42,)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.wagyourminimap]]
 modId = "minecraft"
 mandatory = true
-versionRange = "[1.17,)"
+versionRange = "[1.19.1]"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.wagyourminimap]]
 modId = "architectury"
 mandatory = true
-versionRange = "[2.3.0,)"
+versionRange = "[6.0.0,)"
 ordering = "AFTER"
 side = "BOTH"

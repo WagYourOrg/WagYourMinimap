@@ -37,7 +37,7 @@ dependencies {
     shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
 
 
-    modApi "com.terraformersmc:modmenu:4.0.4"
+    modApi "com.terraformersmc:modmenu:4.0.5"
 }
 
 processResources {
