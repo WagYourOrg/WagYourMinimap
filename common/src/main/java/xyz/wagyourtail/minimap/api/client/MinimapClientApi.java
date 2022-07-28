@@ -57,10 +57,7 @@ public class MinimapClientApi extends MinimapApi {
             .replace("%y", Integer.toString(y))
             .replace("%z", Integer.toString(z));
 
-        if (command.startsWith("/")) {
-            command = command.substring(1);
-        }
-        mc.player.commandUnsigned(command);
+        mc.player.chat(command);
     }
 
 }
