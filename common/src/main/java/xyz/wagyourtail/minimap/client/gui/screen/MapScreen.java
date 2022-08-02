@@ -51,8 +51,11 @@ public class MapScreen extends Screen {
         super(net.minecraft.network.chat.Component.translatable("gui.wagyourminimap.title"));
     }
 
+    private long clickStartTime = 0;
+
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        clickStartTime = System.currentTimeMillis();
         dragStartX = mouseX;
         dragStartY = mouseY;
         dragEndX = mouseX;
@@ -83,6 +86,9 @@ public class MapScreen extends Screen {
     public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
         boolean consumed = super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
         if (button == 1) {
+            if (System.currentTimeMillis() - clickStartTime < renderer.dragSelectDelay) {
+                return true;
+            }
             dragEndX = mouseX;
             dragEndY = mouseY;
             return true;

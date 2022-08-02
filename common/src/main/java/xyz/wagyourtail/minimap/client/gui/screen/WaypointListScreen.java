@@ -5,6 +5,7 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import org.jetbrains.annotations.Nullable;
+import org.lwjgl.glfw.GLFW;
 import xyz.wagyourtail.minimap.api.MinimapApi;
 import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
 import xyz.wagyourtail.minimap.api.client.MinimapClientEvents;
@@ -160,6 +161,43 @@ public class WaypointListScreen extends Screen {
     public void refreshEntries() {
         this.waypointListWidget.refreshEntries();
         setSelected(null);
+    }
+
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        WaypointList.WaypointListEntry selected = getSelected();
+        switch (keyCode) {
+            case GLFW.GLFW_KEY_DELETE: {
+                if (selected != null) {
+                    MinimapApi.getInstance().getMapServer().waypoints.removeWaypoint(selected.point);
+                    refreshEntries();
+                }
+                return true;
+            }
+            case GLFW.GLFW_KEY_ENTER: {
+                if (selected != null) {
+                    // edit
+                    assert minecraft != null;
+                    minecraft.setScreen(new WaypointEditScreen(this, selected.point));
+                }
+                return true;
+            }
+            case GLFW.GLFW_KEY_DOWN: {
+                int idx = this.waypointListWidget.children().indexOf(selected);
+                if (idx < this.waypointListWidget.children().size() - 1) {
+                    setSelected(this.waypointListWidget.children().get(idx + 1));
+                }
+                return true;
+            }
+            case GLFW.GLFW_KEY_UP: {
+                int idx = this.waypointListWidget.children().indexOf(selected);
+                if (idx > 0) {
+                    setSelected(this.waypointListWidget.children().get(idx - 1));
+                }
+                return true;
+            }
+        }
+        return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
 }

@@ -2,6 +2,7 @@ package xyz.wagyourtail.minimap.client.gui.screen.map;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.world.phys.Vec3;
+import xyz.wagyourtail.config.field.IntRange;
 import xyz.wagyourtail.config.field.Setting;
 import xyz.wagyourtail.config.field.SettingsContainer;
 import xyz.wagyourtail.minimap.client.gui.AbstractMapRenderer;
@@ -28,6 +29,10 @@ public class ScreenMapRenderer extends AbstractMapRenderer {
     public AbstractFullscreenOverlay[] overlays = new AbstractFullscreenOverlay[] {
         new PlayerIconOverlay(this), new WaypointOverlay(this), new DataOverlay(this)
     };
+
+    @Setting(value = "gui.wagyourminimap.settings.drag_select_delay")
+    @IntRange(from = 0, to = 1000)
+    public int dragSelectDelay = 100;
 
     public int blockRadius = 30 * 16;
     public int width, height, xDiam, zDiam;
