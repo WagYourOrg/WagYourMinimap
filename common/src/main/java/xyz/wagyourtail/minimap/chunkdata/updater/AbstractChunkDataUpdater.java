@@ -14,6 +14,7 @@ import net.minecraft.world.level.lighting.LayerLightEventListener;
 import xyz.wagyourtail.minimap.api.MinimapEvents;
 import xyz.wagyourtail.minimap.chunkdata.ChunkData;
 import xyz.wagyourtail.minimap.chunkdata.ChunkLocation;
+import xyz.wagyourtail.minimap.chunkdata.cache.CacheManager;
 import xyz.wagyourtail.minimap.chunkdata.parts.DataPart;
 import xyz.wagyourtail.minimap.map.MapServer;
 
@@ -92,6 +93,11 @@ public abstract class AbstractChunkDataUpdater<T extends DataPart<T>> implements
     public void onLightLevel(ChunkSource chunkGetter, SectionPos pos) {}
 
     public interface ChunkUpdateListener<T extends DataPart<T>> {
+
+        /*
+         * NOT ALLOWED TO LOCK/GET ANOTHER CHUNK OR CacheManager WITHIN THIS FUNCTION!!!! - can deadlock
+         * https://github.com/wagyourtail/WagYourMinimap/issues/7
+         */
         T onChunkUpdate(ChunkLocation location, ChunkData data, T oldData);
 
     }
