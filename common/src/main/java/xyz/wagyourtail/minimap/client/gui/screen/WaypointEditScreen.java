@@ -50,12 +50,7 @@ public class WaypointEditScreen extends Screen {
     public static WaypointEditScreen createNewFromPos(Screen parent, BlockPos pos) {
         Minecraft mc = Minecraft.getInstance();
         int color = Color.HSBtoRGB(random.nextFloat(), 1f, 1f);
-        String[] dims;
-        if (mc.level.dimension().equals(Level.OVERWORLD) || mc.level.dimension().equals(Level.NETHER)) {
-            dims = new String[] {"minecraft/overworld", "minecraft/the_nether"};
-        } else {
-            dims = new String[] {MinimapApi.getInstance().getMapServer().getLevelFor(mc.level).level_slug()};
-        }
+        String[] dims = new String[] {MinimapApi.getInstance().getMapServer().getLevelFor(mc.level).level_slug()};
 
         return new WaypointEditScreen(parent, new Waypoint(
             mc.level.dimensionType().coordinateScale(),
