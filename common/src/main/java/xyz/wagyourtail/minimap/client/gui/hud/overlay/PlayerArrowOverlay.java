@@ -2,11 +2,10 @@ package xyz.wagyourtail.minimap.client.gui.hud.overlay;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Vector3f;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
+import org.joml.Quaternionf;
 import xyz.wagyourtail.config.field.IntRange;
 import xyz.wagyourtail.config.field.Setting;
 import xyz.wagyourtail.config.field.SettingsContainer;
@@ -47,12 +46,12 @@ public class PlayerArrowOverlay extends AbstractMinimapOverlay {
         Vec3 offset = center.subtract(player_pos);
         if (parent.rotate) {
             stack.translate(maxLength / 2, maxLength / 2, 0);
-            stack.mulPose(Vector3f.ZN.rotationDegrees(player_rot - 180));
+            stack.mulPose(new Quaternionf().rotateZ((float) Math.toRadians(player_rot - 180)));
             stack.translate(-maxLength / 2, -maxLength / 2, 0);
         }
 
         stack.translate(maxLength / 2 + offset.x * chunkScale / 16f, maxLength / 2 + offset.z * chunkScale / 16f, 0);
-        stack.mulPose(Vector3f.ZP.rotationDegrees(player_rot));
+        stack.mulPose(new Quaternionf().rotateZ((float) Math.toRadians(player_rot)));
         RenderSystem.setShaderTexture(0, player_icon_tex);
         float texSize = Math.max(maxLength / 20, 8);
         int color =  (blue << 16) | (green << 8) | red;

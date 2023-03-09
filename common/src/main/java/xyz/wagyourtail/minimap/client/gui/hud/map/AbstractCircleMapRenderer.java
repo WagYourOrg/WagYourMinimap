@@ -2,9 +2,9 @@ package xyz.wagyourtail.minimap.client.gui.hud.map;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
-import com.mojang.math.Matrix4f;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Matrix4f;
 import xyz.wagyourtail.minimap.client.gui.hud.overlay.AbstractMinimapOverlay;
 import xyz.wagyourtail.minimap.client.gui.hud.overlay.CircleMapBorderOverlay;
 

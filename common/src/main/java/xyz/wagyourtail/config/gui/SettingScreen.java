@@ -61,32 +61,35 @@ public class SettingScreen extends Screen {
         super.init();
         AtomicInteger currentPage = new AtomicInteger();
 
-        backButton = addRenderableWidget(new Button(
+        backButton = addRenderableWidget(new Button.Builder(
+            Component.translatable("gui.wagyourconfig.back"),
+            (btn) -> drawPage(currentPage.decrementAndGet())
+        ).bounds(
             this.width / 2 - 210,
             this.height - 30,
             100,
-            20,
-            Component.translatable("gui.wagyourconfig.back"),
-            (btn) -> drawPage(currentPage.decrementAndGet())
-        ));
+            20
+        ).build());
 
-        forwardButton = addRenderableWidget(new Button(
+        forwardButton = addRenderableWidget(new Button.Builder(
+            Component.translatable("gui.wagyourconfig.forward"),
+            (btn) -> drawPage(currentPage.incrementAndGet())
+        ).bounds(
             this.width / 2 - 105,
             this.height - 30,
             100,
-            20,
-            Component.translatable("gui.wagyourconfig.forward"),
-            (btn) -> drawPage(currentPage.incrementAndGet())
-        ));
+            20
+        ).build());
 
-        doneButton = addRenderableWidget(new Button(
+        doneButton = addRenderableWidget(new Button.Builder(
+            Component.translatable("gui.wagyourconfig.done"),
+            (btn) -> onClose()
+        ).bounds(
             this.width / 2 + 5,
             this.height - 30,
             200,
-            20,
-            Component.translatable("gui.wagyourconfig.done"),
-            (btn) -> onClose()
-        ));
+            20
+        ).build());
 
         drawPage(0);
         int buttonsPerPage = height / 30 * 2;
@@ -136,11 +139,7 @@ public class SettingScreen extends Screen {
         // pure subsetting
         if (setting.u() != null) {
             return new AbstractWidget[] {
-                new Button(
-                    x,
-                    y,
-                    width,
-                    height,
+                new Button.Builder(
                     Component.translatable(setting.u().type.getAnnotation(SettingsContainer.class).value()),
                     (btn) -> {
                         try {
@@ -152,7 +151,12 @@ public class SettingScreen extends Screen {
                             e.printStackTrace();
                         }
                     }
-                )
+                ).bounds(
+                    x,
+                    y,
+                    width,
+                    height
+                ).build()
             };
         }
         try {
@@ -271,11 +275,7 @@ public class SettingScreen extends Screen {
                 if (settingField.options() != null) {
                     MutableComponent title = Component.translatable(settingField.setting.value());
                     List<String> settings = (List<String>) settingField.options().stream().toList();
-                    element = new Button(
-                        x,
-                        y,
-                        width,
-                        height,
+                    element = new Button.Builder(
                         title.copy().append(" " + settingField.get()),
                         (btn) -> {
                             try {
@@ -286,7 +286,12 @@ public class SettingScreen extends Screen {
                                 e.printStackTrace();
                             }
                         }
-                    );
+                    ).bounds(
+                        x,
+                        y,
+                        width,
+                        height
+                    ).build();
                 } else {
                     element = new NamedEditBox(
                         font,
@@ -310,11 +315,7 @@ public class SettingScreen extends Screen {
             } else if (settingField.fieldType.isEnum()) {
                 MutableComponent title = Component.translatable(settingField.setting.value());
                 List<?> settings = settingField.options().stream().toList();
-                element = new Button(
-                    x,
-                    y,
-                    width,
-                    height,
+                element = new Button.Builder(
                     title.copy().append(" " + settingField.get()),
                     (btn) -> {
                         try {
@@ -325,15 +326,16 @@ public class SettingScreen extends Screen {
                             e.printStackTrace();
                         }
                     }
-                );
-
-                //array
-            } else if (settingField.fieldType.isArray()) {
-                element = new Button(
+                ).bounds(
                     x,
                     y,
                     width,
-                    height,
+                    height
+                ).build();
+
+                //array
+            } else if (settingField.fieldType.isArray()) {
+                element = new Button.Builder(
                     Component.translatable(settingField.setting.value()),
                     (btn) -> {
                         minecraft.setScreen(new ArrayScreen<>(
@@ -343,7 +345,12 @@ public class SettingScreen extends Screen {
                             (SettingField<Object[]>) settingField
                         ));
                     }
-                );
+                ).bounds(
+                    x,
+                    y,
+                    width,
+                    height
+                ).build();
                 //map
             } else if (Map.class.isAssignableFrom(settingField.fieldType)) {
                 throw new IllegalArgumentException("Map settings are not supported yet");
@@ -355,11 +362,7 @@ public class SettingScreen extends Screen {
             } else {
                 MutableComponent title = Component.translatable(settingField.setting.value());
                 List<Class<?>> settings = (List<Class<?>>) settingField.options().stream().toList();
-                element = new Button(
-                    x,
-                    y,
-                    width - height - 5,
-                    height,
+                element = new Button.Builder(
                     title.copy()
                         .append(" ")
                         .append(Component.translatable(settingField.get()
@@ -388,12 +391,13 @@ public class SettingScreen extends Screen {
                             e.printStackTrace();
                         }
                     }
-                );
-                settingButton[0] = new Button(
-                    x + width - height,
+                ).bounds(
+                    x,
                     y,
-                    height,
-                    height,
+                    width - height - 5,
+                    height
+                ).build();
+                settingButton[0] = new Button.Builder(
                     Component.literal("⚙"),
                     (btn) -> {
                         try {
@@ -405,7 +409,12 @@ public class SettingScreen extends Screen {
                             e.printStackTrace();
                         }
                     }
-                );
+                ).bounds(
+                    x + width - height,
+                    y,
+                    height,
+                    height
+                ).build();
                 Object option = settingField.get();
                 settingButton[0].visible =
                     option.getClass().isAnnotationPresent(SettingsContainer.class) && Arrays.stream(option.getClass()

@@ -2,18 +2,17 @@ package xyz.wagyourtail.minimap.client.world;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
-import com.mojang.math.Matrix4f;
-import com.mojang.math.Vector3f;
 import dev.architectury.event.Event;
 import dev.architectury.event.EventFactory;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Matrix4f;
+import org.joml.Quaternionf;
 import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
 import xyz.wagyourtail.minimap.api.client.config.MinimapClientConfig;
 import xyz.wagyourtail.minimap.client.gui.AbstractMapRenderer;
@@ -82,9 +81,9 @@ public class InGameWaypointRenderer {
     }
 
     public static void renderWaypointIcon(PoseStack stack, Vec3 offset, float xRot, float yRot, Waypoint waypoint, double distance) {
-        stack.mulPose(Vector3f.YP.rotationDegrees(yRot));
-        stack.mulPose(Vector3f.XP.rotationDegrees(xRot));
-        stack.mulPose(Vector3f.ZP.rotationDegrees(180));
+        stack.mulPose(new Quaternionf().rotateY((float) Math.toRadians(yRot)));
+        stack.mulPose(new Quaternionf().rotateX((float) Math.toRadians(xRot)));
+        stack.mulPose(new Quaternionf().rotateZ((float) Math.toRadians(180)));
         float scale = (float) Math.max(.0675, -distance / 50f * .0625 + .125f);
         stack.scale(scale, scale, scale);
         RenderSystem.setShaderTexture(0, waypoint.getIcon());
@@ -123,8 +122,10 @@ public class InGameWaypointRenderer {
     public static void renderWaypointBeam(PoseStack stack, Vec3 offset, float xRot, float yRot, Waypoint waypoint, double distance) {
         // face player
 
-        stack.mulPose(Vector3f.YP.rotationDegrees(yRot));
-        stack.mulPose(Vector3f.ZP.rotationDegrees(180));
+//        stack.mulPose(Vector3f.YP.rotationDegrees(yRot));
+//        stack.mulPose(Vector3f.ZP.rotationDegrees(180));
+        stack.mulPose(new Quaternionf().rotateY((float) Math.toRadians(yRot)));
+        stack.mulPose(new Quaternionf().rotateZ((float) Math.toRadians(180)));
 
         //        float scale = (float) Math.max(.0675, -distance / 50f * .0625 + .125f);
         //        stack.scale(scale, scale, scale);

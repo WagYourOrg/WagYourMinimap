@@ -60,7 +60,7 @@ public class MinimapClientApi extends MinimapApi {
         if (command.startsWith("/")) {
             command = command.substring(1);
         }
-        mc.player.commandUnsigned(command);
+        mc.getConnection().sendCommand(command);
     }
 
 }

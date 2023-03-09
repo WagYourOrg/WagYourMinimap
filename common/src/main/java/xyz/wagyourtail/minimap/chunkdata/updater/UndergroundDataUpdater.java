@@ -2,6 +2,7 @@ package xyz.wagyourtail.minimap.chunkdata.updater;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
@@ -68,7 +69,7 @@ public class UndergroundDataUpdater extends AbstractChunkDataUpdater<Underground
         ChunkPos pos = chunk.getPos();
         LayerLightEventListener light = getBlockLightLayer(level);
         BlockPos.MutableBlockPos blockPos = new BlockPos.MutableBlockPos();
-        Registry<Biome> biomeRegistry = level.registryAccess().registryOrThrow(Registry.BIOME_REGISTRY);
+        Registry<Biome> biomeRegistry = level.registryAccess().registryOrThrow(Registries.BIOME);
 
         int sectionMin = sectionY * sectionHeight;
         int sectionMax = sectionMin + sectionHeight;

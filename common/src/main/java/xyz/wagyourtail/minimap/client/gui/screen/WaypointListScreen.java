@@ -51,11 +51,7 @@ public class WaypointListScreen extends Screen {
         waypointListWidget = new WaypointList(this, minecraft, width, height, 32, height - 64, 16);
         addWidget(waypointListWidget);
 
-        buttons.addAll(List.of(new Button(
-            0,
-            0,
-            0,
-            20,
+        buttons.addAll(List.of(new Button.Builder(
             net.minecraft.network.chat.Component.translatable("gui.wagyourminimap.waypoints.add"),
             (button) -> {
                 assert minecraft.player != null;
@@ -64,19 +60,20 @@ public class WaypointListScreen extends Screen {
                     new BlockPos(minecraft.player.getPosition(0)).above()
                 ));
             }
-        ), new Button(0, 0, 0, 20, net.minecraft.network.chat.Component.translatable("gui.wagyourminimap.waypoints.reload"), (button) -> {
+        ).bounds(
+            0,
+            0,
+            0,
+            20
+        ).build(), new Button.Builder(net.minecraft.network.chat.Component.translatable("gui.wagyourminimap.waypoints.reload"), (button) -> {
             refreshEntries();
-        }), new Button(0, 0, 0, 20, net.minecraft.network.chat.Component.translatable("gui.wagyourminimap.close"), (button) -> {
+        }).bounds(0, 0, 0, 20).build(), new Button.Builder(net.minecraft.network.chat.Component.translatable("gui.wagyourminimap.close"), (button) -> {
             onClose();
-        })));
+        }).bounds(0, 0, 0, 20).build()));
 
 
         waypointNotNullButtons.addAll(List.of(
-            new Button(
-                0,
-                0,
-                0,
-                20,
+            new Button.Builder(
                 net.minecraft.network.chat.Component.translatable("gui.wagyourminimap.waypoints.edit"),
                 (button) -> {
                     WaypointList.WaypointListEntry selected = getSelected();
@@ -85,28 +82,33 @@ public class WaypointListScreen extends Screen {
                         minecraft.setScreen(new WaypointEditScreen(this, selected.point));
                     }
                 }
-            ),
-            new Button(0, 0, 0, 20, net.minecraft.network.chat.Component.translatable("gui.wagyourminimap.waypoints.delete"), (button) -> {
+            ).bounds(
+                0,
+                0,
+                0,
+                20
+            ).build(),
+            new Button.Builder(net.minecraft.network.chat.Component.translatable("gui.wagyourminimap.waypoints.delete"), (button) -> {
                 WaypointList.WaypointListEntry selected = getSelected();
                 if (selected != null) {
                     MinimapApi.getInstance().getMapServer().waypoints.removeWaypoint(selected.point);
                     refreshEntries();
                 }
-            }),
-            new Button(0, 0, 0, 20, net.minecraft.network.chat.Component.translatable("gui.wagyourminimap.waypoints.enable"), (button) -> {
+            }).bounds(0, 0, 0, 20).build(),
+            new Button.Builder(net.minecraft.network.chat.Component.translatable("gui.wagyourminimap.waypoints.enable"), (button) -> {
                 WaypointList.WaypointListEntry selected = getSelected();
                 if (selected != null) {
                     selected.toggleEnabled();
                 }
-            }),
-            new Button(0, 0, 0, 20, net.minecraft.network.chat.Component.translatable("gui.wagyourminimap.waypoints.teleport"), (button) -> {
+            }).bounds(0, 0, 0, 20).build(),
+            new Button.Builder(net.minecraft.network.chat.Component.translatable("gui.wagyourminimap.waypoints.teleport"), (button) -> {
                 WaypointList.WaypointListEntry selected = getSelected();
                 if (selected != null) {
                     assert minecraft != null;
                     BlockPos pos = selected.point.posForCoordScale(minecraft.level.dimensionType().coordinateScale());
                     MinimapClientApi.getInstance().sendTp(pos.getX(), pos.getY(), pos.getZ());
                 }
-            })
+            }).bounds(0, 0, 0, 20).build()
         ));
 
         MinimapClientEvents.WAYPOINT_LIST_MENU.invoker().onPopulate(this, buttons, waypointNotNullButtons);
@@ -116,8 +118,8 @@ public class WaypointListScreen extends Screen {
 
         for (int i = 0; i < waypointNotNullButtons.size(); i++) {
             Button button = waypointNotNullButtons.get(i);
-            button.x = i * waypointNotNullButtonsWidth + offset;
-            button.y = height - 50;
+            button.setX(i * waypointNotNullButtonsWidth + offset);
+            button.setY(height - 50);
             button.active = false;
             button.setWidth(waypointNotNullButtonsWidth - 5);
             addRenderableWidget(button);
@@ -128,8 +130,8 @@ public class WaypointListScreen extends Screen {
 
         for (int i = 0; i < buttons.size(); i++) {
             Button button = buttons.get(i);
-            button.x = i * buttonsWidth + offset;
-            button.y = height - 25;
+            button.setX(i * buttonsWidth + offset);
+            button.setY(height - 25);
             button.setWidth(buttonsWidth - 5);
             addRenderableWidget(button);
         }

@@ -2,11 +2,11 @@ package xyz.wagyourtail.minimap.client.gui.hud.overlay;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Vector3f;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
+import org.joml.Quaternionf;
 import xyz.wagyourtail.config.field.SettingsContainer;
 import xyz.wagyourtail.minimap.WagYourMinimap;
 import xyz.wagyourtail.minimap.api.MinimapApi;
@@ -59,7 +59,8 @@ public class WaypointOverlay extends AbstractMinimapOverlay {
             );
             stack.scale(.004f * maxLength, .004f * maxLength, 1);
             if (scale < 1) {
-                stack.mulPose(Vector3f.ZN.rotation((float) Math.atan2(pointVec.x, pointVec.z)));
+//                stack.mulPose(Vector3f.ZN.rotation((float) Math.atan2(pointVec.x, pointVec.z)));
+                stack.mulPose(new Quaternionf().rotateZ(-(float) Math.atan2(pointVec.x, pointVec.z)));
                 RenderSystem.setShaderTexture(0, waypoint_arrow_tex);
             } else {
                 RenderSystem.setShaderTexture(0, point.getIcon());

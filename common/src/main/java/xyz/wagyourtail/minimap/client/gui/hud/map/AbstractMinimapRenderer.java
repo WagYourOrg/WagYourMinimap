@@ -2,11 +2,11 @@ package xyz.wagyourtail.minimap.client.gui.hud.map;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Vector3f;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
+import org.joml.Quaternionf;
 import org.lwjgl.opengl.GL11;
 import xyz.wagyourtail.config.field.Setting;
 import xyz.wagyourtail.minimap.ModLoaderSpecific;
@@ -323,7 +323,7 @@ public abstract class AbstractMinimapRenderer extends AbstractMapRenderer {
 
     public void rotateMatrix(PoseStack matrixStack, float maxLength, float player_rot) {
         matrixStack.translate(maxLength / 2, maxLength / 2, 0);
-        matrixStack.mulPose(Vector3f.ZN.rotationDegrees(player_rot - 180));
+        matrixStack.mulPose(new Quaternionf().rotateZ((float) Math.toRadians(player_rot - 180)));
         matrixStack.translate(-maxLength / 2, -maxLength / 2, 0);
     }
 

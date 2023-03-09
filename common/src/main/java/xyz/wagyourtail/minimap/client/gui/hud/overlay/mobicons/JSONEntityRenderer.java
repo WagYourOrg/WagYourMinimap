@@ -4,6 +4,8 @@ import com.google.gson.Gson;
 import com.google.gson.JsonParser;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -25,7 +27,7 @@ public class JSONEntityRenderer extends AbstractEntityRenderer<LivingEntity> {
                 Files.writeString(iconFile, "{}");
             }
             new JsonParser().parse(Files.readString(iconFile)).getAsJsonObject().entrySet().forEach(e -> {
-                Registry.ENTITY_TYPE.getOptional(new ResourceLocation(e.getKey()))
+                BuiltInRegistries.ENTITY_TYPE.getOptional(new ResourceLocation(e.getKey()))
                     .ifPresent(type -> {
                         texMap.put(
                             (EntityType<? extends LivingEntity>) type,

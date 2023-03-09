@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.world.level.biome.Biome;
@@ -55,7 +56,7 @@ public abstract class AccurateBlockColors extends BlockColors {
     public int getBlockColor(BlockState block, BlockPos pos) {
         return blockColorCache.computeIfAbsent(block, (bs) -> {
             NativeImage image = null;
-            ResourceLocation blockLocation = Registry.BLOCK.getKey(bs.getBlock());
+            ResourceLocation blockLocation = BuiltInRegistries.BLOCK.getKey(bs.getBlock());
             try {
                 // try for top texture
                 ResourceLocation imageLocation = new ResourceLocation(

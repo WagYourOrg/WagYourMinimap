@@ -2,13 +2,13 @@ package xyz.wagyourtail.minimap.client.gui.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
-import com.mojang.math.Matrix4f;
-import net.minecraft.client.gui.components.Widget;
+import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.resources.ResourceLocation;
+import org.joml.Matrix4f;
 import xyz.wagyourtail.minimap.WagYourMinimap;
 import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
 import xyz.wagyourtail.minimap.api.client.MinimapClientEvents;
@@ -182,7 +182,7 @@ public class MapScreen extends Screen {
     }
 
     @Override
-    public <T extends GuiEventListener & Widget & NarratableEntry> T addRenderableWidget(T widget) {
+    public <T extends GuiEventListener & Renderable  & NarratableEntry> T addRenderableWidget(T widget) {
         return super.addRenderableWidget(widget);
     }
 
@@ -222,8 +222,8 @@ public class MapScreen extends Screen {
     private void setupMenu(List<MenuButton> buttons) {
         int i = height / 2 - buttons.size() * 30 + 5;
         for (MenuButton btn : buttons) {
-            btn.x = 2;
-            btn.y = i;
+            btn.setX(2);
+            btn.setY(i);
             i += 35;
             addRenderableWidget(btn);
         }
