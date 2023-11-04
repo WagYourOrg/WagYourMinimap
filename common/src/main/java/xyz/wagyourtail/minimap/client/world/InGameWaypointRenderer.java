@@ -6,6 +6,7 @@ import dev.architectury.event.Event;
 import dev.architectury.event.EventFactory;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.core.BlockPos;
@@ -112,7 +113,7 @@ public class InGameWaypointRenderer {
             false,
             stack.last().pose(),
             buffer,
-            true,
+            Font.DisplayMode.NORMAL,
             0x30000000,
             0xF000F0
         );
@@ -135,7 +136,6 @@ public class InGameWaypointRenderer {
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
-        RenderSystem.disableTexture();
         BufferBuilder builder = Tesselator.getInstance().getBuilder();
         builder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
         float r = (waypoint.colR & 0xFF) / 255f;

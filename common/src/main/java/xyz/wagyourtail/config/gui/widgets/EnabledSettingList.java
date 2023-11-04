@@ -40,7 +40,7 @@ public class EnabledSettingList<T> extends ObjectSelectionList<EnabledSettingLis
     }
 
     @Override
-    protected void renderHeader(PoseStack poseStack, int x, int y, Tesselator tessellator) {
+    protected void renderHeader(PoseStack poseStack, int x, int y) {
         Component component = (Component.literal("")).append(this.title).withStyle(
             ChatFormatting.UNDERLINE,
             ChatFormatting.BOLD

@@ -109,7 +109,7 @@ public class WagYourMinimapClient extends WagYourMinimap {
                 InGameHud.getRenderer().fullscreen_toggle = false;
             }
             if (key_new_waypoint.consumeClick()) {
-                mc.setScreen(WaypointEditScreen.createNewFromPos(null, new BlockPos(mc.cameraEntity.getEyePosition())));
+                mc.setScreen(WaypointEditScreen.createNewFromPos(null, BlockPos.containing(mc.cameraEntity.getEyePosition())));
             }
             if (key_zoom_in.consumeClick()) {
                 int rad = MinimapApi.getInstance().getConfig().get(MinimapClientConfig.class).getChunkRadius();
@@ -153,9 +153,7 @@ public class WagYourMinimapClient extends WagYourMinimap {
         InGameWaypointRenderer.RENDER_LAST.register((stack, camera) -> {
 
             RenderSystem.enableBlend();
-            RenderSystem.enableTexture();
             RenderSystem.defaultBlendFunc();
-            RenderSystem.enableTexture();
             RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
             try {
                 if (MinimapApi.getInstance().getConfig().get(MinimapClientConfig.class).showWaypoints) {

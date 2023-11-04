@@ -20,7 +20,7 @@ public class UndergroundAccurateImageStrategy extends AccurateBlockColors implem
         assert UndergroundImager.minecraft.level != null;
         assert UndergroundImager.minecraft.player != null;
         int light = UndergroundImager.minecraft.level.getLightEngine().getLayerListener(LightLayer.SKY).getLightValue(
-            new BlockPos(UndergroundImager.minecraft.player.getPosition(0)));
+            UndergroundImager.minecraft.player.blockPosition());
         return light < this.lightLevel;
     }
 

@@ -165,7 +165,12 @@ public class SettingField<T> {
 
     public Collection<?> options() throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         if (options != null) {
-            return (Collection<?>) options.invoke(parent.get());
+            try {
+                return (Collection<?>) options.invoke(parent.get());
+            }catch (IllegalArgumentException ex) {
+                System.out.println("Error getting options for " + field.getName() + " in " + field.getDeclaringClass().getName());
+                throw ex;
+            }
         }
         if (fieldType.isEnum()) {
             return Arrays.asList((Object[]) fieldType.getDeclaredMethod("values").invoke(null));

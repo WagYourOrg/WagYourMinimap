@@ -105,7 +105,7 @@ public class InteractMenu extends GuiComponent implements Renderable, GuiEventLi
         List<InteractMenuButton> buttons = new ArrayList<>();
         buttons.add(new InteractMenuButton(
             net.minecraft.network.chat.Component.translatable("gui.wagyourminimap.create_waypoint"),
-            (btn) -> minecraft.setScreen(WaypointEditScreen.createNewFromPos(parent, new BlockPos(pos).above()))
+            (btn) -> minecraft.setScreen(WaypointEditScreen.createNewFromPos(parent, BlockPos.containing(pos.x, pos.y, pos.z).above()))
         ));
 
         buttons.add(new InteractMenuButton(
@@ -216,4 +216,13 @@ public class InteractMenu extends GuiComponent implements Renderable, GuiEventLi
 
     }
 
+    @Override
+    public void setFocused(boolean focused) {
+
+    }
+
+    @Override
+    public boolean isFocused() {
+        return false;
+    }
 }

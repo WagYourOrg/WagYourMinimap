@@ -15,13 +15,13 @@ public class NamedEditBox extends EditBox {
 
 
     @Override
-    public void renderButton(PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
+    public void renderWidget(PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
         poseStack.pushPose();
         poseStack.translate(this.getX(), this.getY() - 6, 0);
         poseStack.scale(.6f, .6f, 1);
         drawString(poseStack, font, this.getMessage(), 0, 0, 0xFFFFFF);
         poseStack.popPose();
-        super.renderButton(poseStack, mouseX, mouseY, partialTicks);
+        super.renderWidget(poseStack, mouseX, mouseY, partialTicks);
     }
 
 }

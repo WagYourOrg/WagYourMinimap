@@ -34,8 +34,7 @@ public class ColorButton extends AbstractWidget {
     }
 
     @Override
-    public void renderButton(PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
-        RenderSystem.disableTexture();
+    public void renderWidget(PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
@@ -121,7 +120,6 @@ public class ColorButton extends AbstractWidget {
 
         tesselator.end();
         RenderSystem.disableBlend();
-        RenderSystem.enableTexture();
     }
 
     @Override

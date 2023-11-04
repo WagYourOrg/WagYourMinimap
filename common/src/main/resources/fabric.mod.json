@@ -2,7 +2,7 @@
     "schemaVersion": 1,
     "id": "wagyourminimap-common",
     "version": "${version}",
-    "name": "WagYourMinimap",
+    "name": "WagYourMinimap-Common-Dev",
     "description": "Minimap mod coded from scratch to not be ass.",
     "authors": [
         "Wagyourtail"
@@ -15,22 +15,10 @@
     "icon": "assets/wagyourminimap/icon/icon.png",
     "environment": "*",
     "entrypoints": {
-        "client": [
-            "xyz.wagyourtail.minimap.fabric.WagYourMinimapFabric"
-        ],
-        "modmenu": [
-            "xyz.wagyourtail.minimap.fabric.ModMenuConfig"
-        ]
     },
     "mixins": [
-        "wagyourminimapcommon.mixins.json",
-        "wagyourminimapfabric.mixins.json"
     ],
     "depends": {
-        "fabricloader": ">=0.11.0",
-        "fabric": "*",
-        "minecraft": "1.19.2",
-        "architectury": ">=6.0.0"
     },
     "suggests": {
     }

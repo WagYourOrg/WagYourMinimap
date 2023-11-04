@@ -57,7 +57,7 @@ public class WaypointListScreen extends Screen {
                 assert minecraft.player != null;
                 minecraft.setScreen(WaypointEditScreen.createNewFromPos(
                     this,
-                    new BlockPos(minecraft.player.getPosition(0)).above()
+                    new BlockPos(minecraft.player.blockPosition()).above()
                 ));
             }
         ).bounds(

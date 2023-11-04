@@ -58,7 +58,6 @@ public abstract class AbstractEntityRenderer<T extends LivingEntity> {
             RenderSystem.setShader(GameRenderer::getPositionColorTexShader);
             RenderSystem.enableBlend();
             RenderSystem.defaultBlendFunc();
-            RenderSystem.enableTexture();
             Matrix4f matrix = stack.last().pose();
             BufferBuilder builder = Tesselator.getInstance().getBuilder();
             boolean prevTexed = true;

@@ -29,7 +29,7 @@ public class InteractMenuButton extends AbstractButton {
 
 
     @Override
-    public void renderButton(PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
+    public void renderWidget(PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
         Minecraft minecraft = Minecraft.getInstance();
         fill(
             poseStack,

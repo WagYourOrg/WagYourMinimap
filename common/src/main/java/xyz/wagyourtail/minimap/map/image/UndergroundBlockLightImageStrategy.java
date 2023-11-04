@@ -72,8 +72,8 @@ public class UndergroundBlockLightImageStrategy implements ImageStrategy {
     public boolean shouldRender() {
         assert minecraft.level != null;
         assert minecraft.player != null;
-        int light = minecraft.level.getLightEngine().getLayerListener(LightLayer.SKY).getLightValue(new BlockPos(
-            minecraft.player.getPosition(0)));
+        int light = minecraft.level.getLightEngine().getLayerListener(LightLayer.SKY).getLightValue(
+            minecraft.player.blockPosition());
         return light < this.lightLevel;
     }
 

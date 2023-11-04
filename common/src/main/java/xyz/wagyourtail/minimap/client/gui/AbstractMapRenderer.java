@@ -58,7 +58,6 @@ public abstract class AbstractMapRenderer {
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
-        RenderSystem.enableTexture();
         BufferBuilder builder = Tesselator.getInstance().getBuilder();
         builder.begin(VertexFormat.Mode.TRIANGLE_STRIP, DefaultVertexFormat.POSITION_TEX);
         builder.vertex(matrix, x, y, 0).uv(endU, endV).endVertex();
@@ -73,7 +72,6 @@ public abstract class AbstractMapRenderer {
         RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
-        RenderSystem.enableTexture();
         BufferBuilder builder = Tesselator.getInstance().getBuilder();
         float a = (abgrTint >> 0x18 & 0xFF) / 255f;
         float b = (abgrTint >> 0x10 & 0xFF) / 255f;
@@ -101,7 +99,6 @@ public abstract class AbstractMapRenderer {
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
-        RenderSystem.enableTexture();
         BufferBuilder builder = Tesselator.getInstance().getBuilder();
         builder.begin(VertexFormat.Mode.TRIANGLE_STRIP, DefaultVertexFormat.POSITION_TEX);
         builder.vertex(matrix, x, y, 0).uv(startU, startV).endVertex();
@@ -159,7 +156,6 @@ public abstract class AbstractMapRenderer {
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
-        RenderSystem.enableTexture();
         boolean ret = false;
         BufferBuilder builder = Tesselator.getInstance().getBuilder();
         Matrix4f matrix = matrixStack.last().pose();
@@ -205,7 +201,6 @@ public abstract class AbstractMapRenderer {
     public void rect(PoseStack matrixStack, float x, float y, float width, float height) {
         Matrix4f matrix = matrixStack.last().pose();
         RenderSystem.enableBlend();
-        RenderSystem.disableTexture();
         RenderSystem.defaultBlendFunc();
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
         BufferBuilder builder = Tesselator.getInstance().getBuilder();
@@ -215,7 +210,6 @@ public abstract class AbstractMapRenderer {
         builder.vertex(matrix, x + width, y, 0).color(0, 0, 0, 1f).endVertex();
         builder.vertex(matrix, x + width, y + height, 0).color(0, 0, 0, 1f).endVertex();
         BufferUploader.drawWithShader(builder.end());
-        RenderSystem.enableTexture();
         RenderSystem.disableBlend();
     }
 

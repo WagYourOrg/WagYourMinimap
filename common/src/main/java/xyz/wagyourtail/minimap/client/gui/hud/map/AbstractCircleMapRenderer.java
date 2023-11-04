@@ -42,7 +42,6 @@ public abstract class AbstractCircleMapRenderer extends AbstractMinimapRenderer 
         matrixStack.translate(x, y, 0);
         Matrix4f matrix = matrixStack.last().pose();
         RenderSystem.enableBlend();
-        RenderSystem.disableTexture();
         RenderSystem.defaultBlendFunc();
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
         BufferBuilder builder = Tesselator.getInstance().getBuilder();

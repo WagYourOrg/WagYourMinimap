@@ -69,7 +69,6 @@ public class ScaleOverlay extends AbstractFullscreenOverlay {
         float j = (float) (color & 255) / 255.0F;
         BufferBuilder bufferBuilder = Tesselator.getInstance().getBuilder();
         RenderSystem.enableBlend();
-        RenderSystem.disableTexture();
         RenderSystem.defaultBlendFunc();
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
         bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
@@ -78,7 +77,6 @@ public class ScaleOverlay extends AbstractFullscreenOverlay {
         bufferBuilder.vertex(matrix, maxX, minY, 0.0F).color(g, h, j, f).endVertex();
         bufferBuilder.vertex(matrix, minX, minY, 0.0F).color(g, h, j, f).endVertex();
         BufferUploader.drawWithShader(bufferBuilder.end());
-        RenderSystem.enableTexture();
         RenderSystem.disableBlend();
     }
 

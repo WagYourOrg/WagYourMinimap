@@ -24,7 +24,6 @@ public class CustomFilter extends AbstractMobIconFilter {
     @Setting(value = "gui.wagyourminimap.settings.mob_icon.filter.custom.mobs",
         options = "getMobOptions",
         setter = "setMobs")
-    @BrigadierOptionsOverride(value = ResourceArgument.class, getter = {"getSummonableEntityType", "method_45610", "m_247713_"})
     public String[] mobs = new String[0];
     private Predicate<LivingEntity> compiled = compileFilter();
 
