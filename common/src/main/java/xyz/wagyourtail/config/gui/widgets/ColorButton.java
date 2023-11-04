@@ -44,41 +44,41 @@ public class ColorButton extends AbstractWidget {
         bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
         // hue across the bottom, brightness top-bottom, sidebar on right for saturation
         float w = (width - 30) / 6f;
-        bufferBuilder.vertex(getX(), getY(), 0).color(0f, 0f, 0f, 1f).endVertex();
-        bufferBuilder.vertex(getX(), getY() + height, 0).color(0f, 0f, 0f, 1f).endVertex();
-        bufferBuilder.vertex(getX() + w * 6, getY() + height, 0).color(0f, 0f, 0f, 1f).endVertex();
-        bufferBuilder.vertex(getX() + w * 6, getY(), 0).color(0f, 0f, 0f, 1f).endVertex();
+        bufferBuilder.vertex(x, y, 0).color(0f, 0f, 0f, 1f).endVertex();
+        bufferBuilder.vertex(x, y + height, 0).color(0f, 0f, 0f, 1f).endVertex();
+        bufferBuilder.vertex(x + w * 6, y + height, 0).color(0f, 0f, 0f, 1f).endVertex();
+        bufferBuilder.vertex(x + w * 6, y, 0).color(0f, 0f, 0f, 1f).endVertex();
 
 
-        bufferBuilder.vertex(getX(), getY(), 0).color(1f, 0f, 0f, 1f).endVertex();
-        bufferBuilder.vertex(getX(), getY() + height, 0).color(1f, 0f, 0f, 0f).endVertex();
-        bufferBuilder.vertex(getX() + w, getY() + height, 0).color(1f, 1f, 0f, 0f).endVertex();
-        bufferBuilder.vertex(getX() + w, getY(), 0).color(1f, 1f, 0f, 1f).endVertex();
+        bufferBuilder.vertex(x, y, 0).color(1f, 0f, 0f, 1f).endVertex();
+        bufferBuilder.vertex(x, y + height, 0).color(1f, 0f, 0f, 0f).endVertex();
+        bufferBuilder.vertex(x + w, y + height, 0).color(1f, 1f, 0f, 0f).endVertex();
+        bufferBuilder.vertex(x + w, y, 0).color(1f, 1f, 0f, 1f).endVertex();
 
-        bufferBuilder.vertex(getX() + w, getY(), 0).color(1f, 1f, 0f, 1f).endVertex();
-        bufferBuilder.vertex(getX() + w, getY() + height, 0).color(1f, 1f, 0f, 0f).endVertex();
-        bufferBuilder.vertex(getX() + w * 2, getY() + height, 0).color(0f, 1f, 0f, 0f).endVertex();
-        bufferBuilder.vertex(getX() + w * 2, getY(), 0).color(0f, 1f, 0f, 1f).endVertex();
+        bufferBuilder.vertex(x + w, y, 0).color(1f, 1f, 0f, 1f).endVertex();
+        bufferBuilder.vertex(x + w, y + height, 0).color(1f, 1f, 0f, 0f).endVertex();
+        bufferBuilder.vertex(x + w * 2, y + height, 0).color(0f, 1f, 0f, 0f).endVertex();
+        bufferBuilder.vertex(x + w * 2, y, 0).color(0f, 1f, 0f, 1f).endVertex();
 
-        bufferBuilder.vertex(getX() + w * 2, getY(), 0).color(0f, 1f, 0f, 1f).endVertex();
-        bufferBuilder.vertex(getX() + w * 2, getY() + height, 0).color(0f, 1f, 0f, 0f).endVertex();
-        bufferBuilder.vertex(getX() + w * 3, getY() + height, 0).color(0f, 1f, 1f, 0f).endVertex();
-        bufferBuilder.vertex(getX() + w * 3, getY(), 0).color(0f, 1f, 1f, 1f).endVertex();
+        bufferBuilder.vertex(x + w * 2, y, 0).color(0f, 1f, 0f, 1f).endVertex();
+        bufferBuilder.vertex(x + w * 2, y + height, 0).color(0f, 1f, 0f, 0f).endVertex();
+        bufferBuilder.vertex(x + w * 3, y + height, 0).color(0f, 1f, 1f, 0f).endVertex();
+        bufferBuilder.vertex(x + w * 3, y, 0).color(0f, 1f, 1f, 1f).endVertex();
 
-        bufferBuilder.vertex(getX() + w * 3, getY(), 0).color(0f, 1f, 1f, 1f).endVertex();
-        bufferBuilder.vertex(getX() + w * 3, getY() + height, 0).color(0f, 1f, 1f, 0f).endVertex();
-        bufferBuilder.vertex(getX() + w * 4, getY() + height, 0).color(0f, 0f, 1f, 0f).endVertex();
-        bufferBuilder.vertex(getX() + w * 4, getY(), 0).color(0f, 0f, 1f, 1f).endVertex();
+        bufferBuilder.vertex(x + w * 3, y, 0).color(0f, 1f, 1f, 1f).endVertex();
+        bufferBuilder.vertex(x + w * 3, y + height, 0).color(0f, 1f, 1f, 0f).endVertex();
+        bufferBuilder.vertex(x + w * 4, y + height, 0).color(0f, 0f, 1f, 0f).endVertex();
+        bufferBuilder.vertex(x + w * 4, y, 0).color(0f, 0f, 1f, 1f).endVertex();
 
-        bufferBuilder.vertex(getX() + w * 4, getY(), 0).color(0f, 0f, 1f, 1f).endVertex();
-        bufferBuilder.vertex(getX() + w * 4, getY() + height, 0).color(0f, 0f, 1f, 0f).endVertex();
-        bufferBuilder.vertex(getX() + w * 5, getY() + height, 0).color(1f, 0f, 1f, 0f).endVertex();
-        bufferBuilder.vertex(getX() + w * 5, getY(), 0).color(1f, 0f, 1f, 1f).endVertex();
+        bufferBuilder.vertex(x + w * 4, y, 0).color(0f, 0f, 1f, 1f).endVertex();
+        bufferBuilder.vertex(x + w * 4, y + height, 0).color(0f, 0f, 1f, 0f).endVertex();
+        bufferBuilder.vertex(x + w * 5, y + height, 0).color(1f, 0f, 1f, 0f).endVertex();
+        bufferBuilder.vertex(x + w * 5, y, 0).color(1f, 0f, 1f, 1f).endVertex();
 
-        bufferBuilder.vertex(getX() + w * 5, getY(), 0).color(1f, 0f, 1f, 1f).endVertex();
-        bufferBuilder.vertex(getX() + w * 5, getY() + height, 0).color(1f, 0f, 1f, 0f).endVertex();
-        bufferBuilder.vertex(getX() + w * 6, getY() + height, 0).color(1f, 0f, 0f, 0f).endVertex();
-        bufferBuilder.vertex(getX() + w * 6, getY(), 0).color(1f, 0f, 0f, 1f).endVertex();
+        bufferBuilder.vertex(x + w * 5, y, 0).color(1f, 0f, 1f, 1f).endVertex();
+        bufferBuilder.vertex(x + w * 5, y + height, 0).color(1f, 0f, 1f, 0f).endVertex();
+        bufferBuilder.vertex(x + w * 6, y + height, 0).color(1f, 0f, 0f, 0f).endVertex();
+        bufferBuilder.vertex(x + w * 6, y, 0).color(1f, 0f, 0f, 1f).endVertex();
 
         int colFullSat = Color.HSBtoRGB(h, 1f, v);
         float colFullSatRed = (colFullSat >> 16 & 255) / 255f;
@@ -86,38 +86,38 @@ public class ColorButton extends AbstractWidget {
         float colFullSatBlue = (colFullSat & 255) / 255f;
         float colorNoSat = Math.max(Math.max(colFullSatRed, colFullSatGreen), colFullSatBlue);
 
-        bufferBuilder.vertex(getX() + w * 6 + 10, getY(), 0)
+        bufferBuilder.vertex(x + w * 6 + 10, y, 0)
             .color(colFullSatRed, colFullSatGreen, colFullSatBlue, 1f)
             .endVertex();
-        bufferBuilder.vertex(getX() + w * 6 + 10, getY() + height, 0).color(colorNoSat, colorNoSat, colorNoSat, 1f).endVertex();
-        bufferBuilder.vertex(getX() + w * 6 + 30, getY() + height, 0).color(colorNoSat, colorNoSat, colorNoSat, 1f).endVertex();
-        bufferBuilder.vertex(getX() + w * 6 + 30, getY(), 0)
+        bufferBuilder.vertex(x + w * 6 + 10, y + height, 0).color(colorNoSat, colorNoSat, colorNoSat, 1f).endVertex();
+        bufferBuilder.vertex(x + w * 6 + 30, y + height, 0).color(colorNoSat, colorNoSat, colorNoSat, 1f).endVertex();
+        bufferBuilder.vertex(x + w * 6 + 30, y, 0)
             .color(colFullSatRed, colFullSatGreen, colFullSatBlue, 1f)
             .endVertex();
 
         // draw location in saturation
         float h = height * (1f - s);
-        bufferBuilder.vertex(getX() + w * 6 + 10, getY() + h, 0).color(0f, 0f, 0f, 1f).endVertex();
-        bufferBuilder.vertex(getX() + w * 6 + 10, getY() + h + 1, 0).color(0f, 0f, 0f, 1f).endVertex();
-        bufferBuilder.vertex(getX() + w * 6 + 30, getY() + h + 1, 0).color(0f, 0f, 0f, 1f).endVertex();
-        bufferBuilder.vertex(getX() + w * 6 + 30, getY() + h, 0).color(0f, 0f, 0f, 1f).endVertex();
+        bufferBuilder.vertex(x + w * 6 + 10, y + h, 0).color(0f, 0f, 0f, 1f).endVertex();
+        bufferBuilder.vertex(x + w * 6 + 10, y + h + 1, 0).color(0f, 0f, 0f, 1f).endVertex();
+        bufferBuilder.vertex(x + w * 6 + 30, y + h + 1, 0).color(0f, 0f, 0f, 1f).endVertex();
+        bufferBuilder.vertex(x + w * 6 + 30, y + h, 0).color(0f, 0f, 0f, 1f).endVertex();
 
         // draw location in hb graph
         float locX = (w * 6) * this.h;
         float locY = height * (1 - v);
-        bufferBuilder.vertex(getX() + locX - 2, getY() + locY - 2, 0).color(0f, 0f, 0f, 1f).endVertex();
-        bufferBuilder.vertex(getX() + locX - 2, getY() + locY + 2, 0).color(0f, 0f, 0f, 1f).endVertex();
-        bufferBuilder.vertex(getX() + locX + 2, getY() + locY + 2, 0).color(0f, 0f, 0f, 1f).endVertex();
-        bufferBuilder.vertex(getX() + locX + 2, getY() + locY - 2, 0).color(0f, 0f, 0f, 1f).endVertex();
+        bufferBuilder.vertex(x + locX - 2, y + locY - 2, 0).color(0f, 0f, 0f, 1f).endVertex();
+        bufferBuilder.vertex(x + locX - 2, y + locY + 2, 0).color(0f, 0f, 0f, 1f).endVertex();
+        bufferBuilder.vertex(x + locX + 2, y + locY + 2, 0).color(0f, 0f, 0f, 1f).endVertex();
+        bufferBuilder.vertex(x + locX + 2, y + locY - 2, 0).color(0f, 0f, 0f, 1f).endVertex();
 
         int col = Color.HSBtoRGB(this.h, s, v);
         float colRed = (col >> 16 & 255) / 255f;
         float colGreen = (col >> 8 & 255) / 255f;
         float colBlue = (col & 255) / 255f;
-        bufferBuilder.vertex(getX() + locX - 1, getY() + locY - 1, 0).color(colRed, colGreen, colBlue, 1f).endVertex();
-        bufferBuilder.vertex(getX() + locX - 1, getY() + locY + 1, 0).color(colRed, colGreen, colBlue, 1f).endVertex();
-        bufferBuilder.vertex(getX() + locX + 1, getY() + locY + 1, 0).color(colRed, colGreen, colBlue, 1f).endVertex();
-        bufferBuilder.vertex(getX() + locX + 1, getY() + locY - 1, 0).color(colRed, colGreen, colBlue, 1f).endVertex();
+        bufferBuilder.vertex(x + locX - 1, y + locY - 1, 0).color(colRed, colGreen, colBlue, 1f).endVertex();
+        bufferBuilder.vertex(x + locX - 1, y + locY + 1, 0).color(colRed, colGreen, colBlue, 1f).endVertex();
+        bufferBuilder.vertex(x + locX + 1, y + locY + 1, 0).color(colRed, colGreen, colBlue, 1f).endVertex();
+        bufferBuilder.vertex(x + locX + 1, y + locY - 1, 0).color(colRed, colGreen, colBlue, 1f).endVertex();
 
         tesselator.end();
         RenderSystem.disableBlend();
@@ -126,7 +126,7 @@ public class ColorButton extends AbstractWidget {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (mouseX < getX() || mouseX > getX() + width || mouseY < getY() || mouseY > getY() + height) {
+        if (mouseX < x || mouseX > x + width || mouseY < y || mouseY > y + height) {
             return false;
         }
         if (button == 0) {
@@ -138,7 +138,7 @@ public class ColorButton extends AbstractWidget {
 
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
-        if (mouseX < getX() || mouseX > getX() + width || mouseY < getY() || mouseY > getY() + height) {
+        if (mouseX < x || mouseX > x + width || mouseY < y || mouseY > y + height) {
             return false;
         }
         if (button == 0) {
@@ -149,8 +149,8 @@ public class ColorButton extends AbstractWidget {
     }
 
     private void adjustColor(double mouseX, double mouseY) {
-        mouseX -= getX();
-        mouseY -= getY();
+        mouseX -= x;
+        mouseY -= y;
         mouseX = Mth.clamp(mouseX, 0, width);
         mouseY = Mth.clamp(mouseY, 0, height);
         if (mouseX <= width - 30) {
@@ -165,7 +165,7 @@ public class ColorButton extends AbstractWidget {
     }
 
     @Override
-    protected void updateWidgetNarration(NarrationElementOutput narrationElementOutput) {
+    public void updateNarration(NarrationElementOutput narrationElementOutput) {
 
     }
 

@@ -5,7 +5,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
@@ -60,7 +59,7 @@ public interface UndergroundImager extends IBlockColors {
 
             NativeImage image = new NativeImage(16, 16, false);
 
-            Registry<Biome> biomeRegistry = minecraft.level.registryAccess().registryOrThrow(Registries.BIOME);
+            Registry<Biome> biomeRegistry = minecraft.level.registryAccess().registryOrThrow(Registry.BIOME_REGISTRY);
 
             int[] north = data.north()
                 .get()

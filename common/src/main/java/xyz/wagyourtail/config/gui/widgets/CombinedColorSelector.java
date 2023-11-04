@@ -53,8 +53,8 @@ public class CombinedColorSelector extends AbstractWidget {
     }
 
     @Override
-    protected void updateWidgetNarration(NarrationElementOutput narrationElementOutput) {
-
+    public void updateNarration(NarrationElementOutput narrationElementOutput) {
+        // TODO
     }
 
     @Override
@@ -74,7 +74,7 @@ public class CombinedColorSelector extends AbstractWidget {
 
     @Override
     public void render(PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
-        drawString(poseStack, font, getMessage(), getX(), getY(), 0xFFFFFF);
+        drawString(poseStack, font, getMessage(), x, y, 0xFFFFFF);
         colorWheel.render(poseStack, mouseX, mouseY, partialTick);
         colorEdit.render(poseStack, mouseX, mouseY, partialTick);
     }

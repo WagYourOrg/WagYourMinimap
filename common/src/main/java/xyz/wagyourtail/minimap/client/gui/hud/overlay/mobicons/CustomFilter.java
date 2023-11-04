@@ -1,9 +1,7 @@
 package xyz.wagyourtail.minimap.client.gui.hud.overlay.mobicons;
 
-import net.minecraft.commands.arguments.ResourceArgument;
+import net.minecraft.commands.arguments.EntitySummonArgument;
 import net.minecraft.core.Registry;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobCategory;
@@ -24,12 +22,12 @@ public class CustomFilter extends AbstractMobIconFilter {
     @Setting(value = "gui.wagyourminimap.settings.mob_icon.filter.custom.mobs",
         options = "getMobOptions",
         setter = "setMobs")
-    @BrigadierOptionsOverride(value = ResourceArgument.class, getter = {"getSummonableEntityType", "method_45610", "m_247713_"})
+    @BrigadierOptionsOverride(value = EntitySummonArgument.class, getter = {"getSummonableEntity", "method_9322", "m_93338_", "m_drqmdajp"})
     public String[] mobs = new String[0];
     private Predicate<LivingEntity> compiled = compileFilter();
 
     public List<String> getMobOptions() {
-        return BuiltInRegistries.ENTITY_TYPE.entrySet().stream().filter(e ->
+        return Registry.ENTITY_TYPE.entrySet().stream().filter(e ->
             e.getValue().getCategory() != MobCategory.MISC ||
                 miscLiving.contains(e.getValue())
         ).map(e -> e.getKey().location().toString()).toList();
@@ -43,7 +41,7 @@ public class CustomFilter extends AbstractMobIconFilter {
 
     public Predicate<LivingEntity> compileFilter() {
         List<String> mobs = List.of(this.mobs);
-        return (e) -> mobs.contains(BuiltInRegistries.ENTITY_TYPE.getKey(e.getType()).toString());
+        return (e) -> mobs.contains(Registry.ENTITY_TYPE.getKey(e.getType()).toString());
     }
 
     @Override

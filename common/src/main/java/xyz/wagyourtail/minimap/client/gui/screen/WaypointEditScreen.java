@@ -245,30 +245,28 @@ public class WaypointEditScreen extends Screen {
         extra.setMaxLength(Integer.MAX_VALUE);
         extra.setValue(gson.toJson(prev_point.extra));
 
-        addRenderableWidget(new Button.Builder(
+        addRenderableWidget(new Button(
+            width / 2 - 100,
+            h + gradientHeight + 125,
+            95,
+            20,
             Component.translatable("gui.wagyourminimap.cancel"),
             (btn) -> {
                 canceled = true;
                 this.onClose();
             }
-        ).bounds(
-            width / 2 - 100,
+        ));
+
+        addRenderableWidget(new Button(
+            width / 2 + 5,
             h + gradientHeight + 125,
             95,
-            20
-        ).build());
-
-        addRenderableWidget(new Button.Builder(
+            20,
             Component.translatable("gui.wagyourminimap.save"),
             (btn) -> {
                 this.onClose();
             }
-        ).bounds(
-            width / 2 + 5,
-            h + gradientHeight + 125,
-            95,
-            20
-        ).build());
+        ));
 
         sideText = new ArrayList<>();
         if (width > 600) {

@@ -41,15 +41,16 @@ public class MenuButton extends AbstractButton {
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.enableDepthTest();
-        blit(poseStack, getX(), getY(), width, height, 0, 0, 64, 64, 64, 64);
+        blit(poseStack, x, y, width, height, 0, 0, 64, 64, 64, 64);
         RenderSystem.setShaderTexture(0, tex);
-        blit(poseStack, getX(), getY(), width, height, 0, 0, 64, 64, 64, 64);
+        blit(poseStack, x, y, width, height, 0, 0, 64, 64, 64, 64);
         if (this.isHovered) {
             this.renderToolTip(poseStack, mouseX, mouseY);
         }
 
     }
 
+    @Override
     public void renderToolTip(PoseStack poseStack, int mouseX, int mouseY) {
         Font font = Minecraft.getInstance().font;
         fill(
@@ -69,8 +70,8 @@ public class MenuButton extends AbstractButton {
     }
 
     @Override
-    protected void updateWidgetNarration(NarrationElementOutput narrationElementOutput) {
-
+    public void updateNarration(NarrationElementOutput narrationElementOutput) {
+        //TODO: figure out what this does?
     }
 
 }

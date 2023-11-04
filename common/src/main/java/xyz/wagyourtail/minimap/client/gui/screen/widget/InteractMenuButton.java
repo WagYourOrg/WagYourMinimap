@@ -27,16 +27,20 @@ public class InteractMenuButton extends AbstractButton {
         this.onPress.accept(this);
     }
 
+    @Override
+    public void updateNarration(NarrationElementOutput narrationElementOutput) {
+        //TODO: figure out what this does?
+    }
 
     @Override
     public void renderButton(PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
         Minecraft minecraft = Minecraft.getInstance();
         fill(
             poseStack,
-            this.getX(),
-            this.getY(),
-            this.getX() + this.width,
-            this.getY() + this.height,
+            this.x,
+            this.y,
+            this.x + this.width,
+            this.y + this.height,
             this.isHovered ? hoverColor : color
         );
         int j = this.active ? 16777215 : 10526880;
@@ -44,15 +48,10 @@ public class InteractMenuButton extends AbstractButton {
             poseStack,
             minecraft.font,
             this.getMessage(),
-            this.getX() + this.width / 2,
-            this.getY() + (this.height - 8) / 2,
+            this.x + this.width / 2,
+            this.y + (this.height - 8) / 2,
             j | Mth.ceil(this.alpha * 255.0F) << 24
         );
-    }
-
-    @Override
-    protected void updateWidgetNarration(NarrationElementOutput narrationElementOutput) {
-
     }
 
 }

@@ -124,7 +124,11 @@ public class ArrayScreen<T, U> extends Screen implements EnabledSettingList.Entr
                         20,
                         Component.translatable("gui.wagyourconfig.addentry")
                     ));
-                    this.addRenderableWidget(new Button.Builder(
+                    this.addRenderableWidget(new Button(
+                        this.width / 2 + 4,
+                        this.height / 2 + 4,
+                        200,
+                        20,
                         Component.translatable("gui.wagyourconfig.submit"),
                         (b) -> {
                             if (!setting.setting.allowDuplicateOption() && this.enabledEntries.children()
@@ -140,12 +144,7 @@ public class ArrayScreen<T, U> extends Screen implements EnabledSettingList.Entr
                                 Component.literal(box.getValue())
                             ));
                         }
-                    ).bounds(
-                        this.width / 2 + 4,
-                        this.height / 2 + 4,
-                        200,
-                        20
-                    ).build());
+                    ));
                 }
             } else if (setting.fieldType.componentType().isEnum()) {
                 throw new RuntimeException("NON Object List not yet implemented");
@@ -180,15 +179,14 @@ public class ArrayScreen<T, U> extends Screen implements EnabledSettingList.Entr
             e.printStackTrace();
         }
 
-        doneButton = addRenderableWidget(new Button.Builder(
-            Component.translatable("gui.wagyourconfig.done"),
-            (btn) -> onClose()
-        ).bounds(
+        doneButton = addRenderableWidget(new Button(
             this.width / 2 + 5,
             this.height - 30,
             200,
-            20
-        ).build());
+            20,
+            Component.translatable("gui.wagyourconfig.done"),
+            (btn) -> onClose()
+        ));
     }
 
     @Override

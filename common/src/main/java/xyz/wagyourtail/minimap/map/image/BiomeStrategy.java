@@ -4,7 +4,6 @@ import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.core.Registry;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.biome.Biome;
 import xyz.wagyourtail.minimap.chunkdata.ChunkData;
@@ -23,7 +22,7 @@ public class BiomeStrategy implements ImageStrategy {
             return null;
         }
         assert minecraft.level != null;
-        Registry<Biome> biomeRegistry = minecraft.level.registryAccess().registryOrThrow(Registries.BIOME);
+        Registry<Biome> biomeRegistry = minecraft.level.registryAccess().registryOrThrow(Registry.BIOME_REGISTRY);
         NativeImage image = new NativeImage(16, 16, false);
         for (int i = 0; i < 256; ++i) {
             int x = (i >> 4) % 16;

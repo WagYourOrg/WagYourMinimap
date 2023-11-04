@@ -48,40 +48,37 @@ public class MainSettingScreen extends Screen {
         super.init();
         AtomicInteger currentPage = new AtomicInteger();
 
-        backButton = addRenderableWidget(new Button.Builder(
+        backButton = addRenderableWidget(new Button(
+            this.width / 2 - 210,
+            this.height - 30,
+            100,
+            20,
             Component.translatable("gui.wagyourconfig.back"),
             (btn) -> {
                 drawPage(currentPage.decrementAndGet());
             }
-        ).bounds(
-            this.width / 2 - 210,
+        ));
+
+        forwardButton = addRenderableWidget(new Button(
+            this.width / 2 - 105,
             this.height - 30,
             100,
-            20
-        ).build());
-
-        forwardButton = addRenderableWidget(new Button.Builder(
+            20,
             Component.translatable("gui.wagyourconfig.forward"),
             (btn) -> {
                 drawPage(currentPage.incrementAndGet());
             }
-        ).bounds(
-            this.width / 2 - 105,
-            this.height - 30,
-            100,
-            20
-        ).build());
+        ));
 
 
-        doneButton = addRenderableWidget(new Button.Builder(
-            Component.translatable("gui.wagyourconfig.done"),
-            (btn) -> onClose()
-        ).bounds(
+        doneButton = addRenderableWidget(new Button(
             this.width / 2 + 5,
             this.height - 30,
             200,
-            20
-        ).build());
+            20,
+            Component.translatable("gui.wagyourconfig.done"),
+            (btn) -> onClose()
+        ));
 
         drawPage(0);
         int buttonsPerPage = height / 30 * 2;
@@ -106,23 +103,11 @@ public class MainSettingScreen extends Screen {
                 .getAnnotation(SettingsContainer.class)
                 .value());
             if (i % 2 == 0) {
-                pageButtons.add(addRenderableWidget(new Button.Builder(
-                    title,
-                    (btn) -> {
-                        try {
-                            minecraft.setScreen(new SettingScreen(title, this, config, config.get(configs[finalI])));
-                        } catch (NoSuchMethodException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                ).bounds(
+                pageButtons.add(addRenderableWidget(new Button(
                     this.width / 2 - 210,
                     50 + (i / 2) * 30,
                     205,
-                    20
-                ).build()));
-            } else {
-                pageButtons.add(addRenderableWidget(new Button.Builder(
+                    20,
                     title,
                     (btn) -> {
                         try {
@@ -131,12 +116,22 @@ public class MainSettingScreen extends Screen {
                             e.printStackTrace();
                         }
                     }
-                ).bounds(
+                )));
+            } else {
+                pageButtons.add(addRenderableWidget(new Button(
                     this.width / 2 + 5,
                     50 + (i / 2) * 30,
                     205,
-                    20
-                ).build()));
+                    20,
+                    title,
+                    (btn) -> {
+                        try {
+                            minecraft.setScreen(new SettingScreen(title, this, config, config.get(configs[finalI])));
+                        } catch (NoSuchMethodException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                )));
             }
         }
         backButton.active = page != 0;

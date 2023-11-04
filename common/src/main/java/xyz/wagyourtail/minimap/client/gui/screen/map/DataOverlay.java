@@ -2,7 +2,6 @@ package xyz.wagyourtail.minimap.client.gui.screen.map;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.core.Registry;
-import net.minecraft.core.registries.BuiltInRegistries;
 import xyz.wagyourtail.config.field.SettingsContainer;
 import xyz.wagyourtail.minimap.api.MinimapApi;
 import xyz.wagyourtail.minimap.chunkdata.ChunkData;
@@ -33,7 +32,7 @@ public class DataOverlay extends AbstractFullscreenOverlay {
             SurfaceDataPart surface = chunk.getData(SurfaceDataPart.class).orElse(null);
             if (surface != null) {
                 y = surface.heightmap[SurfaceDataPart.blockPosToIndex(x, z)];
-                block = BuiltInRegistries.BLOCK.getKey(chunk.getBlockState(surface.blockid[SurfaceDataPart.blockPosToIndex(
+                block = Registry.BLOCK.getKey(chunk.getBlockState(surface.blockid[SurfaceDataPart.blockPosToIndex(
                     x,
                     z
                 )]).getBlock()).toString();

@@ -5,7 +5,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.state.BlockState;
 import xyz.wagyourtail.minimap.chunkdata.ChunkData;
@@ -24,7 +23,7 @@ public interface SurfaceImager extends IBlockColors {
         }
         NativeImage image = new NativeImage(16, 16, false);
         assert minecraft.level != null;
-        Registry<Biome> biomeRegistry = minecraft.level.registryAccess().registryOrThrow(Registries.BIOME);
+        Registry<Biome> biomeRegistry = minecraft.level.registryAccess().registryOrThrow(Registry.BIOME_REGISTRY);
         int[] north = data.north()
             .get()
             .getData(SurfaceDataPart.class)

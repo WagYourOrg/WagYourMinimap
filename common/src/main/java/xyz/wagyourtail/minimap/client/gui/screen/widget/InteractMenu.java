@@ -3,16 +3,14 @@ package xyz.wagyourtail.minimap.client.gui.screen.widget;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
-import net.minecraft.client.gui.components.Renderable;
-import net.minecraft.client.gui.components.events.GuiEventListener;
-import net.minecraft.client.gui.narration.NarratableEntry;
-import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.gui.components.Widget;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.Vec3;
 import xyz.wagyourtail.minimap.api.MinimapApi;
 import xyz.wagyourtail.minimap.api.client.MinimapClientApi;
 import xyz.wagyourtail.minimap.api.client.MinimapClientEvents;
+import xyz.wagyourtail.minimap.api.client.config.CurrentServerConfig;
 import xyz.wagyourtail.minimap.chunkdata.ChunkData;
 import xyz.wagyourtail.minimap.chunkdata.ChunkLocation;
 import xyz.wagyourtail.minimap.chunkdata.parts.SurfaceDataPart;
@@ -27,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class InteractMenu extends GuiComponent implements Renderable, GuiEventListener, NarratableEntry {
+public class InteractMenu extends GuiComponent implements Widget {
     protected static final Minecraft minecraft = Minecraft.getInstance();
     public static int backround_color = 0xFF3F3F74;
     public final MapScreen parent;
@@ -93,8 +91,8 @@ public class InteractMenu extends GuiComponent implements Renderable, GuiEventLi
             currentTopY += 6;
             totalBtns += group.getValue().size();
             for (InteractMenuButton btn : group.getValue()) {
-                btn.setX(leftX);
-                btn.setY(currentTopY);
+                btn.x = leftX;
+                btn.y = currentTopY;
                 parent.addRenderableWidget(btn);
                 currentTopY += InteractMenuButton.btnHeight;
             }
@@ -204,16 +202,6 @@ public class InteractMenu extends GuiComponent implements Renderable, GuiEventLi
         for (List<InteractMenuButton> value : buttons.values()) {
             value.forEach(parent::removeWidget);
         }
-    }
-
-    @Override
-    public NarrationPriority narrationPriority() {
-        return NarrationPriority.NONE;
-    }
-
-    @Override
-    public void updateNarration(NarrationElementOutput narrationElementOutput) {
-
     }
 
 }

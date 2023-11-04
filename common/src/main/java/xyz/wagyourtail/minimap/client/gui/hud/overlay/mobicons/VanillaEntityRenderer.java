@@ -4,7 +4,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.core.Registry;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.GlowSquid;
 import net.minecraft.world.entity.LivingEntity;
@@ -338,7 +337,7 @@ public class VanillaEntityRenderer extends AbstractEntityRenderer<LivingEntity> 
                         }
                         RenderSystem.setShaderTexture(
                             0,
-                            getResourceLocation(BuiltInRegistries.VILLAGER_PROFESSION.getKey(entity.getVillagerData()
+                            getResourceLocation(Registry.VILLAGER_PROFESSION.getKey(entity.getVillagerData()
                                 .getProfession()))
                         );
                         return true;
@@ -394,7 +393,7 @@ public class VanillaEntityRenderer extends AbstractEntityRenderer<LivingEntity> 
                         }
                         RenderSystem.setShaderTexture(
                             0,
-                            getResourceLocation(BuiltInRegistries.VILLAGER_PROFESSION.getKey(entity.getVillagerData()
+                            getResourceLocation(Registry.VILLAGER_PROFESSION.getKey(entity.getVillagerData()
                                 .getProfession()))
                         );
                         return true;

@@ -2,7 +2,6 @@ package xyz.wagyourtail.minimap.chunkdata.updater;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
@@ -51,7 +50,7 @@ public class SurfaceDataUpdater extends AbstractChunkDataUpdater<SurfaceDataPart
         ChunkPos pos = chunk.getPos();
         //TODO: replace with chunk section stuff to not use a MutableBlockPos at all (see baritone), maybe not possible since we need light levels too
         BlockPos.MutableBlockPos blockPos = new BlockPos.MutableBlockPos();
-        Registry<Biome> biomeRegistry = mclevel.registryAccess().registryOrThrow(Registries.BIOME);
+        Registry<Biome> biomeRegistry = mclevel.registryAccess().registryOrThrow(Registry.BIOME_REGISTRY);
         if (mclevel.dimensionType().hasCeiling()) {
             int ceiling = mclevel.dimensionType().logicalHeight() - 1;
             for (int i = 0; i < 256; ++i) {
@@ -129,7 +128,7 @@ public class SurfaceDataUpdater extends AbstractChunkDataUpdater<SurfaceDataPart
             return loadFromChunk(chunk, level, mclevel, parent, data);
         }
         data.parent.updateTime = System.currentTimeMillis();
-        Registry<Biome> biomeRegistry = mclevel.registryAccess().registryOrThrow(Registries.BIOME);
+        Registry<Biome> biomeRegistry = mclevel.registryAccess().registryOrThrow(Registry.BIOME_REGISTRY);
         int x = bp.getX();
         int z = bp.getZ();
         BlockPos.MutableBlockPos blockPos = new BlockPos.MutableBlockPos(x, 0, z);

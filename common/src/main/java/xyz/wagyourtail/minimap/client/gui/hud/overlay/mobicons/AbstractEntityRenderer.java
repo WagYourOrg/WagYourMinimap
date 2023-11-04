@@ -2,10 +2,10 @@ package xyz.wagyourtail.minimap.client.gui.hud.overlay.mobicons;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
+import com.mojang.math.Matrix4f;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.world.entity.LivingEntity;
-import org.joml.Matrix4f;
 
 public abstract class AbstractEntityRenderer<T extends LivingEntity> {
     protected static final Minecraft minecraft = Minecraft.getInstance();
