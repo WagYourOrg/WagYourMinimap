@@ -45,6 +45,11 @@ remapJar {
     inputFile.set shadowJar.archiveFile
     dependsOn shadowJar
     archiveClassifier.set null
+    manifest {
+        attributes([
+                "MixinConfigs": "wagyourminimapcommon.mixins.json",
+        ])
+    }
 }
 
 jar {
