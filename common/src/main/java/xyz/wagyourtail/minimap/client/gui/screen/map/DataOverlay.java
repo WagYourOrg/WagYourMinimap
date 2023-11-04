@@ -1,6 +1,7 @@
 package xyz.wagyourtail.minimap.client.gui.screen.map;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import xyz.wagyourtail.config.field.SettingsContainer;
@@ -18,7 +19,7 @@ public class DataOverlay extends AbstractFullscreenOverlay {
     }
 
     @Override
-    public void renderOverlay(PoseStack stack, int mouseX, int mouseY) {
+    public void renderOverlay(GuiGraphics stack, int mouseX, int mouseY) {
         int x = (int) (parent.topX + parent.xDiam * mouseX / parent.width);
         int z = (int) (parent.topZ + parent.zDiam * mouseY / parent.height);
 
@@ -44,9 +45,9 @@ public class DataOverlay extends AbstractFullscreenOverlay {
                 light = lightData.blocklight[SurfaceDataPart.blockPosToIndex(x, z)];
             }
         }
-        minecraft.font.draw(stack, level.parent().server_slug, 50, 4, 0xFFFFFF);
-        minecraft.font.draw(
-            stack,
+        stack.drawString(minecraft.font, level.parent().server_slug, 50, 4, 0xFFFFFF);
+        stack.drawString(
+                minecraft.font,
             String.format("%d, %d, %d  %s/%s %d", x, y, z, biome, block, light),
             50,
             parent.height - 10,

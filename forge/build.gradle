@@ -7,7 +7,7 @@ version = version + "-forge"
 unimined.minecraft {
     forge {
         loader rootProject.forge_version
-        mixinConfig "wagyourminimapcommon.mixins.json"
+        mixinConfig(["wagyourminimapcommon.mixins.json", "wagyourminimapforge.mixins.json"])
     }
 }
 

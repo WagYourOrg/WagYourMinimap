@@ -1,6 +1,7 @@
 package xyz.wagyourtail.minimap.client.gui.hud;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import org.jetbrains.annotations.NotNull;
 import xyz.wagyourtail.minimap.client.gui.hud.map.AbstractMinimapRenderer;
 
@@ -16,8 +17,13 @@ public class InGameHud {
         InGameHud.renderer = renderer;
     }
 
-    public static void render(@NotNull PoseStack matrixStack, float tickDelta) {
-        renderer.render(matrixStack, tickDelta);
+    public static void render(@NotNull GuiGraphics matrixStack, float tickDelta) {
+        Minecraft mc = Minecraft.getInstance();
+        try {
+            renderer.render(matrixStack, tickDelta);
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public enum SnapSide {

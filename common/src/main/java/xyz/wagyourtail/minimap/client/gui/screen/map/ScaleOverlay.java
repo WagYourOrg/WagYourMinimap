@@ -2,7 +2,7 @@ package xyz.wagyourtail.minimap.client.gui.screen.map;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
-import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
 import org.joml.Matrix4f;
 import xyz.wagyourtail.config.field.SettingsContainer;
@@ -14,8 +14,8 @@ public class ScaleOverlay extends AbstractFullscreenOverlay {
     }
 
     @Override
-    public void renderOverlay(PoseStack stack, int mouseX, int mouseY) {
-        stack.pushPose();
+    public void renderOverlay(GuiGraphics stack, int mouseX, int mouseY) {
+        stack.pose().pushPose();
         float endX = parent.topX + parent.xDiam;
         float width = endX - parent.topX;
 
@@ -29,14 +29,13 @@ public class ScaleOverlay extends AbstractFullscreenOverlay {
         }
         float length = blocks / width * parent.width;
 
-        stack.translate(20, parent.height - 30, 0);
+        stack.pose().translate(20, parent.height - 30, 0);
 
         fill(stack, 0, 8, length, 10, 0xFFFFFFFF);
         fill(stack, 0, 8, 2, 0, 0xFFFFFFFF);
         fill(stack, length - 2, 8, length, 0, 0xFFFFFFFF);
 
-        GuiComponent.drawCenteredString(
-            stack,
+        stack.drawCenteredString(
             minecraft.font,
             String.format("%d blocks", blocks),
             (int) length / 2,
@@ -44,12 +43,12 @@ public class ScaleOverlay extends AbstractFullscreenOverlay {
             0xFFFFFFFF
         );
 
-        stack.popPose();
+        stack.pose().popPose();
     }
 
 
-    private void fill(PoseStack stack, float minX, float minY, float maxX, float maxY, int color) {
-        Matrix4f matrix = stack.last().pose();
+    private void fill(GuiGraphics stack, float minX, float minY, float maxX, float maxY, int color) {
+        Matrix4f matrix = stack.pose().last().pose();
         float i;
         if (minX < maxX) {
             i = minX;

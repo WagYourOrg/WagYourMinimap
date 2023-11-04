@@ -2,6 +2,7 @@ package xyz.wagyourtail.minimap.client.gui.hud.overlay;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
@@ -31,14 +32,14 @@ public class WaypointOverlay extends AbstractMinimapOverlay {
     }
 
     @Override
-    public void renderOverlay(PoseStack stack, @NotNull Vec3 center, float maxLength, @NotNull Vec3 player_pos, float player_rot) {
+    public void renderOverlay(GuiGraphics stack, @NotNull Vec3 center, float maxLength, @NotNull Vec3 player_pos, float player_rot) {
         int chunkRadius = MinimapClientApi.getInstance().getConfig().get(MinimapClientConfig.class).chunkRadius;
         int chunkDiam = chunkRadius * 2 - 1;
         float chunkScale = maxLength / ((float) chunkDiam - 1);
 
         Set<Waypoint> points = MinimapApi.getInstance().getMapServer().waypoints.getVisibleWaypoints();
         for (Waypoint point : points) {
-            stack.pushPose();
+            stack.pose().pushPose();
             BlockPos pos = point.posForCoordScale(minecraft.level.dimensionType().coordinateScale());
             Vec3 pointVec = new Vec3(pos.getX(), pos.getY(), pos.getZ()).subtract(center);
             if (parent.rotate) {
@@ -52,15 +53,15 @@ public class WaypointOverlay extends AbstractMinimapOverlay {
             if (scale < 1) {
                 pointVec = pointVec.multiply(scale, 1, scale);
             }
-            stack.translate(
+            stack.pose().translate(
                 maxLength / 2 + pointVec.x * chunkScale / 16f,
                 maxLength / 2 + pointVec.z * chunkScale / 16f,
                 0
             );
-            stack.scale(.004f * maxLength, .004f * maxLength, 1);
+            stack.pose().scale(.004f * maxLength, .004f * maxLength, 1);
             if (scale < 1) {
 //                stack.mulPose(Vector3f.ZN.rotation((float) Math.atan2(pointVec.x, pointVec.z)));
-                stack.mulPose(new Quaternionf().rotateZ(-(float) Math.atan2(pointVec.x, pointVec.z)));
+                stack.pose().mulPose(new Quaternionf().rotateZ(-(float) Math.atan2(pointVec.x, pointVec.z)));
                 RenderSystem.setShaderTexture(0, waypoint_arrow_tex);
             } else {
                 RenderSystem.setShaderTexture(0, point.getIcon());
@@ -68,9 +69,9 @@ public class WaypointOverlay extends AbstractMinimapOverlay {
             int abgr = 0xFF000000 | point.colB & 0xFF << 0x10 | point.colG & 0xFF << 0x8 | point.colR & 0xFF;
             AbstractMapRenderer.drawTexCol(stack, -10, -10, 20, 20, 0, 0, 1, 1, abgr);
             if (scale >= 1) {
-                minecraft.font.draw(stack, point.name, -minecraft.font.width(point.name) / 2f, 10, 0xFFFFFF);
+                stack.drawString(minecraft.font, point.name, -minecraft.font.width(point.name) / 2, 10, 0xFFFFFF);
             }
-            stack.popPose();
+            stack.pose().popPose();
         }
     }
 

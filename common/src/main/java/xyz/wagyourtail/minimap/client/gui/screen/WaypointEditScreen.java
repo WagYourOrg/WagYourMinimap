@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
@@ -76,12 +77,12 @@ public class WaypointEditScreen extends Screen {
     }
 
     @Override
-    public void render(PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
+    public void render(GuiGraphics poseStack, int mouseX, int mouseY, float partialTicks) {
         renderBackground(poseStack);
-        drawCenteredString(poseStack, font, title, width / 2, 17, 0xFFFFFF);
+        poseStack.drawCenteredString(font, title, width / 2, 17, 0xFFFFFF);
         int i = 5;
         for (Component comp : sideText) {
-            font.draw(poseStack, comp, 5, i, 0xFFFFFF);
+            poseStack.drawString(font, comp, 5, i, 0xFFFFFF);
             i += 9;
         }
         super.render(poseStack, mouseX, mouseY, partialTicks);

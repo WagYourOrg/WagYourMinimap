@@ -2,7 +2,7 @@ package xyz.wagyourtail.minimap.client.gui.screen.map;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.phys.Vec3;
 import xyz.wagyourtail.config.field.SettingsContainer;
 
@@ -13,7 +13,7 @@ public class PlayerIconOverlay extends AbstractFullscreenOverlay {
     }
 
     @Override
-    public void renderOverlay(PoseStack stack, int mouseX, int mouseY) {
+    public void renderOverlay(GuiGraphics stack, int mouseX, int mouseY) {
         float endX = parent.topX + parent.xDiam;
         float endZ = parent.topZ + parent.zDiam;
 
@@ -25,10 +25,10 @@ public class PlayerIconOverlay extends AbstractFullscreenOverlay {
             RenderSystem.setShaderTexture(0, minecraft.player.getSkinTextureLocation());
             float posX = (float) (pos.x - parent.topX) * parent.chunkWidth / 16f;
             float posZ = (float) (pos.z - parent.topZ) * parent.chunkWidth / 16f;
-            stack.pushPose();
-            stack.translate(posX, posZ, 0);
-            GuiComponent.blit(stack, -4, -4, 8, 8, 8.0F, 8, 8, 8, 64, 64);
-            stack.popPose();
+            stack.pose().pushPose();
+            stack.pose().translate(posX, posZ, 0);
+            stack.blit(minecraft.player.getSkinTextureLocation(), -4, -4, 8, 8, 8.0F, 8, 8, 8, 64, 64);
+            stack.pose().popPose();
         }
 
     }

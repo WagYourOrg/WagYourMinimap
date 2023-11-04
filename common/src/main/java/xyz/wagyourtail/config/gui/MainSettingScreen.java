@@ -1,6 +1,7 @@
 package xyz.wagyourtail.config.gui;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -31,10 +32,10 @@ public class MainSettingScreen extends Screen {
     }
 
     @Override
-    public void render(PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
+    public void render(GuiGraphics poseStack, int mouseX, int mouseY, float partialTicks) {
         renderBackground(poseStack);
         super.render(poseStack, mouseX, mouseY, partialTicks);
-        drawCenteredString(poseStack, this.font, this.title, this.width / 2, 17, 0xFFFFFF);
+        poseStack.drawCenteredString(this.font, this.title, this.width / 2, 17, 0xFFFFFF);
     }
 
     @Override

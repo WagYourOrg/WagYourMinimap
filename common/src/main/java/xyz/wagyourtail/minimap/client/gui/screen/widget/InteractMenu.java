@@ -2,7 +2,7 @@ package xyz.wagyourtail.minimap.client.gui.screen.widget;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class InteractMenu extends GuiComponent implements Renderable, GuiEventListener, NarratableEntry {
+public class InteractMenu implements Renderable, GuiEventListener, NarratableEntry {
     protected static final Minecraft minecraft = Minecraft.getInstance();
     public static int backround_color = 0xFF3F3F74;
     public final MapScreen parent;
@@ -180,9 +180,8 @@ public class InteractMenu extends GuiComponent implements Renderable, GuiEventLi
     }
 
     @Override
-    public void render(PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
-        fill(
-            poseStack,
+    public void render(GuiGraphics poseStack, int mouseX, int mouseY, float partialTicks) {
+        poseStack.fill(
             (int) endX - 2,
             (int) endY - 2,
             (int) endX + 102,
@@ -191,11 +190,11 @@ public class InteractMenu extends GuiComponent implements Renderable, GuiEventLi
         );
         int currentY = (int) endY;
         for (Map.Entry<String, List<InteractMenuButton>> group : buttons.entrySet()) {
-            poseStack.pushPose();
-            poseStack.translate(endX + 50, currentY, 0);
-            poseStack.scale(.6f, .6f, 1);
-            drawCenteredString(poseStack, minecraft.font, group.getKey(), 0, 0, 0x639BFF);
-            poseStack.popPose();
+            poseStack.pose().pushPose();
+            poseStack.pose().translate(endX + 50, currentY, 0);
+            poseStack.pose().scale(.6f, .6f, 1);
+            poseStack.drawCenteredString(minecraft.font, group.getKey(), 0, 0, 0x639BFF);
+            poseStack.pose().popPose();
             currentY += 6 + group.getValue().size() * InteractMenuButton.btnHeight;
         }
     }

@@ -4,6 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
@@ -87,13 +88,13 @@ public class WaypointList extends ObjectSelectionList<WaypointList.WaypointListE
         }
 
         @Override
-        public void render(PoseStack poseStack, int index, int top, int left, int width, int height, int mouseX, int mouseY, boolean isMouseOver, float partialTick) {
+        public void render(GuiGraphics poseStack, int index, int top, int left, int width, int height, int mouseX, int mouseY, boolean isMouseOver, float partialTick) {
             RenderSystem.setShaderTexture(0, point.getIcon());
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
             int abgr = 0xFF000000 | point.colB & 0xFF << 0x10 | point.colG & 0xFF << 0x8 | point.colR & 0xFF;
             AbstractMapRenderer.drawTexCol(poseStack, left + 1, top + 1, height - 2, height - 2, 0, 0, 1, 1, abgr);
-            mc.font.draw(
-                poseStack,
+            poseStack.drawString(
+                mc.font,
                 Language.getInstance().getVisualOrder(mc.font.substrByWidth(name, width - 100)),
                 left + height + 3,
                 top + 1,

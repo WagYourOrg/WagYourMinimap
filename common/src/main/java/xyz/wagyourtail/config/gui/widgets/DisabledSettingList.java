@@ -1,11 +1,9 @@
 package xyz.wagyourtail.config.gui.widgets;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.Tesselator;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
@@ -30,16 +28,16 @@ public class DisabledSettingList<T> extends ObjectSelectionList<DisabledSettingL
     }
 
     @Override
-    protected void renderHeader(PoseStack poseStack, int x, int y) {
+    protected void renderHeader(GuiGraphics poseStack, int x, int y) {
         Component component = (Component.literal("")).append(this.title).withStyle(
             ChatFormatting.UNDERLINE,
             ChatFormatting.BOLD
         );
-        this.minecraft.font.draw(
-            poseStack,
+        poseStack.drawString(
+            this.minecraft.font,
             component,
-            (float) (x + this.width / 2 - this.minecraft.font.width(component) / 2),
-            (float) Math.min(this.y0 + 3, y),
+            x + this.width / 2 - this.minecraft.font.width(component) / 2,
+            Math.min(this.y0 + 3, y),
             0xFFFFFF
         );
     }
@@ -78,19 +76,19 @@ public class DisabledSettingList<T> extends ObjectSelectionList<DisabledSettingL
         }
 
         @Override
-        public void render(PoseStack matrixStack, int index, int top, int left, int width, int height, int mouseX, int mouseY, boolean isMouseOver, float partialTicks) {
+        public void render(GuiGraphics matrixStack, int index, int top, int left, int width, int height, int mouseX, int mouseY, boolean isMouseOver, float partialTicks) {
             RenderSystem.setShaderTexture(0, ICON_OVERLAY_LOCATION);
             RenderSystem.setShader(GameRenderer::getPositionTexShader);
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
             int i = mouseX - left;
             if (i < 16 && isMouseOver) {
-                GuiComponent.blit(matrixStack, left, top, 32.0F, 32.0F, 32, 32, 256, 256);
+                matrixStack.blit(ICON_OVERLAY_LOCATION, left, top, 32.0F, 32.0F, 32, 32, 256, 256);
             } else {
-                GuiComponent.blit(matrixStack, left, top, 32.0F, 0.0F, 32, 32, 256, 256);
+                matrixStack.blit(ICON_OVERLAY_LOCATION, left, top, 32.0F, 0.0F, 32, 32, 256, 256);
             }
 
 
-            minecraft.font.draw(matrixStack, minecraft.font.split(name, width - 36).get(0), left + 36, top, 0xFFFFFF);
+            matrixStack.drawString(minecraft.font, minecraft.font.split(name, width - 36).get(0), left + 36, top, 0xFFFFFF);
         }
 
         @Override

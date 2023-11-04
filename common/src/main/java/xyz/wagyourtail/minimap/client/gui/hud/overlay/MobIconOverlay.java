@@ -1,6 +1,7 @@
 package xyz.wagyourtail.minimap.client.gui.hud.overlay;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
@@ -57,7 +58,7 @@ public class MobIconOverlay extends AbstractMinimapOverlay {
     }
 
     @Override
-    public void renderOverlay(PoseStack stack, @NotNull Vec3 center, float maxLength, @NotNull Vec3 player_pos, float player_rot) {
+    public void renderOverlay(GuiGraphics stack, @NotNull Vec3 center, float maxLength, @NotNull Vec3 player_pos, float player_rot) {
         int chunkRadius = MinimapClientApi.getInstance().getConfig().get(MinimapClientConfig.class).chunkRadius;
         int chunkDiam = chunkRadius * 2 - 1;
         float chunkScale = maxLength / ((float) chunkDiam - 1);
@@ -68,7 +69,7 @@ public class MobIconOverlay extends AbstractMinimapOverlay {
         for (Entity e : minecraft.level.entitiesForRendering()) {
             if (e instanceof LivingEntity le && filter.test(le)) {
                 //TODO: filtering settings
-                stack.pushPose();
+                stack.pose().pushPose();
                 Vec3 pointVec = new Vec3(e.getX(), e.getY(), e.getZ()).subtract(center);
                 if (parent.rotate) {
                     pointVec = pointVec.yRot((float) Math.toRadians(
@@ -79,21 +80,21 @@ public class MobIconOverlay extends AbstractMinimapOverlay {
                 }
                 float scale = parent.getScaleForVecToBorder(pointVec, chunkRadius, maxLength);
                 if (scale < 1) {
-                    stack.popPose();
+                    stack.pose().popPose();
                     continue;
                 }
-                stack.translate(
+                stack.pose().translate(
                     maxLength / 2 + pointVec.x * chunkScale / 16f,
                     maxLength / 2 + pointVec.z * chunkScale / 16f,
                     0
                 );
                 renderEntity(stack, le, iconSize, pointVec.y / yFadeDistance);
-                stack.popPose();
+                stack.pose().popPose();
             }
         }
     }
 
-    public void renderEntity(PoseStack stack, LivingEntity e, float maxIconSize, double yDiff) {
+    public void renderEntity(GuiGraphics stack, LivingEntity e, float maxIconSize, double yDiff) {
         for (AbstractEntityRenderer<?> renderer : availableMobIconRenderers) {
             if (renderEntityInner(stack, renderer, e, maxIconSize, yDiff)) {
                 return;
@@ -101,7 +102,7 @@ public class MobIconOverlay extends AbstractMinimapOverlay {
         }
     }
 
-    private boolean renderEntityInner(PoseStack stack, AbstractEntityRenderer<?> renderer, LivingEntity e, float maxIconSize, double yDiff) {
+    private boolean renderEntityInner(GuiGraphics stack, AbstractEntityRenderer<?> renderer, LivingEntity e, float maxIconSize, double yDiff) {
         if (renderer.canUseFor(e)) {
             renderer.render(stack, e, maxIconSize, yDiff);
             return true;

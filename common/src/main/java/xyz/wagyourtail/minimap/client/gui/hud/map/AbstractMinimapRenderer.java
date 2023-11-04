@@ -2,6 +2,7 @@ package xyz.wagyourtail.minimap.client.gui.hud.map;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.phys.Vec3;
@@ -98,11 +99,11 @@ public abstract class AbstractMinimapRenderer extends AbstractMapRenderer {
         this.undergroundLayerExtra = undergroundLayerExtra;
     }
 
-    public void render(PoseStack matrixStack, float tickDelta) {
+    public void render(GuiGraphics matrixStack, float tickDelta) {
         if (minecraft.options.renderDebug) {
             return;
         }
-        matrixStack.pushPose();
+        matrixStack.pose().pushPose();
         int w = minecraft.getWindow().getGuiScaledWidth();
         int h = minecraft.getWindow().getGuiScaledHeight();
 
@@ -126,24 +127,24 @@ public abstract class AbstractMinimapRenderer extends AbstractMapRenderer {
         float player_rot = player.getYRot();
 
         //pull back map to 0, 0
-        matrixStack.translate(posX, posZ, 0);
-        matrixStack.pushPose();
+        matrixStack.pose().translate(posX, posZ, 0);
+        matrixStack.pose().pushPose();
         renderMinimap(matrixStack, player_pos, minimapSize, player_pos, player_rot);
-        matrixStack.popPose();
+        matrixStack.pose().popPose();
 
         //DRAW OVERLAYS
         for (AbstractMinimapOverlay overlay : overlays) {
-            matrixStack.pushPose();
+            matrixStack.pose().pushPose();
             overlay.renderOverlay(matrixStack, player_pos, minimapSize, player_pos, player_rot);
-            matrixStack.popPose();
+            matrixStack.pose().popPose();
         }
-        matrixStack.popPose();
+        matrixStack.pose().popPose();
 
         //pull back text pos to 0, 0
-        matrixStack.pushPose();
-        matrixStack.translate(posX, posZ, 0);
+        matrixStack.pose().pushPose();
+        matrixStack.pose().translate(posX, posZ, 0);
         if (!bottom) {
-            matrixStack.translate(0, minimapSize + 5, 0);
+            matrixStack.pose().translate(0, minimapSize + 5, 0);
         }
         renderText(
             matrixStack,
@@ -151,10 +152,10 @@ public abstract class AbstractMinimapRenderer extends AbstractMapRenderer {
             bottom,
             Component.literal(String.format("%.2f %.2f %.2f", player_pos.x, player_pos.y, player_pos.z))
         );
-        matrixStack.popPose();
+        matrixStack.pose().popPose();
     }
 
-    protected void renderMinimap(PoseStack matrixStack, @NotNull Vec3 center, float maxLength, @NotNull Vec3 player_pos, float player_rot) {
+    protected void renderMinimap(GuiGraphics matrixStack, @NotNull Vec3 center, float maxLength, @NotNull Vec3 player_pos, float player_rot) {
         int chunkRadius = MinimapClientApi.getInstance().getConfig().get(MinimapClientConfig.class).chunkRadius;
 
         float blockX = (float) (center.x % 16);
@@ -199,10 +200,10 @@ public abstract class AbstractMinimapRenderer extends AbstractMapRenderer {
         }
 
         if (rotate) {
-            rotateMatrix(matrixStack, maxLength, player_rot);
+            rotateMatrix(matrixStack.pose(), maxLength, player_rot);
         }
         if (scaleBy != 1) {
-            scaleMatrix(matrixStack, maxLength, scaleBy);
+            scaleMatrix(matrixStack.pose(), maxLength, scaleBy);
         }
 
         int i = 0;
@@ -333,26 +334,27 @@ public abstract class AbstractMinimapRenderer extends AbstractMapRenderer {
         matrixStack.translate(-maxLength / 2, -maxLength / 2, 0);
     }
 
-    public abstract void drawStencil(PoseStack stack, float maxLength);
+    public abstract void drawStencil(GuiGraphics stack, float maxLength);
 
-    public void renderText(PoseStack matrixStack, float maxLength, boolean bottom, Component... textLines) {
-        matrixStack.translate(0, 10, 0);
+    public void renderText(GuiGraphics matrixStack, float maxLength, boolean bottom, Component... textLines) {
+        matrixStack.pose().translate(0, 10, 0);
         float lineOffset = 0;
         for (Component textLine : textLines) {
             int len = minecraft.font.width(textLine);
             float scale = len / maxLength;
             if (scale > 1) {
-                matrixStack.scale(1 / scale, 1 / scale, 0);
+                matrixStack.pose().scale(1 / scale, 1 / scale, 0);
             }
-            minecraft.font.drawShadow(
-                matrixStack,
+            matrixStack.drawString(
+                minecraft.font,
                 textLine,
-                len < maxLength ? (maxLength - len) / 2 : 0,
-                lineOffset,
-                0xFFFFFF
+                len < maxLength ? (int) (maxLength - len) / 2 : 0,
+                (int) lineOffset,
+                0xFFFFFF,
+                true
             );
             if (scale > 1) {
-                matrixStack.scale(scale, scale, 0);
+                matrixStack.pose().scale(scale, scale, 0);
                 lineOffset += scale * minecraft.font.lineHeight;
             } else {
                 lineOffset += minecraft.font.lineHeight;

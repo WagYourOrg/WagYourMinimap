@@ -3,6 +3,7 @@ package xyz.wagyourtail.minimap.client.gui.hud.overlay.mobicons;
 import com.google.gson.Gson;
 import com.google.gson.JsonParser;
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -46,7 +47,7 @@ public class JSONEntityRenderer extends AbstractEntityRenderer<LivingEntity> {
     }
 
     @Override
-    public void render(PoseStack stack, LivingEntity entity, float maxSize, double yDiff) {
+    public void render(GuiGraphics stack, LivingEntity entity, float maxSize, double yDiff) {
         for (Map.Entry<EntityType<? extends LivingEntity>, Parts<?>> tex : texMap.entrySet()) {
             if (tex.getKey() == entity.getType()) {
                 // cast to base, so we can compile

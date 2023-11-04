@@ -2,6 +2,7 @@ package xyz.wagyourtail.minimap.client.gui.screen.widget;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
@@ -29,10 +30,9 @@ public class InteractMenuButton extends AbstractButton {
 
 
     @Override
-    public void renderWidget(PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
+    public void renderWidget(GuiGraphics poseStack, int mouseX, int mouseY, float partialTicks) {
         Minecraft minecraft = Minecraft.getInstance();
-        fill(
-            poseStack,
+        poseStack.fill(
             this.getX(),
             this.getY(),
             this.getX() + this.width,
@@ -40,8 +40,7 @@ public class InteractMenuButton extends AbstractButton {
             this.isHovered ? hoverColor : color
         );
         int j = this.active ? 16777215 : 10526880;
-        drawCenteredString(
-            poseStack,
+        poseStack.drawCenteredString(
             minecraft.font,
             this.getMessage(),
             this.getX() + this.width / 2,

@@ -1,6 +1,7 @@
 package xyz.wagyourtail.minimap.client.gui.hud.map;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.phys.Vec3;
 import xyz.wagyourtail.minimap.client.gui.hud.overlay.AbstractMinimapOverlay;
 import xyz.wagyourtail.minimap.client.gui.hud.overlay.SquareMapBorderOverlay;
@@ -26,7 +27,7 @@ public abstract class AbstractSquareMapRenderer extends AbstractMinimapRenderer 
     }
 
     @Override
-    public void drawStencil(PoseStack stack, float maxLength) {
+    public void drawStencil(GuiGraphics stack, float maxLength) {
         rect(stack, 0, 0, maxLength, maxLength);
     }
 

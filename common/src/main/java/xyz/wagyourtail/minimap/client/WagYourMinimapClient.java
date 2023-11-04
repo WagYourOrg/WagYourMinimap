@@ -151,13 +151,12 @@ public class WagYourMinimapClient extends WagYourMinimap {
             }
         });
         InGameWaypointRenderer.RENDER_LAST.register((stack, camera) -> {
-
             RenderSystem.enableBlend();
             RenderSystem.defaultBlendFunc();
             RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
             try {
                 if (MinimapApi.getInstance().getConfig().get(MinimapClientConfig.class).showWaypoints) {
-                    InGameWaypointRenderer.onRender(stack, camera);
+                    InGameWaypointRenderer.onRender(constructGuiGraphics(minecraft, stack), camera);
                 }
             } catch (Throwable t) {
                 t.printStackTrace();
@@ -180,11 +179,11 @@ public class WagYourMinimapClient extends WagYourMinimap {
                     String[] dims = new String[] {
                         MinimapApi.getInstance()
                             .getMapServer()
-                            .getLevelFor(oldP.level).level_slug()
+                            .getLevelFor(oldP.level()).level_slug()
                     };
                     MinimapApi.getInstance().getMapServer().waypoints.forceAddWaypoint(
                         new Waypoint(
-                            oldP.level.dimensionType().coordinateScale(),
+                            oldP.level().dimensionType().coordinateScale(),
                             oldP.getBlockX(),
                             oldP.getBlockY(),
                             oldP.getBlockZ(),

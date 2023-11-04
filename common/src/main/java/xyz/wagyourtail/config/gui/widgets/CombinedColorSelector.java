@@ -2,6 +2,7 @@ package xyz.wagyourtail.config.gui.widgets;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
@@ -73,8 +74,8 @@ public class CombinedColorSelector extends AbstractWidget {
     }
 
     @Override
-    public void renderWidget(PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
-        drawString(poseStack, font, getMessage(), getX(), getY(), 0xFFFFFF);
+    public void renderWidget(GuiGraphics poseStack, int mouseX, int mouseY, float partialTick) {
+        poseStack.drawString(font, getMessage(), getX(), getY(), 0xFFFFFF);
         colorWheel.render(poseStack, mouseX, mouseY, partialTick);
         colorEdit.render(poseStack, mouseX, mouseY, partialTick);
     }

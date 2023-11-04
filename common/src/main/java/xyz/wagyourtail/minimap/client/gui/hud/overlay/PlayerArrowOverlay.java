@@ -2,6 +2,7 @@ package xyz.wagyourtail.minimap.client.gui.hud.overlay;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
@@ -37,7 +38,7 @@ public class PlayerArrowOverlay extends AbstractMinimapOverlay {
     }
 
     @Override
-    public void renderOverlay(PoseStack stack, @NotNull Vec3 center, float maxLength, @NotNull Vec3 player_pos, float player_rot) {
+    public void renderOverlay(GuiGraphics stack, @NotNull Vec3 center, float maxLength, @NotNull Vec3 player_pos, float player_rot) {
         int chunkRadius = MinimapClientApi.getInstance().getConfig().get(MinimapClientConfig.class).chunkRadius;
 
         int chunkDiam = chunkRadius * 2 - 1;
@@ -45,13 +46,13 @@ public class PlayerArrowOverlay extends AbstractMinimapOverlay {
 
         Vec3 offset = center.subtract(player_pos);
         if (parent.rotate) {
-            stack.translate(maxLength / 2, maxLength / 2, 0);
-            stack.mulPose(new Quaternionf().rotateZ((float) Math.toRadians(player_rot - 180)));
-            stack.translate(-maxLength / 2, -maxLength / 2, 0);
+            stack.pose().translate(maxLength / 2, maxLength / 2, 0);
+            stack.pose().mulPose(new Quaternionf().rotateZ((float) Math.toRadians(player_rot - 180)));
+            stack.pose().translate(-maxLength / 2, -maxLength / 2, 0);
         }
 
-        stack.translate(maxLength / 2 + offset.x * chunkScale / 16f, maxLength / 2 + offset.z * chunkScale / 16f, 0);
-        stack.mulPose(new Quaternionf().rotateZ((float) Math.toRadians(player_rot)));
+        stack.pose().translate(maxLength / 2 + offset.x * chunkScale / 16f, maxLength / 2 + offset.z * chunkScale / 16f, 0);
+        stack.pose().mulPose(new Quaternionf().rotateZ((float) Math.toRadians(player_rot)));
         RenderSystem.setShaderTexture(0, player_icon_tex);
         float texSize = Math.max(maxLength / 20, 8);
         int color =  (blue << 16) | (green << 8) | red;

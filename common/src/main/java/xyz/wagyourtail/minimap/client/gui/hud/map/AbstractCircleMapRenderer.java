@@ -2,6 +2,7 @@ package xyz.wagyourtail.minimap.client.gui.hud.map;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
@@ -28,8 +29,8 @@ public abstract class AbstractCircleMapRenderer extends AbstractMinimapRenderer 
     }
 
     @Override
-    public void drawStencil(PoseStack stack, float maxLength) {
-        circle(stack, maxLength / 2, maxLength / 2, maxLength / 2, 50);
+    public void drawStencil(GuiGraphics stack, float maxLength) {
+        circle(stack.pose(), maxLength / 2, maxLength / 2, maxLength / 2, 50);
     }
 
     @Override

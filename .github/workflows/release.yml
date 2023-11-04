@@ -9,40 +9,81 @@ on:
     types: [ created ]
 
 jobs:
-  build_1_19:
-    uses: wagyourtail/wagyourminimap/.github/workflows/releasebuild.yml@main-1.19
+
+  build_1_20_1:
+    uses: wagyourtail/wagyourminimap/.github/workflows/releasebuild.yml@main-1.20
     with:
-      branch: main-1.19
+      branch: main-1.20
+      java_version: 17
+
+  build_1_19_4:
+    uses: wagyourtail/wagyourminimap/.github/workflows/releasebuild.yml@main-1.20
+    with:
+      branch: backport-1.19.4
+      java_version: 17
+
+  build_1_19_2:
+    uses: wagyourtail/wagyourminimap/.github/workflows/releasebuild.yml@main-1.20
+    with:
+      branch: backport-1.19.2
       java_version: 17
 
   build_1_18:
-    uses: wagyourtail/wagyourminimap/.github/workflows/releasebuild.yml@main-1.19
+    uses: wagyourtail/wagyourminimap/.github/workflows/releasebuild.yml@main-1.20
     with:
       branch: backport-1.18.2
       java_version: 17
 
   build_1_17:
-    uses: wagyourtail/wagyourminimap/.github/workflows/releasebuild.yml@main-1.19
+    uses: wagyourtail/wagyourminimap/.github/workflows/releasebuild.yml@main-1.20
     with:
       branch: backport-1.17.1
       java_version: 17
 
-  deploy_1_19:
-    uses: wagyourtail/wagyourminimap/.github/workflows/releasedeploy.yml@main-1.19
+  deploy_1_20_1:
+    uses: wagyourtail/wagyourminimap/.github/workflows/releasedeploy.yml@main-1.20
     with:
-      branch: main-1.19
-      game_vers: 1.19.1
+      branch: main-1.20
+      game_vers: 1.20.1
       java_vers: 17
       GITHUB_REF: ${{ github.ref }}
     secrets:
       CF_API_KEY: ${{ secrets.CF_API_KEY }}
       MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
     needs:
-      - build_1_19
+      - build_1_20_1
+      - deploy_1_19_4
+
+  deploy_1_19_4:
+    uses: wagyourtail/wagyourminimap/.github/workflows/releasedeploy.yml@main-1.20
+    with:
+      branch: backport-1.19.4
+      game_vers: 1.19.4
+      java_vers: 17
+      GITHUB_REF: ${{ github.ref }}
+    secrets:
+      CF_API_KEY: ${{ secrets.CF_API_KEY }}
+      MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
+    needs:
+      - build_1_19_4
+      - deploy_1_19_2
+
+  deploy_1_19_2:
+    uses: wagyourtail/wagyourminimap/.github/workflows/releasedeploy.yml@main-1.20
+    with:
+      branch: backport-1.19.2
+      game_vers: 1.19.2
+      java_vers: 17
+      GITHUB_REF: ${{ github.ref }}
+    secrets:
+      CF_API_KEY: ${{ secrets.CF_API_KEY }}
+      MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
+    needs:
+      - build_1_19_2
       - deploy_1_18
 
   deploy_1_18:
-    uses: wagyourtail/wagyourminimap/.github/workflows/releasedeploy.yml@main-1.19
+    uses: wagyourtail/wagyourminimap/.github/workflows/releasedeploy.yml@main-1.20
     with:
       branch: backport-1.18.2
       game_vers: 1.18.2
@@ -57,7 +98,7 @@ jobs:
 
 
   deploy_1_17:
-    uses: wagyourtail/wagyourminimap/.github/workflows/releasedeploy.yml@main-1.19
+    uses: wagyourtail/wagyourminimap/.github/workflows/releasedeploy.yml@main-1.20
     with:
       branch: backport-1.17.1
       game_vers: 1.17.1

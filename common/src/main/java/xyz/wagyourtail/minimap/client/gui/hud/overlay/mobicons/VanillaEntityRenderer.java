@@ -2,6 +2,7 @@ package xyz.wagyourtail.minimap.client.gui.hud.overlay.mobicons;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -228,7 +229,7 @@ public class VanillaEntityRenderer extends AbstractEntityRenderer<LivingEntity> 
                     }
 
                     @Override
-                    public void render(PoseStack stack, Player entity, float maxSize, double yDiff) {
+                    public void render(GuiGraphics stack, Player entity, float maxSize, double yDiff) {
                         if (entity == minecraft.getCameraEntity()) {
                             return; // don't render the controlled entity, it's already the arrow
                         }
@@ -236,12 +237,12 @@ public class VanillaEntityRenderer extends AbstractEntityRenderer<LivingEntity> 
                         if (Math.abs(yDiff) >= 1) {
                             return; // don't render if the player is past fade distance
                         }
-                        stack.translate(maxSize / 2, maxSize, 0);
-                        stack.scale(.5f, .5f, 1);
-                        minecraft.font.draw(
-                            stack,
+                        stack.pose().translate(maxSize / 2, maxSize, 0);
+                        stack.pose().scale(.5f, .5f, 1);
+                        stack.drawString(
+                            minecraft.font,
                             entity.getDisplayName(),
-                            -minecraft.font.width(entity.getDisplayName()) / 2f,
+                            -minecraft.font.width(entity.getDisplayName()) / 2,
                             10,
                             0xFFFFFF
                         );
@@ -495,7 +496,7 @@ public class VanillaEntityRenderer extends AbstractEntityRenderer<LivingEntity> 
     }
 
     @Override
-    public void render(PoseStack stack, LivingEntity entity, float maxSize, double yDiff) {
+    public void render(GuiGraphics stack, LivingEntity entity, float maxSize, double yDiff) {
         for (Pair<Class<? extends LivingEntity>, Parts<?>> tex : texOrdered) {
             if (tex.t().isAssignableFrom(entity.getClass())) {
                 // cast to base, so we can compile

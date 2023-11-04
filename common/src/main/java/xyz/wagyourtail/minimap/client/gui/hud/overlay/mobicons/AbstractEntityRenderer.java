@@ -3,6 +3,7 @@ package xyz.wagyourtail.minimap.client.gui.hud.overlay.mobicons;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.world.entity.LivingEntity;
 import org.joml.Matrix4f;
@@ -16,7 +17,7 @@ public abstract class AbstractEntityRenderer<T extends LivingEntity> {
 
     public abstract boolean canUseFor(LivingEntity entity);
 
-    public abstract void render(PoseStack stack, LivingEntity entity, float maxSize, double yDiff);
+    public abstract void render(GuiGraphics stack, LivingEntity entity, float maxSize, double yDiff);
 
     public static class Parts<T extends LivingEntity> {
         private final int texWidth;
@@ -32,7 +33,7 @@ public abstract class AbstractEntityRenderer<T extends LivingEntity> {
             this.parts = parts;
         }
 
-        public void render(PoseStack stack, T entity, float maxSize, double yDiff) {
+        public void render(GuiGraphics stack, T entity, float maxSize, double yDiff) {
             if (Math.abs(yDiff) >= 1) {
                 return; // don't render if too far away on y axis
             }
@@ -50,15 +51,15 @@ public abstract class AbstractEntityRenderer<T extends LivingEntity> {
             float xW = maxX - minX;
             float yH = maxY - minY;
             maxSize *= scale;
-            stack.translate(-maxSize / 2, -maxSize / 2, 1);
+            stack.pose().translate(-maxSize / 2, -maxSize / 2, 1);
             renderInner(stack, entity, maxSize, yDiff, minX, minY, maxX, maxY, xW, yH);
         }
 
-        public void renderInner(PoseStack stack, T entity, float maxSize, double fadeDiff, float minX, float minY, float maxX, float maxY, float xW, float yH) {
+        public void renderInner(GuiGraphics stack, T entity, float maxSize, double fadeDiff, float minX, float minY, float maxX, float maxY, float xW, float yH) {
             RenderSystem.setShader(GameRenderer::getPositionColorTexShader);
             RenderSystem.enableBlend();
             RenderSystem.defaultBlendFunc();
-            Matrix4f matrix = stack.last().pose();
+            Matrix4f matrix = stack.pose().last().pose();
             BufferBuilder builder = Tesselator.getInstance().getBuilder();
             boolean prevTexed = true;
             if (xW < yH) {

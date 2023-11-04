@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import org.joml.Matrix4f;
@@ -53,8 +54,8 @@ public abstract class AbstractMapRenderer {
         return List.of(new SurfaceBlockLightImageStrategy());
     }
 
-    public static void drawTexSideways(PoseStack matrixStack, float x, float y, float width, float height, float startU, float startV, float endU, float endV) {
-        Matrix4f matrix = matrixStack.last().pose();
+    public static void drawTexSideways(GuiGraphics matrixStack, float x, float y, float width, float height, float startU, float startV, float endU, float endV) {
+        Matrix4f matrix = matrixStack.pose().last().pose();
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
@@ -67,8 +68,8 @@ public abstract class AbstractMapRenderer {
         BufferUploader.drawWithShader(builder.end());
     }
 
-    public static void drawTexCol(PoseStack matrixStack, float x, float y, float width, float height, float startU, float startV, float endU, float endV, int abgrTint) {
-        Matrix4f matrix = matrixStack.last().pose();
+    public static void drawTexCol(GuiGraphics matrixStack, float x, float y, float width, float height, float startU, float startV, float endU, float endV, int abgrTint) {
+        Matrix4f matrix = matrixStack.pose().last().pose();
         RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
@@ -94,8 +95,8 @@ public abstract class AbstractMapRenderer {
         }
     }
 
-    public static void drawTex(PoseStack matrixStack, float x, float y, float width, float height, float startU, float startV, float endU, float endV) {
-        Matrix4f matrix = matrixStack.last().pose();
+    public static void drawTex(GuiGraphics matrixStack, float x, float y, float width, float height, float startU, float startV, float endU, float endV) {
+        Matrix4f matrix = matrixStack.pose().last().pose();
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
@@ -125,7 +126,7 @@ public abstract class AbstractMapRenderer {
         return ChunkLocation.locationForChunkPos(level, chunkX, chunkZ);
     }
 
-    protected void drawPartialChunk(PoseStack stack, ChunkLocation chunk, float x, float y, float scale, float startBlockX, float startBlockZ, float endBlockX, float endBlockZ) {
+    protected void drawPartialChunk(GuiGraphics stack, ChunkLocation chunk, float x, float y, float scale, float startBlockX, float startBlockZ, float endBlockX, float endBlockZ) {
         float startX = startBlockX / 16F;
         float startZ = startBlockZ / 16F;
         float endX = endBlockX / 16F;
@@ -140,7 +141,7 @@ public abstract class AbstractMapRenderer {
         rect(stack, x, y, scaledScaleX, scaledScaleZ);
     }
 
-    protected boolean drawChunk(PoseStack matrixStack, ChunkLocation chunk, float x, float y, float width, float height, float startU, float startV, float endU, float endV) {
+    protected boolean drawChunk(GuiGraphics matrixStack, ChunkLocation chunk, float x, float y, float width, float height, float startU, float startV, float endU, float endV) {
         return drawChunkBatchTex(matrixStack, x, y, width, height, startU, startV, endU, endV, chunk, getLayers());
     }
 
@@ -152,13 +153,13 @@ public abstract class AbstractMapRenderer {
         return a;
     }
 
-    public boolean drawChunkBatchTex(PoseStack matrixStack, float x, float y, float width, float height, float startU, float startV, float endU, float endV, ChunkLocation chunk, List<ImageStrategy> layers) {
+    public boolean drawChunkBatchTex(GuiGraphics matrixStack, float x, float y, float width, float height, float startU, float startV, float endU, float endV, ChunkLocation chunk, List<ImageStrategy> layers) {
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         boolean ret = false;
         BufferBuilder builder = Tesselator.getInstance().getBuilder();
-        Matrix4f matrix = matrixStack.last().pose();
+        Matrix4f matrix = matrixStack.pose().last().pose();
         builder.begin(VertexFormat.Mode.TRIANGLE_STRIP, DefaultVertexFormat.POSITION_TEX);
         builder.vertex(matrix, x, y, 0).uv(startU, startV).endVertex();
         builder.vertex(matrix, x, y + height, 0).uv(startU, endV).endVertex();
@@ -198,8 +199,8 @@ public abstract class AbstractMapRenderer {
         return false;
     }
 
-    public void rect(PoseStack matrixStack, float x, float y, float width, float height) {
-        Matrix4f matrix = matrixStack.last().pose();
+    public void rect(GuiGraphics matrixStack, float x, float y, float width, float height) {
+        Matrix4f matrix = matrixStack.pose().last().pose();
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
@@ -213,7 +214,7 @@ public abstract class AbstractMapRenderer {
         RenderSystem.disableBlend();
     }
 
-    protected void drawChunk(PoseStack matrixStack, ChunkLocation chunk, float x, float y, float scale) {
+    protected void drawChunk(GuiGraphics matrixStack, ChunkLocation chunk, float x, float y, float scale) {
         if (chunk != null) {
             if (drawChunk(matrixStack, chunk, x, y, scale, scale, 0, 0, 1, 1)) {
                 return;

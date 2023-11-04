@@ -7,6 +7,7 @@ import dev.architectury.event.EventFactory;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.core.BlockPos;
@@ -26,8 +27,8 @@ public class InGameWaypointRenderer {
     public static final double WARP_COMPENSATION_X_FACTOR = 10;
 
 
-    public static void onRender(PoseStack stack, Camera camera) {
-        stack.pushPose();
+    public static void onRender(GuiGraphics stack, Camera camera) {
+        stack.pose().pushPose();
         Vec3 center = camera.getPosition();
         boolean showBeam = MinimapClientApi.getInstance().getConfig().get(MinimapClientConfig.class).showWaypointBeam;
         for (Waypoint visibleWaypoint : MinimapClientApi.getInstance().getMapServer().waypoints.getVisibleWaypoints()) {
@@ -54,39 +55,39 @@ public class InGameWaypointRenderer {
 
             // render waypoint beam at it's actual location in the world
             if (showBeam && distance < 256) {
-                stack.pushPose();
+                stack.pose().pushPose();
                 RenderSystem.enableDepthTest();
-                stack.translate(offset.x, offset.y, offset.z);
+                stack.pose().translate(offset.x, offset.y, offset.z);
                 renderWaypointBeam(stack, center, xRot, yRot, visibleWaypoint, distance);
-                stack.popPose();
+                stack.pose().popPose();
             }
 
             if (distance > factor) {
                 // render waypoint relative to the player so infinite distance works
-                stack.pushPose();
+                stack.pose().pushPose();
                 RenderSystem.disableDepthTest();
-                stack.translate(normalized_offset.x, normalized_offset.y, normalized_offset.z);
+                stack.pose().translate(normalized_offset.x, normalized_offset.y, normalized_offset.z);
                 renderWaypointIcon(stack, offset, xRot, yRot, visibleWaypoint, distance);
-                stack.popPose();
+                stack.pose().popPose();
             } else {
-                stack.pushPose();
+                stack.pose().pushPose();
                 RenderSystem.disableDepthTest();
-                stack.translate(offset.x, offset.y, offset.z);
-                stack.scale((float) (distance / factor), (float) (distance / factor), (float) (distance / factor));
+                stack.pose().translate(offset.x, offset.y, offset.z);
+                stack.pose().scale((float) (distance / factor), (float) (distance / factor), (float) (distance / factor));
                 renderWaypointIcon(stack, offset, xRot, yRot, visibleWaypoint, distance);
-                stack.popPose();
+                stack.pose().popPose();
             }
         }
         RenderSystem.enableDepthTest();
-        stack.popPose();
+        stack.pose().popPose();
     }
 
-    public static void renderWaypointIcon(PoseStack stack, Vec3 offset, float xRot, float yRot, Waypoint waypoint, double distance) {
-        stack.mulPose(new Quaternionf().rotateY((float) Math.toRadians(yRot)));
-        stack.mulPose(new Quaternionf().rotateX((float) Math.toRadians(xRot)));
-        stack.mulPose(new Quaternionf().rotateZ((float) Math.toRadians(180)));
+    public static void renderWaypointIcon(GuiGraphics stack, Vec3 offset, float xRot, float yRot, Waypoint waypoint, double distance) {
+        stack.pose().mulPose(new Quaternionf().rotateY((float) Math.toRadians(yRot)));
+        stack.pose().mulPose(new Quaternionf().rotateX((float) Math.toRadians(xRot)));
+        stack.pose().mulPose(new Quaternionf().rotateZ((float) Math.toRadians(180)));
         float scale = (float) Math.max(.0675, -distance / 50f * .0625 + .125f);
-        stack.scale(scale, scale, scale);
+        stack.pose().scale(scale, scale, scale);
         RenderSystem.setShaderTexture(0, waypoint.getIcon());
         int abgr = 0xFF000000 | waypoint.colB & 0xFF << 0x10 | waypoint.colG & 0xFF << 0x8 | waypoint.colR & 0xFF;
         AbstractMapRenderer.drawTexCol(stack, -10, -10, 20, 20, 0, 0, 1, 1, abgr);
@@ -103,7 +104,7 @@ public class InGameWaypointRenderer {
         return normal.distanceTo(Vec3.directionFromRotation(xRot, yRot)) < .1;
     }
 
-    public static void drawText(PoseStack stack, String text) {
+    public static void drawText(GuiGraphics stack, String text) {
         MultiBufferSource.BufferSource buffer = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
         mc.font.drawInBatch(
             text,
@@ -111,7 +112,7 @@ public class InGameWaypointRenderer {
             20,
             -1,
             false,
-            stack.last().pose(),
+            stack.pose().last().pose(),
             buffer,
             Font.DisplayMode.NORMAL,
             0x30000000,
@@ -120,19 +121,19 @@ public class InGameWaypointRenderer {
         buffer.endBatch();
     }
 
-    public static void renderWaypointBeam(PoseStack stack, Vec3 offset, float xRot, float yRot, Waypoint waypoint, double distance) {
+    public static void renderWaypointBeam(GuiGraphics stack, Vec3 offset, float xRot, float yRot, Waypoint waypoint, double distance) {
         // face player
 
 //        stack.mulPose(Vector3f.YP.rotationDegrees(yRot));
 //        stack.mulPose(Vector3f.ZP.rotationDegrees(180));
-        stack.mulPose(new Quaternionf().rotateY((float) Math.toRadians(yRot)));
-        stack.mulPose(new Quaternionf().rotateZ((float) Math.toRadians(180)));
+        stack.pose().mulPose(new Quaternionf().rotateY((float) Math.toRadians(yRot)));
+        stack.pose().mulPose(new Quaternionf().rotateZ((float) Math.toRadians(180)));
 
         //        float scale = (float) Math.max(.0675, -distance / 50f * .0625 + .125f);
         //        stack.scale(scale, scale, scale);
 
         // rendering code
-        Matrix4f matrix = stack.last().pose();
+        Matrix4f matrix = stack.pose().last().pose();
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();

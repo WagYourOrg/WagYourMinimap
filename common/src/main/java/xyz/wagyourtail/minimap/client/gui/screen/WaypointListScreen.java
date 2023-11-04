@@ -1,6 +1,7 @@
 package xyz.wagyourtail.minimap.client.gui.screen;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
@@ -27,12 +28,12 @@ public class WaypointListScreen extends Screen {
     }
 
     @Override
-    public void render(PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
+    public void render(GuiGraphics poseStack, int mouseX, int mouseY, float partialTicks) {
         renderBackground(poseStack);
 
         this.waypointListWidget.render(poseStack, mouseX, mouseY, partialTicks);
 
-        drawCenteredString(poseStack, font, title, width / 2, 8, 0xFFFFFF);
+        poseStack.drawCenteredString(font, title, width / 2, 8, 0xFFFFFF);
 
         super.render(poseStack, mouseX, mouseY, partialTicks);
     }

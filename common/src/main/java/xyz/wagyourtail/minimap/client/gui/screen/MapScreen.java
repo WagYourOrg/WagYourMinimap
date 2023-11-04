@@ -2,6 +2,7 @@ package xyz.wagyourtail.minimap.client.gui.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
@@ -125,39 +126,35 @@ public class MapScreen extends Screen {
     }
 
     @Override
-    public void render(PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
+    public void render(GuiGraphics poseStack, int mouseX, int mouseY, float partialTicks) {
         renderBackground(poseStack);
 
         renderer.renderMinimap(poseStack, mouseX, mouseY);
 
         if (dragStartX != dragEndX && dragStartY != dragEndY) {
-            fill(poseStack, (int) dragStartX, (int) dragStartY, (int) dragEndX, (int) dragEndY, SELECT_REGION_COLOR);
-            fill(
-                poseStack,
+            poseStack.fill((int) dragStartX, (int) dragStartY, (int) dragEndX, (int) dragEndY, SELECT_REGION_COLOR);
+            poseStack.fill(
                 (int) dragStartX,
                 (int) dragStartY + 1,
                 (int) dragStartX + 1,
                 (int) dragEndY + 1,
                 SELECT_REGION_BORDER_COLOR
             );
-            fill(
-                poseStack,
+            poseStack.fill(
                 (int) dragStartX,
                 (int) dragStartY,
                 (int) dragEndX,
                 (int) dragStartY + 1,
                 SELECT_REGION_BORDER_COLOR
             );
-            fill(
-                poseStack,
+            poseStack.fill(
                 (int) dragEndX,
                 (int) dragStartY + 1,
                 (int) dragEndX + 1,
                 (int) dragEndY + 1,
                 SELECT_REGION_BORDER_COLOR
             );
-            fill(
-                poseStack,
+            poseStack.fill(
                 (int) dragStartX,
                 (int) dragEndY,
                 (int) dragEndX,
@@ -230,8 +227,8 @@ public class MapScreen extends Screen {
         menuHeight = (buttons.size() + 1) * 35;
     }
 
-    private static void drawTex(PoseStack pose, int x1, int y1, int w, int h, float minU, float maxU, float minV, float maxV) {
-        Matrix4f matrix = pose.last().pose();
+    private static void drawTex(GuiGraphics pose, int x1, int y1, int w, int h, float minU, float maxU, float minV, float maxV) {
+        Matrix4f matrix = pose.pose().last().pose();
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         BufferBuilder bufferBuilder = Tesselator.getInstance().getBuilder();
         bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);

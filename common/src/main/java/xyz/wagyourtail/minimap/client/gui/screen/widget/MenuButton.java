@@ -4,6 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.renderer.GameRenderer;
@@ -34,33 +35,30 @@ public class MenuButton extends AbstractButton {
     }
 
     @Override
-    public void renderWidget(PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
+    public void renderWidget(GuiGraphics poseStack, int mouseX, int mouseY, float partialTicks) {
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        RenderSystem.setShaderTexture(0, isHovered ? button_base_active : button_base);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.enableDepthTest();
-        blit(poseStack, getX(), getY(), width, height, 0, 0, 64, 64, 64, 64);
-        RenderSystem.setShaderTexture(0, tex);
-        blit(poseStack, getX(), getY(), width, height, 0, 0, 64, 64, 64, 64);
+        poseStack.blit(isHovered ? button_base_active : button_base, getX(), getY(), width, height, 0, 0, 64, 64, 64, 64);
+        poseStack.blit(tex, getX(), getY(), width, height, 0, 0, 64, 64, 64, 64);
         if (this.isHovered) {
             this.renderToolTip(poseStack, mouseX, mouseY);
         }
 
     }
 
-    public void renderToolTip(PoseStack poseStack, int mouseX, int mouseY) {
+    public void renderToolTip(GuiGraphics poseStack, int mouseX, int mouseY) {
         Font font = Minecraft.getInstance().font;
-        fill(
-            poseStack,
+        poseStack.fill(
             mouseX + 8,
             mouseY - 2,
             mouseX + font.width(getMessage()) + 12,
             mouseY + font.lineHeight + 2,
             0x7F000000
         );
-        font.draw(poseStack, getMessage(), mouseX + 10, mouseY, 0xFFFFFF);
+        poseStack.drawString(font, getMessage(), mouseX + 10, mouseY, 0xFFFFFF);
     }
 
     @Override

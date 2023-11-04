@@ -2,6 +2,7 @@ package xyz.wagyourtail.minimap.client.gui.hud.overlay;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
@@ -23,10 +24,10 @@ public class CircleMapBorderOverlay extends AbstractMinimapOverlay {
     }
 
     @Override
-    public void renderOverlay(PoseStack stack, @NotNull Vec3 center, float maxLength, @NotNull Vec3 player_pos, float player_rot) {
+    public void renderOverlay(GuiGraphics stack, @NotNull Vec3 center, float maxLength, @NotNull Vec3 player_pos, float player_rot) {
         RenderSystem.setShaderTexture(0, border);
-        stack.translate(maxLength / 2, maxLength / 2, 0);
-        Matrix4f matrix = stack.last().pose();
+        stack.pose().translate(maxLength / 2, maxLength / 2, 0);
+        Matrix4f matrix = stack.pose().last().pose();
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.setShader(GameRenderer::getPositionTexShader);

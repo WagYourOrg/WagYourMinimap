@@ -2,6 +2,7 @@ package xyz.wagyourtail.config.gui.widgets;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.network.chat.Component;
 
@@ -15,12 +16,12 @@ public class NamedEditBox extends EditBox {
 
 
     @Override
-    public void renderWidget(PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
-        poseStack.pushPose();
-        poseStack.translate(this.getX(), this.getY() - 6, 0);
-        poseStack.scale(.6f, .6f, 1);
-        drawString(poseStack, font, this.getMessage(), 0, 0, 0xFFFFFF);
-        poseStack.popPose();
+    public void renderWidget(GuiGraphics poseStack, int mouseX, int mouseY, float partialTicks) {
+        poseStack.pose().pushPose();
+        poseStack.pose().translate(this.getX(), this.getY() - 6, 0);
+        poseStack.pose().scale(.6f, .6f, 1);
+        poseStack.drawString(font, this.getMessage(), 0, 0, 0xFFFFFF);
+        poseStack.pose().popPose();
         super.renderWidget(poseStack, mouseX, mouseY, partialTicks);
     }
 

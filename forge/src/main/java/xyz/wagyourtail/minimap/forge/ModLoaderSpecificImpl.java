@@ -15,7 +15,7 @@ public class ModLoaderSpecificImpl implements ModLoaderSpecific {
 
     @Override
     public void clientCommandContextLog(SharedSuggestionProvider p, Component s) {
-        ((ClientCommandSourceStack) p).sendSuccess(s, true);
+        ((ClientCommandSourceStack) p).sendSuccess(() -> s, true);
     }
 
 }
