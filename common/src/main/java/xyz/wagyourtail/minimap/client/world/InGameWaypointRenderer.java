@@ -61,12 +61,21 @@ public class InGameWaypointRenderer {
                 stack.popPose();
             }
 
-            // render waypoint relative to the player so infinite distance works
-            stack.pushPose();
-            RenderSystem.disableDepthTest();
-            stack.translate(normalized_offset.x, normalized_offset.y, normalized_offset.z);
-            renderWaypointIcon(stack, offset, xRot, yRot, visibleWaypoint, distance);
-            stack.popPose();
+            if (distance > factor) {
+                // render waypoint relative to the player so infinite distance works
+                stack.pushPose();
+                RenderSystem.disableDepthTest();
+                stack.translate(normalized_offset.x, normalized_offset.y, normalized_offset.z);
+                renderWaypointIcon(stack, offset, xRot, yRot, visibleWaypoint, distance);
+                stack.popPose();
+            } else {
+                stack.pushPose();
+                RenderSystem.disableDepthTest();
+                stack.translate(offset.x, offset.y, offset.z);
+                stack.scale((float) (distance / factor), (float) (distance / factor), (float) (distance / factor));
+                renderWaypointIcon(stack, offset, xRot, yRot, visibleWaypoint, distance);
+                stack.popPose();
+            }
         }
         RenderSystem.enableDepthTest();
         stack.popPose();

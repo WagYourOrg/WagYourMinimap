@@ -15,6 +15,8 @@ import xyz.wagyourtail.minimap.chunkdata.ChunkLocation;
 import xyz.wagyourtail.minimap.chunkdata.parts.SurfaceDataPart;
 import xyz.wagyourtail.minimap.chunkdata.parts.UndergroundDataPart;
 import xyz.wagyourtail.minimap.map.MapServer;
+import xyz.wagyourtail.minimap.map.image.UndergroundAccurateImageStrategy;
+import xyz.wagyourtail.minimap.map.image.UndergroundBlockLightImageStrategy;
 import xyz.wagyourtail.minimap.map.image.UndergroundVanillaImageStrategy;
 
 import java.util.Set;
@@ -24,7 +26,11 @@ public class UndergroundDataUpdater extends AbstractChunkDataUpdater<Underground
 
 
     public UndergroundDataUpdater() {
-        super(Set.of(UndergroundVanillaImageStrategy.class.getCanonicalName()));
+        super(Set.of(
+            UndergroundVanillaImageStrategy.class.getCanonicalName(),
+            UndergroundAccurateImageStrategy.class.getCanonicalName(),
+            UndergroundBlockLightImageStrategy.class.getCanonicalName()
+        ));
     }
 
     @Override

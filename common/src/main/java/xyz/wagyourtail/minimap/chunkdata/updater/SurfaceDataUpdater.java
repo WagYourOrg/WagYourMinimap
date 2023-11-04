@@ -21,13 +21,16 @@ import xyz.wagyourtail.minimap.map.image.SurfaceBlockLightImageStrategy;
 import xyz.wagyourtail.minimap.map.image.VanillaMapImageStrategy;
 
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ForkJoinPool;
 
 public class SurfaceDataUpdater extends AbstractChunkDataUpdater<SurfaceDataPart> {
 
     public SurfaceDataUpdater() {
         super(Set.of(
             VanillaMapImageStrategy.class.getCanonicalName(),
-            AccurateMapImageStrategy.class.getCanonicalName()
+            AccurateMapImageStrategy.class.getCanonicalName(),
+            SurfaceBlockLightImageStrategy.class.getCanonicalName()
         ));
     }
 
@@ -48,7 +51,6 @@ public class SurfaceDataUpdater extends AbstractChunkDataUpdater<SurfaceDataPart
         //TODO: replace with chunk section stuff to not use a MutableBlockPos at all (see baritone), maybe not possible since we need light levels too
         BlockPos.MutableBlockPos blockPos = new BlockPos.MutableBlockPos();
         Registry<Biome> biomeRegistry = mclevel.registryAccess().registryOrThrow(Registry.BIOME_REGISTRY);
-        LayerLightEventListener light = getBlockLightLayer(mclevel);
         if (mclevel.dimensionType().hasCeiling()) {
             int ceiling = mclevel.dimensionType().logicalHeight() - 1;
             for (int i = 0; i < 256; ++i) {
@@ -95,10 +97,6 @@ public class SurfaceDataUpdater extends AbstractChunkDataUpdater<SurfaceDataPart
                 }
             }
         }
-
-        //TODO: we don't have to invalidate lighting for these
-        parent.north().get().invalidateDerivitives(derivitivesToInvalidate);
-        parent.south().get().invalidateDerivitives(derivitivesToInvalidate);
 
         if (oldSurfaceData != null) {
             if (oldSurfaceData.mergeFrom(data)) {

@@ -76,18 +76,25 @@ public class LightDataUpdater extends AbstractChunkDataUpdater<LightDataPart> {
         ChunkPos pos = chunk.getPos();
         //TODO: replace with chunk section stuff to not use a MutableBlockPos at all (see baritone), maybe not possible since we need light levels too
         BlockPos.MutableBlockPos blockPos = new BlockPos.MutableBlockPos();
+        boolean changed = false;
         LayerLightEventListener light = getBlockLightLayer(mclevel);
         for (int i = 0; i < 256; ++i) {
             int x = (i >> 4) % 16;
             int z = i % 16;
+            byte lightlevel = data.blocklight[i];
             data.blocklight[i] = (byte) light.getLightValue(blockPos.set(
                 (pos.x << 4) + x,
                 surface.heightmap[i] + 1,
                 (pos.z << 4) + z
             ));
+            if (lightlevel != data.blocklight[i]) {
+                changed = true;
+            }
         }
-        parent.markDirty();
-        parent.invalidateDerivitives(Set.of(SurfaceBlockLightImageStrategy.class.getCanonicalName()));
+        if (changed) {
+            parent.markDirty();
+            parent.invalidateDerivitives(derivitivesToInvalidate);
+        }
         return data;
     }
 
