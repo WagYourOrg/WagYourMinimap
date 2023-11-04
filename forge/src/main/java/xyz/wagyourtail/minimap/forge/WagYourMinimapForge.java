@@ -57,6 +57,7 @@ public class WagYourMinimapForge {
     }
 
     @SubscribeEvent
+    @SuppressWarnings("removal")
     public void onRenderLast(RenderLevelLastEvent renderEvent) {
 //        if (renderEvent.getStage() == RenderLevelStageEvent.Stage.AFTER_WEATHER) {
             InGameWaypointRenderer.RENDER_LAST.invoker().onRenderLast(
